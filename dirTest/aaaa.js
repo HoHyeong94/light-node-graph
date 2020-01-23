@@ -1,9 +1,2 @@
-function ThreeRenderer() {
-  this.addInput("mesh", "meshxx");
-}
+Litegraph node 작성 프로젝트입니다. test
 
-ThreeRenderer.prototype.onExecute = function() {
-  ThreeRenderAction(this.getInputData(0));
-};
-
-LiteGraph.registerNodeType("nexivil/threerenderer", ThreeRenderer);
