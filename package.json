@@ -1,0 +1,21 @@
+{
+    "name": "test",
+    "version": "0.0.1",
+    "description": "For test node",
+    "private": false,
+    "keywords": [
+        "test",
+        "node"
+    ],
+    "homepage": "http://github.com/owner/project",
+    "bugs": {
+        "url": "http://github.com/owner/project/issues",
+        "email": "project@hostname.com"
+    },
+    "license": "MIT",
+    "author": {
+        "name": "Barney Rubble",
+        "email": "b@rubble.com",
+        "url": "http://barnyrubble.tumblr.com/"
+    }
+}
