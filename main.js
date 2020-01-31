@@ -1,5 +1,7 @@
 import {add, minus} from "./a/chunk0";
 
 export default function main() {
-    return (add(1,3), minus(3,1))
+    const a=add(1,13)
+    const b=minus(31,2)
+    return {a,b}
 }
