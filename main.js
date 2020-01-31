@@ -1,5 +1,5 @@
-import add from "/chunk0";
-import minus from "/chunk1";
+import add from "./a/chunk0";
+import minus from "./a/b/chunk1";
 
 export default function main() {
     const a=minus(3,1)
