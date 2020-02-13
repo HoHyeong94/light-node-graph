@@ -1,4 +1,6 @@
-import makerjs from 'makerjs'
+//import makerjs from 'makerjs'
+import {makerjs} from 'global'
+
 export function testDraw(sectionName,sectionPoint, diaPoint){
 // var makerjs = require('makerjs');
 let sc = 0.200;

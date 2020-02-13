@@ -1,5 +1,5 @@
 import { PointGenerator, LineMatch,  OffsetLine, SplinePointGenerator } from "./nodeGenerator";
-import _ from "lodash";
+import {_} from "global";
 
 
 export function GirderLayoutGenerator(girderLayoutInput, hLine, VerticalDataList, SuperElevation) {

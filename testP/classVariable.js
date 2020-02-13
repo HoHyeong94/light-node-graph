@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import {_} from 'global'
 
 
 export function Vector2d(xydata) {

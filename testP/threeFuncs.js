@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { THREE } from "global";
 
 
 export function ThreeInit(camera, scene, renderer) {

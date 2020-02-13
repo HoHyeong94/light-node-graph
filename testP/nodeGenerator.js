@@ -1,5 +1,5 @@
 import { Vector2d, Curve } from "./classVariable";
-import _ from "lodash";
+import {_} from "global";
 
 
 export const LineGenerator = inputs => {

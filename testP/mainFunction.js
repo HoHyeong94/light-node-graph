@@ -18,7 +18,7 @@ import {
   hBracingSection,
   hBracingPlate
 } from "./geometryFunc";
-import _ from "lodash";
+import {_} from "global";
 
 
 

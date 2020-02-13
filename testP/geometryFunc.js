@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import {THREE} from "global";
 import {ToGlobalPoint} from './threejsDisplay';
 
 export function sectionPoint(sectionInfo, pointSectionInfo, gradient){

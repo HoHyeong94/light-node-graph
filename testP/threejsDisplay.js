@@ -1,5 +1,5 @@
 import {ConvexBufferGeometry} from './convex/ConvexGeometry'
-import * as THREE from "three";
+import { THREE } from "global";
 
 // import {Main} from './mainFunction'
 

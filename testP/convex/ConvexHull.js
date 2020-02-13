@@ -5,12 +5,21 @@
  *
  */
 
-import {
+// import {
+// 	Line3,
+// 	Plane,
+// 	Triangle,
+// 	Vector3
+// } from "three";
+
+import {THREE} from 'global'
+
+const {
 	Line3,
 	Plane,
 	Triangle,
 	Vector3
-} from "three";
+} = THREE
 
 var ConvexHull = ( function () {
 
