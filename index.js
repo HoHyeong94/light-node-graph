@@ -35,7 +35,7 @@ MainFunction.prototype.onExecute = function () {
 
     group.add(LineView(linedata.p[0], initPoint));
 
-    meshArr.push({id:0,mesh:group})
+    meshArr.current.push({id:0,mesh:group})
 };
 
 LiteGraph.registerNodeType("nexivil/mainfunction", MainFunction);
