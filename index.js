@@ -75,13 +75,13 @@ MainFunction.prototype.onExecute = function() {
   // );
 
 
-  let girder = GirderFrameView(
-    linedata.gridPoint.gridPointStation,
-    linedata.gridPoint.stationDictList,
-    linedata.gridPoint.nameToPointDict,
-    linedata.xbeamData,
-    initPoint
-  )
+  // let girder = GirderFrameView(
+  //   linedata.gridPoint.gridPointStation,
+  //   linedata.gridPoint.stationDictList,
+  //   linedata.gridPoint.nameToPointDict,
+  //   linedata.xbeamData,
+  //   initPoint
+  // )
   // group.add(
   //   SteelBoxGirder(
   //     linedata.gridPoint.gridPointStation,
@@ -91,6 +91,14 @@ MainFunction.prototype.onExecute = function() {
   //     initPoint
   //   )
   // );
+
+  let sbg = SteelBoxGirder(
+    linedata.gridPoint.gridPointStation,
+    linedata.gridPoint.stationDictList,
+    linedata.sectionPointDict,
+    linedata.gridPoint.nameToPointDict,
+    initPoint
+  )
   // //xbeamView//
   // group.add(
   //   XbeamView(
@@ -117,7 +125,7 @@ MainFunction.prototype.onExecute = function() {
   //   )
   // );
 
-  meshArr.current.push({ id: 0, mesh: girder });
+  meshArr.current.push({ id: 0, mesh: sbg });
 };
 
 LiteGraph.registerNodeType("nexivil/mainfunction", MainFunction);

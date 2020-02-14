@@ -38,7 +38,7 @@ export function GirderFrameView(gridPoint,stationDictList,nameToPointDict,xbeamD
           newgeometry.vertices.push(new THREE.Vector3	(spts.x - xInit,	spts.y - yInit,	spts.z - zInit));
           newgeometry.vertices.push(new THREE.Vector3	(epts.x - xInit,	epts.y - yInit,	epts.z - zInit));
           group.add(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0x0000ff })));
-          mergedGeo.mergeMesh(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0x0000ff })))
+          //mergedGeo.mergeMesh(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0x0000ff })))
           //mergedGeo.merge()
         }
       }
@@ -50,11 +50,11 @@ export function GirderFrameView(gridPoint,stationDictList,nameToPointDict,xbeamD
       newgeometry.vertices.push(new THREE.Vector3	(spts.x - xInit,	spts.y - yInit,	spts.z - zInit));
       newgeometry.vertices.push(new THREE.Vector3	(epts.x - xInit,	epts.y - yInit,	epts.z - zInit));
       group.add(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0xff00ff })));
-      mergedGeo.mergeMesh(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0xff00ff })))
+      //mergedGeo.mergeMesh(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0xff00ff })))
     }
     //return group
     // mergedGeo.mergeMesh(group)
-    return mergedGeo
+    return group
 }
 
 export function DiaView(nameToPointDict, diaDict,initPoint){
@@ -160,6 +160,7 @@ export function HBracingView(hBracingList,initPoint){
 
 export function SteelBoxGirder(gridPoint, stationDictList,sectionPointDict,nameToPointDict,initPoint){
     var group = new THREE.Group();
+    var mergedGeo = new THREE.Geometry();
     // var meshMaterial = new THREE.MeshLambertMaterial( {
     //     color: 0x00ff00,
     //     emissive: 0x44aa44,
@@ -181,27 +182,32 @@ export function SteelBoxGirder(gridPoint, stationDictList,sectionPointDict,nameT
 
             let plist1 = sectionPointDict[pk1].forward.bottomPlate;
             let plist2 = sectionPointDict[pk2].backward.bottomPlate;
+            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
             plist1 = sectionPointDict[pk1].forward.lWeb;
             plist2 = sectionPointDict[pk2].backward.lWeb
+            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
             plist1 = sectionPointDict[pk1].forward.rWeb;
             plist2 = sectionPointDict[pk2].backward.rWeb
+            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
             plist1 = sectionPointDict[pk1].forward.rightTopPlate;
             plist2 = sectionPointDict[pk2].backward.rightTopPlate
+            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
             plist1 = sectionPointDict[pk1].forward.leftTopPlate;
             plist2 = sectionPointDict[pk2].backward.leftTopPlate
+            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
             }
         }
     }
-    return group
+    return mergedGeo
 }
 
 
