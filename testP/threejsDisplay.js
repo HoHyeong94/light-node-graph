@@ -17,7 +17,7 @@ export function LineView(linepoints, initPoint){
         geometry, new THREE.LineBasicMaterial( {color: 0xffff00} )
     );
     group.add(line);
-    return group, geometry
+    return [group, geometry]
     //return geometry;
 }
 
