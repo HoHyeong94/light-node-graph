@@ -3,7 +3,15 @@ import { Main } from "./testP/mainFunction";
 import { defaultValues } from "./testP/defaultValues";
 import { LiteGraph, meshArr, THREE } from "global";
 
-import { LineView } from "./testP/threejsDisplay";
+import {
+  LineView,
+  GirderFrameView,
+  SteelBoxGirder,
+  XbeamView,
+  DiaView,
+  HBracingView,
+  HBracingPlateView
+} from "./testP/threejsDisplay";
 
 const {
   horizon,
