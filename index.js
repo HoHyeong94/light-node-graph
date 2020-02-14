@@ -61,7 +61,8 @@ MainFunction.prototype.onExecute = function() {
 
   const initPoint = linedata.gridPoint.nameToPointDict["G1S1"];
 
-  group.add(LineView(linedata.p[0], initPoint));
+  //group.add(LineView(linedata.p[0], initPoint));
+  let line = LineView(linedata.p[0], initPoint)
 
   // group.add(
   //   GirderFrameView(
@@ -107,7 +108,7 @@ MainFunction.prototype.onExecute = function() {
   //   )
   // );
 
-  meshArr.current.push({ id: 0, mesh: group });
+  meshArr.current.push({ id: 0, mesh: line });
 };
 
 LiteGraph.registerNodeType("nexivil/mainfunction", MainFunction);
