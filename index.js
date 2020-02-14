@@ -64,15 +64,15 @@ MainFunction.prototype.onExecute = function() {
   //group.add(LineView(linedata.p[0], initPoint));
   let line = LineView(linedata.p[0], initPoint)
 
-  group.add(
-    GirderFrameView(
-      linedata.gridPoint.gridPointStation,
-      linedata.gridPoint.stationDictList,
-      linedata.gridPoint.nameToPointDict,
-      linedata.xbeamData,
-      initPoint
-    )
-  );
+  // group.add(
+  //   GirderFrameView(
+  //     linedata.gridPoint.gridPointStation,
+  //     linedata.gridPoint.stationDictList,
+  //     linedata.gridPoint.nameToPointDict,
+  //     linedata.xbeamData,
+  //     initPoint
+  //   )
+  // );
 
 
   let girder = GirderFrameView(

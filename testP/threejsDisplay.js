@@ -22,6 +22,7 @@ export function LineView(linepoints, initPoint){
 }
 
 export function GirderFrameView(gridPoint,stationDictList,nameToPointDict,xbeamData,initPoint){
+    let mergedGeo = new THREE.Geometry();
     var group = new THREE.Group();
     const xInit = initPoint.x
     const yInit = initPoint.y
@@ -37,6 +38,7 @@ export function GirderFrameView(gridPoint,stationDictList,nameToPointDict,xbeamD
           newgeometry.vertices.push(new THREE.Vector3	(spts.x - xInit,	spts.y - yInit,	spts.z - zInit));
           newgeometry.vertices.push(new THREE.Vector3	(epts.x - xInit,	epts.y - yInit,	epts.z - zInit));
           group.add(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0x0000ff })));
+          //mergedGeo.merge()
         }
       }
     }
@@ -48,7 +50,9 @@ export function GirderFrameView(gridPoint,stationDictList,nameToPointDict,xbeamD
       newgeometry.vertices.push(new THREE.Vector3	(epts.x - xInit,	epts.y - yInit,	epts.z - zInit));
       group.add(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0xff00ff })));
     }
-    return group
+    //return group
+    mergedGeo.mergeMesh(group)
+    return mergedGeo
 }
 
 export function DiaView(nameToPointDict, diaDict,initPoint){
