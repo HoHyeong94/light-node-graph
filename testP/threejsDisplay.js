@@ -160,7 +160,7 @@ export function HBracingView(hBracingList,initPoint){
 
 export function SteelBoxGirder(gridPoint, stationDictList,sectionPointDict,nameToPointDict,initPoint){
     var group = new THREE.Group();
-    var mergedGeo = new THREE.Geometry();
+    //var mergedGeo = new THREE.Geometry();
     // var meshMaterial = new THREE.MeshLambertMaterial( {
     //     color: 0x00ff00,
     //     emissive: 0x44aa44,
@@ -182,32 +182,32 @@ export function SteelBoxGirder(gridPoint, stationDictList,sectionPointDict,nameT
 
             let plist1 = sectionPointDict[pk1].forward.bottomPlate;
             let plist2 = sectionPointDict[pk2].backward.bottomPlate;
-            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
+            // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
             plist1 = sectionPointDict[pk1].forward.lWeb;
             plist2 = sectionPointDict[pk2].backward.lWeb
-            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
+            // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
             plist1 = sectionPointDict[pk1].forward.rWeb;
             plist2 = sectionPointDict[pk2].backward.rWeb
-            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
+            // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
             plist1 = sectionPointDict[pk1].forward.rightTopPlate;
             plist2 = sectionPointDict[pk2].backward.rightTopPlate
-            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
+            // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
             plist1 = sectionPointDict[pk1].forward.leftTopPlate;
             plist2 = sectionPointDict[pk2].backward.leftTopPlate
-            mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
+            // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
             group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
             }
         }
     }
-    return mergedGeo
+    return group
 }
 
 
