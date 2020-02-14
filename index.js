@@ -61,8 +61,8 @@ MainFunction.prototype.onExecute = function() {
 
   const initPoint = linedata.gridPoint.nameToPointDict["G1S1"];
 
-  group.add(LineView(linedata.p[0], initPoint));
-  let line , linegeo = LineView(linedata.p[0], initPoint)
+  let [line , linegeo] = LineView(linedata.p[0], initPoint)
+  group.add(line);
 
   // group.add(
   //   GirderFrameView(
