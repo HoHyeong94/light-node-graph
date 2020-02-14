@@ -36,6 +36,8 @@ MainFunction.prototype.onExecute = function () {
     group.add(LineView(linedata.p[0], initPoint));
     console.log(group)
 
+    console.log(meshArr)
+
     meshArr.current.push({id:0,mesh:group})
 };
 
