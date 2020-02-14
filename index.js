@@ -63,49 +63,49 @@ MainFunction.prototype.onExecute = function() {
 
   group.add(LineView(linedata.p[0], initPoint));
 
-  group.add(
-    GirderFrameView(
-      linedata.gridPoint.gridPointStation,
-      linedata.gridPoint.stationDictList,
-      linedata.gridPoint.nameToPointDict,
-      linedata.xbeamData,
-      initPoint
-    )
-  );
-  group.add(
-    SteelBoxGirder(
-      linedata.gridPoint.gridPointStation,
-      linedata.gridPoint.stationDictList,
-      linedata.sectionPointDict,
-      linedata.gridPoint.nameToPointDict,
-      initPoint
-    )
-  );
-  //xbeamView//
-  group.add(
-    XbeamView(
-      linedata.gridPoint.nameToPointDict,
-      linedata.xbeamSectionDict,
-      initPoint
-    )
-  );
-  //diaphragmView//
-  group.add(
-    DiaView(linedata.gridPoint.nameToPointDict, linedata.diaDict, initPoint)
-  );
-  group.add(
-    DiaView(linedata.gridPoint.nameToPointDict, linedata.vStiffDict, initPoint)
-  );
-  group.add(LineView(linedata.hBracingList[0].line, initPoint));
-  group.add(LineView(linedata.hBracingList[1].line, initPoint));
-  group.add(HBracingView(linedata.hBracingList, initPoint));
-  group.add(
-    HBracingPlateView(
-      linedata.gridPoint.nameToPointDict,
-      linedata.hBracingPlateDict,
-      initPoint
-    )
-  );
+  // group.add(
+  //   GirderFrameView(
+  //     linedata.gridPoint.gridPointStation,
+  //     linedata.gridPoint.stationDictList,
+  //     linedata.gridPoint.nameToPointDict,
+  //     linedata.xbeamData,
+  //     initPoint
+  //   )
+  // );
+  // group.add(
+  //   SteelBoxGirder(
+  //     linedata.gridPoint.gridPointStation,
+  //     linedata.gridPoint.stationDictList,
+  //     linedata.sectionPointDict,
+  //     linedata.gridPoint.nameToPointDict,
+  //     initPoint
+  //   )
+  // );
+  // //xbeamView//
+  // group.add(
+  //   XbeamView(
+  //     linedata.gridPoint.nameToPointDict,
+  //     linedata.xbeamSectionDict,
+  //     initPoint
+  //   )
+  // );
+  // //diaphragmView//
+  // group.add(
+  //   DiaView(linedata.gridPoint.nameToPointDict, linedata.diaDict, initPoint)
+  // );
+  // group.add(
+  //   DiaView(linedata.gridPoint.nameToPointDict, linedata.vStiffDict, initPoint)
+  // );
+  // group.add(LineView(linedata.hBracingList[0].line, initPoint));
+  // group.add(LineView(linedata.hBracingList[1].line, initPoint));
+  // group.add(HBracingView(linedata.hBracingList, initPoint));
+  // group.add(
+  //   HBracingPlateView(
+  //     linedata.gridPoint.nameToPointDict,
+  //     linedata.hBracingPlateDict,
+  //     initPoint
+  //   )
+  // );
 
   meshArr.current.push({ id: 0, mesh: group });
 };
