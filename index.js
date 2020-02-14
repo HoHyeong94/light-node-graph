@@ -38,7 +38,7 @@ MainFunction.prototype.onExecute = function () {
 
     console.log(meshArr)
 
-    meshArr.current.push({id:0,mesh:group})
+    meshArr.current =  [{id:0,mesh:group}]
 };
 
 LiteGraph.registerNodeType("nexivil/mainfunction", MainFunction);
