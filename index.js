@@ -92,13 +92,13 @@ MainFunction.prototype.onExecute = function() {
   //   )
   // );
 
-  let sbg = SteelBoxGirder(
-    linedata.gridPoint.gridPointStation,
-    linedata.gridPoint.stationDictList,
-    linedata.sectionPointDict,
-    linedata.gridPoint.nameToPointDict,
-    initPoint
-  )
+  // let sbg = SteelBoxGirder(
+  //   linedata.gridPoint.gridPointStation,
+  //   linedata.gridPoint.stationDictList,
+  //   linedata.sectionPointDict,
+  //   linedata.gridPoint.nameToPointDict,
+  //   initPoint
+  // )
   // //xbeamView//
   // group.add(
   //   XbeamView(
@@ -125,7 +125,7 @@ MainFunction.prototype.onExecute = function() {
   //   )
   // );
 
-  meshArr.current.push({ id: 0, mesh: sbg });
+  meshArr.current.push({ id: 0, mesh: line });
 };
 
 LiteGraph.registerNodeType("nexivil/mainfunction", MainFunction);
