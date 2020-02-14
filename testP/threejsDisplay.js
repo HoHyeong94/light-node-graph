@@ -17,8 +17,8 @@ export function LineView(linepoints, initPoint){
         geometry, new THREE.LineBasicMaterial( {color: 0xffff00} )
     );
     group.add(line);
-    //return group
-    return geometry;
+    return group
+    //return geometry;
 }
 
 export function GirderFrameView(gridPoint,stationDictList,nameToPointDict,xbeamData,initPoint){
