@@ -1,7 +1,7 @@
 import { add, minus } from "./a/chunk0";
 import { Main } from "./testP/mainFunction";
 import { defaultValues } from "./testP/defaultValues";
-import { LiteGraph, meshArr, THREE } from "global";
+import { LiteGraph, sceneAdder, THREE } from "global";
 
 import {
   LineView,
@@ -125,7 +125,8 @@ MainFunction.prototype.onExecute = function() {
   //   )
   // );
 
-  meshArr.current.push({ id: 0, mesh: group , geo:linegeo });
+  //meshArr.current.push({ id: 0, mesh: group , geo:linegeo });
+  sceneAdder({ id: 0, mesh: group , geo:linegeo })
 };
 
 LiteGraph.registerNodeType("nexivil/mainfunction", MainFunction);
