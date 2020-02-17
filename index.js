@@ -1,7 +1,7 @@
 import { add, minus } from "./a/chunk0";
 import { Main } from "./testP/mainFunction";
 import { defaultValues } from "./testP/defaultValues";
-import { LiteGraph, sceneAdder, THREE } from "global";
+import { LiteGraph, meshArr, THREE } from "global";
 
 import {
   LineView,
