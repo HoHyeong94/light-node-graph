@@ -125,8 +125,8 @@ MainFunction.prototype.onExecute = function() {
   //   )
   // );
 
-  //meshArr.current.push({ id: 0, mesh: group , geo:linegeo });
-  sceneAdder({ id: 0, mesh: group , geo:linegeo })
+  meshArr.current.push({ id: 0, mesh: group , geo:linegeo });
+  // sceneAdder({ id: 0, mesh: group , geo:linegeo })
 };
 
 LiteGraph.registerNodeType("nexivil/mainfunction", MainFunction);
