@@ -1,6 +1,7 @@
 // import { defaultValues } from "./defaultValues";
 // import { LiteGraph, meshArr, THREE } from "global";
 import "./inputNodes"
+import "./lineNodes"
 
 // const {
 //   horizon,
