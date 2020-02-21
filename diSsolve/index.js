@@ -2,6 +2,10 @@
 // import { LiteGraph, meshArr, THREE } from "global";
 import "./inputNodes"
 import "./lineNodes"
+import "./girderNodes"
+import "./sectionPointNodes"
+import "./steelBoxNodes"
+import "./stiffnerNodes"
 
 // const {
 //   horizon,
