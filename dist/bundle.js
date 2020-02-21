@@ -2574,11 +2574,13 @@ var bundle = (function (global) {
         var line = new global.THREE.Line(
             geometry, new global.THREE.LineBasicMaterial( {color: 0xffff00} )
         );
-        group.add(line);
-        return group
+          group.add(line);
+        return [group, geometry]
+        //return geometry;
     }
 
     function GirderFrameView(gridPoint,stationDictList,nameToPointDict,xbeamData,initPoint){
+        let mergedGeo = new global.THREE.Geometry();
         var group = new global.THREE.Group();
         const xInit = initPoint.x;
         const yInit = initPoint.y;
@@ -2594,6 +2596,8 @@ var bundle = (function (global) {
               newgeometry.vertices.push(new global.THREE.Vector3	(spts.x - xInit,	spts.y - yInit,	spts.z - zInit));
               newgeometry.vertices.push(new global.THREE.Vector3	(epts.x - xInit,	epts.y - yInit,	epts.z - zInit));
               group.add(new global.THREE.Line(newgeometry, new global.THREE.LineBasicMaterial({ color: 0x0000ff })));
+              //mergedGeo.mergeMesh(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0x0000ff })))
+              //mergedGeo.merge()
             }
           }
         }
@@ -2604,7 +2608,10 @@ var bundle = (function (global) {
           newgeometry.vertices.push(new global.THREE.Vector3	(spts.x - xInit,	spts.y - yInit,	spts.z - zInit));
           newgeometry.vertices.push(new global.THREE.Vector3	(epts.x - xInit,	epts.y - yInit,	epts.z - zInit));
           group.add(new global.THREE.Line(newgeometry, new global.THREE.LineBasicMaterial({ color: 0xff00ff })));
+          //mergedGeo.mergeMesh(new THREE.Line(newgeometry, new THREE.LineBasicMaterial({ color: 0xff00ff })))
         }
+        //return group
+        // mergedGeo.mergeMesh(group)
         return group
     }
 
@@ -2711,6 +2718,7 @@ var bundle = (function (global) {
 
     function SteelBoxGirder(gridPoint, stationDictList,sectionPointDict,nameToPointDict,initPoint){
         var group = new global.THREE.Group();
+        //var mergedGeo = new THREE.Geometry();
         // var meshMaterial = new THREE.MeshLambertMaterial( {
         //     color: 0x00ff00,
         //     emissive: 0x44aa44,
@@ -2732,22 +2740,27 @@ var bundle = (function (global) {
 
                 let plist1 = sectionPointDict[pk1].forward.bottomPlate;
                 let plist2 = sectionPointDict[pk2].backward.bottomPlate;
+                // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
                 group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
                 plist1 = sectionPointDict[pk1].forward.lWeb;
                 plist2 = sectionPointDict[pk2].backward.lWeb;
+                // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
                 group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
                 plist1 = sectionPointDict[pk1].forward.rWeb;
                 plist2 = sectionPointDict[pk2].backward.rWeb;
+                // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
                 group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
                 plist1 = sectionPointDict[pk1].forward.rightTopPlate;
                 plist2 = sectionPointDict[pk2].backward.rightTopPlate;
+                // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
                 group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
 
                 plist1 = sectionPointDict[pk1].forward.leftTopPlate;
                 plist2 = sectionPointDict[pk2].backward.leftTopPlate;
+                // mergedGeo.mergeMesh(plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial))
                 group.add( plateMesh(point1, point2,plist1, plist2,initPoint, meshMaterial) );
                 }
             }
@@ -5048,7 +5061,8 @@ var bundle = (function (global) {
 
       const initPoint = linedata.gridPoint.nameToPointDict["G1S1"];
 
-      group.add(LineView(linedata.p[0], initPoint));
+      let [line , linegeo] = LineView(linedata.p[0], initPoint);
+      group.add(line);
 
       group.add(
         GirderFrameView(
@@ -5059,6 +5073,15 @@ var bundle = (function (global) {
           initPoint
         )
       );
+
+
+      let girder = GirderFrameView(
+        linedata.gridPoint.gridPointStation,
+        linedata.gridPoint.stationDictList,
+        linedata.gridPoint.nameToPointDict,
+        linedata.xbeamData,
+        initPoint
+      );
       group.add(
         SteelBoxGirder(
           linedata.gridPoint.gridPointStation,
@@ -5067,6 +5090,14 @@ var bundle = (function (global) {
           linedata.gridPoint.nameToPointDict,
           initPoint
         )
+      );
+
+      let sbg = SteelBoxGirder(
+        linedata.gridPoint.gridPointStation,
+        linedata.gridPoint.stationDictList,
+        linedata.sectionPointDict,
+        linedata.gridPoint.nameToPointDict,
+        initPoint
       );
       //xbeamView//
       group.add(
@@ -5094,7 +5125,8 @@ var bundle = (function (global) {
         )
       );
 
-      global.meshArr.current.push({ id: 0, mesh: group });
+      global.meshArr.current.push({ id: 0, mesh: group , geo:linegeo });
+      // sceneAdder({ id: 0, mesh: group , geo:linegeo })
     };
 
     global.LiteGraph.registerNodeType("nexivil/mainfunction", MainFunction);

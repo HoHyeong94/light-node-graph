@@ -1,6 +1,6 @@
 {
   "in": {
-    "input": ["/main.js"],
+    "input": ["/index.js"],
     "plugins": []
   },
   "out": {
