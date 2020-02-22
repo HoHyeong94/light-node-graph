@@ -36,7 +36,7 @@ function HorizonInput(){
 HorizonInput.prototype.onExecute = function() {
   this.setOutputData(0,horizon)
 }
-LiteGraph.registerNodeType("nexivil/Horizon", HorizonInput);
+LiteGraph.registerNodeType("HMInput/Horizon", HorizonInput);
 
 function VerticalInput(){
   this.addOutput("vertical","vertical")
@@ -44,7 +44,7 @@ function VerticalInput(){
 VerticalInput.prototype.onExecute = function() {
   this.setOutputData(0,vertical)
 }
-LiteGraph.registerNodeType("nexivil/vertical", VerticalInput);
+LiteGraph.registerNodeType("HMInput/vertical", VerticalInput);
 
 function SuperElevationInput(){
   this.addOutput("superElevation","superElevation")
@@ -52,7 +52,7 @@ function SuperElevationInput(){
 SuperElevationInput.prototype.onExecute = function() {
   this.setOutputData(0,superElevation)
 }
-LiteGraph.registerNodeType("nexivil/superElevation", SuperElevationInput);
+LiteGraph.registerNodeType("HMInput/superElevation", SuperElevationInput);
 
 
 function GirderLayoutInput(){
@@ -61,7 +61,7 @@ function GirderLayoutInput(){
 GirderLayoutInput.prototype.onExecute = function() {
   this.setOutputData(0,girderLayoutInput)
 }
-LiteGraph.registerNodeType("nexivil/girderLayoutInput", GirderLayoutInput);
+LiteGraph.registerNodeType("HMInput/girderLayoutInput", GirderLayoutInput);
 
 function SEShapeInput(){
   this.addOutput("SEShape","SEShape")
@@ -69,7 +69,7 @@ function SEShapeInput(){
 SEShapeInput.prototype.onExecute = function() {
   this.setOutputData(0,SEShape)
 }
-LiteGraph.registerNodeType("nexivil/SEShape", SEShapeInput);
+LiteGraph.registerNodeType("HMInput/SEShape", SEShapeInput);
 
 function GirderBaseInfo(){
   this.addOutput("girderBaseInfo","girderBaseInfo")
@@ -77,7 +77,7 @@ function GirderBaseInfo(){
 GirderBaseInfo.prototype.onExecute = function() {
   this.setOutputData(0,girderBaseInfo)
 }
-LiteGraph.registerNodeType("nexivil/girderBaseInfo", GirderBaseInfo);
+LiteGraph.registerNodeType("HMInput/girderBaseInfo", GirderBaseInfo);
 
 
 function DiaphragmInput(){
@@ -88,7 +88,7 @@ DiaphragmInput.prototype.onExecute = function() {
   this.setOutputData(0,diaphragmLayout)
   this.setOutputData(1,diaphragmSectionList)
 }
-LiteGraph.registerNodeType("nexivil/diaphragmInput", DiaphragmInput);
+LiteGraph.registerNodeType("HMInput/diaphragmInput", DiaphragmInput);
 
 function VStiffInput(){
   this.addOutput("vStiffLayout","vStiffLayout")
@@ -98,7 +98,7 @@ VStiffInput.prototype.onExecute = function() {
   this.setOutputData(0,vStiffLayout)
   this.setOutputData(1,vStiffSectionList)
 }
-LiteGraph.registerNodeType("nexivil/vStiffInput", VStiffInput);
+LiteGraph.registerNodeType("HMInput/vStiffInput", VStiffInput);
 
 
 
@@ -118,4 +118,4 @@ GridPointInput.prototype.onExecute = function() {
   this.setOutputData(4,height)
   this.setOutputData(5,taperedPoint)
 }
-LiteGraph.registerNodeType("nexivil/gridPointInput", GridPointInput);
+LiteGraph.registerNodeType("HMInput/gridPointInput", GridPointInput);

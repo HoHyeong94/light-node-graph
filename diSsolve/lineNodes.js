@@ -50,4 +50,4 @@ LineView.prototype.onExecute = function() {
   meshArr.current.push({ id: 0, mesh: group}); 
 }
 
-LiteGraph.registerNodeType("nexivil/lineView", LineView);
+LiteGraph.registerNodeType("3DVIEW/lineView", LineView);

@@ -664,7 +664,7 @@
   HorizonInput.prototype.onExecute = function() {
     this.setOutputData(0,horizon);
   };
-  global.LiteGraph.registerNodeType("nexivil/Horizon", HorizonInput);
+  global.LiteGraph.registerNodeType("HMInput/Horizon", HorizonInput);
 
   function VerticalInput(){
     this.addOutput("vertical","vertical");
@@ -672,7 +672,7 @@
   VerticalInput.prototype.onExecute = function() {
     this.setOutputData(0,vertical);
   };
-  global.LiteGraph.registerNodeType("nexivil/vertical", VerticalInput);
+  global.LiteGraph.registerNodeType("HMInput/vertical", VerticalInput);
 
   function SuperElevationInput(){
     this.addOutput("superElevation","superElevation");
@@ -680,7 +680,7 @@
   SuperElevationInput.prototype.onExecute = function() {
     this.setOutputData(0,superElevation);
   };
-  global.LiteGraph.registerNodeType("nexivil/superElevation", SuperElevationInput);
+  global.LiteGraph.registerNodeType("HMInput/superElevation", SuperElevationInput);
 
 
   function GirderLayoutInput(){
@@ -689,7 +689,7 @@
   GirderLayoutInput.prototype.onExecute = function() {
     this.setOutputData(0,girderLayoutInput);
   };
-  global.LiteGraph.registerNodeType("nexivil/girderLayoutInput", GirderLayoutInput);
+  global.LiteGraph.registerNodeType("HMInput/girderLayoutInput", GirderLayoutInput);
 
   function SEShapeInput(){
     this.addOutput("SEShape","SEShape");
@@ -697,7 +697,7 @@
   SEShapeInput.prototype.onExecute = function() {
     this.setOutputData(0,SEShape);
   };
-  global.LiteGraph.registerNodeType("nexivil/SEShape", SEShapeInput);
+  global.LiteGraph.registerNodeType("HMInput/SEShape", SEShapeInput);
 
   function GirderBaseInfo(){
     this.addOutput("girderBaseInfo","girderBaseInfo");
@@ -705,7 +705,7 @@
   GirderBaseInfo.prototype.onExecute = function() {
     this.setOutputData(0,girderBaseInfo);
   };
-  global.LiteGraph.registerNodeType("nexivil/girderBaseInfo", GirderBaseInfo);
+  global.LiteGraph.registerNodeType("HMInput/girderBaseInfo", GirderBaseInfo);
 
 
   function DiaphragmInput(){
@@ -716,7 +716,7 @@
     this.setOutputData(0,diaphragmLayout);
     this.setOutputData(1,diaphragmSectionList);
   };
-  global.LiteGraph.registerNodeType("nexivil/diaphragmInput", DiaphragmInput);
+  global.LiteGraph.registerNodeType("HMInput/diaphragmInput", DiaphragmInput);
 
   function VStiffInput(){
     this.addOutput("vStiffLayout","vStiffLayout");
@@ -726,7 +726,7 @@
     this.setOutputData(0,vStiffLayout);
     this.setOutputData(1,vStiffSectionList);
   };
-  global.LiteGraph.registerNodeType("nexivil/vStiffInput", VStiffInput);
+  global.LiteGraph.registerNodeType("HMInput/vStiffInput", VStiffInput);
 
 
 
@@ -746,7 +746,7 @@
     this.setOutputData(4,height);
     this.setOutputData(5,taperedPoint);
   };
-  global.LiteGraph.registerNodeType("nexivil/gridPointInput", GridPointInput);
+  global.LiteGraph.registerNodeType("HMInput/gridPointInput", GridPointInput);
 
   function LineToThree(linepoints, initPoint){
       var group = new global.THREE.Group();
@@ -1193,7 +1193,7 @@
     global.meshArr.current.push({ id: 0, mesh: group}); 
   };
 
-  global.LiteGraph.registerNodeType("nexivil/lineView", LineView);
+  global.LiteGraph.registerNodeType("3DVIEW/lineView", LineView);
 
   function GirderLayoutGenerator(girderLayoutInput, hLine, VerticalDataList, SuperElevation) {
       let result = {
