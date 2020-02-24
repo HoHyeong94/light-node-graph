@@ -1,4 +1,5 @@
-import {_} from 'global'
+import React from "react";
+import _ from 'lodash'
 
 
 export function Vector2d(xydata) {

@@ -1,8 +1,8 @@
 import {
   GirderLayoutGenerator,
-  GirderGridStation,
-  GridPointGenerator,
-  PointSectionInfo
+  GridPointGenerator2,
+  PointSectionInfo,
+  SupportAngleCalculator,
 } from "./uiFunction";
 import {
   LineGenerator,
@@ -16,11 +16,15 @@ import {
   diaphragmSection2,
   vStiffSection,
   hBracingSection,
-  hBracingPlate
+  hBracingPlate,
+  SplicePlate,
 } from "./geometryFunc";
-import {_} from "global";
-
-
+import { ToGlobalPoint } from "./threejsDisplay";
+// import {Vector2d, Curve, LineSegment} from "./Class_variable";
+import _ from "lodash";
+import {
+  addedValues,
+} from "./defaultValues";
 
 // ---------------------- Test ----------------------------------
 export function Main(
@@ -37,7 +41,7 @@ export function Main(
   vStiffLayout,
   vStiffSectionList,
   hBracingLayout,
-  hBracingSectionList
+  hBracingSectionList,
 ) {
   ///// 선형정보는 입력은 m단위로 받는 것을 자동 변환할 수 있도록 함. mm로 변환 코드 작성 필요 ///
   const horizonDataList = horizon;
@@ -66,29 +70,42 @@ export function Main(
     VerticalDataList,
     SuperElevation
   );
-  let gridStationList = GirderGridStation(girderLayout, 5000, 1000);
+  // let gridStationList = GirderGridStation(girderLayout, 5000, 1000);
   let startSkew = girderLayoutInput.supportData[0].angle;
-  let endSkew =
-    girderLayoutInput.supportData[girderLayoutInput.supportData.length - 1]
-      .angle;
-  let gridPoint = GridPointGenerator(
+  let endSkew = girderLayoutInput.supportData[girderLayoutInput.supportData.length - 1].angle;
+  // let gridPoint2 = GridPointGenerator(
+  //   line,
+  //   girderLayout,
+  //   gridStationList,
+  //   SEShape,
+  //   startSkew,
+  //   endSkew,
+  //   VerticalDataList,
+  //   SuperElevation
+  // );
+
+  let gridPoint = GridPointGenerator2(
     line,
     girderLayout,
-    gridStationList,
     SEShape,
     startSkew,
     endSkew,
     VerticalDataList,
-    SuperElevation
-  );
+    SuperElevation,
+    addedValues.diaPhragmLocate, 
+    addedValues.vStiffLocate, 
+    addedValues.splice, 
+    addedValues.joint, 
+    addedValues.height,
+    addedValues.taperedPoint)
+
   // for (let pt in gridPoint.nameToPointDict){
   //     gridPoint.nameToPointDict[pt].z = VerticalPositionGenerator(VerticalDataList, SuperElevation,gridPoint.nameToPointDict[pt])
   // }
-  console.log(gridPoint);
-
-  // immer 로 감쌌기 때문에 ... .length 가 없을수 있다 ...
+  // console.log(gridPoint);
+  let supportAngle = SupportAngleCalculator(addedValues.supportFixed, addedValues.supportData, gridPoint.nameToPointDict)
+    // immer 로 감쌌기 때문에 ... .length 가 없을수 있다 ...
   //gridPoint.stationDictList[index].length
-
   let sectionPointDict = {};
   for (let i = 0; i < girderBaseInfo.length; i++) {
     let index = girderBaseInfo[i].girderIndex;
@@ -101,6 +118,8 @@ export function Main(
           girderBaseInfo[i],
           gridPoint.nameToPointDict
         );
+        
+
         sectionPointDict[pt] = sectionPoint(
           girderBaseInfo[i].section,
           pointSectionInfo,
@@ -109,8 +128,17 @@ export function Main(
       }
     }
   }
+  console.log(sectionPointDict)
+  
+  // let deckPointDict = {};
+  // for (let i in sectionPointDict){
+  //   deckPointDict[i] = deckSection()
+  // }
+
+
+
   // console.log(sectionInfo)
-  // console.log(gridPoint)
+  
   let diaDict = DiaShapeDict(
     sectionPointDict,
     diaphragmLayout,
@@ -121,7 +149,7 @@ export function Main(
     vStiffLayout,
     vStiffSectionList
   );
-  let hBracing = HBracingList(
+  let hBracing = HBracingDict(
     gridPoint.nameToPointDict,
     sectionPointDict,
     hBracingLayout,
@@ -133,6 +161,17 @@ export function Main(
     xbeamLayout,
     xbeamSectionList
   );
+
+  let steelBoxDict = SteelBoxDict(
+    gridPoint.gridPointStation,
+    gridPoint.stationDictList,
+    gridPoint.nameToPointDict,
+    sectionPointDict,
+  )
+  let spliceDict = SpliceDict(
+    gridPoint.nameToPointDict,
+    sectionPointDict,
+  )
   return {
     p: [line.points],
     gridPoint,
@@ -141,9 +180,142 @@ export function Main(
     diaDict,
     vStiffDict,
     ...hBracing,
-    ...xbeamDict
+    ...xbeamDict,
+    steelBoxDict,
+    spliceDict,
+    supportAngle
   };
 }
+
+export function SpliceDict(nameToPointDict,sectionPointDict){
+  let spliceDict = {}
+  for (let key in nameToPointDict){
+    if(key.includes("SP")){
+      spliceDict[key] = SplicePlate(nameToPointDict[key],sectionPointDict[key].forward)
+    }
+  }
+  return spliceDict
+}
+
+
+export function SteelBoxDict(gridPointList,stationDictList,nameToPointDict, sectionPointDict){
+    let steelBoxDict = {};
+    let pk1 = ""
+    let pk2 = ""
+    let UFi = 1;
+    let Bi = 1;
+    let LWi = 1;
+    let RWi = 1;
+    let Ribi = 1;
+    let keyname = ""
+    for (let i  in gridPointList){
+      for (let j in gridPointList[i]){
+        for (let k = 0; k< gridPointList[i][j].length -1;k++){
+          pk1 = stationDictList[i][j][gridPointList[i][j][k]]
+          pk2 = stationDictList[i][j][gridPointList[i][j][k+1]]
+          let point1 = nameToPointDict[pk1];
+          let point2 = nameToPointDict[pk2];
+
+          keyname = "G"+(i*1+1).toString()+"TopPlate" + UFi
+          if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
+          let L1 = sectionPointDict[pk1].forward.leftTopPlate
+          let R1 = sectionPointDict[pk1].forward.rightTopPlate
+          let L2 = sectionPointDict[pk2].backward.leftTopPlate
+          let L3 = sectionPointDict[pk2].forward.leftTopPlate
+          let R2 = sectionPointDict[pk2].backward.rightTopPlate
+          let R3 = sectionPointDict[pk2].forward.rightTopPlate
+            
+          if(L1[1].x>=R1[1].x){ //폐합인 경우 
+            let C1 = [L1[0],R1[0],R1[3],L1[3]];
+            C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
+          }else{
+            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+            R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)))
+          }
+          let FisB = true;
+          for (let i in L2){ if(L2[i] !== L3[i] || R2[i] !== R3[i]){FisB = false}}
+          if (!FisB || pk2.substr(2,1)==="K" || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP"|| k === gridPointList[i][j].length -2){
+            if(L2[1].x>=R2[1].x){ //폐합인 경우 
+              let C2 = [L2[0],R2[0],R2[3],L2[3]];
+              C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
+            }else{
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+              R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)))
+            }
+          }
+          if(pk2.substr(2,1)==="K" || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP"){ UFi +=1 }
+
+
+          keyname = "G"+(i*1+1).toString()+"BottomPlate" + Bi
+          if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
+          L1 = sectionPointDict[pk1].forward.bottomPlate
+          L2 = sectionPointDict[pk2].backward.bottomPlate
+          L3 = sectionPointDict[pk2].forward.bottomPlate
+            
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+          
+          FisB = true;
+          for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false}}
+          if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP"|| k === gridPointList[i][j].length -2){
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+          }
+          if(pk2.substr(2,2)==="BF" || pk2.substr(2,2)==="SP"){ Bi +=1 }
+
+          // keyname = "G"+(i*1+1).toString()+"LeftWeB" + LWi
+          // if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
+          // L1 = sectionPointDict[pk1].forward.lWeb
+          // L2 = sectionPointDict[pk2].backward.lWeb
+          // L3 = sectionPointDict[pk2].forward.lWeb
+          // L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+          // FisB = true;
+          // for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false}}
+          // if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || k === gridPointList[i][j].length -2){
+          //     L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+          // }
+          // if(pk2.substr(2,2)==="LW" || pk2.substr(2,2)==="SP" ){ LWi +=1 }
+
+          // keyname = "G"+(i*1+1).toString()+"RightWeB" + RWi
+          // if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
+          // L1 = sectionPointDict[pk1].forward.rWeb
+          // L2 = sectionPointDict[pk2].backward.rWeb
+          // L3 = sectionPointDict[pk2].forward.rWeb
+          // L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+          // FisB = true;
+          // for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false}}
+          // if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || k === gridPointList[i][j].length -2){
+          //     L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+          // }
+          // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){ RWi +=1 }
+
+          let RibList = []
+          for (let ii in  sectionPointDict[pk1].forward){
+            if (ii.includes("Rib"))
+            RibList.push(ii)
+          }
+          for (let Ribkey of RibList){
+            keyname = "G"+(i*1+1).toString()+"lRib" + Ribi
+            if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
+            L1 = sectionPointDict[pk1].forward[Ribkey]
+            L2 = sectionPointDict[pk2].backward[Ribkey]
+            L3 = sectionPointDict[pk2].forward[Ribkey]
+            console.log(L1,L2,L3)
+            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+            FisB = true;
+            for (let i in L2){ FisB = L3? (L2[i] !== L3[i]? false :true):false }
+            if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || k === gridPointList[i][j].length -2){
+                L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+                Ribi +=1
+            }
+            // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){  }
+        }
+
+        }
+        }
+    }
+
+    return steelBoxDict
+}
+
 
 export function XbeamDict(
   nameToPointDict,
@@ -204,13 +376,13 @@ export function XbeamDict(
 //   return resultPoint
 // }
 
-export function HBracingList(
+export function HBracingDict(
   nameToPointDict,
   sectionPointDict,
   hBracingLayout,
   hBracingectionList
 ) {
-  let hBracingList = [];
+  let hBracingDict = {};
   let hBracingPlateDict = {};
   let right = true;
   for (let i = 0; i < hBracingLayout.length; i++) {
@@ -236,7 +408,7 @@ export function HBracingList(
     let point1 = nameToPointDict[pk1];
     let point2 = nameToPointDict[pk2];
 
-    hBracingList.push(hBracingSection(point1, point2, webPoints, hBSection));
+    hBracingDict[pk1+pk2] = hBracingSection(point1, point2, webPoints, hBSection);
     if (hBracingLayout[i].platelayout[0]) {
       right = hBracingLayout[i].leftToright ? false : true;
       let webPoints1 = [
@@ -259,7 +431,7 @@ export function HBracingList(
     }
   }
 
-  return { hBracingList, hBracingPlateDict };
+  return { hBracingDict, hBracingPlateDict };
 }
 
 export function DiaShapeDict(

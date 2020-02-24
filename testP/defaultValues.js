@@ -62,13 +62,13 @@ export const defaultValues = {
       bridgeBeginStation: 1208150
     },
     supportData: [
-      { name: "시점", angle: 70, spanlength: 0 },
-      { name: "A1", angle: 70, spanLength: 700 },
+      { name: "시점", angle: 90, spanlength: 0 },
+      { name: "A1", angle: 90, spanLength: 700 },
       { name: "P1", angle: 90, spanLength: 55000 },
-      { name: "P2", angle: 90, spanLength: 55000 },
-      { name: "P3", angle: 90, spanLength: 60000 },
-      { name: "P4", angle: 90, spanLength: 60000 },
-      { name: "P5", angle: 90, spanLength: 55000 },
+      // { name: "P2", angle: 90, spanLength: 55000 },
+      // { name: "P3", angle: 90, spanLength: 60000 },
+      // { name: "P4", angle: 90, spanLength: 60000 },
+      // { name: "P5", angle: 90, spanLength: 55000 },
       { name: "A2", angle: 89.7708167291586, spanLength: 55000 },
       { name: "종점", angle: 90, spanLength: 800 }
     ],
@@ -87,8 +87,8 @@ export const defaultValues = {
       E: 500,
       F: 2000,
       G: 1000,
-      J: 470,
-      S: 270,
+      // J: 470,
+      // S: 270,
       Taper: "parallel"
     },
     end: {
@@ -99,10 +99,11 @@ export const defaultValues = {
       E: 500,
       F: 2000,
       G: 1000,
-      J: 470,
-      S: 270,
+      // J: 470,
+      // S: 270,
       Taper: "parallel"
-    }
+    },
+    etc:{a:1}
   },
 
   girderBaseInfo: [
@@ -114,81 +115,41 @@ export const defaultValues = {
         UR: 1050,
         C: 200,
         D: 200,
-        C1: 200,
-        D1: 200,
+        C1: 100,
+        D1: 100,
         H: 2000
       },
       height: [
         //straight/circle/parabola
-        {
-          start: "G1K1",
-          end: "G1C18",
-          startH: 2000,
-          endH: 2000,
-          type: "straight"
-        },
-        {
-          start: "G1C18",
-          end: "G1C21",
-          startH: 2000,
-          endH: 2500,
-          type: "circle"
-        },
-        {
-          start: "G1C21",
-          end: "G1C24",
-          startH: 2500,
-          endH: 2500,
-          type: "straight"
-        },
-        {
-          start: "G1C24",
-          end: "G1C27",
-          startH: 2500,
-          endH: 2000,
-          type: "circle"
-        },
-        {
-          start: "G1C27",
-          end: "G1S7",
-          startH: 2000,
-          endH: 2000,
-          type: "straight"
-        }
+        { start: "G1K1", end: "G1H1", startH: 2000, endH: 2000, type: "straight" },
+        { start: "G1H1", end: "G1H2", startH: 2000, endH: 2500, type: "circle" },
+        { start: "G1H2", end: "G1H3", startH: 2500, endH: 2500, type: "straight" },
+        { start: "G1H3", end: "G1H4", startH: 2500, endH: 2000, type: "circle" },
+        { start: "G1H4", end: "G1K6", startH: 2000, endH: 2000, type: "straight" }
       ],
       slabThickness: [
         //straight/
-        {
-          start: "G1K1",
-          end: "G1K2",
-          startH: 470,
-          endH: 470,
-          type: "straight"
-        },
-        { start: "G1K2", end: "G1K3", startH: 470, endH: 270, type: "straight" }
+        { start: "G1K1", end: "G1K2", startH: 470, endH: 470, type: "straight" },
+        { start: "G1K2", end: "G1K3", startH: 470, endH: 270, type: "straight" },
+        { start: "G1K4", end: "G1K5", startH: 270, endH: 470, type: "straight" },
+        { start: "G1K5", end: "G1K6", startH: 270, endH: 470, type: "straight" },
+
       ],
       uFlange: [
-        { start: "G1K1", end: "G1S7", thickness: 18, startW: 400, endW: 400 }
+        { start: "G1K1", end: "G1TF1", thickness: 18, startW: 400, endW: 400 },
+        { start: "G1TF1", end: "G1T1", thickness: 18, startW: 400, endW: 400 },
+        { start: "G1T1", end: "G1T2", thickness: 18, startW: 400, endW: 950 },
+        { start: "G1T2", end: "G1T3", thickness: 18, startW: 1300, endW: 1300 },
+        { start: "G1T3", end: "G1T4", thickness: 18, startW: 950, endW: 400 },
+        { start: "G1T4", end: "G1K6", thickness: 18, startW: 400, endW: 400 },
       ],
-      lFlange: [{ start: "G1K1", end: "G1S7", thickness: 20 }],
-      web: [{ start: "G1K1", end: "G1S7", thickness: 14 }],
+      lFlange: [{ start: "G1K1", end: "G1K6", thickness: 20 }],
+      web: [{ start: "G1K1", end: "G1K6", thickness: 14 }],
       uRib: [
-        {
-          start: "G1K1",
-          end: "G1S7",
-          thickness: 14,
-          height: 150,
-          layout: [-200, 200]
-        }
+        { start: "G1K1", end: "G1K6", thickness: 14, height: 150, layout: [-125, 125] }
       ],
       lRib: [
-        {
-          start: "G1K1",
-          end: "G1S7",
-          thickness: 14,
-          height: 150,
-          layout: [-200, 200]
-        }
+        { start: "G1K1", end: "G1K6", thickness: 14, height: 150, layout: [-125, 125] }
       ]
     },
     {
@@ -199,154 +160,62 @@ export const defaultValues = {
         UR: 1050,
         C: 200,
         D: 200,
-        C1: 200,
-        D1: 200,
+        C1: 100,
+        D1: 100,
         H: 2000
       },
       height: [
         //straight/circle/parabola
-        {
-          start: "G2K1",
-          end: "G2C18",
-          startH: 2000,
-          endH: 2000,
-          type: "straight"
-        },
-        {
-          start: "G2C18",
-          end: "G2C21",
-          startH: 2000,
-          endH: 2500,
-          type: "circle"
-        },
-        {
-          start: "G2C21",
-          end: "G2C24",
-          startH: 2500,
-          endH: 2500,
-          type: "straight"
-        },
-        {
-          start: "G2C24",
-          end: "G2C27",
-          startH: 2500,
-          endH: 2000,
-          type: "circle"
-        },
-        {
-          start: "G2C27",
-          end: "G2S7",
-          startH: 2000,
-          endH: 2000,
-          type: "straight"
-        }
+        { start: "G2K1", end: "G2H1", startH: 2000, endH: 2000, type: "straight" },
+        { start: "G2H1", end: "G2H2", startH: 2000, endH: 2500, type: "circle" },
+        { start: "G2H2", end: "G2H3", startH: 2500, endH: 2500, type: "straight" },
+        { start: "G2H3", end: "G2H4", startH: 2500, endH: 2000, type: "circle" },
+        { start: "G2H4", end: "G2K6", startH: 2000, endH: 2000, type: "straight" }
       ],
       slabThickness: [
         //straight/
-        {
-          start: "G2K1",
-          end: "G2K2",
-          startH: 470,
-          endH: 470,
-          type: "straight"
-        },
-        { start: "G2K2", end: "G2K3", startH: 470, endH: 270, type: "straight" }
+        { start: "G2K1", end: "G2K2", startH: 470, endH: 470, type: "straight" },
+        { start: "G2K2", end: "G2K3", startH: 470, endH: 270, type: "straight" },
+        { start: "G2K4", end: "G2K5", startH: 270, endH: 470, type: "straight" },
+        { start: "G2K5", end: "G2K6", startH: 470, endH: 470, type: "straight" },
+
       ],
       uFlange: [
-        { start: "G2K1", end: "G2S7", thickness: 18, startW: 400, endW: 400 }
+               { start: "G2K1", end: "G2K6", thickness: 18, startW: 400, endW: 400 }
       ],
-      lFlange: [{ start: "G2K1", end: "G2S7", thickness: 20 }],
-      web: [{ start: "G2K1", end: "G2S7", thickness: 14 }],
+      lFlange: [
+        { start: "G2K1", end: "G2K6", thickness: 20 }
+      ],
+      web: [
+        { start: "G2K1", end: "G2K6", thickness: 14 }
+      ],
       uRib: [
-        {
-          start: "G2K1",
-          end: "G2S7",
-          thickness: 14,
-          height: 150,
-          layout: [-200, 200]
-        }
+        {start: "G2K1", end: "G2K6", thickness: 14, height: 150, layout: [-125, 125]}
       ],
       lRib: [
-        {
-          start: "G2K1",
-          end: "G2S7",
-          thickness: 14,
-          height: 150,
-          layout: [-200, 200]
-        }
+        {start: "G2K1", end: "G2K6", thickness: 14, height: 150, layout: [-125, 125]}
       ]
     },
-    // {
-    //   girderIndex: 2,
-    //   section: {
-    //     B: 1700,
-    //     UL: 1050,
-    //     UR: 1050,
-    //     C: 200,
-    //     D: 200,
-    //     C1: 200,
-    //     D1: 200,
-    //     H: 2000
-    //   },
-    //   height: [
-    //     {
-    //       start: "G3K1",
-    //       end: "G3S7",
-    //       startH: 2000,
-    //       endH: 2000,
-    //       type: "straight"
-    //     }
-    //   ],
-    //   slabThickness: [
-    //     //straight/
-    //     {
-    //       start: "G3K1",
-    //       end: "G3K2",
-    //       startH: 470,
-    //       endH: 470,
-    //       type: "straight"
-    //     },
-    //     { start: "G3K2", end: "G3K3", startH: 470, endH: 270, type: "straight" }
-    //   ],
-    //   uFlange: [
-    //     { start: "G3K1", end: "G3S7", thickness: 18, startW: 400, endW: 400 }
-    //   ],
-    //   lFlange: [{ start: "G3K1", end: "G3S7", thickness: 30 }],
-    //   web: [{ start: "G3K1", end: "G3S7", thickness: 14 }],
-    //   uRib: [
-    //     {
-    //       start: "G3K1",
-    //       end: "G3S7",
-    //       thickness: 14,
-    //       height: 150,
-    //       layout: [-200, 200]
-    //     }
-    //   ],
-    //   lRib: [
-    //     {
-    //       start: "G3K1",
-    //       end: "G3S7",
-    //       thickness: 14,
-    //       height: 150,
-    //       layout: [-200, 200]
-    //     }
-    //   ]
-    // }
   ],
 
   xbeamLayout: [
-    { iNode: "G1D5", jNode: "G2D6", section: "xbeamK" },
-    { iNode: "G1D3", jNode: "G2D4", section: "xbeamK" },
-    { iNode: "G1D1", jNode: "G2D2", section: "xbeamK" },
-    { iNode: "G1D7", jNode: "G2D8", section: "xbeamK" },
-    { iNode: "G1D9", jNode: "G2D10", section: "xbeamK" },
+    { iNode: "G1D5", jNode: "G2D5", section: "xbeamK" },
+    { iNode: "G1D3", jNode: "G2D3", section: "xbeamK" },
+    { iNode: "G1D1", jNode: "G2D1", section: "xbeamK" },
+    { iNode: "G1D7", jNode: "G2D7", section: "xbeamK" },
+    { iNode: "G1D9", jNode: "G2D9", section: "xbeamK" },
+    { iNode: "G1D12", jNode: "G2D12", section: "xbeamK" },
+    { iNode: "G1D14", jNode: "G2D14", section: "xbeamK" },
+    { iNode: "G1D16", jNode: "G2D16", section: "xbeamK" },
+    { iNode: "G1D18", jNode: "G2D18", section: "xbeamK" },
+    { iNode: "G1D20", jNode: "G2D20", section: "xbeamK" },
     { iNode: "G1S1", jNode: "G2S1", section: "xbeamI" },
     { iNode: "G1S2", jNode: "G2S2", section: "xbeamI" },
     { iNode: "G1S3", jNode: "G2S3", section: "xbeamI" },
-    { iNode: "G1S4", jNode: "G2S4", section: "xbeamI" },
-    { iNode: "G1S5", jNode: "G2S5", section: "xbeamI" },
-    { iNode: "G1S6", jNode: "G2S6", section: "xbeamI" },
-    { iNode: "G1S7", jNode: "G2S7", section: "xbeamI" }
+    // { iNode: "G1S4", jNode: "G2S4", section: "xbeamI" },
+    // { iNode: "G1S5", jNode: "G2S5", section: "xbeamI" },
+    // { iNode: "G1S6", jNode: "G2S6", section: "xbeamI" },
+    // { iNode: "G1S7", jNode: "G2S7", section: "xbeamI" }
     // {iNode:"G1K1",jNode:"G2K1",section:"xbeam1"},
     // {iNode:"G1K2",jNode:"G2K2",section:"xbeam1"},
     // {iNode:"G1K3",jNode:"G2K3",section:"xbeam1"},
@@ -395,11 +264,24 @@ export const defaultValues = {
     { position: "G1D9", section: "diaType1" },
     { position: "G1D10", section: "diaType1" },
 
+    { position: "G2D1", section: "diaType1" },
     { position: "G2D2", section: "diaType1" },
+    { position: "G2D3", section: "diaType1" },
+    { position: "G2D4", section: "diaType1" },
+    { position: "G2D5", section: "diaType1" },
+    { position: "G2D6", section: "diaType1" },
+    { position: "G2D7", section: "diaType1" },
+    { position: "G2D8", section: "diaType1" },
+    { position: "G2D9", section: "diaType1" },
+    { position: "G2D10", section: "diaType1" },
+
 
     { position: "G1S1", section: "diaType2" },
     { position: "G1S2", section: "diaType2" },
-    { position: "G2S1", section: "diaType2" }
+    { position: "G1S3", section: "diaType2" },
+    { position: "G2S1", section: "diaType2" },
+    { position: "G2S2", section: "diaType2" },
+    { position: "G2S3", section: "diaType2" },
   ],
 
   diaphragmSectionList: {
@@ -410,7 +292,7 @@ export const defaultValues = {
       lowerTopwidth: 100,
       upperThickness: 12,
       longiRibHeight: 150,
-      longiRibRayout: [-180, 180],
+      longiRibRayout: [-125, 125],
       upperHeight: 220,
       sideHeight: 200,
       sideThickness: 14,
@@ -461,7 +343,6 @@ export const defaultValues = {
 
   vStiffLayout: [
     { position: "G1V2", section: "vStiffType1" },
-    { position: "G1V3", section: "vStiffType1" },
     { position: "G1V4", section: "vStiffType1" },
     { position: "G1V5", section: "vStiffType1" },
     { position: "G1V6", section: "vStiffType1" },
@@ -471,7 +352,17 @@ export const defaultValues = {
     { position: "G1V10", section: "vStiffType1" },
     { position: "G1V11", section: "vStiffType1" },
     { position: "G1V12", section: "vStiffType1" },
-    { position: "G2V2", section: "vStiffType1" }
+    { position: "G2V2", section: "vStiffType1" },
+    { position: "G2V4", section: "vStiffType1" },
+    { position: "G2V5", section: "vStiffType1" },
+    { position: "G2V6", section: "vStiffType1" },
+    { position: "G2V7", section: "vStiffType1" },
+    { position: "G2V8", section: "vStiffType1" },
+    { position: "G2V9", section: "vStiffType1" },
+    { position: "G2V10", section: "vStiffType1" },
+    { position: "G2V11", section: "vStiffType1" },
+    { position: "G2V12", section: "vStiffType1" },
+
   ],
 
   vStiffSectionList: {
@@ -482,7 +373,7 @@ export const defaultValues = {
       bottomOffset: 60,
       // added variables
       scallopRadius: 35,
-      sideScallopOffset: 200,
+      sideScallopOffset: 20,
       //L100x100x10 section point, origin = (0,0)
       spc: 50,
       pts: [100, 10, 0, 10, 100] //단면중심축에 대한 정보포함된 L형 단면정보
@@ -490,169 +381,51 @@ export const defaultValues = {
   },
 
   hBracingLayout: [
-    {
-      from: "G1V1",
-      to: "G1D1",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D1",
-      to: "G1V2",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V2",
-      to: "G1D2",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D2",
-      to: "G1V3",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V3",
-      to: "G1D3",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D3",
-      to: "G1V4",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V4",
-      to: "G1D4",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D4",
-      to: "G1V5",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V5",
-      to: "G1D5",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D5",
-      to: "G1V6",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V6",
-      to: "G1D6",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D6",
-      to: "G1V7",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V7",
-      to: "G1D7",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D7",
-      to: "G1V8",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V8",
-      to: "G1D8",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D8",
-      to: "G1V9",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V9",
-      to: "G1D9",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D9",
-      to: "G1V10",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V10",
-      to: "G1D10",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G1D10",
-      to: "G1V11",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    },
-    {
-      from: "G1V11",
-      to: "G1S2",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, true]
-    },
-
-    {
-      from: "G2V1",
-      to: "G2D2",
-      leftToright: false,
-      section: "hBracingType1",
-      platelayout: [true, false]
-    },
-    {
-      from: "G2D2",
-      to: "G2V2",
-      leftToright: true,
-      section: "hBracingType1",
-      platelayout: [false, true]
-    }
+    { from: "G1S1", to: "G1V2", leftToright: true, section: "hBracingType1", platelayout: [false, false] },
+    { from: "G1V2", to: "G1D1", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D1", to: "G1V4", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V4", to: "G1D2", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D2", to: "G1V5", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V5", to: "G1D3", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D3", to: "G1V6", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V6", to: "G1D4", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D4", to: "G1V7", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V7", to: "G1D5", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D5", to: "G1V8", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V8", to: "G1D6", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D6", to: "G1V9", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V9", to: "G1D7", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D7", to: "G1V10", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V10", to: "G1D8", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D8", to: "G1V11", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V11", to: "G1D9", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G1D9", to: "G1V12", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G1V12", to: "G1D10", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+  
+    { from: "G2S1", to: "G2V2", leftToright: true, section: "hBracingType1", platelayout: [false, false] },
+    { from: "G2V2", to: "G2D1", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D1", to: "G2V4", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V4", to: "G2D2", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D2", to: "G2V5", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V5", to: "G2D3", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D3", to: "G2V6", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V6", to: "G2D4", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D4", to: "G2V7", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V7", to: "G2D5", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D5", to: "G2V8", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V8", to: "G2D6", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D6", to: "G2V9", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V9", to: "G2D7", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D7", to: "G2V10", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V10", to: "G2D8", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D8", to: "G2V11", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V11", to: "G2D9", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
+    { from: "G2D9", to: "G2V12", leftToright: true, section: "hBracingType1", platelayout: [false, true] },
+    { from: "G2V12", to: "G2D10", leftToright: false, section: "hBracingType1", platelayout: [true, false] },
   ],
+
+
+
 
   hBracingSectionList: {
     hBracingType1: {
@@ -669,6 +442,192 @@ export const defaultValues = {
       pts: [75, -75, -4.5, 4.5, -6.5, -150] //단면중심축에 대한 정보포함된 T형 단면정보 <-- L형하고 다름
     }
   },
-
-  zPosition: 0
 };
+export const addedValues = {
+  SlabInfo: [
+    {
+      Key: "start",
+      A1: 1200,
+      A2: 1200,
+      Slab_thickness: 470,
+      T1: 440,
+      T2: 440,
+      W1: 0,
+      Haunch: 0,
+      precast_overlap: 0,
+      precast_added_weight: 0
+    },
+    {
+      Key: "center",
+      A1: 1200,
+      A2: 1200,
+      Slab_thickness: 270,
+      T1: 240,
+      T2: 240,
+      W1: 0,
+      Haunch: 0,
+      precast_overlap: 0,
+      precast_added_weight: 0
+    },
+    {
+      Key: "end",
+      A1: 1200,
+      A2: 1200,
+      Slab_thickness: 470,
+      T1: 440,
+      T2: 440,
+      W1: 0,
+      Haunch: 0,
+      precast_overlap: 0,
+      precast_added_weight: 0
+    }
+  ],
+
+  supportFixed: true, //고정단중심경우 true, 접선방향의 경우 false
+  supportData: [
+    { point: "G1S1", type: "종방향가동", offset: 0 },
+    { point: "G1S2", type: "종방향가동", offset: 0 },
+    { point: "G1S3", type: "종방향가동", offset: 0 },
+    // { point: "G1S4", type: "고정단", offset: 0 },
+    // { point: "G1S5", type: "종방향가동", offset: 0 },
+    // { point: "G1S6", type: "종방향가동", offset: 0 },
+    // { point: "G1S7", type: "종방향가동", offset: -507},
+    // { point: "G2S1", type: "양방향단", offset: 0 },
+    // { point: "G2S2", type: "양방향단", offset: 0 },
+    // { point: "G2S3", type: "양방향단", offset: 0 },
+    // { point: "G2S4", type: "횡방향가동", offset: 0 },
+    // { point: "G2S5", type: "양방향단", offset: 0 },
+    // { point: "G2S6", type: "양방향단", offset: 0 },
+    // { point: "G2S7", type: "양방향단", offset: -507},
+  ],
+  diaPhragmLocate:[
+    {name : "G1D1", BenchMark : "G1S1", offset: 4450},
+    {name : "G1D2", BenchMark : "G1S1", offset: 9450},
+    {name : "G1D3", BenchMark : "G1S1", offset: 14450},
+    {name : "G1D4", BenchMark : "G1S1", offset: 19450},
+    {name : "G1D5", BenchMark : "G1S1", offset: 24450},
+    {name : "G1D6", BenchMark : "G1S1", offset: 29450},
+    {name : "G1D7", BenchMark : "G1S1", offset: 34450},
+    {name : "G1D8", BenchMark : "G1S1", offset: 39450},
+    {name : "G1D9", BenchMark : "G1S1", offset: 44450},
+    {name : "G1D10", BenchMark : "G1S1", offset: 49450},
+    {name : "G1D11", BenchMark : "G1S2", offset: 5000},
+    {name : "G1D12", BenchMark : "G1S2", offset: 10000},
+    {name : "G1D13", BenchMark : "G1S2", offset: 15000},
+    {name : "G1D14", BenchMark : "G1S2", offset: 20000},
+    {name : "G1D15", BenchMark : "G1S2", offset: 25000},
+    {name : "G1D16", BenchMark : "G1S2", offset: 30000},
+    {name : "G1D17", BenchMark : "G1S2", offset: 35000},
+    {name : "G1D18", BenchMark : "G1S2", offset: 40000},
+    {name : "G1D19", BenchMark : "G1S2", offset: 45000},
+    {name : "G1D20", BenchMark : "G1S2", offset: 50000},
+    {name : "G2D1", BenchMark : "G1S1", offset: 4450},
+    {name : "G2D2", BenchMark : "G1S1", offset: 9450},
+    {name : "G2D3", BenchMark : "G1S1", offset: 14450},
+    {name : "G2D4", BenchMark : "G1S1", offset: 19450},
+    {name : "G2D5", BenchMark : "G1S1", offset: 24450},
+    {name : "G2D6", BenchMark : "G1S1", offset: 29450},
+    {name : "G2D7", BenchMark : "G1S1", offset: 34450},
+    {name : "G2D8", BenchMark : "G1S1", offset: 39450},
+    {name : "G2D9", BenchMark : "G1S1", offset: 44450},
+    {name : "G2D10", BenchMark : "G1S1", offset: 49450},
+    {name : "G2D11", BenchMark : "G1S2", offset: 5000},
+    {name : "G2D12", BenchMark : "G1S2", offset: 10000},
+    {name : "G2D13", BenchMark : "G1S2", offset: 15000},
+    {name : "G2D14", BenchMark : "G1S2", offset: 20000},
+    {name : "G2D15", BenchMark : "G1S2", offset: 25000},
+    {name : "G2D16", BenchMark : "G1S2", offset: 30000},
+    {name : "G2D17", BenchMark : "G1S2", offset: 35000},
+    {name : "G2D18", BenchMark : "G1S2", offset: 40000},
+    {name : "G2D19", BenchMark : "G1S2", offset: 45000},
+    {name : "G2D20", BenchMark : "G1S2", offset: 50000},
+
+  ],
+  vStiffLocate:[
+    {name : "G1V1", BenchMark : "G1S1", offset: 1113},
+    {name : "G1V2", BenchMark : "G1S1", offset: 2225},
+    {name : "G1V3", BenchMark : "G1S1", offset: 3337},
+    {name : "G1V4", BenchMark : "G1S1", offset: 6950},
+    {name : "G1V5", BenchMark : "G1S1", offset: 11950},
+    {name : "G1V6", BenchMark : "G1S1", offset: 16950},
+    {name : "G1V7", BenchMark : "G1S1", offset: 21950},
+    {name : "G1V8", BenchMark : "G1S1", offset: 26950},
+    {name : "G1V9", BenchMark : "G1S1", offset: 31950},
+    {name : "G1V10", BenchMark : "G1S1", offset: 36950},
+    {name : "G1V11", BenchMark : "G1S1", offset: 41950},
+    {name : "G1V12", BenchMark : "G1S1", offset: 46950},    
+    {name : "G1V13", BenchMark : "G1S1", offset: 51950},    
+    {name : "G1V14", BenchMark : "G1S2", offset: 25000},    
+    {name : "G1V15", BenchMark : "G1S2", offset: 75000},    
+    {name : "G1V16", BenchMark : "G1S2", offset: 125000},    
+    {name : "G1V17", BenchMark : "G1S2", offset: 175000},    
+    {name : "G1V18", BenchMark : "G1S2", offset: 225000},    
+    {name : "G1V19", BenchMark : "G1S2", offset: 275000},    
+    {name : "G1V20", BenchMark : "G1S2", offset: 325000},    
+    {name : "G1V21", BenchMark : "G1S2", offset: 375000},    
+    {name : "G1V22", BenchMark : "G1S2", offset: 425000},    
+    {name : "G1V23", BenchMark : "G1S2", offset: 475000},    
+    {name : "G1V24", BenchMark : "G1S2", offset: 525000},    
+   
+    {name : "G2V1", BenchMark : "G1S1", offset: 1113},
+    {name : "G2V2", BenchMark : "G1S1", offset: 2225},
+    {name : "G2V3", BenchMark : "G1S1", offset: 3337},
+    {name : "G2V4", BenchMark : "G1S1", offset: 6950},
+    {name : "G2V5", BenchMark : "G1S1", offset: 11950},
+    {name : "G2V6", BenchMark : "G1S1", offset: 16950},
+    {name : "G2V7", BenchMark : "G1S1", offset: 21950},
+    {name : "G2V8", BenchMark : "G1S1", offset: 26950},
+    {name : "G2V9", BenchMark : "G1S1", offset: 31950},
+    {name : "G2V10", BenchMark : "G1S1", offset: 36950},
+    {name : "G2V11", BenchMark : "G1S1", offset: 41950},
+    {name : "G2V12", BenchMark : "G1S1", offset: 46950},    
+    {name : "G2V13", BenchMark : "G1S1", offset: 51950},    
+    {name : "G2V14", BenchMark : "G1S2", offset: 25000},    
+    {name : "G2V15", BenchMark : "G1S2", offset: 75000},    
+    {name : "G2V16", BenchMark : "G1S2", offset: 125000},    
+    {name : "G2V17", BenchMark : "G1S2", offset: 175000},    
+    {name : "G2V18", BenchMark : "G1S2", offset: 225000},    
+    {name : "G2V19", BenchMark : "G1S2", offset: 275000},    
+    {name : "G2V20", BenchMark : "G1S2", offset: 325000},    
+    {name : "G2V21", BenchMark : "G1S2", offset: 375000},    
+    {name : "G2V22", BenchMark : "G1S2", offset: 425000},    
+    {name : "G2V23", BenchMark : "G1S2", offset: 475000},    
+    {name : "G2V24", BenchMark : "G1S2", offset: 525000},    
+
+
+  ],
+  splice:[
+    {name : "G1SP1", BenchMark : "G1S1", offset: 8200},
+    {name : "G1SP2", BenchMark : "G1S1", offset: 18200},
+    {name : "G1SP3", BenchMark : "G1S1", offset: 28200},
+    {name : "G1SP4", BenchMark : "G1S1", offset: 38200},
+    {name : "G1SP5", BenchMark : "G1S1", offset: 50700},
+    {name : "G1SP6", BenchMark : "G1S1", offset: 58200},
+    {name : "G2SP1", BenchMark : "G1S1", offset: 8200},
+    {name : "G2SP2", BenchMark : "G1S1", offset: 18200},
+    {name : "G2SP3", BenchMark : "G1S1", offset: 28200},
+    {name : "G2SP4", BenchMark : "G1S1", offset: 38200},
+    {name : "G2SP5", BenchMark : "G1S1", offset: 50700},
+    {name : "G2SP6", BenchMark : "G1S1", offset: 58200},
+  ],
+  joint:[
+    {name : "G1TF1", BenchMark : "G1V11", offset: 1250},
+    {name : "G1BF1", BenchMark : "G1D1", offset: 1250},
+  ],
+  height:[
+    {name : "G1H1", BenchMark : "G1S2", offset: -19500},
+    {name : "G1H2", BenchMark : "G1S2", offset: -2500},
+    {name : "G1H3", BenchMark : "G1S2", offset: 2500},
+    {name : "G1H4", BenchMark : "G1S2", offset: 19500},
+    {name : "G2H1", BenchMark : "G2S2", offset: -19500},
+    {name : "G2H2", BenchMark : "G2S2", offset: -2500},
+    {name : "G2H3", BenchMark : "G2S2", offset: 2500},
+    {name : "G2H4", BenchMark : "G2S2", offset: 19500},
+  ],
+  taperedPoint:[
+    {name : "G1T1", BenchMark : "G1S2", offset: -11250},
+    {name : "G1T2", BenchMark : "G1S2", offset: -6450},
+    {name : "G1T3", BenchMark : "G1S2", offset: 6450},
+    {name : "G1T4", BenchMark : "G1S2", offset: 11250},
+  ]
+}

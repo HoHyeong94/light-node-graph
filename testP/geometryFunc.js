@@ -1,263 +1,208 @@
-import {THREE} from "global";
+import * as THREE from "three";
 import {ToGlobalPoint} from './threejsDisplay';
 
+
+// girderSectionPointList is must be ordered by left to right
+
 export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
-    const lWebCot = (sectionInfo.B/2 - sectionInfo.UL) / sectionInfo.H;
-    const rWebCot = (sectionInfo.UR - sectionInfo.B/2) / sectionInfo.H;
-    const lWebCos = sectionInfo.H / Math.sqrt((sectionInfo.B/2 - sectionInfo.UL)**2 + sectionInfo.H**2);
-    const rWebCos = sectionInfo.H / Math.sqrt((sectionInfo.UR - sectionInfo.B/2)**2 + sectionInfo.H**2);
     const height = pointSectionInfo.forward.height;
-    const deltaH = height - sectionInfo.H;
     const centerThickness = 270 //  slab변수 추가
+    const lwb = {x: - sectionInfo.B/2, y:-sectionInfo.H}
+    const lwt = {x: - sectionInfo.UL, y:0}
+    const rwb = {x: sectionInfo.B/2, y:-sectionInfo.H}
+    const rwt = {x: sectionInfo.UR, y:0}
     let forward = {};
     let backward = {};
-    let ps = {}
-    let skew = pointSectionInfo.forward.skew
+    let ps = {};
+    let skew = pointSectionInfo.forward.skew; // gridPoint의 skew가 있어 사용여부 확인후 삭제요망
     for (let i = 0; i < 2;i++){
         if (i === 0) {
             ps = pointSectionInfo.forward
         } else {
             ps = pointSectionInfo.backward
         }
-        let lfThickness = ps.lFlangeThk;
-        let webThickness = ps.webThk;
-        let ufWidth = ps.uFlangeW;
-        let ufThickness = ps.uFlangeThk;
-        let lwt = webThickness / lWebCos;
-        let rwt = webThickness / rWebCos;
         let slabThickness = ps.slabThickness - centerThickness
-        // leftWeb
-        let blwX = - sectionInfo.B/2 - deltaH * lWebCot;
-        let tlwX = (- sectionInfo.UL - slabThickness * lWebCot) / (1 - gradient * lWebCot);
-        let lWeb = [
-            {x: blwX, y: - height},
-            {x: tlwX, y: gradient*tlwX - slabThickness},
-            {x: (tlwX - lwt), y: gradient*(tlwX - lwt) - slabThickness},
-            {x: (blwX - lwt), y: - height},
-        ];
-        // rightWeb
-        let brwX = sectionInfo.B/2 -deltaH * rWebCot;
-        let trwX = (sectionInfo.UR - slabThickness * rWebCot) / (1 - gradient * rWebCot);
-        let rWeb = [
-            {x: brwX, y: - height},
-            {x: trwX, y: gradient*trwX- slabThickness},
-            {x: (trwX + rwt), y: gradient*(trwX + rwt)- slabThickness},
-            {x: (brwX + rwt), y: - height}
-        ];
-        // bottomplate
-        let blx= - sectionInfo.B/2 - deltaH * lWebCot -sectionInfo.C1;
-        let brx= sectionInfo.B/2 -deltaH * rWebCot + sectionInfo.D1;
-        let bottomPlate = [
-        {x: blx, y:  - height},
-        {x: brx, y:  - height},
-        {x: brx, y:  - height - lfThickness},
-        {x: blx, y:  - height - lfThickness}
+        
+        let Rib = {}
+        for (let j in ps.lRibLO){
+        let lRib = [{x:ps.lRibLO[j] - ps.lRibThk/2,y:-height},{x:ps.lRibLO[j]- ps.lRibThk/2,y:-height+ps.lRibH},
+                    {x:ps.lRibLO[j] + ps.lRibThk/2,y:-height+ps.lRibH},{x:ps.lRibLO[j] + ps.lRibThk/2,y:-height}]
+        let keyname = "lRib" + j
+        Rib[keyname] = lRib                    
+         }
 
-        ]
+         
+        // leftWeb
+        let lw1 = WebPoint(lwb,lwt,0,-height) //{x:blwX,y:-height}
+        let lw2 = WebPoint(lwb,lwt,gradient,-slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
+        let lWeb = PlateRestPoint(lw1,lw2,0,gradient,-ps.webThk);
+        // rightWeb
+        let rw1 = WebPoint(rwb,rwt,0,-height) //{x:brwX,y:-height}
+        let rw2 = WebPoint(rwb,rwt,gradient,-slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
+        let rWeb = PlateRestPoint(rw1,rw2,0,gradient,ps.webThk);
+        // bottomplate
+        let b1 = {x:lw1.x - sectionInfo.C1,y:-height}
+        let b2 = {x:rw1.x + sectionInfo.D1,y:-height}
+        let bottomPlate = PlateRestPoint(b1,b2,null,null,-ps.lFlangeThk)
         // TopPlate
-        let gcos = 1 / Math.sqrt(1 + gradient**2);
-        let gsin = gradient * gcos;
-        let addedX = - gsin * ufThickness;
-        let addedZ = gcos * ufThickness;
-        let tlx = (- sectionInfo.UL - sectionInfo.C - slabThickness * lWebCot) / (1 - gradient * lWebCot);
-        let tlx2 = (- sectionInfo.UL - sectionInfo.C + ufWidth - slabThickness * lWebCot) / (1 - gradient * lWebCot);
-        let trx = (sectionInfo.UR + sectionInfo.D - slabThickness * rWebCot) / (1 - gradient * rWebCot);
-        let trx2 = (sectionInfo.UR + sectionInfo.D - ufWidth - slabThickness * rWebCot) / (1 - gradient * rWebCot);
-        let topPlate1 = [
-            {x: tlx, y: gradient*tlx- slabThickness},
-            {x: tlx2, y: gradient*tlx2 - slabThickness},
-            {x: (tlx2 + addedX), y: gradient*(tlx2 + addedX) + addedZ - slabThickness},
-            {x: (tlx + addedX), y: gradient*(tlx + addedX) + addedZ- slabThickness}
-        ];
-        let topPlate2 = [
-            {x: trx, y: gradient*trx- slabThickness},
-            {x: trx2, y: gradient*trx2- slabThickness},
-            {x: (trx2 + addedX), y: gradient*(trx2 + addedX) + addedZ- slabThickness},
-            {x: (trx + addedX), y: gradient*(trx + addedX) + addedZ- slabThickness}
-        ]
+        let tl1 = {x: lw2.x - sectionInfo.C, y: lw2.y + gradient*(- sectionInfo.C)};
+        let tl2 = {x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient*(- sectionInfo.C + ps.uFlangeW)};
+        let topPlate1 = PlateRestPoint(tl1,tl2,-1/gradient,-1/gradient,ps.uFlangeThk);
+        let tr1 = {x: rw2.x + sectionInfo.D, y: rw2.y + gradient*(sectionInfo.D)};
+        let tr2 = {x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient*(sectionInfo.D - ps.uFlangeW)};
+        let topPlate2 = PlateRestPoint(tr1,tr2,-1/gradient,-1/gradient,ps.uFlangeThk);;
         if (i===0){
-            forward ={skew, bottomPlate:bottomPlate, leftTopPlate:topPlate1, rightTopPlate : topPlate2, lWeb:lWeb, rWeb:rWeb}    
+            forward ={skew, bottomPlate:bottomPlate, leftTopPlate:topPlate1, rightTopPlate : topPlate2, lWeb:lWeb, rWeb:rWeb, ...Rib}    
         }else {
-            backward ={skew, bottomPlate:bottomPlate, leftTopPlate:topPlate1, rightTopPlate : topPlate2, lWeb:lWeb, rWeb:rWeb}    
+            backward ={skew, bottomPlate:bottomPlate, leftTopPlate:topPlate1, rightTopPlate : topPlate2, lWeb:lWeb, rWeb:rWeb, ...Rib}    
         }
     }
-
     return {forward, backward}
   }
 
-
-  export function diaphragmSection(webPoints, skew, uflangePoint, diaSection){ //ribPoint needed
+  export function diaphragmSection(webPoints, skew, uflangePoint, ds){ //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
+    let result = {}
     const bl = webPoints[0];
     const tl = webPoints[1];
     const br = webPoints[2];
     const tr = webPoints[3];
-    var rotationY = (skew - 90)*Math.PI/180
+    const rotationY = (skew - 90)*Math.PI/180
     const lwCot = (tl.x - bl.x)/(tl.y-bl.y)
     const rwCot = (tr.x - br.x)/(tr.y-br.y)
-
-    var lowerHeight = diaSection.lowerHeight;
-    var lowerThickness = diaSection.lowerThickness;
-    var lowerTopThickness = diaSection.lowerTopThickness;
-    var lowerTopwidth = diaSection.lowerTopwidth;
-    var upperThickness = diaSection.upperThickness;
-    var longiRibHeight = diaSection.longiRibHeight;
-    var longiRibRayout = diaSection.longiRibRayout;
-    var upperHeight = diaSection.upperHeight;
-    var sideHeight = diaSection.sideHeight;
-    var sideThickness = diaSection.sideThickness;
-    var leftsideTopwidth = diaSection.leftsideTopwidth;
-    var leftsideTopThickness = diaSection.leftsideTopThickness;
-    var leftsideToplength = diaSection.leftsideToplength;
-    var rightsideTopwidth = diaSection.rightsideTopwidth;
-    var rightsideTopThickness = diaSection.rightsideTopThickness;
-    var rightsideToplength = diaSection.rightsideToplength;
-    var upperTopThickness = diaSection.upperTopThickness;
-    var upperTopwidth = diaSection.upperTopwidth;
-    // added variables
-    var scallopRadius = diaSection.scallopRadius;
-    var ribHoleD = diaSection.ribHoleD;
-    var ribHoleR = diaSection.ribHoleR;
-    //L100x100x10 section point, origin = (0,0)
-    var spc = diaSection.spc;
-    var pts = diaSection.pts;
+    const gradient = (tr.y- tl.y)/(tr.x-tl.x)
 
     ///lower stiffener
-    var lowerPlate = [
-      {x:bl.x + lwCot * lowerHeight,y:bl.y + lowerHeight}, bl, br,
-      {x:br.x + rwCot * lowerHeight,y:br.y + lowerHeight}
+    let lowerPlate = [
+      {x:bl.x + lwCot * ds.lowerHeight,y:bl.y + ds.lowerHeight}, bl, br,
+      {x:br.x + rwCot * ds.lowerHeight,y:br.y + ds.lowerHeight}
     ];
-    var lowerPoints = [];
+    let lowerPoints = [];
     lowerPoints.push(lowerPlate[0]);
-    // points.push(plate[1]);
-    lowerPoints = lowerPoints.concat(scallop(tl,bl,br,scallopRadius,4));
+    lowerPoints = lowerPoints.concat(scallop(tl,bl,br,ds.scallopRadius,4));
     //// longitudinal stiffner holes
-    for (let i=0; i<longiRibRayout.length;i++){
-      lowerPoints.push({x:longiRibRayout[i] - ribHoleD, y:lowerPlate[1].y});
-      var curve = new THREE.ArcCurve(longiRibRayout[i],lowerPlate[1].y + longiRibHeight, ribHoleR, Math.PI,0,true);
-      var dummyVectors = curve.getPoints(8)
+    for (let i=0; i<ds.longiRibRayout.length;i++){
+      lowerPoints.push({x:ds.longiRibRayout[i] - ds.ribHoleD, y:lowerPlate[1].y});
+      let curve = new THREE.ArcCurve(ds.longiRibRayout[i],lowerPlate[1].y + ds.longiRibHeight, ds.ribHoleR, Math.PI,0,true);
+      let dummyVectors = curve.getPoints(8)
       for (let i = 0; i< dummyVectors.length;i++){
         lowerPoints.push({x:dummyVectors[i].x, y:dummyVectors[i].y})
       }
-      lowerPoints.push({x:longiRibRayout[i] + ribHoleD,y:lowerPlate[1].y});
+      lowerPoints.push({x:ds.longiRibRayout[i] + ds.ribHoleD,y:lowerPlate[1].y});
     }
-    ////
-    lowerPoints = lowerPoints.concat(scallop(bl,br,tr,scallopRadius,4));
+    lowerPoints = lowerPoints.concat(scallop(bl,br,tr,ds.scallopRadius,4));
     lowerPoints.push(lowerPlate[3]);
-    ////
-    var lowerTopPoints = [lowerPlate[0],
-                          {x:bl.x + lwCot * (lowerHeight+lowerTopThickness), y:bl.y + (lowerHeight+lowerTopThickness)},
-                          {x:br.x + rwCot * (lowerHeight+lowerTopThickness), y:bl.y + (lowerHeight+lowerTopThickness)},
+    let lowerTopPoints = [lowerPlate[0],
+                          {x:bl.x + lwCot * (ds.lowerHeight+ds.lowerTopThickness), y:bl.y + (ds.lowerHeight+ds.lowerTopThickness)},
+                          {x:br.x + rwCot * (ds.lowerHeight+ds.lowerTopThickness), y:bl.y + (ds.lowerHeight+ds.lowerTopThickness)},
                           lowerPlate[3]];
-    
+    result["lowerTopShape"] = {
+      points:lowerTopPoints,Thickness:ds.lowerTopwidth,z:-ds.lowerTopwidth/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size : PlateSize2(lowerPlate,1,ds.lowerTopThickness,ds.lowerTopwidth),
+      anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
+    let lowerweldingLine = [lowerPlate[0],lowerPlate[1],lowerPlate[2],lowerPlate[3]]
+    result["lowershape"]= {
+      points:lowerPoints,Thickness:ds.lowerThickness,z:-ds.lowerThickness/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[], 
+      size: PlateSize(lowerPlate,1,ds.lowerThickness),
+      anchor:[[lowerPlate[0].x,lowerPlate[0].y - 50],[lowerPlate[3].x,lowerPlate[3].y - 50]],
+      welding:[{Line:lowerweldingLine,type:"FF",value1:6}]
+    }
     ///upper stiffener
-    var upperPlate = [];
-    upperPlate.push({x:tl.x, y:tl.y});
-    upperPlate.push({x:tl.x - lwCot * upperHeight,y: tl.y -upperHeight});
-    upperPlate.push({x:tr.x - rwCot * upperHeight,y: tr.y -upperHeight});
-    upperPlate.push({x:tr.x, y:tr.y});
-    var upperPoints = [];
-    upperPoints = upperPoints.concat(scallop(upperPlate[3],upperPlate[0],upperPlate[1],scallopRadius,4));
-    upperPoints.push(upperPlate[1]);
-    upperPoints.push(upperPlate[2]);
-    upperPoints = upperPoints.concat(scallop(upperPlate[2],upperPlate[3],upperPlate[0],scallopRadius,4));
+    let upperPlate = [{x:tl.x, y:tl.y},{x:tl.x - lwCot * ds.upperHeight,y: tl.y -ds.upperHeight},
+                      {x:tr.x - rwCot * ds.upperHeight,y: tr.y -ds.upperHeight},{x:tr.x, y:tr.y}];
+    let upperPoints = [...scallop(upperPlate[3],upperPlate[0],upperPlate[1],ds.scallopRadius,4),
+      upperPlate[1],upperPlate[2],...scallop(upperPlate[2],upperPlate[3],upperPlate[0],ds.scallopRadius,4)];
+
+    result["upper"] = {
+      points:upperPoints,Thickness:ds.upperThickness,z:-ds.upperThickness/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size: PlateSize(upperPlate,1,ds.upperThickness),
+      anchor:[[upperPlate[0].x,upperPlate[0].y - 50],[upperPlate[3].x,upperPlate[3].y - 50]]
+    } 
     //upperTopPlate
-    var gcos = (uflangePoint[1].x - uflangePoint[0].x)/Math.sqrt((uflangePoint[1].x - uflangePoint[0].x)**2 +(uflangePoint[1].y - uflangePoint[0].y)**2 )
-    var gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
-    var upperTopPoints = [
-      {x: uflangePoint[0].x, y: uflangePoint[0].y},
-      {x: uflangePoint[0].x + gcos* upperTopThickness, y: uflangePoint[0].y + gsin* upperTopThickness},
-      {x: uflangePoint[2].x + gcos* upperTopThickness, y: uflangePoint[2].y + gsin* upperTopThickness},
-      {x: uflangePoint[2].x, y: uflangePoint[2].y}
-    ];
+    
+    let gcos = (uflangePoint[1].x - uflangePoint[0].x)/Math.sqrt((uflangePoint[1].x - uflangePoint[0].x)**2 +(uflangePoint[1].y - uflangePoint[0].y)**2 )
+    let gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
+    let gtan = (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
+    if (uflangePoint[0].x < uflangePoint[2].x){
+    let upperTopPoints = PlateRestPoint(uflangePoint[0],uflangePoint[2],gtan,gtan,ds.upperTopThickness)
+    result["upperTopShape"]= {
+      points:upperTopPoints,Thickness:ds.upperTopwidth,z:-ds.upperTopwidth/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size: PlateSize2(upperTopPoints,0,ds.upperTopThickness,ds.upperTopwidth),
+      anchor:[[upperTopPoints[0].x,upperTopPoints[0].y + 50],[upperTopPoints[1].x,upperTopPoints[1].y + 50]]
+    }
+  }
     ////left side stiffner
-    var leftPlate = [
-      {x:bl.x + lwCot * (lowerHeight+lowerTopThickness),y:bl.y + (lowerHeight+lowerTopThickness)}, 
-      {x:bl.x + lwCot * (lowerHeight+lowerTopThickness) + sideHeight*gsin,y:bl.y + (lowerHeight+lowerTopThickness)},
-      {x:tl.x - lwCot * (upperHeight+leftsideTopThickness)*gsin + sideHeight * gsin,y:tl.y - (upperHeight+leftsideTopThickness)*gsin - sideHeight * gcos},
-      {x:tl.x - lwCot * (upperHeight+leftsideTopThickness)*gsin, y:tl.y - (upperHeight+leftsideTopThickness)*gsin}
-    ]
+    let leftPlate = PlateRestPoint(
+      WebPoint(bl,tl,0,bl.y + (ds.lowerHeight+ds.lowerTopThickness)),
+      WebPoint(bl,tl,0,tl.y - (ds.upperHeight+ds.leftsideTopThickness)*gsin),0,gradient,ds.sideHeight )
+    let leftweldingLine = [leftPlate[3],leftPlate[0],leftPlate[1],leftPlate[2]]
+    result["leftPlateShape"] = {points:leftPlate, Thickness:ds.sideThickness,z:-ds.sideThickness/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size: PlateSize(leftPlate,0,ds.sideThickness),
+      anchor:[[leftPlate[0].x + 50,leftPlate[0].y],[leftPlate[1].x  + 50,leftPlate[1].y]],
+      welding:[{Line:leftweldingLine,type:"FF",value1:6}]
+    }
+
+    
 //   ////right side stiffner
-    var rightPlate = [
-      {x:br.x + rwCot * (lowerHeight+lowerTopThickness), y:br.y + (lowerHeight+lowerTopThickness)}, 
-      {x:br.x + rwCot * (lowerHeight+lowerTopThickness) - sideHeight*gsin,y:br.y + (lowerHeight+lowerTopThickness)},
-      {x:tr.x - rwCot * (upperHeight+leftsideTopThickness)*gsin - sideHeight * gsin,y:tr.y - (upperHeight+leftsideTopThickness)*gsin + sideHeight * gcos},
-      {x:tr.x - rwCot * (upperHeight+leftsideTopThickness)*gsin, y:tr.y - (upperHeight+leftsideTopThickness)*gsin}
+    let rightPlate = PlateRestPoint(
+      WebPoint(br,tr,0,br.y + (ds.lowerHeight+ds.lowerTopThickness)),
+      WebPoint(br,tr,0,tr.y - (ds.upperHeight+ds.leftsideTopThickness)*gsin),0,gradient,-ds.sideHeight )
+    result["rightPlateShape"] = {points:rightPlate, Thickness:ds.sideThickness,z:-ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size: PlateSize(rightPlate,0,ds.sideThickness),
+      anchor:[[rightPlate[0].x - 50,rightPlate[0].y],[rightPlate[1].x  - 50,rightPlate[1].y]]
+    }
+    ////leftside top plate
+    let leftTopPlate = PlateRestPoint(
+      upperPlate[1],{x:upperPlate[1].x + ds.leftsideTopwidth*gsin, y: upperPlate[1].y - ds.leftsideTopwidth * gcos},
+      1/lwCot,-1/gradient,-ds.leftsideTopThickness)
+    result["leftTopPlateShape"] = {points:leftTopPlate, Thickness:ds.leftsideToplength,z:-ds.leftsideToplength/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size: PlateSize2(leftTopPlate,0,ds.leftsideTopThickness,ds.leftsideToplength),
+      anchor:[[leftTopPlate[0].x + 50,leftTopPlate[0].y+50],[leftTopPlate[1].x  + 50,leftTopPlate[1].y+50]]
+    }
+    ////rightside top plate
+    let rightTopPlate = PlateRestPoint(
+      upperPlate[2],{x:upperPlate[2].x - ds.rightsideTopwidth*gsin, y: upperPlate[2].y + ds.rightsideTopwidth * gcos},
+      1/rwCot,-1/gradient,-ds.rightsideTopThickness)
+    result["rightTopPlateShape"] = {points:rightTopPlate, Thickness:ds.rightsideToplength,z:-ds.rightsideToplength/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size: PlateSize2(rightTopPlate,0,ds.rightsideTopThickness,ds.rightsideToplength),
+      anchor:[[rightTopPlate[1].x  - 80,rightTopPlate[1].y+50],[rightTopPlate[0].x - 80,rightTopPlate[0].y + 50]]
+    }
+    // k-frame diaphragm
+    let leftline =  [{x:-ds.spc*gsin,y:-ds.spc*gcos},lowerTopPoints[1]]
+    let lcos = (leftline[1].x - leftline[0].x) / Math.sqrt((leftline[1].x - leftline[0].x)**2 + (leftline[1].y - leftline[0].y)**2)
+    let ltan = (leftline[1].y - leftline[0].y) / (leftline[1].x - leftline[0].x)
+    let lsin = lcos * ltan
+    let newleftline = [
+      {x:leftline[0].x - (ds.spc - lcos * ds.pts[0]) / ltan, y: leftline[0].y - (ds.spc - lcos * ds.pts[0])},
+      {x:leftline[1].x + (ds.spc - lsin * ds.pts[0]), y: leftline[1].y + ltan * (ds.spc - lsin * ds.pts[0])}
     ]
-  ////leftside top plate
-  var leftTopPlate = [
-    leftPlate[3],
-    upperPlate[1],
-    {x:upperPlate[1].x + leftsideTopwidth*gsin, y: upperPlate[1].y - leftsideTopwidth * gcos  },
-    {x:upperPlate[1].x + leftsideTopwidth*gsin - leftsideTopThickness*gcos, y: upperPlate[1].y - leftsideTopwidth * gcos - leftsideTopThickness*gsin }
-  ]
-  ////rightside top plate
-  var rightTopPlate = [
-    rightPlate[3],
-    upperPlate[2],
-    {x:upperPlate[2].x - rightsideTopwidth*gsin, y: upperPlate[2].y + rightsideTopwidth * gcos  },
-    {x:upperPlate[2].x - rightsideTopwidth*gsin - rightsideTopThickness*gcos, y: upperPlate[2].y + rightsideTopwidth * gcos - rightsideTopThickness*gsin }
-  ] 
-  // k-frame diaphragm
-    var leftline =  [{x:-spc*gsin,y:-spc*gcos},lowerTopPoints[1]]
-    var lcos = (leftline[1].x - leftline[0].x) / Math.sqrt((leftline[1].x - leftline[0].x)**2 + (leftline[1].y - leftline[0].y)**2)
-    var ltan = (leftline[1].y - leftline[0].y) / (leftline[1].x - leftline[0].x)
-    var lsin = lcos * ltan
-    var newleftline = [
-      {x:leftline[0].x - (spc - lcos * pts[0]) / ltan, y: leftline[0].y - (spc - lcos * pts[0])},
-      {x:leftline[1].x + (spc - lsin * pts[0]), y: leftline[1].y + ltan * (spc - lsin * pts[0])}
+    let [leftframe1,leftframe2] = Kframe(newleftline[1],newleftline[0],0,0,ds.pts)
+    result["leftframe1"] = {points:leftframe1, Thickness:ds.pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
+    result["leftframe2"] = {points:leftframe2, Thickness:ds.pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size:{Label:"L-100x100x10x"+PointLength(...newleftline).toFixed(0)},
+      anchor:[[newleftline[1].x-20,newleftline[1].y],[newleftline[0].x-20,newleftline[0].y]]}
+    
+    let rightline = [{x:ds.spc*gsin,y:ds.spc*gcos},lowerTopPoints[2]]
+    let rcos = (rightline[1].x - rightline[0].x) / Math.sqrt((rightline[1].x - rightline[0].x)**2 + (rightline[1].y - rightline[0].y)**2)
+    let rtan = (rightline[1].y - rightline[0].y) / (rightline[1].x - rightline[0].x)
+    let rsin = rcos * rtan
+    let newrightline = [
+      {x:rightline[0].x - (ds.spc + rcos * ds.pts[0]) / rtan, y: rightline[0].y - (ds.spc + rcos * ds.pts[0])},
+      {x:rightline[1].x - (ds.spc - rsin * ds.pts[0]), y: rightline[1].y - rtan * (ds.spc - rsin * ds.pts[0])}
     ]
-    var leftframe1 = [
-      {x:newleftline[0].x + pts[0] * lsin,y:newleftline[0].y - pts[0] * lcos},
-      {x:newleftline[0].x + pts[1] * lsin,y:newleftline[0].y - pts[1] * lcos},
-      {x:newleftline[1].x + pts[1] * lsin,y:newleftline[1].y - pts[1] * lcos},
-      {x:newleftline[1].x + pts[0] * lsin,y:newleftline[1].y - pts[0] * lcos}
-    ]
-    var leftframe2 = [
-      {x:newleftline[0].x + pts[1] * lsin,y:newleftline[0].y - pts[1] * lcos},
-      {x:newleftline[0].x + pts[2] * lsin,y:newleftline[0].y - pts[2] * lcos},
-      {x:newleftline[1].x + pts[2] * lsin,y:newleftline[1].y - pts[2] * lcos},
-      {x:newleftline[1].x + pts[1] * lsin,y:newleftline[1].y - pts[1] * lcos}
-    ]
-    var rightline = [{x:spc*gsin,y:spc*gcos},lowerTopPoints[2]]
-    var rcos = (rightline[1].x - rightline[0].x) / Math.sqrt((rightline[1].x - rightline[0].x)**2 + (rightline[1].y - rightline[0].y)**2)
-    var rtan = (rightline[1].y - rightline[0].y) / (rightline[1].x - rightline[0].x)
-    var rsin = rcos * rtan
-    var newrightline = [
-      {x:rightline[0].x - (spc + rcos * pts[0]) / rtan, y: rightline[0].y - (spc + rcos * pts[0])},
-      {x:rightline[1].x - (spc - rsin * pts[0]), y: rightline[1].y - rtan * (spc - rsin * pts[0])}
-    ]
-    var rightframe1 = [
-      {x:newrightline[0].x - pts[0] * rsin,y:newrightline[0].y + pts[0] * rcos},
-      {x:newrightline[0].x - pts[1] * rsin,y:newrightline[0].y + pts[1] * rcos},
-      {x:newrightline[1].x - pts[1] * rsin,y:newrightline[1].y + pts[1] * rcos},
-      {x:newrightline[1].x - pts[0] * rsin,y:newrightline[1].y + pts[0] * rcos}
-    ]
-    var rightframe2 = [
-      {x:newrightline[0].x - pts[1] * rsin,y:newrightline[0].y + pts[1] * rcos},
-      {x:newrightline[0].x - pts[2] * rsin,y:newrightline[0].y + pts[2] * rcos},
-      {x:newrightline[1].x - pts[2] * rsin,y:newrightline[1].y + pts[2] * rcos},
-      {x:newrightline[1].x - pts[1] * rsin,y:newrightline[1].y + pts[1] * rcos}
-    ]
-      return {
-        lowershape:{points:lowerPoints,Thickness:lowerThickness,z:-lowerThickness/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[]}, 
-        lowerTopShape: {points:lowerTopPoints,Thickness:lowerTopwidth,z:-lowerTopwidth/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        upperShape: {points:upperPoints,Thickness:upperThickness,z:-upperThickness/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        upperTopShape:{points:upperTopPoints,Thickness:upperTopwidth,z:-upperTopwidth/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        leftPlateShape:{points:leftPlate, Thickness:sideThickness,z:-sideThickness/2, rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        rightPlateShape:{points:rightPlate, Thickness:sideThickness,z:-sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        leftTopPlateShape:{points:leftTopPlate, Thickness:leftsideToplength,z:-leftsideToplength/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        rightTopPlateShape:{points:rightTopPlate, Thickness:rightsideToplength,z:-rightsideToplength/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        leftframe1:{points:leftframe1, Thickness:pts[3],z: sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        leftframe2:{points:leftframe2, Thickness:pts[4],z: sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        rightframe1:{points:rightframe1, Thickness:pts[3],z: sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-        rightframe2:{points:rightframe2, Thickness:pts[4],z: sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-      }
+    let [rightframe1,rightframe2] = Kframe(newrightline[0],newrightline[1],0,0,ds.pts)
+    result["rightframe1"] = {points:rightframe1, Thickness:ds.pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
+    result["rightframe2"] = {points:rightframe2, Thickness:ds.pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      size:{Label:"L-100x100x10x"+PointLength(...newrightline).toFixed(0)},
+      anchor:[[newrightline[0].x+20,newrightline[0].y],[newrightline[1].x+20,newrightline[1].y]]
+    }
+      return result
   }
 
   export function diaphragmSection2(webPoints, skew, uflangePoint, diaSection){ //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
-    const result = {}
+    let result = {}
     const plateThickness = diaSection.plateThickness;
     const holeBottomOffset = diaSection.holeBottomOffset;
     const holeRightOffset = diaSection.holeRightOffset;
@@ -273,8 +218,8 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     const hStiffThickness = diaSection.hStiffThickness
     const hStiffWidth = diaSection.hStiffWidth
     const hStiffBottomOffset = diaSection.hStiffBottomOffset
-    // var longiRibHeight = diaSection.longiRibHeight;
-    // var longiRibRayout = diaSection.longiRibRayout;
+    // let longiRibHeight = diaSection.longiRibHeight;
+    // let longiRibRayout = diaSection.longiRibRayout;
     const holeVstiffnerThickness = diaSection.holeVstiffnerThickness
     const holeVstiffnerhight = diaSection.holeVstiffnerhight
     const holeVstiffnerLength = diaSection.holeVstiffnerLength
@@ -282,8 +227,8 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     const holeHstiffnerHeight = diaSection.holeHstiffnerHeight
     const holeHstiffnerLength = diaSection.holeHstiffnerLength
     const holeStiffSpacing = diaSection.holeStiffSpacing
-    // added variables
-    var scallopRadius = diaSection.scallopRadius;
+    // added letiables
+    let scallopRadius = diaSection.scallopRadius;
 
 
     const bl = webPoints[0];
@@ -307,25 +252,25 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     let vstiffX5 = vStiffLayout[1] - vStiffThickness / 2
     let vstiffX6 = vStiffLayout[1] + vStiffThickness / 2
 
-    var hStiff1 = [
+    let hStiff1 = [
       {x:bl.x + hStiffBottomOffset * lwCot ,y:-(bl.x + hStiffBottomOffset * lwCot) * cot - (hStiffWidth + plateThickness/2) * cosec},
       {x:bl.x + hStiffBottomOffset * lwCot ,y:-(bl.x + hStiffBottomOffset * lwCot) * cot - (plateThickness/2) * cosec},
       {x: vstiffX1 ,y:-(vstiffX1) * cot - (plateThickness/2) * cosec},
       {x: vstiffX1 ,y:-(vstiffX1) * cot - (holeVstiffnerhight + plateThickness/2) * cosec},
     ]
-    var hStiff2 = [
+    let hStiff2 = [
       {x: vstiffX2,y: -(vstiffX2) * cot - (holeVstiffnerhight + plateThickness/2) * cosec},
       {x: vstiffX2,y: -(vstiffX2) * cot - (plateThickness/2) * cosec},
       {x: vstiffX3 ,y:-(vstiffX3) * cot - (plateThickness/2) * cosec},
       {x: vstiffX3 ,y:-(vstiffX3) * cot - (hStiffWidth + plateThickness/2) * cosec},
     ]
-    var hStiff3 = [
+    let hStiff3 = [
       {x: vstiffX4,y: -(vstiffX4) * cot - (hStiffWidth + plateThickness/2) * cosec},
       {x: vstiffX4,y: -(vstiffX4) * cot - (plateThickness/2) * cosec},
       {x: vstiffX5 ,y:-(vstiffX5) * cot - (plateThickness/2) * cosec},
       {x: vstiffX5 ,y:-(vstiffX5) * cot - (hStiffWidth + plateThickness/2) * cosec},
     ]
-    var hStiff4 = [
+    let hStiff4 = [
       {x: vstiffX6,y: -(vstiffX6) * cot - (hStiffWidth + plateThickness/2) * cosec},
       {x: vstiffX6,y: -(vstiffX6) * cot - (plateThickness/2) * cosec},
       {x:br.x + hStiffBottomOffset * rwCot ,y:-(br.x + hStiffBottomOffset * rwCot) * cot - (plateThickness/2) * cosec},
@@ -336,25 +281,25 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     result['hStiff3'] = {points:hStiff3,Thickness:hStiffThickness,z: bl.y + hStiffBottomOffset,rotationX:0,rotationY:0,hole:[]}
     result['hStiff4'] = {points:hStiff4,Thickness:hStiffThickness,z: bl.y + hStiffBottomOffset,rotationX:0,rotationY:0,hole:[]}
 
-    var hStiff5 = [
+    let hStiff5 = [
       {x:bl.x + hStiffBottomOffset * lwCot ,y:-(bl.x + hStiffBottomOffset * lwCot) * cot + (hStiffWidth + plateThickness/2) * cosec},
       {x:bl.x + hStiffBottomOffset * lwCot ,y:-(bl.x + hStiffBottomOffset * lwCot) * cot + (plateThickness/2) * cosec},
       {x: vstiffX1 ,y:-(vstiffX1) * cot + (plateThickness/2) * cosec},
       {x: vstiffX1 ,y:-(vstiffX1) * cot + (holeVstiffnerhight + plateThickness/2) * cosec},
     ]
-    var hStiff6 = [
+    let hStiff6 = [
       {x: vstiffX2,y: -(vstiffX2) * cot + (holeVstiffnerhight + plateThickness/2) * cosec},
       {x: vstiffX2,y: -(vstiffX2) * cot + (plateThickness/2) * cosec},
       {x: vstiffX3 ,y:-(vstiffX3) * cot + (plateThickness/2) * cosec},
       {x: vstiffX3 ,y:-(vstiffX3) * cot + (hStiffWidth + plateThickness/2) * cosec},
     ]
-    var hStiff7 = [
+    let hStiff7 = [
       {x: vstiffX4,y: -(vstiffX4) * cot + (hStiffWidth + plateThickness/2) * cosec},
       {x: vstiffX4,y: -(vstiffX4) * cot + (plateThickness/2) * cosec},
       {x: vstiffX5 ,y:-(vstiffX5) * cot + (plateThickness/2) * cosec},
       {x: vstiffX5 ,y:-(vstiffX5) * cot + (hStiffWidth + plateThickness/2) * cosec},
     ]
-    var hStiff8 = [
+    let hStiff8 = [
       {x: vstiffX6,y: -(vstiffX6) * cot + (hStiffWidth + plateThickness/2) * cosec},
       {x: vstiffX6,y: -(vstiffX6) * cot + (plateThickness/2) * cosec},
       {x:br.x + hStiffBottomOffset * rwCot ,y:-(br.x + hStiffBottomOffset * rwCot) * cot + (plateThickness/2) * cosec},
@@ -365,11 +310,11 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     result['hStiff7'] = {points:hStiff7,Thickness:hStiffThickness,z: bl.y + hStiffBottomOffset,rotationX:0,rotationY:0,hole:[]}
     result['hStiff8'] = {points:hStiff8,Thickness:hStiffThickness,z: bl.y + hStiffBottomOffset,rotationX:0,rotationY:0,hole:[]}
 
-    // var ribHoleD = diaSection.ribHoleD;
-    // var ribHoleR = diaSection.ribHoleR;
+    // let ribHoleD = diaSection.ribHoleD;
+    // let ribHoleR = diaSection.ribHoleR;
 
     // hole stiffner
-    var holeVStiff1 = [
+    let holeVStiff1 = [
       {x: holeRightOffset / cosec + holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight/2 - holeVstiffnerLength /2},
       {x: holeRightOffset / cosec+ holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight/2 + holeVstiffnerLength /2},
       {x: holeRightOffset / cosec+ holeStiffSpacing + holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight/2 + holeVstiffnerLength /2},
@@ -383,7 +328,7 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
       rotationY:0,
       hole:[]}
 
-    var holeVStiff2 = [
+    let holeVStiff2 = [
       {x: (holeRightOffset- holeWidth) / cosec - holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight/2 - holeVstiffnerLength /2},
       {x: (holeRightOffset- holeWidth) / cosec - holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight/2 + holeVstiffnerLength /2},
       {x: (holeRightOffset- holeWidth) / cosec - holeStiffSpacing - holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight/2 + holeVstiffnerLength /2},
@@ -397,7 +342,7 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
       rotationY:0,
       hole:[]}
 
-      var holeHStiff1 = [
+    let holeHStiff1 = [
         {x: (holeRightOffset- holeWidth/2) / cosec - holeHstiffnerLength/2, y: -((holeRightOffset- holeWidth/2) / cosec - holeHstiffnerLength/2)*cot},
         {x: (holeRightOffset- holeWidth/2) / cosec + holeHstiffnerLength/2, y: -((holeRightOffset- holeWidth/2) / cosec + holeHstiffnerLength/2)*cot},
         {x: (holeRightOffset- holeWidth/2) / cosec + holeHstiffnerLength/2, y: -((holeRightOffset- holeWidth/2) / cosec + holeHstiffnerLength/2)*cot + holeHstiffnerHeight * cosec},
@@ -429,7 +374,6 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
         {x:vStiffLayout[i] + vStiffThickness / 2,y: tl.y  + ((vStiffLayout[i] + vStiffThickness / 2) - tl.x) * gradient},
         {x:vStiffLayout[i] - vStiffThickness / 2,y: tl.y + ((vStiffLayout[i] - vStiffThickness / 2)- tl.x) * gradient},
       ]
-
       result[name] = { 
           points:Points,
           Thickness:vStiffWidth,
@@ -440,7 +384,8 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     }
 
     // topPlate
-    var topPlate = [
+    if (uflangePoint[0].x < uflangePoint[2].x){
+    let topPlate = [
       {x:uflangePoint[0].x,y:-uflangePoint[0].x * cot + topPlateWidth/2 *cosec },
       {x:uflangePoint[0].x,y:-uflangePoint[0].x * cot - topPlateWidth/2 *cosec },
       {x:uflangePoint[2].x,y:-uflangePoint[2].x * cot - topPlateWidth/2 *cosec },
@@ -453,24 +398,24 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
       rotationX:0,
       rotationY:-Math.atan(gradient),
       hole:[]}
-
+    }
 
     ///lower stiffener
-    var mainPlate = [
+    let mainPlate = [
       {x: tl.x * cosec, y:tl.y}, 
       {x: bl.x * cosec, y:bl.y}, 
       {x: br.x * cosec, y:br.y}, 
       {x: tr.x * cosec, y:tr.y}, 
     ];
-    var diaPoints = [];
+    let diaPoints = [];
     diaPoints = diaPoints.concat(scallop(mainPlate[3],mainPlate[0],mainPlate[1],scallopRadius,4));
     // points.push(plate[1]);
     diaPoints = diaPoints.concat(scallop(mainPlate[0],mainPlate[1],mainPlate[2],scallopRadius,4));
     //// longitudinal stiffner holes
     // for (let i=0; i<longiRibRayout.length;i++){
     //   lowerPoints.push({x:longiRibRayout[i] - ribHoleD, y:lowerPlate[1].y});
-    //   var curve = new THREE.ArcCurve(longiRibRayout[i],lowerPlate[1].y + longiRibHeight, ribHoleR, Math.PI,0,true);
-    //   var dummyVectors = curve.getPoints(8)
+    //   let curve = new THREE.ArcCurve(longiRibRayout[i],lowerPlate[1].y + longiRibHeight, ribHoleR, Math.PI,0,true);
+    //   let dummyVectors = curve.getPoints(8)
     //   for (let i = 0; i< dummyVectors.length;i++){
     //     lowerPoints.push({x:dummyVectors[i].x, y:dummyVectors[i].y})
     //   }
@@ -481,8 +426,8 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     diaPoints = diaPoints.concat(scallop(mainPlate[2],mainPlate[3],mainPlate[0],scallopRadius,4));
     ////
 
-    var holePoints = []
-    var holeRect = [
+    let holePoints = []
+    let holeRect = [
       {x: holeRightOffset, y: (bl.y + br.y) / 2 + holeBottomOffset },
       {x: holeRightOffset - holeWidth, y: (bl.y + br.y) / 2 + holeBottomOffset },
       {x: holeRightOffset - holeWidth, y: (bl.y + br.y) / 2 + holeBottomOffset + holeHeight },
@@ -503,8 +448,8 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     const tl = webPoints[1];
     const br = webPoints[2];
     const tr = webPoints[3];
-    var gcos = (uflangePoint[1].x - uflangePoint[0].x)/Math.sqrt((uflangePoint[1].x - uflangePoint[0].x)**2 +(uflangePoint[1].y - uflangePoint[0].y)**2 )
-    var gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
+    let gcos = (uflangePoint[1].x - uflangePoint[0].x)/Math.sqrt((uflangePoint[1].x - uflangePoint[0].x)**2 +(uflangePoint[1].y - uflangePoint[0].y)**2 )
+    let gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
     const lwCot = (tl.x - bl.x)/(tl.y-bl.y);
     const rwCot = (tr.x - br.x)/(tr.y-br.y);
     const lcos = (tl.x - bl.x) / Math.sqrt((tl.x - bl.x)**2 + (tl.y - bl.y)**2);
@@ -512,57 +457,42 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
     const rcos = (tr.x - br.x) / Math.sqrt((tr.x - br.x)**2 + (tr.y - br.y)**2);
     const rsin = rcos / rwCot;
 
-    var sideHeight = vSection.sideHeight;
-    var sideThickness = vSection.sideThickness;
-    var upperHeight = vSection.upperHeight;
-    var bottomOffset = vSection.bottomOffset;
-    var scallopRadius = vSection.scallopRadius;
-    var sideScallopOffset = vSection.sideScallopOffset;
+    let sideHeight = vSection.sideHeight;
+    let sideThickness = vSection.sideThickness;
+    let upperHeight = vSection.upperHeight;
+    let bottomOffset = vSection.bottomOffset;
+    let scallopRadius = vSection.scallopRadius;
+    let sideScallopOffset = vSection.sideScallopOffset;
     //L100x100x10 section point, origin = (0,0)
-    var spc = vSection.spc;
-    var pts = vSection.pts;
-    var rotationY = (skew - 90)*Math.PI/180
+    let spc = vSection.spc;
+    let pts = vSection.pts;
+    let rotationY = (skew - 90)*Math.PI/180
   ///left stiffener
-    var leftplate = [
+    let leftplate = [
       tl,
       {x:bl.x + lwCot * bottomOffset, y : bl.y + bottomOffset },
       {x:bl.x + lwCot * bottomOffset + lsin*sideHeight, y : bl.y + bottomOffset - lcos*sideHeight},
       {x:tl.x + gsin * sideHeight, y : tl.y + gcos * sideHeight },
     ]
-    var leftPoints = [];
+    let leftPoints = [];
     leftPoints = leftPoints.concat(scallop(leftplate[3],leftplate[0],leftplate[1],scallopRadius,4));
     leftPoints.push(leftplate[1])
     leftPoints = leftPoints.concat(scallop(leftplate[1],leftplate[2],leftplate[3],sideHeight-sideScallopOffset,1));
     leftPoints.push(leftplate[3])
   
     ///right stiffener
-    var rightplate = [
+    let rightplate = [
       tr,
       {x:br.x + rwCot * bottomOffset, y : br.y + bottomOffset },
       {x:br.x + rwCot * bottomOffset - rsin * sideHeight, y : br.y + bottomOffset + rcos*sideHeight},
       {x:tr.x - gsin * sideHeight, y : tr.y - gcos * sideHeight },
     ]
-    var rightPoints = [];
-    rightPoints = rightPoints.concat(scallop(rightplate[3],rightplate[0],rightplate[1],scallopRadius,4));
-    rightPoints.push(rightplate[1])
-    rightPoints = rightPoints.concat(scallop(rightplate[1],rightplate[2],rightplate[3],sideHeight-sideScallopOffset,1));
-    rightPoints.push(rightplate[3])
+    let rightPoints = [...scallop(rightplate[3],rightplate[0],rightplate[1],scallopRadius,4), rightplate[1],
+                      ...scallop(rightplate[1],rightplate[2],rightplate[3],sideHeight-sideScallopOffset,1), rightplate[3]];
     ////upper bracing
-    var upperline =  [
-      {x:tl.x - lwCot * upperHeight + gsin * spc , y: tl.y - upperHeight + gcos * spc},
-      {x:tr.x - rwCot * upperHeight - gsin * spc , y: tr.y - upperHeight - gcos * spc}]
-    var upperframe1 = [
-      {x:upperline[0].x + pts[0] * gcos,y:upperline[0].y + pts[0] * gsin},
-      {x:upperline[0].x + pts[1] * gcos, y:upperline[0].y + pts[1] * gsin},
-      {x:upperline[1].x + pts[1] * gcos, y:upperline[1].y + pts[1] * gsin},
-      {x:upperline[1].x + pts[0] * gcos, y:upperline[1].y + pts[0] * gsin}
-    ]
-    var upperframe2 = [
-      {x:upperline[0].x + pts[1] * gcos,y:upperline[0].y + pts[1] * gsin},
-      {x:upperline[0].x + pts[2] * gcos, y:upperline[0].y + pts[2] * gsin},
-      {x:upperline[1].x + pts[2] * gcos, y:upperline[1].y + pts[2] * gsin},
-      {x:upperline[1].x + pts[1] * gcos, y:upperline[1].y + pts[1] * gsin}
-    ]
+    let node1 = {x:tl.x - lwCot * upperHeight + gsin * spc , y: tl.y - upperHeight + gcos * spc}
+    let node2 = {x:tr.x - rwCot * upperHeight - gsin * spc , y: tr.y - upperHeight - gcos * spc}
+    let [upperframe1,upperframe2] = Kframe(node1,node2,0,0,pts)
   return {
     leftshape: {points:leftPoints,Thickness:sideThickness,z: -sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}, 
     rightShape: {points:rightPoints,Thickness:sideThickness,z:-sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
@@ -573,11 +503,11 @@ export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
 
 
 export function hBracingSection(point1, point2, webPoints, hBSection){
-  // var sideToplength = 700;
-  // var sideTopwidth = 300;
-  // var B = 2000;
-  // var H = 2500;
-  // var ULR = 1300;
+  // let sideToplength = 700;
+  // let sideTopwidth = 300;
+  // let B = 2000;
+  // let H = 2500;
+  // let ULR = 1300;
 
   const bl = webPoints[0];
   const tl = webPoints[1];
@@ -587,10 +517,10 @@ export function hBracingSection(point1, point2, webPoints, hBSection){
   const lwCot = (tl.x - bl.x)/(tl.y-bl.y)
   const rwCot = (tr.x - br.x)/(tr.y-br.y)
 
-  var upperHeight = hBSection.upperHeight;
-  var sideTopThickness = hBSection.sideTopThickness;
-  var spc = hBSection.spc
-  var pts = hBSection.pts
+  let upperHeight = hBSection.upperHeight;
+  let sideTopThickness = hBSection.sideTopThickness;
+  let spc = hBSection.spc
+  let pts = hBSection.pts
 
   let node1 = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y: tl.y -(upperHeight + sideTopThickness)};
   let node2 = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y: tr.y -(upperHeight + sideTopThickness)};
@@ -610,30 +540,29 @@ export function hBracingSection(point1, point2, webPoints, hBSection){
                     {x: Brline[1].x - Vector[0] * spc / VectorLength,
                       y: Brline[1].y - Vector[1] * spc / VectorLength,
                       z: Brline[1].z - Vector[2] * spc / VectorLength}]
-  let convexpointslist = [
+  let pointslist = 
     [{x :newBrLine[0].x + normalCos * pts[0],y:newBrLine[0].y + normalSin * pts[0],z: newBrLine[0].z},
     {x :newBrLine[0].x + normalCos * pts[1],y:newBrLine[0].y + normalSin * pts[1],z: newBrLine[0].z},
-    {x :newBrLine[1].x + normalCos * pts[1],y:newBrLine[1].y + normalSin * pts[1],z: newBrLine[1].z},
-    {x :newBrLine[1].x + normalCos * pts[0],y:newBrLine[1].y + normalSin * pts[0],z: newBrLine[1].z},
-    {x :newBrLine[0].x + normalCos * pts[0],y:newBrLine[0].y + normalSin * pts[0],z: newBrLine[0].z + pts[4]},
     {x :newBrLine[0].x + normalCos * pts[1],y:newBrLine[0].y + normalSin * pts[1],z: newBrLine[0].z + pts[4]},
+    {x :newBrLine[0].x + normalCos * pts[0],y:newBrLine[0].y + normalSin * pts[0],z: newBrLine[0].z + pts[4]},
+    {x :newBrLine[1].x + normalCos * pts[0],y:newBrLine[1].y + normalSin * pts[0],z: newBrLine[1].z},
+    {x :newBrLine[1].x + normalCos * pts[1],y:newBrLine[1].y + normalSin * pts[1],z: newBrLine[1].z},    
     {x :newBrLine[1].x + normalCos * pts[1],y:newBrLine[1].y + normalSin * pts[1],z: newBrLine[1].z + pts[4]},
     {x :newBrLine[1].x + normalCos * pts[0],y:newBrLine[1].y + normalSin * pts[0],z: newBrLine[1].z + pts[4]},
-  ],
+  ]
+  let pointslist2 =
   [
     {x :newBrLine[0].x + normalCos * pts[2],y:newBrLine[0].y + normalSin * pts[2],z: newBrLine[0].z},
     {x :newBrLine[0].x + normalCos * pts[3],y:newBrLine[0].y + normalSin * pts[3],z: newBrLine[0].z},
-    {x :newBrLine[1].x + normalCos * pts[3],y:newBrLine[1].y + normalSin * pts[3],z: newBrLine[1].z},
-    {x :newBrLine[1].x + normalCos * pts[2],y:newBrLine[1].y + normalSin * pts[2],z: newBrLine[1].z},
-    {x :newBrLine[0].x + normalCos * pts[2],y:newBrLine[0].y + normalSin * pts[2],z: newBrLine[0].z + pts[5]},
     {x :newBrLine[0].x + normalCos * pts[3],y:newBrLine[0].y + normalSin * pts[3],z: newBrLine[0].z + pts[5]},
+    {x :newBrLine[0].x + normalCos * pts[2],y:newBrLine[0].y + normalSin * pts[2],z: newBrLine[0].z + pts[5]},
+    {x :newBrLine[1].x + normalCos * pts[2],y:newBrLine[1].y + normalSin * pts[2],z: newBrLine[1].z},
+    {x :newBrLine[1].x + normalCos * pts[3],y:newBrLine[1].y + normalSin * pts[3],z: newBrLine[1].z},
     {x :newBrLine[1].x + normalCos * pts[3],y:newBrLine[1].y + normalSin * pts[3],z: newBrLine[1].z + pts[5]},
     {x :newBrLine[1].x + normalCos * pts[2],y:newBrLine[1].y + normalSin * pts[2],z: newBrLine[1].z + pts[5]},
-
-    ]
-  ];
-
-  return { line:Brline, pointlist: convexpointslist, }
+    ];
+  
+  return { line:Brline, points:[pointslist, pointslist2,[]]};
 }
 
 export function hBracingPlate(right, webPoints, hBSection){
@@ -663,8 +592,8 @@ export function hBracingPlate(right, webPoints, hBSection){
   let rotation = (right)? Math.PI/2 : -Math.PI/2;
   let cos = Math.cos(rotation);
   let sin = Math.sin(rotation);
-  var curve = new THREE.ArcCurve(0,scallopHeight,scallopRadius,Math.PI,0,true);
-  var curvePoint = curve.getPoints(8);
+  let curve = new THREE.ArcCurve(0,scallopHeight,scallopRadius,Math.PI,0,true);
+  let curvePoint = curve.getPoints(8);
   let ps = [];
   ps.push({x:-sideToplength/2, y:sideTopwidth});
   ps.push({x:-sideToplength/2, y: 0});
@@ -683,6 +612,106 @@ export function hBracingPlate(right, webPoints, hBSection){
 
   return {plate: {points:plateShape,Thickness: sideTopThickness,z:position.y, rotationX:0, rotationY:rotationY,hole:[]}}
 }
+
+export function SplicePlate(iPoint, iSectionPoint){
+  let result = {}
+  let iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[0])
+  let jNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1])
+  let centerPoint = {
+    x:(iNode.x + jNode.x)/2,
+    y:(iNode.y + jNode.y)/2,
+    z:(iNode.z + jNode.z)/2,
+    normalCos: iPoint.normalCos,
+    normalSin: iPoint.normalSin,
+  }
+  let Web = [{x:-900, y:-250},{x:-900, y:250},{x:900, y:250},{x:900, y:-250}]
+  let WebBolt = [{startPoint:{x:800, y:150},P:100,G:100,pNum:4,gNum:17,size:37,t:14,l:54},]
+  let lWebAngle = Math.PI-Math.atan((iSectionPoint.lWeb[1].y - iSectionPoint.lWeb[0].y)/(iSectionPoint.lWeb[1].x - iSectionPoint.lWeb[0].x))
+  let rWebAngle = Math.PI-Math.atan((iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y)/(iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x))
+  result["lWeb"]={points:Web,point:centerPoint,
+                 Thickness:20,z:14, rotationX:0, rotationY:lWebAngle,hole:[],bolt:WebBolt}
+  result["lWeb2"]={points:Web,point:centerPoint,
+  Thickness:-20,z:0, rotationX:0, rotationY:lWebAngle,hole:[]}
+
+  iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[0])
+  jNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1])
+  centerPoint = {x:(iNode.x + jNode.x)/2,
+              y:(iNode.y + jNode.y)/2,
+              z:(iNode.z + jNode.z)/2,
+              normalCos: iPoint.normalCos,
+              normalSin: iPoint.normalSin,
+            }
+  result["rWeb"]={points:Web,point:centerPoint,
+    Thickness:20,z:14, rotationX:0, rotationY:rWebAngle,hole:[],bolt:WebBolt}
+  result["rWeb2"]={points:Web,point:centerPoint,
+    Thickness:-20,z:0, rotationX:0, rotationY:rWebAngle,hole:[]}
+  
+  iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1])
+  centerPoint = {...iNode,
+              normalCos: iPoint.normalCos,
+              normalSin: iPoint.normalSin,
+            }
+  let TopFlange = [{x:-200, y:-250},{x:-200, y:250},{x:200, y:250},{x:200, y:-250}]
+  let TopFlangeBolt = [{startPoint:{x:160, y:150},P:100,G:80,pNum:4,gNum:2,size:37,t:14,l:54},
+                      {startPoint:{x:-80, y:150},P:100,G:80,pNum:4,gNum:2,size:37,t:14,l:54}]
+
+  result["lTop"]={points:TopFlange,point:centerPoint,  Thickness:20,z:14, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[],bolt:TopFlangeBolt}
+  result["lTop2"]={points:[{x:-200, y:-250},{x:-200, y:250},{x:-40, y:250},{x:-40, y:-250}],
+    point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+  result["lTop3"]={points:[{x:40, y:-250},{x:40, y:250},{x:200, y:250},{x:200, y:-250}],
+    point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+
+  iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1])
+    centerPoint = {...iNode,
+                normalCos: iPoint.normalCos,
+                normalSin: iPoint.normalSin,
+              }
+  
+  result["rTop"]={points:TopFlange,point:centerPoint,  Thickness:20,z:14, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[],bolt:TopFlangeBolt}
+  result["rTop2"]={points:[{x:-200, y:-250},{x:-200, y:250},{x:-40, y:250},{x:-40, y:-250}],
+    point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+  result["rTop3"]={points:[{x:40, y:-250},{x:40, y:250},{x:200, y:250},{x:200, y:-250}],
+    point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+  
+
+  let BP = iSectionPoint.bottomPlate
+  iNode = ToGlobalPoint(iPoint, BP[0])
+  jNode = ToGlobalPoint(iPoint, BP[1])
+  centerPoint = {x:(iNode.x + jNode.x)/2,
+              y:(iNode.y + jNode.y)/2,
+              z:(iNode.z + jNode.z)/2,
+              normalCos: iPoint.normalCos,
+              normalSin: iPoint.normalSin,
+            }
+  let bottomFlange = [{x:BP[0].x, y:-250},{x:BP[0].x, y:250},{x:BP[1].x, y:250},{x:BP[1].x, y:-250}]
+  let bottomFlangeBolt = [{startPoint:{x:BP[0].x+40, y:150},P:100,G:80,pNum:4,gNum:1,size:37,t:14,l:54},
+                          {startPoint:{x:BP[1].x-40, y:150},P:100,G:80,pNum:4,gNum:1,size:37,t:14,l:54},
+                          {startPoint:{x:BP[1].x-172, y:150},P:100,G:140,pNum:4,gNum:6,size:37,t:14,l:54},
+                          {startPoint:{x:BP[0].x+172, y:150},P:100,G:-140,pNum:4,gNum:6,size:37,t:14,l:54}]
+
+  result["bottom1"]={points:[{x:BP[0].x, y:-250},{x:BP[0].x, y:250},{x:BP[0].x+80, y:250},{x:BP[0].x+80, y:-250}],
+    point:centerPoint,  Thickness:20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:0,hole:[],bolt:bottomFlangeBolt}
+  result["bottom2"]={points:[{x:BP[1].x, y:-250},{x:BP[1].x, y:250},{x:BP[1].x-80, y:250},{x:BP[1].x-80, y:-250}],
+    point:centerPoint,  Thickness:20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:0,hole:[]}
+  result["bottom3"]={points:[{x:BP[0].x+132, y:-250},{x:BP[0].x+132, y:250},{x:BP[1].x-132, y:250},{x:BP[1].x-132, y:-250}],
+    point:centerPoint,  Thickness:20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:0,hole:[]}
+  result["bottom4"]={points:bottomFlange,
+    point:centerPoint,  Thickness:-20,z:-14, rotationX:Math.atan(iPoint.gradientX), rotationY:0,hole:[]}
+  // result["bottom2"]={points:[{x:-200, y:-250},{x:-200, y:250},{x:-40, y:250},{x:-40, y:-250}],
+  //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+  // result["bottom3"]={points:[{x:40, y:-250},{x:40, y:250},{x:200, y:250},{x:200, y:-250}],
+  //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+
+
+
+
+
+  
+  
+  
+  return result
+}
+
 
 export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection){
   const result = {}
@@ -837,7 +866,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
   let cblength = Math.sqrt((jTopNode.x - iTopNode.x)**2 + (jTopNode.y - iTopNode.y)**2)
   let cbVec = {x:(jTopNode.x - iTopNode.x)/cblength,y:(jTopNode.y - iTopNode.y)/cblength}
   let gradient = (jTopNode.z - iTopNode.z)/cblength
-  let iCos = iPoint.normalCos * cbVec.x +iPoint.normalSin * cbVec.y
+  let iCos = (iPoint.normalCos * cbVec.x +iPoint.normalSin * cbVec.y).toFixed(6)*1
   let jCos =jPoint.normalCos * cbVec.x +jPoint.normalSin * cbVec.y
 
   let ibaseNode = {x:iSectionPoint.rWeb[2].x*cosec,y: iSectionPoint.rWeb[2].y}
@@ -907,7 +936,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     hole:[],
     point:iPoint
   }
-     
+  // console.log('icos:', iCos)   
   return result
 }
 
@@ -1041,8 +1070,6 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
     point:centerPoint
   }
 
-
-
   result['topFrame1'] = {
     points:topFrame[0],
     Thickness:pts[3],
@@ -1123,28 +1150,16 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
 }
 
 export function Kframe(node1, node2, ioffset, joffset, pts){
-    let length = Math.sqrt((node2.x-node1.x)**2 + (node2.y-node1.y)**2)
-    let vec = Vector(node1, node2)
-    let plate1 = [
-      XYOffset(node1,vec,ioffset,pts[0]),
-      XYOffset(node1,vec,ioffset,pts[1]),
-      XYOffset(node1,vec,(length-joffset),pts[1]),
-      XYOffset(node1,vec,(length-joffset),pts[0]),
-    // {x:node1.x + vec.x *ioffset - vec.y* pts[0], y: node1.y + vec.y * ioffset + vec.x* pts[0]},
-    // {x:node1.x + vec.x *ioffset - vec.y* pts[1], y: node1.y + vec.y * ioffset + vec.x* pts[1]},
-    // {x:node1.x + vec.x *(length - joffset) - vec.y* pts[1], y: node1.y + vec.y * (length - joffset) + vec.x* pts[1]},
-    // {x:node1.x + vec.x *(length - joffset) - vec.y* pts[0], y: node1.y + vec.y * (length - joffset) + vec.x* pts[0]},
-  ]
-  let plate2 = [
-    XYOffset(node1,vec,ioffset,pts[1]),
-    XYOffset(node1,vec,ioffset,pts[2]),
-    XYOffset(node1,vec,(length-joffset),pts[2]),
-    XYOffset(node1,vec,(length-joffset),pts[1]),
-    // {x:node1.x + vec.x *ioffset - vec.y* pts[1], y: node1.y + vec.y * ioffset + vec.x* pts[1]},
-    // {x:node1.x + vec.x *ioffset - vec.y* pts[2], y: node1.y + vec.y * ioffset + vec.x* pts[2]},
-    // {x:node1.x + vec.x *(length - joffset) - vec.y* pts[2], y: node1.y + vec.y * (length - joffset) + vec.x* pts[2]},
-    // {x:node1.x + vec.x *(length - joffset) - vec.y* pts[1], y: node1.y + vec.y * (length - joffset) + vec.x* pts[1]},
-  ]
+  let length = Math.sqrt((node2.x-node1.x)**2 + (node2.y-node1.y)**2)
+  let vec = Vector(node1, node2)
+  let plate1 = [ XYOffset(node1,vec,ioffset,pts[0]),
+                XYOffset(node1,vec,ioffset,pts[1]),
+                XYOffset(node1,vec,(length-joffset),pts[1]),
+                XYOffset(node1,vec,(length-joffset),pts[0]), ]
+  let plate2 = [ XYOffset(node1,vec,ioffset,pts[1]),
+                XYOffset(node1,vec,ioffset,pts[2]),
+                XYOffset(node1,vec,(length-joffset),pts[2]),
+                XYOffset(node1,vec,(length-joffset),pts[1]),]
   return [plate1, plate2]
 }
 
@@ -1159,11 +1174,11 @@ export function Vector(node1,node2){
 }
 
 function scallop(point1,point2,point3,radius,smoothness){
-  var points = [];
-  var v1 = new THREE.Vector2(point1.x - point2.x, point1.y - point2.y).normalize();
-  var v2 = new THREE.Vector2(point3.x - point2.x, point3.y - point2.y).normalize();
+  let points = [];
+  let v1 = new THREE.Vector2(point1.x - point2.x, point1.y - point2.y).normalize();
+  let v2 = new THREE.Vector2(point3.x - point2.x, point3.y - point2.y).normalize();
   for (let i = 0; i < smoothness+1 ; i++){
-    var v3 = new THREE.Vector2().addVectors(v1.clone().multiplyScalar(smoothness - i), v2.clone().multiplyScalar(i)).setLength(radius);
+    let v3 = new THREE.Vector2().addVectors(v1.clone().multiplyScalar(smoothness - i), v2.clone().multiplyScalar(i)).setLength(radius);
     points.push({x: v3.x + point2.x, y: v3.y +point2.y});
   }
   return points
@@ -1180,10 +1195,10 @@ function Fillet2D(point1, point2, point3, radius, smoothness){
   let v3 = {x : (v1.x+v2.x) * l1, y : (v1.y+v2.y) * l1}
   let centerPoint = {x: point2.x + v3.x, y:point2.y + v3.y}
   let l2 = radius / Math.tan(ang / 2)
-  var p1 = {x: point2.x + v1.x * l2, y:point2.y + v1.y*l2}
-  var p2 = {x: point2.x + v2.x * l2, y:point2.y + v2.y*l2}
-  var vc1 = {x: p1.x - centerPoint.x, y:p1.y - centerPoint.y}
-  var vc2 = {x: p2.x- centerPoint.x, y:p2.y - centerPoint.y}
+  let p1 = {x: point2.x + v1.x * l2, y:point2.y + v1.y*l2}
+  let p2 = {x: point2.x + v2.x * l2, y:point2.y + v2.y*l2}
+  let vc1 = {x: p1.x - centerPoint.x, y:p1.y - centerPoint.y}
+  let vc2 = {x: p2.x- centerPoint.x, y:p2.y - centerPoint.y}
   let points = []
   points.push(p1)
     for (let j = 0; j < smoothness; j++) {
@@ -1195,47 +1210,89 @@ function Fillet2D(point1, point2, point3, radius, smoothness){
   return points
  }
 
-function filletPolyline(geometry, radius, smoothness) {
-  var points = geometry.vertices
-  var newGeometry = new THREE.Geometry();
-  var v1 = new THREE.Vector3();
-  var v2 = new THREE.Vector3();
-  var v3 = new THREE.Vector3();
-  var vc1 = new THREE.Vector3();
-  var vc2 = new THREE.Vector3();
-  var center = new THREE.Vector3();
-  var ang
-  var l1
-
-  newGeometry.vertices.push(points[0])
-  for (let i = 1; i < points.length - 1; i++) {
-    //console.log(points[i].x);
-    v1.subVectors(points[i - 1], points[i]).normalize();
-    v2.subVectors(points[i + 1], points[i]).normalize();
-    ang = Math.acos(v1.dot(v2))
-    l1 = radius / Math.sin(ang / 2)
-    v3.addVectors(v1, v2).setLength(l1);
-    center.addVectors(points[i], v3);
-    var p1 = new THREE.Vector3().addVectors(points[i], v1.multiplyScalar(radius / Math.tan(ang / 2)))
-    var p2 = new THREE.Vector3().addVectors(points[i], v2.multiplyScalar(radius / Math.tan(ang / 2)))
-    vc1.subVectors(p1, center);
-    vc2.subVectors(p2, center);
-
-    newGeometry.vertices.push(p1)
-    for (let j = 0; j < smoothness; j++) {
-      var dirVec = new THREE.Vector3().addVectors(vc1.clone().multiplyScalar(smoothness - j), vc2.clone().multiplyScalar(j + 1)).setLength(radius);
-      newGeometry.vertices.push(new THREE.Vector3().addVectors(center, dirVec));
-    }
-    newGeometry.vertices.push(p2)
+function PlateRestPoint(point1, point2, tan1, tan2, thickness){
+  let x3
+  let x4
+  let y3
+  let y4
+  if (point1.x === point2.x){
+    x3 = point1.x + thickness 
+    x4 = point2.x + thickness
+    y3 = tan1 === null? null : tan1 * (x3 - point1.x) + point1.y;
+    y4 = tan2 === null? null : tan2 * (x4 - point2.x) + point2.y
+  }else{
+    let a = (point1.y - point2.y) / (point1.x - point2.x);
+    let b = point1.y - a * point1.x;
+    let alpha = thickness * Math.sqrt(1 + 1/a**2);
+    x3 = tan1 === null? point1.x:(-a * alpha + b + tan1 * point1.x - point1.y) / (tan1 - a)
+    x4 = tan2 === null? point2.x:(-a * alpha + b + tan2 * point2.x - point2.y) / (tan2 - a);
+    y3 = a ===0? point1.y + thickness : a * (x3 - alpha) + b 
+    y4 = a ===0? point2.y + thickness : a * (x4 - alpha) + b
   }
-  newGeometry.vertices.push(points[points.length - 1])
-  //var line2 = new THREE.Line(newGeometry,line.material);
-  //scene.add(line2)
-  return newGeometry;
+  return [point1,point2,{x:x4,y:y4},{x:x3,y:y3}]
+}
+//// point1, point2 two point of web, tan1 is gradient, H is height
+function WebPoint(point1, point2, tan1, H){
+  let x
+  let y
+  if (point1.x === point2.x){
+    x = point1.x
+    y = tan1 === null? null : tan1 * (x) + H;
+  }else{
+    let a = (point1.y - point2.y) / (point1.x - point2.x);
+    let b = point1.y - a * point1.x;
+    x = tan1 === null? point1.x:(b - H) / (tan1 - a)
+    y = a * (x) + b 
+  }
+  return {x,y}
+}
+//// 다각형 points를 받아 index절점을 기준으로 길이 높이가 최소가 되는 사각형을 계산
+function PlateSize(points,index,thickness){
+  let index2
+  index2 = index === points.length-1? 0 : index + 1;
+  let a = Math.atan2(points[index2].y -points[index].y,points[index2].x -points[index].x );
+  let xs = [];
+  let ys = [];
+  for (let i =0;i<points.length;i++){
+    xs.push(points[i].x * Math.cos(-a) - points[i].y * Math.sin(-a))
+    ys.push(points[i].x * Math.sin(-a) + points[i].y * Math.cos(-a))
+  }
+  let Length = Math.max(...xs) - Math.min(...xs)
+  let Height = Math.max(...ys) - Math.min(...ys)
+  return {L:Length,T:thickness,H:Height,Label:"PL-"+Height.toFixed(0) + 'x' + thickness.toFixed(0) + 'x' + Length.toFixed(0)}
+}
+
+function PlateSize2(points,index,thickness,width){
+  let index2
+  index2 = index === points.length-1? 0 : index + 1;
+  let a = Math.atan2(points[index2].y -points[index].y,points[index2].x -points[index].x );
+  let xs = [];
+  for (let i =0;i<points.length;i++){
+    xs.push(points[i].x * Math.cos(-a) - points[i].y * Math.sin(-a))
+  }
+  let Length = Math.max(...xs) - Math.min(...xs)
+  let Height = width
+  return {L:Length,T:thickness,H:Height,Label:"PL-"+Height.toFixed(0) + 'x' + thickness.toFixed(0) + 'x' + Length.toFixed(0)}
+}
+
+
+
+function PlateWelding(points,sidelist,type,value1,value2,value3){
+  let weldingLength = 0
+  for (let index in sidelist){
+    if (sidelist[index]>0){
+    weldingLength += PointLength(points[index],points[index+1])
+  }
+  }
+  return {type:type,value1:value1,value2:value2,value3:value3,Length:weldingLength}
+}
+
+export function PointLength(point1,point2){
+  return Math.sqrt((point1.x-point2.x)**2 + (point1.y-point2.y)**2)
 }
 
 function makeStirrup(height, width, extend, rebarDia, material) {
-  var geometry = new THREE.Geometry();
+  let geometry = new THREE.Geometry();
   geometry.vertices.push(new THREE.Vector3(extend, 0, 0))
   geometry.vertices.push(new THREE.Vector3(0, 0, 0))
   geometry.vertices.push(new THREE.Vector3(0, height, 0))

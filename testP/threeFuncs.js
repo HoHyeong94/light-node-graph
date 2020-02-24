@@ -1,5 +1,5 @@
-import { THREE } from "global";
-
+import * as THREE from "three";
+//import { CSG } from "@hi-level/three-csg";
 
 export function ThreeInit(camera, scene, renderer) {
   //console.log("threeInit");

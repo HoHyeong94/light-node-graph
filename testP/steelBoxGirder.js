@@ -1,5 +1,5 @@
 
-import { THREE } from "global";
+import * as THREE from "three";
 export function steelBoxMesh(scene) {
     var baseline = girderCurve()    //geometry
     var spline = new THREE.CatmullRomCurve3(baseline.vertices)
