@@ -1,6 +1,6 @@
 {
   "in": {
-    "input": ["/diSsolve/index.js"],
+    "input": ["/main.js"],
     "plugins": []
   },
   "out": {
