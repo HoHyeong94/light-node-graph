@@ -1,6 +1,6 @@
 {
   "in": {
-    "input": ["/main.js"],
+    "input": ["/testDB/index.js"],
     "plugins": []
   },
   "out": {

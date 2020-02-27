@@ -103,7 +103,7 @@ export function LineGenerator(input) {
     beginStationNumber,
     endStationNumber,
     startPoint,
-    slaveOrMaster=input.slaveOrMaster,
+    slaveOrMaster: input.slaveOrMaster,
     input,
     points
   };
