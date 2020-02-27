@@ -57,7 +57,7 @@ export function LineGenerator(input) {
   const segments = { start: [], end: [] };
   segments.start.push(segmentsStation);
 
-  segmentsStation += vectors[j].length - curves[j].beginOffset; //초기값은 항상 직선으로 시작
+  segmentsStation += vectors[0].length - curves[0].beginOffset; //초기값은 항상 직선으로 시작
   segments.start.push(segmentsStation);
 
   for (let j = 1; j < input.horizonDataList.length - 2; j++) {
