@@ -23,88 +23,91 @@ export function LineToThree(linepoints, initPoint) {
   return group;
 }
 
-export function LineGenerator(inputs) {
+export function LineGenerator(input) {
   // console.time("for loop");
-  let lineResult = {
-    vectors: [],
-    curves: [],
-    segments: { start: [], end: [] },
-    beginStationNumber: 0,
-    endStationNumber: 0,
-    startPoint: [],
-    slaveOrMaster: true,
-    input: { ...inputs },
-    points: []
-  };
   const spacing = 10000; //단위 수정시 check
 
-  for (let i = 0; i < lineResult.input.horizonDataList.length - 1; i++) {
-    lineResult.startPoint.push(_.take(lineResult.input.horizonDataList[i], 2));
-    lineResult.vectors.push(
+  const startPoint = [];
+  const vectors = [];
+  for (let i = 0; i < input.horizonDataList.length - 1; i++) {
+    startPoint.push([input.horizonDataList[i][0], input.horizonDataList[i][1]]);
+    vectors.push(
       Vector2d([
-        _.take(lineResult.input.horizonDataList[i], 2),
-        _.take(lineResult.input.horizonDataList[i + 1], 2)
+        [input.horizonDataList[i][0], input.horizonDataList[i][1]],
+        [input.horizonDataList[i + 1][0], input.horizonDataList[i + 1][1]]
       ])
     );
   }
 
-  for (let i = 0; i < lineResult.input.horizonDataList.length - 2; i++) {
-    lineResult.curves.push(
+  const curves = [];
+  for (let i = 0; i < input.horizonDataList.length - 2; i++) {
+    curves.push(
       Curve(
-        _.take(lineResult.input.horizonDataList[i], 2),
-        lineResult.vectors[i],
-        lineResult.vectors[i + 1],
-        lineResult.input.horizonDataList[i + 1][2],
-        lineResult.input.horizonDataList[i + 1][3],
-        lineResult.input.horizonDataList[i + 1][4]
+        [input.horizonDataList[i][0], input.horizonDataList[i][1]],
+        vectors[i],
+        vectors[i + 1],
+        input.horizonDataList[i + 1][2],
+        input.horizonDataList[i + 1][3],
+        input.horizonDataList[i + 1][4]
       )
     );
   }
-  const dataList = lineResult.input.horizonDataList;
-  let segmentsStation = lineResult.input.beginStation;
-  lineResult.segments.start.push(segmentsStation);
-  for (let j = 0; j < dataList.length - 2; j++) {
-    if (j === 0) {
-      segmentsStation +=
-        lineResult.vectors[j].length - lineResult.curves[j].beginOffset; //초기값은 항상 직선으로 시작
-      lineResult.segments.start.push(segmentsStation);
-    } else {
-      segmentsStation +=
-        lineResult.vectors[j].length -
-        lineResult.curves[j].beginOffset -
-        lineResult.curves[j - 1].endOffset;
-      lineResult.segments.start.push(segmentsStation);
-    }
-    segmentsStation += lineResult.curves[j].beginClothoid.length;
-    lineResult.segments.start.push(segmentsStation);
+
+  let segmentsStation = input.beginStation;
+  const segments = { start: [], end: [] };
+  segments.start.push(segmentsStation);
+
+  segmentsStation += vectors[j].length - curves[j].beginOffset; //초기값은 항상 직선으로 시작
+  segments.start.push(segmentsStation);
+
+  for (let j = 1; j < input.horizonDataList.length - 2; j++) {
     segmentsStation +=
-      lineResult.curves[j].arcAngle * lineResult.curves[j].arcRadius;
-    lineResult.segments.start.push(segmentsStation);
-    segmentsStation += lineResult.curves[j].endClothoid.length;
-    lineResult.segments.start.push(segmentsStation);
+      vectors[j].length - curves[j].beginOffset - curves[j - 1].endOffset;
+    segments.start.push(segmentsStation);
+
+    segmentsStation += curves[j].beginClothoid.length;
+    segments.start.push(segmentsStation);
+
+    segmentsStation += curves[j].arcAngle * curves[j].arcRadius;
+    segments.start.push(segmentsStation);
+
+    segmentsStation += curves[j].endClothoid.length;
+    segments.start.push(segmentsStation);
   }
-  lineResult.segments.end.push(..._.drop(lineResult.segments.start));
-  if (lineResult.curves.length === 0) {
-    segmentsStation += lineResult.vectors[lineResult.vectors.length - 1].length;
+  segments.end = [...segments.start];
+  segments.end.shift();
+
+  if (curves.length === 0) {
+    segmentsStation += vectors[vectors.length - 1].length;
   } else {
     segmentsStation +=
-      lineResult.vectors[lineResult.vectors.length - 1].length -
-      lineResult.curves[lineResult.curves.length - 1].endOffset;
+      vectors[vectors.length - 1].length - curves[curves.length - 1].endOffset;
   }
-  lineResult.segments.end.push(segmentsStation);
-  lineResult.beginStationNumber = lineResult.segments.start[0];
-  lineResult.endStationNumber =
-    lineResult.segments.end[lineResult.segments.end.length - 1];
 
+  segments.end.push(segmentsStation);
+  const beginStationNumber = segments.start[0];
+  const endStationNumber = segments.end[segments.end.length - 1];
+  const points = [];
   for (
-    let i = Math.ceil(lineResult.beginStationNumber / spacing) * spacing;
-    i < lineResult.endStationNumber;
+    let i = Math.ceil(beginStationNumber / spacing) * spacing;
+    i < endStationNumber;
     i += spacing
   ) {
-    lineResult.points.push(PointGenerator(i, lineResult, 90));
+    points.push(PointGenerator(i, 90));
   }
-  return lineResult;
-};
+
+  return {
+    vectors,
+    curves,
+    segments,
+    beginStationNumber,
+    endStationNumber,
+    startPoint,
+    slaveOrMaster=input.slaveOrMaster,
+    input,
+    points
+  };
+}
 
 function Vector2d(xydata) {
   let vectorX = xydata[1][0] - xydata[0][0];
@@ -324,34 +327,31 @@ function Curve(startPoint, vector1, vector2, radius, a1, a2) {
 }
 
 function Clothoid(radius, a) {
+  let length = 0;
+  let angle = 0;
+  let totalX = 0;
+  let totalY = 0;
+  let offset = 0;
+  let radiusCenterOffset = 0;
+
   if (radius !== 0) {
-    let length = Math.pow(a, 2) / radius;
-    let angle = Math.pow(a, 2) / Math.pow(radius, 2) / 2;
-    let totalX =
+    length = Math.pow(a, 2) / radius;
+    angle = Math.pow(a, 2) / Math.pow(radius, 2) / 2;
+    totalX =
       length *
       (1 -
         Math.pow(length, 2) / 40 / Math.pow(radius, 2) +
         Math.pow(length, 4) / 3456 / Math.pow(radius, 4));
-    let totalY =
+    totalY =
       (Math.pow(length, 2) / 6 / radius) *
       (1 -
         Math.pow(length, 2) / 56 / Math.pow(radius, 2) +
         Math.pow(length, 4) / 7040 / Math.pow(radius, 4));
-    let offset = totalY - radius * (1 - Math.cos(angle));
-    let radiusCenterOffset = totalX - radius * Math.sin(angle);
-
-    let result = { length, angle, totalX, totalY, offset, radiusCenterOffset };
-    return result;
-  } else {
-    let length = 0;
-    let angle = 0;
-    let totalX = 0;
-    let totalY = 0;
-    let offset = 0;
-    let radiusCenterOffset = 0;
-    let result = { length, angle, totalX, totalY, offset, radiusCenterOffset };
-    return result;
+    offset = totalY - radius * (1 - Math.cos(angle));
+    radiusCenterOffset = totalX - radius * Math.sin(angle);
   }
+
+  return { length, angle, totalX, totalY, offset, radiusCenterOffset };
 }
 
 // const startPoint = [0,0]
