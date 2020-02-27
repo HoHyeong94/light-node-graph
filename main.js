@@ -13,7 +13,7 @@ const Initialize = async () => {
 Initialize().then(() => {
     function LineGenerator() {
         this.addInputs([
-            ["HorizonData", "table"],
+            ["HorizonData", "arr"],
             ["BeginSTA.", "number"],
             ["MasterLine", "boolean"]
         ]);
