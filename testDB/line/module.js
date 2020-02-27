@@ -93,7 +93,7 @@ export function LineGenerator(input) {
     i < endStationNumber;
     i += spacing
   ) {
-    points.push(PointGenerator(i, 90));
+    points.push(PointGenerator(i,{input, segments, startPoint, vectors, curves}, 90));
   }
 
   return {
