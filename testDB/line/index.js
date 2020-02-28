@@ -1,3 +1,4 @@
+import { meshArr } from "global";
 import {
   LineToThree,
   LineGenerator,
@@ -23,6 +24,7 @@ Line.prototype.onExecute = function() {
   const input = { beginStation, horizonDataList, slaveOrMaster };
 
   let line = LineGenerator(input);
+  this.points = line.points;
   let zPosition = 0;
   //   let line2 = OffsetLine(20,line)
   for (let i = 0; i < line.points.length; i++) {
@@ -34,4 +36,8 @@ Line.prototype.onExecute = function() {
     line.points[i].z = zPosition;
   }
   this.setOutputData(0, line);
+};
+
+Line.prototype.on3DExecute = function() {
+  meshArr.current.push({id:0, mesh: LineToThree(this.points,{x:0,y:0,z:0})})
 };
