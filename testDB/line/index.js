@@ -2,7 +2,8 @@ import { meshArr } from "global";
 import {
   LineToThree,
   LineGenerator,
-  VerticalPositionGenerator
+  VerticalPositionGenerator,
+  OffsetLine
 } from "./module";
 
 export function Line() {
@@ -39,5 +40,33 @@ Line.prototype.onExecute = function() {
 };
 
 Line.prototype.on3DExecute = function() {
-  meshArr.current.push({id:0, mesh: LineToThree(this.points,{x:0,y:0,z:0})})
+  meshArr.current.push({
+    id: 0,
+    mesh: LineToThree(this.points, { x: 0, y: 0, z: 0 })
+  });
+};
+
+export function LineOffset() {
+  this.addInput("line", "line");
+  this.addInput("offsets", 0);
+  this.addOutput("lines", "arr");
+}
+LineOffset.prototype.onExecute = async function() {
+  const line = this.getInputData(0);
+  const offsets = this.getInputData(1);
+
+  function offPerform(o) {
+    return new Promise((res, rej) => {
+      res(OffsetLine(line, o));
+    });
+  }
+
+  if (Array.isArray(offsets)) {
+    const tasks = offsets.map(offPerform);
+    const r = await Promise.all(tasks);
+    return this.setOutputData(0, r);
+  }
+
+  const r = await offPerform(offsets)
+  return this.setOutputData(0, r);
 };

@@ -93,7 +93,9 @@ export function LineGenerator(input) {
     i < endStationNumber;
     i += spacing
   ) {
-    points.push(PointGenerator(i,{input, segments, startPoint, vectors, curves}, 90));
+    points.push(
+      PointGenerator(i, { input, segments, startPoint, vectors, curves }, 90)
+    );
   }
 
   return {
@@ -565,4 +567,26 @@ function Gradient(SuperElevation, station, offset) {
     }
   }
   return gradient / 100;
+}
+
+export function OffsetLine(line, offset) {
+  const points = [];
+  //let lineResult = {...line}
+  //   let points = [];
+  for (let i = 0; i < line.points.length; i++) {
+    let resultPoint = {
+      stationNumber: line.points[i].stationNumber,
+      x: line.points[i].x + line.points[i].normalCos * offset,
+      y: line.points[i].y + line.points[i].normalSin * offset,
+      z: 0,
+      normalCos: line.points[i].normalCos,
+      normalSin: line.points[i].normalSin,
+      masterStationNumber: line.points[i].stationNumber,
+      offset: offset,
+      virtual: false
+    };
+    points.push(resultPoint);
+  }
+
+  return points;
 }
