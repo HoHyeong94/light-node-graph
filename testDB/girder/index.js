@@ -1,6 +1,6 @@
 import { GirderLayoutGenerator } from "./module";
 
-function GirdersGen() {
+export function GirdersGen() {
   this.addInput("girderlayoutInput", "arr");
   this.addInput("masterline", "arr");
   this.addInput("line", "arr");
