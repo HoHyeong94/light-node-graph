@@ -454,50 +454,50 @@ export function VerticalPositionGenerator(
   let gradX = 0;
   for (let i = 0; i < VerticalDataList.length - 1; i++) {
     tangent.push(
-      (VerticalDataList[i + 1]["elevation"] -
-        VerticalDataList[i]["elevation"]) /
-        (VerticalDataList[i + 1]["station"] - VerticalDataList[i]["station"])
+      (VerticalDataList[i + 1][1] -
+        VerticalDataList[i][1]) /
+        (VerticalDataList[i + 1][0] - VerticalDataList[i][0])
     );
   }
   for (let i = 0; i < VerticalDataList.length - 2; i++) {
     let parabola1 =
-      VerticalDataList[i + 1]["station"] -
-      VerticalDataList[i + 1]["curveLength"] / 2;
+      VerticalDataList[i + 1][0] -
+      VerticalDataList[i + 1][2] / 2;
     let parabola2 =
-      VerticalDataList[i + 1]["station"] +
-      VerticalDataList[i + 1]["curveLength"] / 2;
+      VerticalDataList[i + 1][0] +
+      VerticalDataList[i + 1][2] / 2;
     parabola_data.push([
       parabola1,
       parabola2,
-      VerticalDataList[i]["elevation"] +
-        tangent[i] * (parabola1 - VerticalDataList[i]["station"]),
-      VerticalDataList[i + 1]["elevation"] +
-        tangent[i + 1] * (parabola2 - VerticalDataList[i + 1]["station"]),
-      VerticalDataList[i + 1]["curveLength"]
+      VerticalDataList[i][1] +
+        tangent[i] * (parabola1 - VerticalDataList[i][0]),
+      VerticalDataList[i + 1][1] +
+        tangent[i + 1] * (parabola2 - VerticalDataList[i + 1][0]),
+      VerticalDataList[i + 1][2]
     ]);
   }
-  if (station <= VerticalDataList[0]["station"]) {
+  if (station <= VerticalDataList[0][0]) {
     result_elevation =
-      VerticalDataList[0]["elevation"] +
-      tangent[0] * (station - VerticalDataList[0]["station"]);
+      VerticalDataList[0][1] +
+      tangent[0] * (station - VerticalDataList[0][0]);
     gradX = tangent[0];
   } else if (
-    station >= VerticalDataList[VerticalDataList.length - 1]["station"]
+    station >= VerticalDataList[VerticalDataList.length - 1][0]
   ) {
     result_elevation =
-      VerticalDataList[VerticalDataList.length - 1]["elevation"] +
+      VerticalDataList[VerticalDataList.length - 1][1] +
       tangent[tangent.length - 1] *
-        (station - VerticalDataList[VerticalDataList.length - 1]["station"]);
+        (station - VerticalDataList[VerticalDataList.length - 1][0]);
     gradX = tangent[tangent.length - 1];
   } else {
     for (let i = 0; i < VerticalDataList.length - 1; i++) {
       if (
-        station >= VerticalDataList[i]["station"] &&
-        station < VerticalDataList[i + 1]["station"]
+        station >= VerticalDataList[i][0] &&
+        station < VerticalDataList[i + 1][0]
       ) {
         result_elevation =
-          VerticalDataList[i]["elevation"] +
-          tangent[i] * (station - VerticalDataList[i]["station"]);
+          VerticalDataList[i][1] +
+          tangent[i] * (station - VerticalDataList[i][0]);
         gradX = tangent[i];
       }
     }
@@ -529,39 +529,39 @@ function Gradient(SuperElevation, station, offset) {
   // const offset = Point.offset;
   let gradient = 0;
 
-  if (station <= SuperElevation[0]["station"]) {
+  if (station <= SuperElevation[0][0]) {
     if (offset < 0) {
-      gradient = -SuperElevation[0]["left"];
+      gradient = -SuperElevation[0][1];
     } else {
-      gradient = SuperElevation[0]["right"];
+      gradient = SuperElevation[0][2];
     }
-  } else if (station >= SuperElevation[SuperElevation.length - 1]["station"]) {
+  } else if (station >= SuperElevation[SuperElevation.length - 1][0]) {
     if (offset < 0) {
-      gradient = -SuperElevation[SuperElevation.length - 1]["left"];
+      gradient = -SuperElevation[SuperElevation.length - 1][1];
     } else {
-      gradient = SuperElevation[SuperElevation.length - 1]["right"];
+      gradient = SuperElevation[SuperElevation.length - 1][2];
     }
   } else {
     for (let i = 0; i < SuperElevation.length - 1; i++) {
       if (
-        station >= SuperElevation[i]["station"] &&
-        station < SuperElevation[i + 1]["station"]
+        station >= SuperElevation[i][0] &&
+        station < SuperElevation[i + 1][0]
       ) {
         if (offset < 0) {
           gradient = -(
-            ((station - SuperElevation[i]["station"]) /
-              (SuperElevation[i + 1]["station"] -
-                SuperElevation[i]["station"])) *
-              (SuperElevation[i + 1]["left"] - SuperElevation[i]["left"]) +
-            SuperElevation[i]["left"]
+            ((station - SuperElevation[i][0]) /
+              (SuperElevation[i + 1][0] -
+                SuperElevation[i][0])) *
+              (SuperElevation[i + 1][1] - SuperElevation[i][1]) +
+            SuperElevation[i][1]
           );
         } else {
           gradient =
-            ((station - SuperElevation[i]["station"]) /
-              (SuperElevation[i + 1]["station"] -
-                SuperElevation[i]["station"])) *
-              (SuperElevation[i + 1]["right"] - SuperElevation[i]["right"]) +
-            SuperElevation[i]["right"];
+            ((station - SuperElevation[i][0]) /
+              (SuperElevation[i + 1][0] -
+                SuperElevation[i][0])) *
+              (SuperElevation[i + 1][2] - SuperElevation[i][2]) +
+            SuperElevation[i][2];
         }
       }
     }
