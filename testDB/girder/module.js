@@ -56,14 +56,14 @@ export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
       input: mLine.inputs,
       points: hLine[girderDataList[j]]
     };
-    console.log("GirderInfo")
-    console.log(girderInfo)
+    // console.log("GirderInfo")
+    // console.log(girderInfo)
 
     // girderInfo.girderLine = OffsetLine(
     //   girderDataList[j].alignOffset,
     //   girderInfoObj.baseLine
     // );
-    girderInfo.alignOffset = girderInfo.points[0].offset; //girderDataList[j].alignOffset;
+    girderInfo.alignOffset = girderInfo.girderLine.points[0].offset; //girderDataList[j].alignOffset;
     girderInfo.outerBeam = false; // girderDataList[j].isBeam ? true : false;
     girderInfoList.push(girderInfo);
     i += 1;
