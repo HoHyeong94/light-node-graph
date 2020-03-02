@@ -1,6 +1,6 @@
 import { PointGenerator, VerticalPositionGenerator } from "../line/module";
 
-export function GirderLayoutGenerator(girderLayoutInput,mLine, hLine) {
+export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
   const { VerticalDataList, SuperElevation } = mLine.input;
   let result = {
     masterLine: {},
@@ -44,10 +44,22 @@ export function GirderLayoutGenerator(girderLayoutInput,mLine, hLine) {
         girderInfoObj.baseLine = hLine[k];
       }
     }
-    girderInfo.girderLine = OffsetLine(
-      girderDataList[j].alignOffset,
-      girderInfoObj.baseLine
-    );
+    girderInfo.girderLine = {
+      vectors: mLine.vectors,
+      curves: mLine.curves,
+      segments: mLine.segments,
+      beginStationNumber: mLine.beginStationNumber,
+      endStationNumber: mLine.endStationNumber,
+      startPoint: [],
+      slaveOrMaster: false,
+      input: mLine.inputs,
+      points: hLine[girderDataList[k]]
+    };
+
+    // girderInfo.girderLine = OffsetLine(
+    //   girderDataList[j].alignOffset,
+    //   girderInfoObj.baseLine
+    // );
     girderInfo.alignOffset = girderDataList[j].alignOffset;
     girderInfo.outerBeam = girderDataList[j].isBeam ? true : false;
     girderInfoList.push(girderInfo);
@@ -55,16 +67,12 @@ export function GirderLayoutGenerator(girderLayoutInput,mLine, hLine) {
   }
   //console.log(supportDataList)
   result.centralSupportPoint.push(
-    PointGenerator(supportStation, result.masterLine, supportDataList[0].angle)
+    PointGenerator(supportStation, result.masterLine, supportDataList[0][0])
   );
   for (i = 1; i < supportDataList.length; i++) {
-    supportStation = supportStation + supportDataList[i].spanLength;
+    supportStation = supportStation + supportDataList[i][1];
     result.centralSupportPoint.push(
-      PointGenerator(
-        supportStation,
-        result.masterLine,
-        supportDataList[i].angle
-      )
+      PointGenerator(supportStation, result.masterLine, supportDataList[i][0])
     );
   }
   for (let i = 0; i < girderInfoList.length; i++) {
@@ -115,7 +123,7 @@ function SupportSkewPointGenerator(
 ) {
   let resultPoint = [];
   for (let i = 0; i < centralSupportPoint.length; i++) {
-    let skew = supportDatalist[i].angle;
+    let skew = supportDatalist[i][0];
     if (skew !== 0) {
       let dummyPoint = LineMatch(
         centralSupportPoint[i],
