@@ -11,13 +11,13 @@ export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
     // girderLengthList :[],
     girderSpanPoint: []
   };
-  let girderInfoObj = {
-    number: 0,
-    baseLine: {},
-    alignOffset: 0,
-    girderLine: {},
-    outerBeam: false
-  };
+  //   let girderInfoObj = {
+  //     number: 0,
+  //     baseLine: {},
+  //     alignOffset: 0,
+  //     girderLine: {},
+  //     outerBeam: false
+  //   };
   // let GirderLengthObj = {
   //     crTotalLength: 0,
   //     girderTotalLength: 0,
@@ -29,21 +29,22 @@ export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
   // let endShapeDataList = girderLayoutInput.SEShape.end       // 종점부
   let girderDataList = girderLayoutInput.getGirderList;
   let supportStation = girderLayoutInput.baseValue.bridgeBeginStation;
-  for (let i = 0; i < hLine.length; i++) {
-    if (hLine[i].slaveOrMaster == true) {
-      result.masterLine = { ...hLine[i] };
-    }
-  }
+
+  result.masterLine = mLine;
+
   let i = 0;
   let girderInfoList = [];
   for (let j = 0; j < girderDataList.length; j++) {
-    let girderInfo = { ...girderInfoObj };
+    const girderInfo = {
+      number: 0,
+      baseLine: {},
+      alignOffset: 0,
+      girderLine: {},
+      outerBeam: false
+    };
+
     girderInfo.number = i;
-    for (let k = 0; k < hLine.length; k++) {
-      if ("align" + String(k + 1) == girderDataList[j].baseAlign) {
-        girderInfoObj.baseLine = hLine[k];
-      }
-    }
+    girderInfo.baseLine = mLine;
     girderInfo.girderLine = {
       vectors: mLine.vectors,
       curves: mLine.curves,
