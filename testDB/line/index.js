@@ -22,7 +22,7 @@ Line.prototype.onExecute = function() {
   const beginStation = this.getInputData(3); //769452.42;
   const slaveOrMaster = this.getInputData(4); //true;
 
-  const input = { beginStation, horizonDataList, slaveOrMaster };
+  const input = { beginStation, horizonDataList, slaveOrMaster, verticalDataList, superElevation };
 
   let line = LineGenerator(input);
   this.points = line.points;
