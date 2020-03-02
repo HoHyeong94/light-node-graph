@@ -54,15 +54,15 @@ export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
       startPoint: [],
       slaveOrMaster: false,
       input: mLine.inputs,
-      points: hLine[girderDataList[k]]
+      points: hLine[girderDataList[j]]
     };
 
     // girderInfo.girderLine = OffsetLine(
     //   girderDataList[j].alignOffset,
     //   girderInfoObj.baseLine
     // );
-    girderInfo.alignOffset = girderDataList[j].alignOffset;
-    girderInfo.outerBeam = girderDataList[j].isBeam ? true : false;
+    girderInfo.alignOffset = girderInfo.points[0].offset; //girderDataList[j].alignOffset;
+    girderInfo.outerBeam = false; // girderDataList[j].isBeam ? true : false;
     girderInfoList.push(girderInfo);
     i += 1;
   }
