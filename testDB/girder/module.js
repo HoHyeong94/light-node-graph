@@ -56,6 +56,8 @@ export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
       input: mLine.inputs,
       points: hLine[girderDataList[j]]
     };
+    console.log("GirderInfo")
+    console.log(girderInfo)
 
     // girderInfo.girderLine = OffsetLine(
     //   girderDataList[j].alignOffset,
