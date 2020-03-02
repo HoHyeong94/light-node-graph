@@ -28,7 +28,7 @@ export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
   // let beginShapeDataList = girderLayoutInput.SEShape.start   // 시점부
   // let endShapeDataList = girderLayoutInput.SEShape.end       // 종점부
   let girderDataList = girderLayoutInput.getGirderList;
-  let supportStation = girderLayoutInput.baseValue.bridgeBeginStation;
+  let supportStation = girderLayoutInput.baseValue;
 
   result.masterLine = mLine;
 
