@@ -1,7 +1,7 @@
 import { PointGenerator, VerticalPositionGenerator } from "../line/module";
 
 export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
-  const { VerticalDataList, SuperElevation } = mLine.input;
+  const { verticalDataList:VerticalDataList , superElevation:SuperElevation } = mLine.input;
   let result = {
     masterLine: {},
     girderLine: [],
