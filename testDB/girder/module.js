@@ -507,10 +507,10 @@ export function GridPointGenerator2(
     stationDictList.push(stationDict);
   }
   diaPhragmLocate.forEach(function(elem) {
-    pointName = elem.name;
+    pointName = elem[0];
     let i = pointName.substr(1, 1) * 1 - 1;
     let masterstation =
-      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+      nameToPointDict[elem[1]].masterStationNumber + elem[2];
     let masterPoint = PointGenerator(masterstation, masterLine);
     for (let j = 0; j < spanNumber; j++) {
       if (
@@ -533,10 +533,10 @@ export function GridPointGenerator2(
   });
 
   vStiffLocate.forEach(function(elem) {
-    pointName = elem.name;
+    pointName = elem[0];
     let i = pointName.substr(1, 1) * 1 - 1;
     let masterstation =
-      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+      nameToPointDict[elem[1]].masterStationNumber + elem[2];
     let masterPoint = PointGenerator(masterstation, masterLine);
     for (let j = 0; j < spanNumber; j++) {
       if (
@@ -559,10 +559,10 @@ export function GridPointGenerator2(
   });
 
   splice.forEach(function(elem) {
-    pointName = elem.name;
+    pointName = elem[0];
     let i = pointName.substr(1, 1) * 1 - 1;
     let masterstation =
-      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+      nameToPointDict[elem[1]].masterStationNumber + elem[2];
     let masterPoint = PointGenerator(masterstation, masterLine);
     for (let j = 0; j < spanNumber; j++) {
       if (
@@ -584,10 +584,10 @@ export function GridPointGenerator2(
     }
   });
   joint.forEach(function(elem) {
-    pointName = elem.name;
+    pointName = elem[0];
     let i = pointName.substr(1, 1) * 1 - 1;
     let masterstation =
-      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+      nameToPointDict[elem[1]].masterStationNumber + elem[2];
     let masterPoint = PointGenerator(masterstation, masterLine);
     for (let j = 0; j < spanNumber; j++) {
       if (
@@ -610,10 +610,10 @@ export function GridPointGenerator2(
   });
 
   height.forEach(function(elem) {
-    pointName = elem.name;
+    pointName = elem[0];
     let i = pointName.substr(1, 1) * 1 - 1;
     let masterstation =
-      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+      nameToPointDict[elem[1]].masterStationNumber + elem[2];
     let masterPoint = PointGenerator(masterstation, masterLine);
     for (let j = 0; j < spanNumber; j++) {
       if (
@@ -636,10 +636,10 @@ export function GridPointGenerator2(
   });
 
   taperedPoint.forEach(function(elem) {
-    pointName = elem.name;
+    pointName = elem[0];
     let i = pointName.substr(1, 1) * 1 - 1;
     let masterstation =
-      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+      nameToPointDict[elem[1]].masterStationNumber + elem[2];
     let masterPoint = PointGenerator(masterstation, masterLine);
     for (let j = 0; j < spanNumber; j++) {
       if (
