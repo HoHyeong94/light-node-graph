@@ -23,8 +23,8 @@ GirdersGen.prototype.onExecute = function() {
 export function GridPoint() {
   this.addInput("gridPointInput","obj");
   this.addInput("masterLine","arr");
-  this.addInput("girderLayout","girderLayout");
-  this.addOutput("gridPoint","gridPoint");
+  this.addInput("girderLayout","arr");
+  this.addOutput("gridPoint","arr");
 }
 
 GridPoint.prototype.onExecute = function() {
