@@ -56,5 +56,4 @@ GridPoint.prototype.onExecute = function() {
     taperedPoint
   );
   this.setOutputData(0, result);
-  console.log(result);
 };
