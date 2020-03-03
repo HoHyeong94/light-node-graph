@@ -1,7 +1,10 @@
 import { PointGenerator, VerticalPositionGenerator } from "../line/module";
 
 export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
-  const { verticalDataList:VerticalDataList , superElevation:SuperElevation } = mLine.input;
+  const {
+    verticalDataList: VerticalDataList,
+    superElevation: SuperElevation
+  } = mLine.input;
   let result = {
     masterLine: {},
     girderLine: [],
@@ -370,3 +373,426 @@ function splineCoefficient(point1, point2) {
 //             + Math.sqrt(Math.pow((2 * coe.a1 * t3 + coe.b1), 2) + Math.pow((2 * coe.a2 * t3 + coe.b2),2)) * w3
 //     return length.toFixed(4)*1
 // }
+
+export function GridPointGenerator2(
+  masterLine,
+  girderLayout,
+  SEShape,
+  startSkew,
+  endSkew,
+  VerticalDataList,
+  SuperElevation,
+  diaPhragmLocate,
+  vStiffLocate,
+  splice,
+  joint,
+  height,
+  taperedPoint
+) {
+  let gridPointStation = [];
+  let stationDictList = [];
+  let nameToPointDict = {};
+  const girderNumber = girderLayout.girderSupportPoint.length;
+  const spanNumber = girderLayout.girderSpanPoint[0].length;
+  let pointName = "";
+
+  for (let i = 0; i < girderNumber; i++) {
+    let kNum = 1;
+    let ptsList = [];
+    let stationDict = [];
+    for (let j = 0; j < spanNumber; j++) {
+      let pts = [];
+      let stationToNameDict = {};
+      pointName = "G" + (i + 1) + "S" + (j + 1);
+      stationToNameDict[
+        girderLayout.girderSupportPoint[i][j + 1].masterStationNumber
+      ] = pointName;
+      nameToPointDict[pointName] = girderLayout.girderSupportPoint[i][j + 1];
+      pointName = "G" + (i + 1) + "S" + (j + 2);
+      stationToNameDict[
+        girderLayout.girderSupportPoint[i][j + 2].masterStationNumber
+      ] = pointName;
+      if (j === spanNumber - 1) {
+        nameToPointDict[pointName] = girderLayout.girderSupportPoint[i][j + 2];
+      }
+      let skewedStation = [];
+      if (j === 0) {
+        let masterPoint = girderLayout.centralSupportPoint[0];
+        let offset = 0;
+        for (let k = 0; k < 3; k++) {
+          pointName = "G" + (i + 1) + "K" + kNum;
+          kNum += 1;
+          if (k === 0) {
+            offset = SEShape.start.A + SEShape.start.D; // neede to minus sign
+          } else if (k === 1) {
+            offset = SEShape.start.A + SEShape.start.D + SEShape.start.F; // neede to minus sign
+          } else {
+            offset =
+              SEShape.start.A +
+              SEShape.start.D +
+              SEShape.start.F +
+              SEShape.start.G;
+          }
+          let skew = OffsetSkewCalculator(
+            masterPoint,
+            startSkew,
+            offset,
+            masterLine
+          );
+          let centerPoint = PointGenerator(
+            masterPoint.masterStationNumber + offset,
+            masterLine,
+            skew
+          );
+          let skewPoint = LineMatch(
+            centerPoint,
+            masterLine,
+            girderLayout.girderLine[i],
+            skew,
+            VerticalDataList,
+            SuperElevation
+          );
+          skewedStation.push(skewPoint.masterStationNumber);
+          stationToNameDict[skewPoint.masterStationNumber] = pointName;
+          nameToPointDict[pointName] = skewPoint;
+        }
+      } else if (j === spanNumber - 1) {
+        let masterPoint =
+          girderLayout.centralSupportPoint[
+            girderLayout.centralSupportPoint.length - 1
+          ];
+        let offset = 0;
+        for (let k = 3; k < 6; k++) {
+          pointName = "G" + (i + 1) + "K" + kNum;
+          kNum += 1;
+          if (k === 3) {
+            offset =
+              SEShape.end.A + SEShape.end.D + SEShape.end.F + SEShape.end.G;
+          } else if (k === 4) {
+            offset = SEShape.end.A + SEShape.end.D + SEShape.end.F; // neede to minus sign
+          } else {
+            offset = SEShape.end.A + SEShape.end.D; // neede to minus sign
+          }
+          let skew = OffsetSkewCalculator(
+            masterPoint,
+            endSkew,
+            -1 * offset,
+            masterLine
+          );
+          let centerPoint = PointGenerator(
+            masterPoint.masterStationNumber - offset,
+            masterLine,
+            skew
+          );
+          let skewPoint = LineMatch(
+            centerPoint,
+            masterLine,
+            girderLayout.girderLine[i],
+            skew,
+            VerticalDataList,
+            SuperElevation
+          );
+          skewedStation.push(skewPoint.masterStationNumber);
+          stationToNameDict[skewPoint.masterStationNumber] = pointName;
+          nameToPointDict[pointName] = skewPoint;
+        }
+      }
+      pts.push(girderLayout.girderSupportPoint[i][j + 1].masterStationNumber);
+      pts.push(girderLayout.girderSupportPoint[i][j + 2].masterStationNumber);
+      pts.push(...skewedStation);
+      stationDict.push(stationToNameDict);
+      ptsList.push(pts);
+    }
+    gridPointStation.push(ptsList);
+    stationDictList.push(stationDict);
+  }
+  diaPhragmLocate.forEach(function(elem) {
+    pointName = elem.name;
+    let i = pointName.substr(1, 1) * 1 - 1;
+    let masterstation =
+      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+    let masterPoint = PointGenerator(masterstation, masterLine);
+    for (let j = 0; j < spanNumber; j++) {
+      if (
+        masterstation >=
+          girderLayout.centralSupportPoint[j + 1].masterStationNumber &&
+        masterstation <=
+          girderLayout.centralSupportPoint[j + 2].masterStationNumber
+      ) {
+        stationDictList[i][j][masterstation] = pointName;
+        gridPointStation[i][j].push(masterstation);
+        nameToPointDict[pointName] = SplinePointGenerator(
+          masterPoint,
+          girderLayout.girderSpanPoint[i][j],
+          VerticalDataList,
+          SuperElevation
+        );
+        break;
+      }
+    }
+  });
+
+  vStiffLocate.forEach(function(elem) {
+    pointName = elem.name;
+    let i = pointName.substr(1, 1) * 1 - 1;
+    let masterstation =
+      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+    let masterPoint = PointGenerator(masterstation, masterLine);
+    for (let j = 0; j < spanNumber; j++) {
+      if (
+        masterstation >=
+          girderLayout.centralSupportPoint[j + 1].masterStationNumber &&
+        masterstation <=
+          girderLayout.centralSupportPoint[j + 2].masterStationNumber
+      ) {
+        stationDictList[i][j][masterstation] = pointName;
+        gridPointStation[i][j].push(masterstation);
+        nameToPointDict[pointName] = SplinePointGenerator(
+          masterPoint,
+          girderLayout.girderSpanPoint[i][j],
+          VerticalDataList,
+          SuperElevation
+        );
+        break;
+      }
+    }
+  });
+
+  splice.forEach(function(elem) {
+    pointName = elem.name;
+    let i = pointName.substr(1, 1) * 1 - 1;
+    let masterstation =
+      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+    let masterPoint = PointGenerator(masterstation, masterLine);
+    for (let j = 0; j < spanNumber; j++) {
+      if (
+        masterstation >=
+          girderLayout.centralSupportPoint[j + 1].masterStationNumber &&
+        masterstation <=
+          girderLayout.centralSupportPoint[j + 2].masterStationNumber
+      ) {
+        stationDictList[i][j][masterstation] = pointName;
+        gridPointStation[i][j].push(masterstation);
+        nameToPointDict[pointName] = SplinePointGenerator(
+          masterPoint,
+          girderLayout.girderSpanPoint[i][j],
+          VerticalDataList,
+          SuperElevation
+        );
+        break;
+      }
+    }
+  });
+  joint.forEach(function(elem) {
+    pointName = elem.name;
+    let i = pointName.substr(1, 1) * 1 - 1;
+    let masterstation =
+      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+    let masterPoint = PointGenerator(masterstation, masterLine);
+    for (let j = 0; j < spanNumber; j++) {
+      if (
+        masterstation >=
+          girderLayout.centralSupportPoint[j + 1].masterStationNumber &&
+        masterstation <=
+          girderLayout.centralSupportPoint[j + 2].masterStationNumber
+      ) {
+        stationDictList[i][j][masterstation] = pointName;
+        gridPointStation[i][j].push(masterstation);
+        nameToPointDict[pointName] = SplinePointGenerator(
+          masterPoint,
+          girderLayout.girderSpanPoint[i][j],
+          VerticalDataList,
+          SuperElevation
+        );
+        break;
+      }
+    }
+  });
+
+  height.forEach(function(elem) {
+    pointName = elem.name;
+    let i = pointName.substr(1, 1) * 1 - 1;
+    let masterstation =
+      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+    let masterPoint = PointGenerator(masterstation, masterLine);
+    for (let j = 0; j < spanNumber; j++) {
+      if (
+        masterstation >=
+          girderLayout.centralSupportPoint[j + 1].masterStationNumber &&
+        masterstation <=
+          girderLayout.centralSupportPoint[j + 2].masterStationNumber
+      ) {
+        stationDictList[i][j][masterstation] = pointName;
+        gridPointStation[i][j].push(masterstation);
+        nameToPointDict[pointName] = SplinePointGenerator(
+          masterPoint,
+          girderLayout.girderSpanPoint[i][j],
+          VerticalDataList,
+          SuperElevation
+        );
+        break;
+      }
+    }
+  });
+
+  taperedPoint.forEach(function(elem) {
+    pointName = elem.name;
+    let i = pointName.substr(1, 1) * 1 - 1;
+    let masterstation =
+      nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset;
+    let masterPoint = PointGenerator(masterstation, masterLine);
+    for (let j = 0; j < spanNumber; j++) {
+      if (
+        masterstation >=
+          girderLayout.centralSupportPoint[j + 1].masterStationNumber &&
+        masterstation <=
+          girderLayout.centralSupportPoint[j + 2].masterStationNumber
+      ) {
+        stationDictList[i][j][masterstation] = pointName;
+        gridPointStation[i][j].push(masterstation);
+        nameToPointDict[pointName] = SplinePointGenerator(
+          masterPoint,
+          girderLayout.girderSpanPoint[i][j],
+          VerticalDataList,
+          SuperElevation
+        );
+        break;
+      }
+    }
+  });
+
+  for (let i in gridPointStation) {
+    for (let j in gridPointStation[i]) {
+      gridPointStation[i][j].sort();
+    }
+  }
+
+  return { gridPointStation, stationDictList, nameToPointDict };
+}
+
+export function OffsetSkewCalculator(
+  masterPoint,
+  masterSkew,
+  offset,
+  masterLine
+) {
+  const startSkew = masterSkew;
+  let offsetStation = masterPoint.masterStationNumber + offset;
+  const offsetPoint = PointGenerator(offsetStation, masterLine);
+  let sign = 1;
+  if (
+    masterPoint.normalCos * offsetPoint.normalSin -
+      masterPoint.normalSin * offsetPoint.normalCos >=
+    0
+  ) {
+    sign = 1;
+  } else {
+    sign = -1;
+  }
+  let deltaSkew =
+    (
+      (Math.acos(
+        masterPoint.normalCos * offsetPoint.normalCos +
+          masterPoint.normalSin * offsetPoint.normalSin
+      ) *
+        180) /
+      Math.PI
+    ).toFixed(4) * 1;
+  let offsetSkew = startSkew - sign * deltaSkew;
+  if (offsetSkew > 90) {
+    offsetSkew -= 180;
+  } else if (offsetSkew < -90) {
+    offsetSkew += 180;
+  }
+  return offsetSkew;
+}
+
+export function SplinePointGenerator(
+  masterPoint,
+  slavePoints,
+  VerticalDataList,
+  SuperElevation
+) {
+  let resultPoint = {
+    stationNumber: 0,
+    x: 0,
+    y: 0,
+    z: 0,
+    normalCos: 0,
+    normalSin: 0,
+    masterStationNumber: 0,
+    offset: 0,
+    virtual: false,
+    skew: 90
+  };
+
+  let dX = masterPoint.normalCos;
+  let dY = masterPoint.normalSin;
+  let alpha = dY;
+  let beta = -1 * dX;
+  let gamma = -alpha * masterPoint.x - beta * masterPoint.y;
+  let dummy1 = 0;
+  let dummy2 = 0;
+  let sign = 1;
+  for (let i = 0; i < slavePoints.length - 1; i++) {
+    dummy1 = alpha * slavePoints[i].x + beta * slavePoints[i].y + gamma;
+    dummy2 = alpha * slavePoints[i + 1].x + beta * slavePoints[i + 1].y + gamma;
+    if (dummy1 === 0) {
+      resultPoint = slavePoints[i];
+      break;
+    } else if (dummy2 === 0) {
+      resultPoint = slavePoints[i + 1];
+      break;
+    } else if (dummy1 * dummy2 < 0) {
+      let coe = splineCoefficient(slavePoints[i], slavePoints[i + 1]);
+      let a = alpha * coe.a2 + beta * coe.a1;
+      let b = alpha * coe.b2 + beta * coe.b1;
+      let c = alpha * coe.c2 + beta * coe.c1 + gamma;
+      let t = 0;
+      if (a == 0) {
+        t = -c / b;
+      } else {
+        t = (-b + Math.sqrt(b ** 2 - 4 * a * c)) / (2 * a);
+        if (t > 1 || t < -1) {
+          t = (-b - Math.sqrt(b ** 2 - 4 * a * c)) / (2 * a);
+        }
+      }
+      let deltaX = 2 * coe.a2 * t + coe.b2;
+      let deltaY = 2 * coe.a1 * t + coe.b1;
+      let len = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+      resultPoint.normalCos = -deltaY / len;
+      resultPoint.normalSin = deltaX / len;
+      resultPoint.x = coe.a2 * t ** 2 + coe.b2 * t + coe.c2;
+      resultPoint.y = coe.a1 * t ** 2 + coe.b1 * t + coe.c1;
+      resultPoint.masterStationNumber =
+        masterPoint.masterStationNumber.toFixed(4) * 1;
+      resultPoint.stationNumber = resultPoint.masterStationNumber;
+      if (
+        masterPoint.normalCos * (resultPoint.x - masterPoint.x) +
+          masterPoint.normalSin * (resultPoint.y - masterPoint.y) >=
+        0
+      ) {
+        sign = 1;
+      } else {
+        sign = -1;
+      }
+      resultPoint.offset =
+        sign *
+        Math.sqrt(
+          (resultPoint.x - masterPoint.x) ** 2 +
+            (resultPoint.y - masterPoint.y) ** 2
+        ).toFixed(4) *
+        1;
+      let verticalInfo = VerticalPositionGenerator(
+        VerticalDataList,
+        SuperElevation,
+        resultPoint
+      );
+      resultPoint.z = verticalInfo.elevation;
+      resultPoint.gradientX = verticalInfo.gradientX;
+      resultPoint.gradientY = verticalInfo.gradientY;
+      break;
+    }
+  }
+  return resultPoint;
+}
