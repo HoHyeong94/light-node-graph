@@ -1,10 +1,9 @@
-import { LiteGraph } from "global";
 import { PointSectionInfo, sectionPoint } from "./sectionPointModule"
 
-function SectionPointDict(){
-  this.addInput("girderBaseInfo","girderBaseInfo");
-  this.addInput("gridPoint","gridPoint");
-  this.addOutput("sectionPointDict","sectionPointDict");
+export function SectionPointDict(){
+  this.addInput("girderBaseInfo","obj");
+  this.addInput("gridPoint","arr");
+  this.addOutput("sectionPointDict","arr");
 }
 
 SectionPointDict.prototype.onExecute = function() {
@@ -32,5 +31,3 @@ SectionPointDict.prototype.onExecute = function() {
   }
   this.setOutputData(0, sectionPointDict)
 }
-
-LiteGraph.registerNodeType("nexivil/sectionPointDict", SectionPointDict);
