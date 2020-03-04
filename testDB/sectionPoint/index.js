@@ -1,4 +1,4 @@
-import { PointSectionInfo, sectionPoint } from "./sectionPointModule"
+import { PointSectionInfo, sectionPoint } from "./module"
 
 export function SectionPointDict(){
   this.addInput("girderBaseInfo","obj");
