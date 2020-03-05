@@ -367,7 +367,7 @@ function Clothoid(radius, a) {
 
 export const PointGenerator = (stationNumber, line, skew) => {
   let resultPoint = {
-    stationNumber: stationNumber.toFixed(4) * 1,
+    stationNumber: Number.parseFloat(stationNumber).toFixed(4) * 1,
     x: 0,
     y: 0,
     z: 0,
@@ -454,18 +454,13 @@ export function VerticalPositionGenerator(
   let gradX = 0;
   for (let i = 0; i < VerticalDataList.length - 1; i++) {
     tangent.push(
-      (VerticalDataList[i + 1][1] -
-        VerticalDataList[i][1]) /
+      (VerticalDataList[i + 1][1] - VerticalDataList[i][1]) /
         (VerticalDataList[i + 1][0] - VerticalDataList[i][0])
     );
   }
   for (let i = 0; i < VerticalDataList.length - 2; i++) {
-    let parabola1 =
-      VerticalDataList[i + 1][0] -
-      VerticalDataList[i + 1][2] / 2;
-    let parabola2 =
-      VerticalDataList[i + 1][0] +
-      VerticalDataList[i + 1][2] / 2;
+    let parabola1 = VerticalDataList[i + 1][0] - VerticalDataList[i + 1][2] / 2;
+    let parabola2 = VerticalDataList[i + 1][0] + VerticalDataList[i + 1][2] / 2;
     parabola_data.push([
       parabola1,
       parabola2,
@@ -478,12 +473,9 @@ export function VerticalPositionGenerator(
   }
   if (station <= VerticalDataList[0][0]) {
     result_elevation =
-      VerticalDataList[0][1] +
-      tangent[0] * (station - VerticalDataList[0][0]);
+      VerticalDataList[0][1] + tangent[0] * (station - VerticalDataList[0][0]);
     gradX = tangent[0];
-  } else if (
-    station >= VerticalDataList[VerticalDataList.length - 1][0]
-  ) {
+  } else if (station >= VerticalDataList[VerticalDataList.length - 1][0]) {
     result_elevation =
       VerticalDataList[VerticalDataList.length - 1][1] +
       tangent[tangent.length - 1] *
@@ -550,16 +542,14 @@ function Gradient(SuperElevation, station, offset) {
         if (offset < 0) {
           gradient = -(
             ((station - SuperElevation[i][0]) /
-              (SuperElevation[i + 1][0] -
-                SuperElevation[i][0])) *
+              (SuperElevation[i + 1][0] - SuperElevation[i][0])) *
               (SuperElevation[i + 1][1] - SuperElevation[i][1]) +
             SuperElevation[i][1]
           );
         } else {
           gradient =
             ((station - SuperElevation[i][0]) /
-              (SuperElevation[i + 1][0] -
-                SuperElevation[i][0])) *
+              (SuperElevation[i + 1][0] - SuperElevation[i][0])) *
               (SuperElevation[i + 1][2] - SuperElevation[i][2]) +
             SuperElevation[i][2];
         }

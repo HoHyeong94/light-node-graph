@@ -1,9 +1,9 @@
-import { PointSectionInfo, sectionPoint } from "./module"
+import { PointSectionInfo, sectionPoint } from "./module";
 
-export function SectionPointDict(){
-  this.addInput("girderBaseInfo","obj");
-  this.addInput("gridPoint","arr");
-  this.addOutput("sectionPointDict","arr");
+export function SectionPointDict() {
+  this.addInput("girderBaseInfo", "obj");
+  this.addInput("gridPoint", "arr");
+  this.addOutput("sectionPointDict", "arr");
 }
 
 SectionPointDict.prototype.onExecute = function() {
@@ -29,5 +29,5 @@ SectionPointDict.prototype.onExecute = function() {
       }
     }
   }
-  this.setOutputData(0, sectionPointDict)
-}
+  this.setOutputData(0, sectionPointDict);
+};
