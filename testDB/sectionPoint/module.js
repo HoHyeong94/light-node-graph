@@ -38,36 +38,36 @@ export function PointSectionInfo(station,skew, girderBaseInfo,nameToPointDict){
     let L = 0;
     let height = 0;
     for (let i = 0; i< girderBaseInfo.height.length;i++){
-        let sp = nameToPointDict[girderBaseInfo.height[i].start];
-        let ep = nameToPointDict[girderBaseInfo.height[i].end];
+        let sp = nameToPointDict[girderBaseInfo.height[i][0]];
+        let ep = nameToPointDict[girderBaseInfo.height[i][1]];
         if (station >= sp.masterStationNumber && station <= ep.masterStationNumber){
-            deltaH = girderBaseInfo.height[i].startH - girderBaseInfo.height[i].endH
+            deltaH = girderBaseInfo.height[i][2] - girderBaseInfo.height[i][3]
             L = ep.masterStationNumber - sp.masterStationNumber;
-            if (girderBaseInfo.height[i].type == "circle"){
+            if (girderBaseInfo.height[i][4] == "circle"){
                 if (deltaH>0){
                     R = Math.abs((L**2 + deltaH**2) / 2 / deltaH)
                     x1 = ep.masterStationNumber - station;
-                    height = girderBaseInfo.height[i].endH + (R -Math.sqrt(R**2 - x1**2));
+                    height = girderBaseInfo.height[i][3] + (R -Math.sqrt(R**2 - x1**2));
                 }else if (deltaH<0){
                     R = Math.abs((L**2 + deltaH**2) / 2 / deltaH)
                     x1 = station - sp.masterStationNumber;
-                    height = girderBaseInfo.height[i].startH + (R -Math.sqrt(R**2 - x1**2))
+                    height = girderBaseInfo.height[i][2] + (R -Math.sqrt(R**2 - x1**2))
                 }else{
-                    height = girderBaseInfo.height[i].startH
+                    height = girderBaseInfo.height[i][2]
                 }
-            }else if (girderBaseInfo.height[i].type == "parabola"){
+            }else if (girderBaseInfo.height[i][4] == "parabola"){
                 if (deltaH>0){
                     x1 = ep.masterStationNumber - station;
-                    height = girderBaseInfo.height[i].endH + deltaH / L**2 * x1**2;
+                    height = girderBaseInfo.height[i][3] + deltaH / L**2 * x1**2;
                 }else if (deltaH<0){
                     x1 = station - sp.masterStationNumber;
-                    height = girderBaseInfo.height[i].startH - deltaH / L**2 * x1**2;
+                    height = girderBaseInfo.height[i][2] - deltaH / L**2 * x1**2;
                 }else{
-                    height = girderBaseInfo.height[i].startH
+                    height = girderBaseInfo.height[i][2]
                 }
             }else{  //straight
                 x1 = station - sp.masterStationNumber;
-                height = girderBaseInfo.height[i].startH - x1/L * deltaH
+                height = girderBaseInfo.height[i][2] - x1/L * deltaH
             }
             break;
         }
@@ -78,14 +78,14 @@ export function PointSectionInfo(station,skew, girderBaseInfo,nameToPointDict){
 
     let slabThickness = 0;
     for (let i = 0; i< girderBaseInfo.slabThickness.length;i++){
-        let sp = nameToPointDict[girderBaseInfo.slabThickness[i].start];
-        let ep = nameToPointDict[girderBaseInfo.slabThickness[i].end];
+        let sp = nameToPointDict[girderBaseInfo.slabThickness[i][0]];
+        let ep = nameToPointDict[girderBaseInfo.slabThickness[i][1]];
         if (station >= sp.masterStationNumber && station <= ep.masterStationNumber){
-            deltaH = girderBaseInfo.slabThickness[i].startH - girderBaseInfo.slabThickness[i].endH
+            deltaH = girderBaseInfo.slabThickness[i][2] - girderBaseInfo.slabThickness[i][3]
             L = ep.masterStationNumber - sp.masterStationNumber;
             //straight
             x1 = station - sp.masterStationNumber;
-            slabThickness = girderBaseInfo.slabThickness[i].startH - x1/L * deltaH
+            slabThickness = girderBaseInfo.slabThickness[i][2] - x1/L * deltaH
             break;
         }else{
             slabThickness = 270; // slab thickness추후 예외상황없도록 수정
@@ -95,78 +95,78 @@ export function PointSectionInfo(station,skew, girderBaseInfo,nameToPointDict){
     backward.slabThickness = slabThickness;
 
     var uFlange = girderBaseInfo.uFlange.filter(function(element){ 
-        return (station >= nameToPointDict[element.start].masterStationNumber && station < nameToPointDict[element.end].masterStationNumber)
-        })
+        return (station >= nameToPointDict[element[0]].masterStationNumber && station < nameToPointDict[element[1]].masterStationNumber)
+    })
     if(uFlange.length>0){
-        forward.uFlangeThk = uFlange[0].thickness
-        forward.uFlangeW = uFlange[0].startW + (uFlange[0].endW - uFlange[0].startW)* (station - nameToPointDict[uFlange[0].start].masterStationNumber) / (nameToPointDict[uFlange[0].end].masterStationNumber - nameToPointDict[uFlange[0].start].masterStationNumber)
+        forward.uFlangeThk = uFlange[0][2]
+        forward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3])* (station - nameToPointDict[uFlange[0][0]].masterStationNumber) / (nameToPointDict[uFlange[0][1]].masterStationNumber - nameToPointDict[uFlange[0][0]].masterStationNumber)
     }
     uFlange = girderBaseInfo.uFlange.filter(function(element){ 
-        return (station > nameToPointDict[element.start].masterStationNumber && station <= nameToPointDict[element.end].masterStationNumber)
+        return (station > nameToPointDict[element[0]].masterStationNumber && station <= nameToPointDict[element[1]].masterStationNumber)
         })
     if(uFlange.length>0){
-        backward.uFlangeThk = uFlange[0].thickness
-        backward.uFlangeW = uFlange[0].startW + (uFlange[0].endW - uFlange[0].startW)* (station - nameToPointDict[uFlange[0].start].masterStationNumber) / (nameToPointDict[uFlange[0].end].masterStationNumber - nameToPointDict[uFlange[0].start].masterStationNumber)
+        backward.uFlangeThk = uFlange[0][2]
+        backward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3])* (station - nameToPointDict[uFlange[0][0]].masterStationNumber) / (nameToPointDict[uFlange[0][1]].masterStationNumber - nameToPointDict[uFlange[0][0]].masterStationNumber)
     }
 
     var lFlange = girderBaseInfo.lFlange.filter(function(element){ 
-        return (station >= nameToPointDict[element.start].masterStationNumber && station < nameToPointDict[element.end].masterStationNumber)
+        return (station >= nameToPointDict[element[0]].masterStationNumber && station < nameToPointDict[element[1]].masterStationNumber)
         })
     if(lFlange.length>0){
-        forward.lFlangeThk = lFlange[0].thickness
+        forward.lFlangeThk = lFlange[0][2]
     }
     lFlange = girderBaseInfo.lFlange.filter(function(element){ 
-        return (station > nameToPointDict[element.start].masterStationNumber && station <= nameToPointDict[element.end].masterStationNumber)
+        return (station > nameToPointDict[element[0]].masterStationNumber && station <= nameToPointDict[element[1]].masterStationNumber)
         })
     if(lFlange.length>0){
-        backward.lFlangeThk = lFlange[0].thickness
+        backward.lFlangeThk = lFlange[0][2]
     }
 
     var web = girderBaseInfo.web.filter(function(element){ 
-        return (station >= nameToPointDict[element.start].masterStationNumber && station < nameToPointDict[element.end].masterStationNumber)
+        return (station >= nameToPointDict[element[0]].masterStationNumber && station < nameToPointDict[element[1]].masterStationNumber)
         })
     if(web.length>0){
-        forward.webThk = web[0].thickness
+        forward.webThk = web[0][2]
     }
     web = girderBaseInfo.web.filter(function(element){ 
-        return (station > nameToPointDict[element.start].masterStationNumber && station <= nameToPointDict[element.end].masterStationNumber)
+        return (station > nameToPointDict[element[0]].masterStationNumber && station <= nameToPointDict[element[1]].masterStationNumber)
         })
     if(web.length>0){
-        backward.webThk = web[0].thickness
+        backward.webThk = web[0][2]
     }
 
     var uRib = girderBaseInfo.uRib.filter(function(element){ 
-        return (station >= nameToPointDict[element.start].masterStationNumber && station < nameToPointDict[element.end].masterStationNumber)
+        return (station >= nameToPointDict[element[0]].masterStationNumber && station < nameToPointDict[element[1]].masterStationNumber)
         })
     if(uRib.length>0){
-        forward.uRibThk = uRib[0].thickness
-        forward.uRibH = uRib[0].height
-        forward.uRibLO = uRib[0].layout
+        forward.uRibThk = uRib[0][2]
+        forward.uRibH = uRib[0][3]
+        forward.uRibLO = uRib[0][4]
     }
     uRib = girderBaseInfo.uRib.filter(function(element){ 
-        return (station > nameToPointDict[element.start].masterStationNumber && station <= nameToPointDict[element.end].masterStationNumber)
+        return (station > nameToPointDict[element[0]].masterStationNumber && station <= nameToPointDict[element[1]].masterStationNumber)
         })
     if(uRib.length>0){
-        backward.uRibThk = uRib[0].thickness
-        backward.uRibH = uRib[0].height
-        backward.uRibLO = uRib[0].layout
+        backward.uRibThk = uRib[0][2]
+        backward.uRibH = uRib[0][3]
+        backward.uRibLO = uRib[0][4]
     }
 
     var lRib = girderBaseInfo.lRib.filter(function(element){ 
-        return (station >= nameToPointDict[element.start].masterStationNumber && station < nameToPointDict[element.end].masterStationNumber)
+        return (station >= nameToPointDict[element[0]].masterStationNumber && station < nameToPointDict[element[1]].masterStationNumber)
         })
     if(lRib.length>0){
-        forward.lRibThk = lRib[0].thickness
-        forward.lRibH = lRib[0].height
-        forward.lRibLO = lRib[0].layout
+        forward.lRibThk = lRib[0][2]
+        forward.lRibH = lRib[0][3]
+        forward.lRibLO = lRib[0][4]
     }
     lRib = girderBaseInfo.lRib.filter(function(element){ 
-        return (station > nameToPointDict[element.start].masterStationNumber && station <= nameToPointDict[element.end].masterStationNumber)
+        return (station > nameToPointDict[element[0]].masterStationNumber && station <= nameToPointDict[element[1]].masterStationNumber)
         })
     if(lRib.length>0){
-        backward.lRibThk = lRib[0].thickness
-        backward.lRibH = lRib[0].height
-        backward.lRibLO = lRib[0].layout
+        backward.lRibThk = lRib[0][2]
+        backward.lRibH = lRib[0][3]
+        backward.lRibLO = lRib[0][4]
     }
 
     return {forward, backward}
