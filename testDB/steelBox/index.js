@@ -8,12 +8,12 @@ export function SteelBox() {
 }
 
 SteelBox.prototype.onExecute = function() {
-  const { gridPointList, stationDictList, nameToPointDict } = this.getInputData(
+  const { gridPointStation, stationDictList, nameToPointDict } = this.getInputData(
     0
   );
   const sectionPointDict = this.getInputData(1);
   const result = SteelBoxDict(
-    gridPointList,
+    gridPointStation,
     stationDictList,
     nameToPointDict,
     sectionPointDict
