@@ -22,7 +22,13 @@ Line.prototype.onExecute = function() {
   const beginStation = this.getInputData(3); //769452.42;
   const slaveOrMaster = this.getInputData(4); //true;
 
-  const input = { beginStation, horizonDataList, slaveOrMaster, verticalDataList, superElevation };
+  const input = {
+    beginStation,
+    horizonDataList,
+    slaveOrMaster,
+    verticalDataList,
+    superElevation
+  };
 
   let line = LineGenerator(input);
   this.points = line.points;
@@ -42,7 +48,20 @@ Line.prototype.onExecute = function() {
 Line.prototype.on3DExecute = function() {
   meshArr.current.push({
     id: 0,
-    mesh: LineToThree(this.points, { x: 0, y: 0, z: 0 })
+    mesh: LineToThree(this.points, {
+      gradientX: 0.016485206229348726,
+      gradientY: -0.02,
+      masterStationNumber: 1208849.9976,
+      normalCos: 0.5750740676992406,
+      normalSin: -0.8181013486481056,
+      offset: -36708.5424,
+      skew: 90,
+      stationNumber: 1208849.9976,
+      virtual: false,
+      x: 178341809.1588868,
+      y: 552237726.8852764,
+      z: 26934.34284538262
+    })
   });
 };
 
@@ -67,6 +86,6 @@ LineOffset.prototype.onExecute = async function() {
     return this.setOutputData(0, r);
   }
 
-  const r = await offPerform(offsets)
+  const r = await offPerform(offsets);
   return this.setOutputData(0, r);
 };
