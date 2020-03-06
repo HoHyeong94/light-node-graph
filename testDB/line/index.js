@@ -73,19 +73,27 @@ export function LineOffset() {
 LineOffset.prototype.onExecute = async function() {
   const line = this.getInputData(0);
   const offsets = this.getInputData(1);
+  // TODO: Support Async
+  // function offPerform(o) {
+  //   return new Promise((res, rej) => {
+  //     res(OffsetLine(line, o));
+  //   });
+  // }
 
-  function offPerform(o) {
-    return new Promise((res, rej) => {
-      res(OffsetLine(line, o));
-    });
-  }
+  // if (Array.isArray(offsets)) {
+  //   const tasks = offsets.map(offPerform);
+  //   const r = await Promise.all(tasks);
+  //   return this.setOutputData(0, r);
+  // }
 
+  // const r = await offPerform(offsets);
+  // return this.setOutputData(0, r);
+  // Sync
   if (Array.isArray(offsets)) {
-    const tasks = offsets.map(offPerform);
-    const r = await Promise.all(tasks);
-    return this.setOutputData(0, r);
+    const result = offsets.map(offset => OffsetLine(line, offset));
+    return this.setOutputData(0, result);
   }
 
-  const r = await offPerform(offsets);
-  return this.setOutputData(0, r);
+  const result = OffsetLine(line, offsets);
+  return this.setOutputData(0, result);
 };
