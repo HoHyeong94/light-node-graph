@@ -1,5 +1,5 @@
 export default {
-    input: './testDB/index.js',
+    input: './diSsolve/index.js',
     output: {
         file: './dist/bundle.js',
         format: 'iife',
