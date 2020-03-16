@@ -23,18 +23,18 @@ export const MasterLineData = (horizon, VerticalDataList, superElevation, beginS
   let parabolaData = [];
   let tangent = [];
   for (let i = 0; i < VerticalDataList.length - 1; i++) {
-    tangent.push((VerticalDataList[i + 1]['elevation'] - VerticalDataList[i]['elevation']) /
-      (VerticalDataList[i + 1]['station'] - VerticalDataList[i]['station']))
+    tangent.push((VerticalDataList[i + 1][1] - VerticalDataList[i][1]) /
+      (VerticalDataList[i + 1][0] - VerticalDataList[i][0]))
   }
   for (let i = 0; i < VerticalDataList.length - 2; i++) {
-    let parabola1 = VerticalDataList[i + 1]['station'] - VerticalDataList[i + 1]['curveLength'] / 2;
-    let parabola2 = VerticalDataList[i + 1]['station'] + VerticalDataList[i + 1]['curveLength'] / 2;
+    let parabola1 = VerticalDataList[i + 1][0] - VerticalDataList[i + 1][2] / 2;
+    let parabola2 = VerticalDataList[i + 1][0] + VerticalDataList[i + 1][2] / 2;
     parabolaData.push([
       parabola1,
       parabola2,
-      VerticalDataList[i]['elevation'] + tangent[i] * (parabola1 - VerticalDataList[i]['station']),
-      VerticalDataList[i + 1]['elevation'] + tangent[i + 1] * (parabola2 - VerticalDataList[i + 1]['station']),
-      VerticalDataList[i + 1]['curveLength']
+      VerticalDataList[i][1] + tangent[i] * (parabola1 - VerticalDataList[i][0]),
+      VerticalDataList[i + 1][1] + tangent[i + 1] * (parabola2 - VerticalDataList[i + 1][0]),
+      VerticalDataList[i + 1][2]
     ])
   }
   lineResult.tangent = tangent
@@ -179,16 +179,16 @@ export const MasterPointGenerator = (station, Masterline,skew) => {
       break;
     }
   }
-  if (station <= Masterline.VerticalDataList[0]['station']) {
-    resultPoint.z = Masterline.VerticalDataList[0]["elevation"] + Masterline.tangent[0] * (station - Masterline.VerticalDataList[0]['station']);
+  if (station <= Masterline.VerticalDataList[0][0]) {
+    resultPoint.z = Masterline.VerticalDataList[0][1] + Masterline.tangent[0] * (station - Masterline.VerticalDataList[0][0]);
     gradX = Masterline.tangent[0]
-  } else if (station >= Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1]['station']) {
-    resultPoint.z = Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1]['elevation'] + Masterline.tangent[Masterline.tangent.length - 1] * (station - Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1]['station']);
+  } else if (station >= Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1][0]) {
+    resultPoint.z = Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1][1] + Masterline.tangent[Masterline.tangent.length - 1] * (station - Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1][0]);
     gradX = Masterline.tangent[Masterline.tangent.length - 1]
   } else {
     for (let i = 0; i < Masterline.VerticalDataList.length - 1; i++) {
-      if (station >= Masterline.VerticalDataList[i]['station'] && station < Masterline.VerticalDataList[i + 1]['station']) {
-        resultPoint.z = Masterline.VerticalDataList[i]['elevation'] + Masterline.tangent[i] * (station - Masterline.VerticalDataList[i]['station'])
+      if (station >= Masterline.VerticalDataList[i][0] && station < Masterline.VerticalDataList[i + 1][0]) {
+        resultPoint.z = Masterline.VerticalDataList[i][0] + Masterline.tangent[i] * (station - Masterline.VerticalDataList[i][0])
         gradX = Masterline.tangent[i];
       }
     }
@@ -201,19 +201,19 @@ export const MasterPointGenerator = (station, Masterline,skew) => {
       }
     }
   }
-  if (station <= Masterline.SuperElevation[0]['station']) {
-      leftG = -Masterline.SuperElevation[0]['left'];
-      rightG = Masterline.SuperElevation[0]['right'];
-  } else if (station >= Masterline.SuperElevation[Masterline.SuperElevation.length - 1]['station']) {
-      leftG = -Masterline.SuperElevation[Masterline.SuperElevation.length - 1]['left'];
-      rightG = Masterline.SuperElevation[Masterline.SuperElevation.length - 1]['right'];
+  if (station <= Masterline.SuperElevation[0][0]) {
+      leftG = -Masterline.SuperElevation[0][1];
+      rightG = Masterline.SuperElevation[0][2];
+  } else if (station >= Masterline.SuperElevation[Masterline.SuperElevation.length - 1][0]) {
+      leftG = -Masterline.SuperElevation[Masterline.SuperElevation.length - 1][1];
+      rightG = Masterline.SuperElevation[Masterline.SuperElevation.length - 1][2];
   } else {
     for (let i = 0; i < Masterline.SuperElevation.length - 1; i++) {
-      if (station >= Masterline.SuperElevation[i]['station'] && station < Masterline.SuperElevation[i + 1]['station']) {
-          leftG = -((station - Masterline.SuperElevation[i]['station']) / (Masterline.SuperElevation[i + 1]['station'] - Masterline.SuperElevation[i]['station'])
-            * (Masterline.SuperElevation[i + 1]['left'] - Masterline.SuperElevation[i]['left']) + Masterline.SuperElevation[i]['left']);
-          rightG = ((station - Masterline.SuperElevation[i]['station']) / (Masterline.SuperElevation[i + 1]['station'] - Masterline.SuperElevation[i]['station'])
-            * (Masterline.SuperElevation[i + 1]['right'] - Masterline.SuperElevation[i]['right']) + Masterline.SuperElevation[i]['right']);
+      if (station >= Masterline.SuperElevation[i][0] && station < Masterline.SuperElevation[i + 1][0]) {
+          leftG = -((station - Masterline.SuperElevation[i][0]) / (Masterline.SuperElevation[i + 1][0] - Masterline.SuperElevation[i][0])
+            * (Masterline.SuperElevation[i + 1][1] - Masterline.SuperElevation[i][1]) + Masterline.SuperElevation[i][1]);
+          rightG = ((station - Masterline.SuperElevation[i][0]) / (Masterline.SuperElevation[i + 1][0] - Masterline.SuperElevation[i][0])
+            * (Masterline.SuperElevation[i + 1][2] - Masterline.SuperElevation[i][2]) + Masterline.SuperElevation[i][2]);
       }
     }
   }
