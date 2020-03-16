@@ -1,5 +1,4 @@
 import { LiteGraph, meshArr, THREE, _ , sceneAdder } from "global";
-import {_} from "global";
 import {LineToThree, MasterLineData,  LineGenerator, VerticalPositionGenerator} from "./lineModule"
 
 function MasterLine(){
