@@ -1,36 +1,20 @@
 import { LiteGraph } from "global";
-import { PointSectionInfo, sectionPoint } from "./sectionPointModule"
+import { SectionPointDict } from "./sectionPointModule"
 
-function SectionPointDict(){
-  this.addInput("girderBaseInfo","girderBaseInfo");
+export function SectionPoint(){
   this.addInput("gridPoint","gridPoint");
+  this.addInput("girderBaseInfo","girderBaseInfo");
+  this.addInput("slabInfo","slabInfo");
+  this.addInput("slabLayout","arr");
   this.addOutput("sectionPointDict","sectionPointDict");
 }
 
-SectionPointDict.prototype.onExecute = function() {
-  const girderBaseInfo = this.getInputData(0);
-  const gridPoint = this.getInputData(1);
-  let sectionPointDict = {};
-  for (let i = 0; i < girderBaseInfo.length; i++) {
-    let index = girderBaseInfo[i].girderIndex;
-    for (let j = 0; j < gridPoint.stationDictList[index].length; j++) {
-      for (let key in gridPoint.stationDictList[index][j]) {
-        let pt = gridPoint.stationDictList[index][j][key];
-        let pointSectionInfo = PointSectionInfo(
-          gridPoint.nameToPointDict[pt].masterStationNumber,
-          gridPoint.nameToPointDict[pt].skew,
-          girderBaseInfo[i],
-          gridPoint.nameToPointDict
-        );
-        sectionPointDict[pt] = sectionPoint(
-          girderBaseInfo[i].section,
-          pointSectionInfo,
-          gridPoint.nameToPointDict[pt].gradientY
-        );
-      }
-    }
-  }
+SectionPoint.prototype.onExecute = function() {
+  const gridPoint = this.getInputData(0);
+  const girderBaseInfo = this.getInputData(1);
+  const slabInfo = this.getInputData(2);
+  const slabLayout = this.getInputData(3);
+  let sectionPointDict = SectionPointDict(gridPoint,girderBaseInfo,slabInfo,slabLayout)
   this.setOutputData(0, sectionPointDict)
 }
 
-LiteGraph.registerNodeType("nexivil/sectionPointDict", SectionPointDict);

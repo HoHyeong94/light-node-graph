@@ -40,7 +40,6 @@ export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
 export function GridPointGenerator3(girderLayout, SEShape, gridInput) {
     let masterLine = girderLayout.masterLine
     let nameToPointDict = {};
-    console.log("ck",girderLayout.girderLine,SEShape,gridInput)
     const girderNumber = girderLayout.girderLine.length
     let pointName = "";
     let offset = 0;

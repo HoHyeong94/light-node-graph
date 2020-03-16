@@ -35,7 +35,6 @@ GridPoint.prototype.onExecute = function() {
     
   const result = GridPointGenerator3(girderLayout, SEShape, gridInput)
   this.setOutputData(0, result)
-  console.log(result)
 }
 
 // LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
