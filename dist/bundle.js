@@ -772,18 +772,18 @@
     let parabolaData = [];
     let tangent = [];
     for (let i = 0; i < VerticalDataList.length - 1; i++) {
-      tangent.push((VerticalDataList[i + 1]['elevation'] - VerticalDataList[i]['elevation']) /
-        (VerticalDataList[i + 1]['station'] - VerticalDataList[i]['station']));
+      tangent.push((VerticalDataList[i + 1][1] - VerticalDataList[i][1]) /
+        (VerticalDataList[i + 1][0] - VerticalDataList[i][0]));
     }
     for (let i = 0; i < VerticalDataList.length - 2; i++) {
-      let parabola1 = VerticalDataList[i + 1]['station'] - VerticalDataList[i + 1]['curveLength'] / 2;
-      let parabola2 = VerticalDataList[i + 1]['station'] + VerticalDataList[i + 1]['curveLength'] / 2;
+      let parabola1 = VerticalDataList[i + 1][0] - VerticalDataList[i + 1][2] / 2;
+      let parabola2 = VerticalDataList[i + 1][0] + VerticalDataList[i + 1][2] / 2;
       parabolaData.push([
         parabola1,
         parabola2,
-        VerticalDataList[i]['elevation'] + tangent[i] * (parabola1 - VerticalDataList[i]['station']),
-        VerticalDataList[i + 1]['elevation'] + tangent[i + 1] * (parabola2 - VerticalDataList[i + 1]['station']),
-        VerticalDataList[i + 1]['curveLength']
+        VerticalDataList[i][1] + tangent[i] * (parabola1 - VerticalDataList[i][0]),
+        VerticalDataList[i + 1][1] + tangent[i + 1] * (parabola2 - VerticalDataList[i + 1][0]),
+        VerticalDataList[i + 1][2]
       ]);
     }
     lineResult.tangent = tangent;
@@ -926,16 +926,16 @@
         break;
       }
     }
-    if (station <= Masterline.VerticalDataList[0]['station']) {
-      resultPoint.z = Masterline.VerticalDataList[0]["elevation"] + Masterline.tangent[0] * (station - Masterline.VerticalDataList[0]['station']);
+    if (station <= Masterline.VerticalDataList[0][0]) {
+      resultPoint.z = Masterline.VerticalDataList[0][1] + Masterline.tangent[0] * (station - Masterline.VerticalDataList[0][0]);
       gradX = Masterline.tangent[0];
-    } else if (station >= Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1]['station']) {
-      resultPoint.z = Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1]['elevation'] + Masterline.tangent[Masterline.tangent.length - 1] * (station - Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1]['station']);
+    } else if (station >= Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1][0]) {
+      resultPoint.z = Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1][1] + Masterline.tangent[Masterline.tangent.length - 1] * (station - Masterline.VerticalDataList[Masterline.VerticalDataList.length - 1][0]);
       gradX = Masterline.tangent[Masterline.tangent.length - 1];
     } else {
       for (let i = 0; i < Masterline.VerticalDataList.length - 1; i++) {
-        if (station >= Masterline.VerticalDataList[i]['station'] && station < Masterline.VerticalDataList[i + 1]['station']) {
-          resultPoint.z = Masterline.VerticalDataList[i]['elevation'] + Masterline.tangent[i] * (station - Masterline.VerticalDataList[i]['station']);
+        if (station >= Masterline.VerticalDataList[i][0] && station < Masterline.VerticalDataList[i + 1][0]) {
+          resultPoint.z = Masterline.VerticalDataList[i][0] + Masterline.tangent[i] * (station - Masterline.VerticalDataList[i][0]);
           gradX = Masterline.tangent[i];
         }
       }
@@ -948,19 +948,19 @@
         }
       }
     }
-    if (station <= Masterline.SuperElevation[0]['station']) {
-        leftG = -Masterline.SuperElevation[0]['left'];
-        rightG = Masterline.SuperElevation[0]['right'];
-    } else if (station >= Masterline.SuperElevation[Masterline.SuperElevation.length - 1]['station']) {
-        leftG = -Masterline.SuperElevation[Masterline.SuperElevation.length - 1]['left'];
-        rightG = Masterline.SuperElevation[Masterline.SuperElevation.length - 1]['right'];
+    if (station <= Masterline.SuperElevation[0][0]) {
+        leftG = -Masterline.SuperElevation[0][1];
+        rightG = Masterline.SuperElevation[0][2];
+    } else if (station >= Masterline.SuperElevation[Masterline.SuperElevation.length - 1][0]) {
+        leftG = -Masterline.SuperElevation[Masterline.SuperElevation.length - 1][1];
+        rightG = Masterline.SuperElevation[Masterline.SuperElevation.length - 1][2];
     } else {
       for (let i = 0; i < Masterline.SuperElevation.length - 1; i++) {
-        if (station >= Masterline.SuperElevation[i]['station'] && station < Masterline.SuperElevation[i + 1]['station']) {
-            leftG = -((station - Masterline.SuperElevation[i]['station']) / (Masterline.SuperElevation[i + 1]['station'] - Masterline.SuperElevation[i]['station'])
-              * (Masterline.SuperElevation[i + 1]['left'] - Masterline.SuperElevation[i]['left']) + Masterline.SuperElevation[i]['left']);
-            rightG = ((station - Masterline.SuperElevation[i]['station']) / (Masterline.SuperElevation[i + 1]['station'] - Masterline.SuperElevation[i]['station'])
-              * (Masterline.SuperElevation[i + 1]['right'] - Masterline.SuperElevation[i]['right']) + Masterline.SuperElevation[i]['right']);
+        if (station >= Masterline.SuperElevation[i][0] && station < Masterline.SuperElevation[i + 1][0]) {
+            leftG = -((station - Masterline.SuperElevation[i][0]) / (Masterline.SuperElevation[i + 1][0] - Masterline.SuperElevation[i][0])
+              * (Masterline.SuperElevation[i + 1][1] - Masterline.SuperElevation[i][1]) + Masterline.SuperElevation[i][1]);
+            rightG = ((station - Masterline.SuperElevation[i][0]) / (Masterline.SuperElevation[i + 1][0] - Masterline.SuperElevation[i][0])
+              * (Masterline.SuperElevation[i + 1][2] - Masterline.SuperElevation[i][2]) + Masterline.SuperElevation[i][2]);
         }
       }
     }
@@ -1133,63 +1133,19 @@
     const verticalDataList = this.getInputData(1);
     const superElevation = this.getInputData(2);
     const beginStation = this.getInputData(3); //769452.42;
-    // const slaveOrMaster = this.getInputData(4); //true;
-    
-    // const input = { beginStation, horizonDataList, slaveOrMaster };
-
     let line = MasterLineData(horizonDataList,verticalDataList,superElevation,beginStation);
-    // let zPosition = 0;
-    // //   let line2 = OffsetLine(20,line)
-    // for (let i = 0; i < line.points.length; i++) {
-    //   zPosition = VerticalPositionGenerator(
-    //     verticalDataList,
-    //     superElevation,
-    //     line.points[i]
-    //   ).elevation;
-    //   line.points[i].z = zPosition;
-    // }
+    this.points= line.points;
     this.setOutputData(0,line.points);
     this.setOutputData(1,line);
   };
-  // LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 
   MasterLine.prototype.on3DExecute = function() {
-    global.sceneAdder({
-      id: 0,
-      mesh: LineToThree(this.points, {
-        gradientX: 0.016485206229348726,
-        gradientY: -0.02,
-        masterStationNumber: 1208849.9976,
-        normalCos: 0.5750740676992406,
-        normalSin: -0.8181013486481056,
-        offset: -36708.5424,
-        skew: 90,
-        stationNumber: 1208849.9976,
-        virtual: false,
-        x: 178341809.1588868,
-        y: 552237726.8852764,
-        z: 26934.34284538262
-      })
-    });
+    let initPoint = { x: 178341809.1588868,
+                      y: 552237726.8852764,
+                      z: 26934.34284538262};
+    let mesh = LineToThree(this.points,initPoint);
+    global.sceneAdder({id:0,mesh:mesh});
   };
-
-
-
-
-
-  // function LineView(){
-  //   this.addInput("points","points");
-  //   this.addInput("point","point");
-  // }
-
-  // LineView.prototype.onExecute = function() {
-  //   const points = this.getInputData(0);
-  //   const initPoint = this.getInputData(1);
-  //   const group = LineToThree(points,initPoint);
-  //   meshArr.current.push({ id: 0, mesh: group}); 
-  // }
-
-  // LiteGraph.registerNodeType("3DVIEW/lineView", LineView);
 
   function ToGlobalPoint(Point, node2D){
       let newPoint = {
@@ -1218,7 +1174,7 @@
     if (point1.x === point2.x){
       x = point1.x;
       y = tan1 === null? null : tan1 * (x) + H;
-    }else {
+    }else{
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       x = tan1 === null? point1.x:(b - H) / (tan1 - a);
@@ -1237,7 +1193,7 @@
       x4 = point2.x + thickness;
       y3 = tan1 === null? null : tan1 * (x3 - point1.x) + point1.y;
       y4 = tan2 === null? null : tan2 * (x4 - point2.x) + point2.y;
-    }else {
+    }else{
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       let alpha = thickness * Math.sqrt(1 + 1/a**2);
@@ -1393,7 +1349,7 @@
                       R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i].startH + (R -Math.sqrt(R**2 - x1**2));
-                  }else {
+                  }else{
                       height = girderBaseInfo.height[i].startH;
                   }
               }else if (girderBaseInfo.height[i].type == "parabola"){
@@ -1403,10 +1359,10 @@
                   }else if (deltaH<0){
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i].startH - deltaH / L**2 * x1**2;
-                  }else {
+                  }else{
                       height = girderBaseInfo.height[i].startH;
                   }
-              }else {  //straight
+              }else{  //straight
                   x1 = station - sp.masterStationNumber;
                   height = girderBaseInfo.height[i].startH - x1/L * deltaH;
               }
@@ -1428,7 +1384,7 @@
               x1 = station - sp.masterStationNumber;
               slabThickness = girderBaseInfo.slabThickness[i].startH - x1/L * deltaH;
               break;
-          }else {
+          }else{
               slabThickness = 270; // slab thickness추후 예외상황없도록 수정
           }
       }
@@ -1632,7 +1588,7 @@
             if(L1[1].x>=R1[1].x){ //폐합인 경우 
               let C1 = [L1[0],R1[0],R1[3],L1[3]];
               C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
-            }else {
+            }else{
               L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
               R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)));
             }
@@ -1642,7 +1598,7 @@
               if(L2[1].x>=R2[1].x){ //폐합인 경우 
                 let C2 = [L2[0],R2[0],R2[3],L2[3]];
                 C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
-              }else {
+              }else{
                 L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
                 R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)));
               }
