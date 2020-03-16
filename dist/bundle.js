@@ -1218,7 +1218,7 @@
     if (point1.x === point2.x){
       x = point1.x;
       y = tan1 === null? null : tan1 * (x) + H;
-    }else{
+    }else {
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       x = tan1 === null? point1.x:(b - H) / (tan1 - a);
@@ -1237,7 +1237,7 @@
       x4 = point2.x + thickness;
       y3 = tan1 === null? null : tan1 * (x3 - point1.x) + point1.y;
       y4 = tan2 === null? null : tan2 * (x4 - point2.x) + point2.y;
-    }else{
+    }else {
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       let alpha = thickness * Math.sqrt(1 + 1/a**2);
@@ -1393,7 +1393,7 @@
                       R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i].startH + (R -Math.sqrt(R**2 - x1**2));
-                  }else{
+                  }else {
                       height = girderBaseInfo.height[i].startH;
                   }
               }else if (girderBaseInfo.height[i].type == "parabola"){
@@ -1403,10 +1403,10 @@
                   }else if (deltaH<0){
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i].startH - deltaH / L**2 * x1**2;
-                  }else{
+                  }else {
                       height = girderBaseInfo.height[i].startH;
                   }
-              }else{  //straight
+              }else {  //straight
                   x1 = station - sp.masterStationNumber;
                   height = girderBaseInfo.height[i].startH - x1/L * deltaH;
               }
@@ -1428,7 +1428,7 @@
               x1 = station - sp.masterStationNumber;
               slabThickness = girderBaseInfo.slabThickness[i].startH - x1/L * deltaH;
               break;
-          }else{
+          }else {
               slabThickness = 270; // slab thickness추후 예외상황없도록 수정
           }
       }
@@ -1632,7 +1632,7 @@
             if(L1[1].x>=R1[1].x){ //폐합인 경우 
               let C1 = [L1[0],R1[0],R1[3],L1[3]];
               C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
-            }else{
+            }else {
               L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
               R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)));
             }
@@ -1642,7 +1642,7 @@
               if(L2[1].x>=R2[1].x){ //폐합인 경우 
                 let C2 = [L2[0],R2[0],R2[3],L2[3]];
                 C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
-              }else{
+              }else {
                 L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
                 R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)));
               }

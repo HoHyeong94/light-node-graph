@@ -31,6 +31,7 @@ MasterLine.prototype.onExecute = function() {
   //   ).elevation;
   //   line.points[i].z = zPosition;
   // }
+  this.points= line.points;
   this.setOutputData(0,line.points);
   this.setOutputData(1,line);
 }
