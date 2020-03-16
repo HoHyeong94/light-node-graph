@@ -7,6 +7,8 @@ import "./sectionPointNodes"
 import "./steelBoxNodes"
 import "./stiffnerNodes"
 
+LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
+
 // const {
 //   horizon,
 //   vertical,

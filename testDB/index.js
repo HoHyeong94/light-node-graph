@@ -6,12 +6,12 @@ import { SectionPointDict } from "./sectionPoint/index";
 
 import { SteelBox } from "./steelBox/index";
 
-LiteGraph.registerNodeType("nexivil/lineGen", Line);
-LiteGraph.registerNodeType("nexivil/lineOffset", LineOffset);
+// LiteGraph.registerNodeType("nexivil/lineGen", Line);
+// LiteGraph.registerNodeType("nexivil/lineOffset", LineOffset);
 
-LiteGraph.registerNodeType("nexivil/GirdersGen", GirdersGen);
-LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
+// LiteGraph.registerNodeType("nexivil/GirdersGen", GirdersGen);
+// LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
 
-LiteGraph.registerNodeType("nexivil/sectionPoint", SectionPointDict);
+// LiteGraph.registerNodeType("nexivil/sectionPoint", SectionPointDict);
 
-LiteGraph.registerNodeType("nexivil/steelBox", SteelBox);
+// LiteGraph.registerNodeType("nexivil/steelBox", SteelBox);
