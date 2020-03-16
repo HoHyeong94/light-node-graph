@@ -1,7 +1,7 @@
 // import { defaultValues } from "./defaultValues";
-// import { LiteGraph, meshArr, THREE } from "global";
+import { LiteGraph, meshArr, THREE } from "global";
 import "./inputNodes"
-import "./lineNodes"
+import {MasterLine} from "./lineNodes"
 import "./girderNodes"
 import "./sectionPointNodes"
 import "./steelBoxNodes"

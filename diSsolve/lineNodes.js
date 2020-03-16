@@ -1,7 +1,7 @@
-import { LiteGraph, meshArr, THREE, _ , sceneAdder } from "global";
-import {LineToThree, MasterLineData,  LineGenerator, VerticalPositionGenerator} from "./lineModule"
+import { LiteGraph, THREE, sceneAdder } from "global";
+import {LineToThree, MasterLineData,  } from "./lineModule"
 
-function MasterLine(){
+export function MasterLine(){
   this.addInput("horizon","horizon");
   this.addInput("vertical","vertical");
   this.addInput("superElevation","superElevation");
@@ -34,7 +34,7 @@ MasterLine.prototype.onExecute = function() {
   this.setOutputData(0,line.points);
   this.setOutputData(1,line);
 }
-LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
+// LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 
 MasterLine.prototype.on3DExecute = function() {
   sceneAdder({

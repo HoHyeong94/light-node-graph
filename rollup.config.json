@@ -1,6 +1,6 @@
 {
   "in": {
-    "input": ["/testDB/index.js"],
+    "input": ["/diSsolve/index.js"],
     "plugins": []
   },
   "out": {
