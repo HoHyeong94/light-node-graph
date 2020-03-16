@@ -2,12 +2,14 @@
 import { LiteGraph, meshArr, THREE } from "global";
 import "./inputNodes"
 import {MasterLine} from "./lineNodes"
-import "./girderNodes"
+import {GirderLayout,GridPoint} from "./girderNodes"
 import "./sectionPointNodes"
 import "./steelBoxNodes"
 import "./stiffnerNodes"
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
+LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
+LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
 
 // const {
 //   horizon,

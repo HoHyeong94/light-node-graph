@@ -188,7 +188,7 @@ export const MasterPointGenerator = (station, Masterline,skew) => {
   } else {
     for (let i = 0; i < Masterline.VerticalDataList.length - 1; i++) {
       if (station >= Masterline.VerticalDataList[i][0] && station < Masterline.VerticalDataList[i + 1][0]) {
-        resultPoint.z = Masterline.VerticalDataList[i][0] + Masterline.tangent[i] * (station - Masterline.VerticalDataList[i][0])
+        resultPoint.z = Masterline.VerticalDataList[i][1] + Masterline.tangent[i] * (station - Masterline.VerticalDataList[i][0])
         gradX = Masterline.tangent[i];
       }
     }
@@ -370,3 +370,144 @@ function Clothoid(radius, a) {
       return result
   }
 }
+
+export const OffsetLine = (offset, line) => {
+ 
+  let points = [];
+   for (let i = 0; i < line.points.length; i++) {
+    let resultPoint = {
+      stationNumber: line.points[i].stationNumber,
+      x: line.points[i].x + line.points[i].normalCos * offset,
+      y: line.points[i].y + line.points[i].normalSin * offset,
+      z: 0,
+      normalCos: line.points[i].normalCos,
+      normalSin: line.points[i].normalSin,
+      masterStationNumber: line.points[i].stationNumber,
+      skew: line.points[i].skew,
+      offset: offset,
+      virtual: false
+    };
+     points.push(resultPoint)
+  }
+  return points
+}
+
+export const PointLineMatch2 = (targetPoint, masterLine) => {
+  let resultPoint = {};
+  let point1 = {};
+  let point2 = {};
+  let crossproduct1 = 0;
+  let crossproduct2 = 0;
+  let innerproduct = 1;
+  let station1 = 0;
+  let station2 = 0;
+  let station3 = 0;
+  const err = 0.1;
+  let num_iter = 0;
+  let a = true;
+
+  //matser_segment = variables.Segment_station_number(master_line_datalist)
+
+  for (let i = 0; i < masterLine.segments.start.length; i++) {
+    station1 = masterLine.segments.start[i];
+    station2 = masterLine.segments.end[i];
+    point1 = PointGenerator(station1, masterLine, 90)
+    point2 = PointGenerator(station2, masterLine, 90)
+    crossproduct1 = (targetPoint.x - point1.x) * point1.normalSin - (targetPoint.y - point1.y) * point1.normalCos
+    crossproduct2 = (targetPoint.x - point2.x) * point2.normalSin - (targetPoint.y - point2.y) * point2.normalCos
+
+    if (crossproduct1 * crossproduct2 < 0) {
+      a = false;
+      break;
+    } else if (Math.abs(crossproduct1) < err) {
+      resultPoint = { ...point1 };
+      break;
+    } else if (Math.abs(crossproduct2) < err) {
+      resultPoint = { ...point2 };
+      break;
+    }
+  }
+  if (a == false) {
+    while (Math.abs(innerproduct) > err) {
+      innerproduct = (targetPoint.x - point1.x) * (-point1.normalSin) + (targetPoint.y - point1.y) * (point1.normalCos)
+      station3 = station1 + innerproduct
+      point1 = PointGenerator(station3, masterLine, 90)
+      station1 = point1.stationNumber
+      crossproduct1 = (targetPoint.x - point1.x) * point1.normalSin - (targetPoint.y - point1.y) * point1.normalCos
+      resultPoint = { ...point1 }
+      num_iter += 1
+      if (num_iter == 200) {
+        break;
+      }
+    }
+  };
+  const MasterPoint = MasterPointGenerator(resultPoint.stationNumber,masterLine)
+  //targetPoint.master_station_number = result.station_number
+  return MasterPoint
+};
+
+export const PointGenerator = (stationNumber, line, skew) => {
+  let resultPoint = {
+    stationNumber: stationNumber.toFixed(4) * 1,
+    x: 0,
+    y: 0,
+    z: 0,
+    normalCos: 0,
+    normalSin: 0,
+    masterStationNumber: stationNumber,
+    offset: 0,
+    virtual: false,
+    skew: skew,
+  };
+  // const dataList = line.input.horizonDataList;
+  const startStationNumList = line.segments.start;
+  const endStationNumList = line.segments.end;
+
+  let l = 0;
+  let lineNum = 0;
+  let varCase = 0;
+  const startPoint = line.startPoint;
+  let tempRes = [0, 0, 0, 0];
+
+  for (let i = 0; i < startStationNumList.length;i++){  // }= 4 * (dataList.length - 2); i++) {
+    l = stationNumber - startStationNumList[i];
+
+    lineNum = Math.floor(i / 4);
+    varCase = i % 4;
+    if (
+      stationNumber >= startStationNumList[i] &&
+      stationNumber <= endStationNumList[i]
+    ) {
+      switch (varCase) {
+        case 0:
+          if (i === 0) { // if datalist.length === 2point, this is not available, || (dataList[lineNum][2] === 0 && dataList[lineNum - 1][2] === 0 && dataList[lineNum + 1][2] === 0 )) {
+            tempRes[0] = startPoint[lineNum][0] + l * line.vectors[lineNum].cos;
+            tempRes[1] = startPoint[lineNum][1] + l * line.vectors[lineNum].sin;
+          } else {
+            tempRes[0] = line.curves[lineNum - 1].endClothoidCoord[0] + l * line.vectors[lineNum].cos;
+            tempRes[1] = line.curves[lineNum - 1].endClothoidCoord[1] + l * line.vectors[lineNum].sin;
+          }
+          tempRes[2] = line.vectors[lineNum].sin;
+          tempRes[3] = -1 * line.vectors[lineNum].cos;
+          break;
+        case 1:
+          tempRes = line.curves[lineNum].beginClothoidStation(l);
+          break;
+        case 2:
+          tempRes = line.curves[lineNum].arcStation(l);
+          break;
+        case 3:
+          tempRes = line.curves[lineNum].endClothoidStation(l);
+          break;
+        default:
+          break;
+      }
+      resultPoint.x = tempRes[0];
+      resultPoint.y = tempRes[1];
+      resultPoint.normalCos = tempRes[2];
+      resultPoint.normalSin = tempRes[3];
+      break;
+    }
+  }
+  return resultPoint;
+};
