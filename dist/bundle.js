@@ -1119,9 +1119,9 @@
   }
 
   function MasterLine(){
-    this.addInput("horizon","horizon");
-    this.addInput("vertical","vertical");
-    this.addInput("superElevation","superElevation");
+    this.addInput("horizon","arr");
+    this.addInput("vertical","arr");
+    this.addInput("superElevation","arr");
     this.addInput("beginStation","number");
     // this.addInput("slaveOrMaster","boolean");
     this.addOutput("points","points");
@@ -1133,7 +1133,7 @@
     const verticalDataList = this.getInputData(1);
     const superElevation = this.getInputData(2);
     const beginStation = this.getInputData(3); //769452.42;
-    const slaveOrMaster = this.getInputData(4); //true;
+    // const slaveOrMaster = this.getInputData(4); //true;
     
     // const input = { beginStation, horizonDataList, slaveOrMaster };
 
