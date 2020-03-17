@@ -74,6 +74,69 @@ export function VstiffShapeDict(
   return result;
 }
 
+export function HBracingDict(
+    pointDict,
+    sectionPointDict,
+    hBracingLayout,
+    hBracingectionList
+  ) {
+    const from = 0;
+    const to = 1;
+    const leftToright = 2;
+    const section = 3;
+    const platelayout = 4;
+    let hBracingDict = {};
+    let hBracingPlateDict = {};
+    let right = true;
+    for (let i = 0; i < hBracingLayout.length; i++) {
+      let hBSection = hBracingectionList[hBracingLayout[i][section]];
+      let pk1 = hBracingLayout[i][from];
+      let pk2 = hBracingLayout[i][to];
+      let webPoints = [];
+      if (hBracingLayout[i][leftToright]) {
+        webPoints = [
+          sectionPointDict[pk1].forward.lWeb[0],
+          sectionPointDict[pk1].forward.lWeb[1],
+          sectionPointDict[pk2].forward.rWeb[0],
+          sectionPointDict[pk2].forward.rWeb[1]
+        ];
+      } else {
+        webPoints = [
+          sectionPointDict[pk1].forward.rWeb[0],
+          sectionPointDict[pk1].forward.rWeb[1],
+          sectionPointDict[pk2].forward.lWeb[0],
+          sectionPointDict[pk2].forward.lWeb[1]
+        ];
+      }
+      let point1 = pointDict[pk1];
+      let point2 = pointDict[pk2];
+  
+      hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection);
+      if (hBracingLayout[i][platelayout[0]]) {
+        right = hBracingLayout[i][leftToright] ? false : true;
+        let webPoints1 = [
+          sectionPointDict[pk1].forward.lWeb[0],
+          sectionPointDict[pk1].forward.lWeb[1],
+          sectionPointDict[pk1].forward.rWeb[0],
+          sectionPointDict[pk1].forward.rWeb[1]
+        ];
+        hBracingPlateDict[pk1] = hBracingPlate(right, webPoints1, hBSection);
+      }
+      if (hBracingLayout[i][platelayout[1]]) {
+        right = hBracingLayout[i][leftToright] ? true : false;
+        let webPoints2 = [
+          sectionPointDict[pk2].forward.lWeb[0],
+          sectionPointDict[pk2].forward.lWeb[1],
+          sectionPointDict[pk2].forward.rWeb[0],
+          sectionPointDict[pk2].forward.rWeb[1]
+        ];
+        hBracingPlateDict[pk2] = hBracingPlate(right, webPoints2, hBSection);
+      }
+    }
+  
+    return { hBracingDict, hBracingPlateDict };
+  }
+
 export function diaphragmSection(webPoints, skew, uflangePoint, ds){ //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
     let result = {}

@@ -1464,7 +1464,7 @@
       resultPoint.offset = sign * Math.sqrt((resultPoint.x - newMasterPoint.x) ** 2 + (resultPoint.y - newMasterPoint.y) ** 2).toFixed(4) * 1;
       if (sign>0){
         resultPoint.z = newMasterPoint.z + newMasterPoint.rightGradient * resultPoint.offset;
-      }else{
+      }else {
         resultPoint.z = newMasterPoint.z + newMasterPoint.leftGradient * resultPoint.offset;
       }
       resultPoint.gradientX = newMasterPoint.gradientX;
@@ -1533,7 +1533,7 @@
             s<=pointDict["G"+(girderIndex+1)+"K6"].masterStationNumber){
             gs[girderIndex].push({station:pointDict[k].masterStationNumber,key:k, point:pointDict[k]});
           }
-        }else{
+        }else {
           cs.push({station:pointDict[k].masterStationNumber,key:k, point:pointDict[k]});
         }
 
@@ -1625,7 +1625,7 @@
     if (point1.x === point2.x){
       x = point1.x;
       y = tan1 === null? null : tan1 * (x) + H;
-    }else{
+    }else {
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       x = tan1 === null? point1.x:(b - H) / (tan1 - a);
@@ -1644,7 +1644,7 @@
       x4 = point2.x + thickness;
       y3 = tan1 === null? null : tan1 * (x3 - point1.x) + point1.y;
       y4 = tan2 === null? null : tan2 * (x4 - point2.x) + point2.y;
-    }else{
+    }else {
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       let alpha = thickness * Math.sqrt(1 + 1/a**2);
@@ -1871,7 +1871,7 @@
                       R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i][2] + (R -Math.sqrt(R**2 - x1**2));
-                  }else{
+                  }else {
                       height = girderBaseInfo.height[i][2];
                   }
               }else if (girderBaseInfo.height[i][4] == "parabola"){
@@ -1881,10 +1881,10 @@
                   }else if (deltaH<0){
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i][2] - deltaH / L**2 * x1**2;
-                  }else{
+                  }else {
                       height = girderBaseInfo.height[i][2];
                   }
-              }else{  //straight
+              }else {  //straight
                   x1 = station - sp.masterStationNumber;
                   height = girderBaseInfo.height[i][2] - x1/L * deltaH;
               }
@@ -2187,10 +2187,12 @@
     vStiffLayout,
     vStiffSectionList
   ) {
+    const position = 0;
+    const section = 1 ;
     let result = {};
     for (let i = 0; i < vStiffLayout.length; i++) {
-      let gridkey = vStiffLayout[i].position;
-      let vSection = vStiffSectionList[vStiffLayout[i].section];
+      let gridkey = vStiffLayout[i][position];
+      let vSection = vStiffSectionList[vStiffLayout[i][section]];
       let webPoints = [
         sectionPointDict[gridkey].forward.lWeb[0],
         sectionPointDict[gridkey].forward.lWeb[1],
@@ -2208,6 +2210,69 @@
     }
     return result;
   }
+
+  function HBracingDict(
+      pointDict,
+      sectionPointDict,
+      hBracingLayout,
+      hBracingectionList
+    ) {
+      const from = 0;
+      const to = 1;
+      const leftToright = 2;
+      const section = 3;
+      const platelayout = 4;
+      let hBracingDict = {};
+      let hBracingPlateDict = {};
+      let right = true;
+      for (let i = 0; i < hBracingLayout.length; i++) {
+        let hBSection = hBracingectionList[hBracingLayout[i][section]];
+        let pk1 = hBracingLayout[i][from];
+        let pk2 = hBracingLayout[i][to];
+        let webPoints = [];
+        if (hBracingLayout[i][leftToright]) {
+          webPoints = [
+            sectionPointDict[pk1].forward.lWeb[0],
+            sectionPointDict[pk1].forward.lWeb[1],
+            sectionPointDict[pk2].forward.rWeb[0],
+            sectionPointDict[pk2].forward.rWeb[1]
+          ];
+        } else {
+          webPoints = [
+            sectionPointDict[pk1].forward.rWeb[0],
+            sectionPointDict[pk1].forward.rWeb[1],
+            sectionPointDict[pk2].forward.lWeb[0],
+            sectionPointDict[pk2].forward.lWeb[1]
+          ];
+        }
+        let point1 = pointDict[pk1];
+        let point2 = pointDict[pk2];
+    
+        hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection);
+        if (hBracingLayout[i][platelayout[0]]) {
+          right = hBracingLayout[i][leftToright] ? false : true;
+          let webPoints1 = [
+            sectionPointDict[pk1].forward.lWeb[0],
+            sectionPointDict[pk1].forward.lWeb[1],
+            sectionPointDict[pk1].forward.rWeb[0],
+            sectionPointDict[pk1].forward.rWeb[1]
+          ];
+          hBracingPlateDict[pk1] = hBracingPlate(right, webPoints1, hBSection);
+        }
+        if (hBracingLayout[i][platelayout[1]]) {
+          right = hBracingLayout[i][leftToright] ? true : false;
+          let webPoints2 = [
+            sectionPointDict[pk2].forward.lWeb[0],
+            sectionPointDict[pk2].forward.lWeb[1],
+            sectionPointDict[pk2].forward.rWeb[0],
+            sectionPointDict[pk2].forward.rWeb[1]
+          ];
+          hBracingPlateDict[pk2] = hBracingPlate(right, webPoints2, hBSection);
+        }
+      }
+    
+      return { hBracingDict, hBracingPlateDict };
+    }
 
   function diaphragmSection(webPoints, skew, uflangePoint, ds){ //ribPoint needed
       // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
@@ -2650,6 +2715,117 @@
      }
   }
 
+
+  function hBracingSection(point1, point2, webPoints, hBSection){
+    // let sideToplength = 700;
+    // let sideTopwidth = 300;
+    // let B = 2000;
+    // let H = 2500;
+    // let ULR = 1300;
+
+    const bl = webPoints[0];
+    const tl = webPoints[1];
+    const br = webPoints[2];
+    const tr = webPoints[3];
+
+    const lwCot = (tl.x - bl.x)/(tl.y-bl.y);
+    const rwCot = (tr.x - br.x)/(tr.y-br.y);
+
+    let upperHeight = hBSection.upperHeight;
+    let sideTopThickness = hBSection.sideTopThickness;
+    let spc = hBSection.spc;
+    let pts = hBSection.pts;
+
+    let node1 = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y: tl.y -(upperHeight + sideTopThickness)};
+    let node2 = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y: tr.y -(upperHeight + sideTopThickness)};
+    let Brline = [
+      ToGlobalPoint(point1, node1),
+      ToGlobalPoint(point2, node2)
+    ];
+    let Vector = [Brline[1].x - Brline[0].x, 
+                  Brline[1].y - Brline[0].y, 
+                  Brline[1].z - Brline[0].z];
+    let VectorLength = Math.sqrt(Vector[0]**2 + Vector[1]**2 + Vector[2]**2);
+    let normalCos = Vector[1] / VectorLength;
+    let normalSin = - Vector[0] / VectorLength;
+    let newBrLine = [{x: Brline[0].x + Vector[0] * spc / VectorLength,
+                      y: Brline[0].y + Vector[1] * spc / VectorLength,
+                      z: Brline[0].z + Vector[2] * spc / VectorLength},
+                      {x: Brline[1].x - Vector[0] * spc / VectorLength,
+                        y: Brline[1].y - Vector[1] * spc / VectorLength,
+                        z: Brline[1].z - Vector[2] * spc / VectorLength}];
+    let pointslist = 
+      [{x :newBrLine[0].x + normalCos * pts[0],y:newBrLine[0].y + normalSin * pts[0],z: newBrLine[0].z},
+      {x :newBrLine[0].x + normalCos * pts[1],y:newBrLine[0].y + normalSin * pts[1],z: newBrLine[0].z},
+      {x :newBrLine[0].x + normalCos * pts[1],y:newBrLine[0].y + normalSin * pts[1],z: newBrLine[0].z + pts[4]},
+      {x :newBrLine[0].x + normalCos * pts[0],y:newBrLine[0].y + normalSin * pts[0],z: newBrLine[0].z + pts[4]},
+      {x :newBrLine[1].x + normalCos * pts[0],y:newBrLine[1].y + normalSin * pts[0],z: newBrLine[1].z},
+      {x :newBrLine[1].x + normalCos * pts[1],y:newBrLine[1].y + normalSin * pts[1],z: newBrLine[1].z},    
+      {x :newBrLine[1].x + normalCos * pts[1],y:newBrLine[1].y + normalSin * pts[1],z: newBrLine[1].z + pts[4]},
+      {x :newBrLine[1].x + normalCos * pts[0],y:newBrLine[1].y + normalSin * pts[0],z: newBrLine[1].z + pts[4]},
+    ];
+    let pointslist2 =
+    [
+      {x :newBrLine[0].x + normalCos * pts[2],y:newBrLine[0].y + normalSin * pts[2],z: newBrLine[0].z},
+      {x :newBrLine[0].x + normalCos * pts[3],y:newBrLine[0].y + normalSin * pts[3],z: newBrLine[0].z},
+      {x :newBrLine[0].x + normalCos * pts[3],y:newBrLine[0].y + normalSin * pts[3],z: newBrLine[0].z + pts[5]},
+      {x :newBrLine[0].x + normalCos * pts[2],y:newBrLine[0].y + normalSin * pts[2],z: newBrLine[0].z + pts[5]},
+      {x :newBrLine[1].x + normalCos * pts[2],y:newBrLine[1].y + normalSin * pts[2],z: newBrLine[1].z},
+      {x :newBrLine[1].x + normalCos * pts[3],y:newBrLine[1].y + normalSin * pts[3],z: newBrLine[1].z},
+      {x :newBrLine[1].x + normalCos * pts[3],y:newBrLine[1].y + normalSin * pts[3],z: newBrLine[1].z + pts[5]},
+      {x :newBrLine[1].x + normalCos * pts[2],y:newBrLine[1].y + normalSin * pts[2],z: newBrLine[1].z + pts[5]},
+      ];
+    
+    return { line:Brline, points:[pointslist, pointslist2,[]]};
+  }
+
+  function hBracingPlate(right, webPoints, hBSection){
+    const bl = webPoints[0];
+    const tl = webPoints[1];
+    const br = webPoints[2];
+    const tr = webPoints[3];
+    const lwCot = (tl.x - bl.x)/(tl.y-bl.y);
+    const rwCot = (tr.x - br.x)/(tr.y-br.y);
+
+    let upperHeight = hBSection.upperHeight;
+    let sideTopThickness = hBSection.sideTopThickness;
+    let sideToplength = hBSection. sideToplength;
+    let sideTopwidth = hBSection. sideTopwidth;
+    let scallopHeight = hBSection. scallopHeight;
+    let scallopRadius = hBSection. scallopRadius;
+    let scallopBottom = hBSection. scallopBottom;
+     
+    let position = {};
+    let rotationY = Math.atan((tr.y - tl.y)/(tr.x-tl.x));
+    if (right){
+      position = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y:  -(upperHeight + sideTopThickness)};
+      rotationY = -rotationY;
+    }else {
+      position = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y:  -(upperHeight + sideTopThickness)}; 
+    }
+    let rotation = (right)? Math.PI/2 : -Math.PI/2;
+    let cos = Math.cos(rotation);
+    let sin = Math.sin(rotation);
+    let curve = new global.THREE.ArcCurve(0,scallopHeight,scallopRadius,Math.PI,0,true);
+    let curvePoint = curve.getPoints(8);
+    let ps = [];
+    ps.push({x:-sideToplength/2, y:sideTopwidth});
+    ps.push({x:-sideToplength/2, y: 0});
+    ps.push({x:-scallopBottom, y:0});
+    
+    for (let i=0; i < 9;i++){
+      ps.push({x:curvePoint[i].x,y:curvePoint[i].y});  
+    }  ps.push({x:scallopBottom, y:0});
+    ps.push({x:sideToplength/2, y:0});
+    ps.push({x:sideToplength/2, y:sideTopwidth});
+    let plateShape = [];
+    for (let i=0; i<ps.length;i++){
+      plateShape.push({x:position.x + ps[i].x *cos - ps[i].y*sin, y: ps[i].y*cos + ps[i].x*sin});
+    }
+
+    return {plate: {points:plateShape,Thickness: sideTopThickness,z:position.y, rotationX:0, rotationY:rotationY,hole:[]}}
+  }
+
   // import { LiteGraph, meshArr } from "global";
 
 
@@ -2670,7 +2846,7 @@
 
   function VstiffDict(){
     this.addInput("sectionPointDict","sectionPointDict");
-    this.addInput("vStiffLayout","vStiffLayout");
+    this.addInput("vStiffLayout","arr");
     this.addInput("vStiffSectionList","vStiffSectionList");
     this.addOutput("diaDict","diaDict");
   }
@@ -2682,6 +2858,23 @@
     const result = VstiffShapeDict(sectionPointDict,vStiffLayout,vStiffSectionList);
     this.setOutputData(0, result);
   };
+
+  function HBracing(){
+      this.addInput("gridPoint","gridPoint");
+      this.addInput("sectionPointDict","sectionPointDict");
+      this.addInput("hBracingLayout","arr");
+      this.addInput("hBracingSectionList","hBracingSectionList");
+      this.addOutput("hBracingDict","hBracingDict");
+    }
+    
+    HBracing.prototype.onExecute = function() {
+      const gridPoint = this.getInputData(0);
+      const sectionPointDict = this.getInputData(1);
+      const hBracingLayout = this.getInputData(2);
+      const hBracingSectionList = this.getInputData(3);
+      const result = HBracingDict(gridPoint, sectionPointDict,hBracingLayout,hBracingSectionList);
+      this.setOutputData(0, result);
+    };
 
   function LineView(linepoints, initPoint, color){
       var group = new global.THREE.Group();
@@ -2799,6 +2992,50 @@
       return mesh
   }
 
+  function HBracingPlateView(pointDict, hBraicngPlateDict, initPoint){
+      var group = new global.THREE.Group();
+      // var meshMaterial = new THREE.MeshLambertMaterial( {
+      //     color: 0x00ffff,
+      //     emissive: 0x44aaaa,
+      //     opacity: 1,
+      //     side:THREE.DoubleSide,
+      //     transparent: false,
+      //     wireframe : false
+      //   } );
+      var meshMaterial = new global.THREE.MeshNormalMaterial();
+      for (let pk in hBraicngPlateDict){
+         let point = pointDict[pk];
+         for (let partkey in hBraicngPlateDict[pk]){
+         let shapeNode = hBraicngPlateDict[pk][partkey].points;
+         let Thickness = hBraicngPlateDict[pk][partkey].Thickness;
+         let zPosition = hBraicngPlateDict[pk][partkey].z;
+         let rotationY = hBraicngPlateDict[pk][partkey].rotationY;
+         let rotationX = hBraicngPlateDict[pk][partkey].rotationX;
+         let hole = hBraicngPlateDict[pk][partkey].hole;
+         group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
+          }
+      }
+      return group
+  }
+
+  function HBracingView(hBracingDict,initPoint){
+      var group = new global.THREE.Group();
+      // var meshMaterial = new THREE.MeshLambertMaterial( {
+      //     color: 0x00ffff,
+      //     emissive: 0x44aaaa,
+      //     opacity: 1,
+      //     side:THREE.DoubleSide,
+      //     transparent: false,
+      //     wireframe : false
+      //   } );
+      var meshMaterial = new global.THREE.MeshNormalMaterial();
+      for (let i in hBracingDict){
+         group.add(convexMesh(hBracingDict[i].points[0],initPoint,meshMaterial));
+         group.add(convexMesh(hBracingDict[i].points[1],initPoint,meshMaterial));
+      }
+      return group
+  }
+
   function LineViewer(){
     this.addInput("points","points");
     this.addInput("initPoint","point");
@@ -2841,7 +3078,22 @@
     global.sceneAdder({ id: 0, mesh: group}); 
   };
 
-
+  function HorBracingView(){
+      this.addInput("gridPoint","gridPoint");
+      this.addInput("hBracingDict","hBracingDict");
+      this.addInput("Point","Point");
+    }
+    
+    HorBracingView.prototype.onExecute = function() {
+      const pointDict = this.getInputData(0);
+      const hb = this.getInputData(1);
+      const initPoint = this.getInputData(2);
+      const group = HBracingView(hb.hBracingDict,initPoint);
+      const group2 = HBracingPlateView(pointDict, hb.hBracingPlateDict,initPoint);
+      global.sceneAdder({ id: 0, mesh: group}); 
+      global.sceneAdder({ id: 0, mesh: group2}); 
+    };
+    
 
   function InitPoint(){
     this.addInput("gridPoint","gridPoint");
@@ -2861,15 +3113,14 @@
   global.LiteGraph.registerNodeType("nexivil/GridStationList", StationList);
   global.LiteGraph.registerNodeType("nexivil/SectionPoint", SectionPoint);
   global.LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
-
   global.LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
   global.LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
-
-
+  global.LiteGraph.registerNodeType("HMECS/hBracing", HBracing);
 
   global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
   global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
   global.LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
+  global.LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
   global.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
 
 

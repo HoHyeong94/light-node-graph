@@ -117,3 +117,47 @@ export function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotat
     mesh.translateZ(zPosition)
     return mesh
 }
+
+export function HBracingPlateView(pointDict, hBraicngPlateDict, initPoint){
+    var group = new THREE.Group();
+    // var meshMaterial = new THREE.MeshLambertMaterial( {
+    //     color: 0x00ffff,
+    //     emissive: 0x44aaaa,
+    //     opacity: 1,
+    //     side:THREE.DoubleSide,
+    //     transparent: false,
+    //     wireframe : false
+    //   } );
+    var meshMaterial = new THREE.MeshNormalMaterial()
+    for (let pk in hBraicngPlateDict){
+       let point = pointDict[pk]
+       for (let partkey in hBraicngPlateDict[pk]){
+       let shapeNode = hBraicngPlateDict[pk][partkey].points
+       let Thickness = hBraicngPlateDict[pk][partkey].Thickness
+       let zPosition = hBraicngPlateDict[pk][partkey].z
+       let rotationY = hBraicngPlateDict[pk][partkey].rotationY
+       let rotationX = hBraicngPlateDict[pk][partkey].rotationX
+       let hole = hBraicngPlateDict[pk][partkey].hole
+       group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
+        }
+    }
+    return group
+}
+
+export function HBracingView(hBracingDict,initPoint){
+    var group = new THREE.Group();
+    // var meshMaterial = new THREE.MeshLambertMaterial( {
+    //     color: 0x00ffff,
+    //     emissive: 0x44aaaa,
+    //     opacity: 1,
+    //     side:THREE.DoubleSide,
+    //     transparent: false,
+    //     wireframe : false
+    //   } );
+    var meshMaterial = new THREE.MeshNormalMaterial()
+    for (let i in hBracingDict){
+       group.add(convexMesh(hBracingDict[i].points[0],initPoint,meshMaterial))
+       group.add(convexMesh(hBracingDict[i].points[1],initPoint,meshMaterial))
+    }
+    return group
+}

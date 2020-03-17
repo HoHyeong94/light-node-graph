@@ -1,5 +1,5 @@
 import { sceneAdder } from "global";
-import {LineView, SteelBoxView, DiaView} from "./module"
+import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView} from "./module"
 
 export function LineViewer(){
   this.addInput("points","points");
@@ -43,7 +43,22 @@ DiaPhragmView.prototype.onExecute = function() {
   sceneAdder({ id: 0, mesh: group}); 
 }
 
-
+export function HorBracingView(){
+    this.addInput("gridPoint","gridPoint");
+    this.addInput("hBracingDict","hBracingDict");
+    this.addInput("Point","Point");
+  }
+  
+  HorBracingView.prototype.onExecute = function() {
+    const pointDict = this.getInputData(0);
+    const hb = this.getInputData(1);
+    const initPoint = this.getInputData(2);
+    const group = HBracingView(hb.hBracingDict,initPoint);
+    const group2 = HBracingPlateView(pointDict, hb.hBracingPlateDict,initPoint);
+    sceneAdder({ id: 0, mesh: group}); 
+    sceneAdder({ id: 0, mesh: group2}); 
+  }
+  
 
 export function InitPoint(){
   this.addInput("gridPoint","gridPoint");
