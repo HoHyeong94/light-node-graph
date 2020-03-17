@@ -161,3 +161,20 @@ export function HBracingView(hBracingDict,initPoint){
     }
     return group
 }
+
+export function convexMesh(plist,initPoint,meshMaterial){
+    let geometry = new THREE.Geometry();
+    for (let i in plist){
+        geometry.vertices.push(new THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z))
+    }
+    let j = plist.length/2
+    for (let i = 0; i<j;i++){
+        let k = i+1===j?0:i+1
+        geometry.faces.push(new THREE.Face3(k,i,i+j));
+        geometry.faces.push(new THREE.Face3(k,i+j,k+j));
+    }
+    geometry.computeFaceNormals();
+    return new THREE.Mesh(geometry,meshMaterial)
+}
+
+
