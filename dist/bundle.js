@@ -749,24 +749,6 @@
   global.LiteGraph.registerNodeType("HMInput/gridPointInput", GridPointInput);
   //git
 
-  function LineToThree(linepoints, initPoint){
-      var group = new global.THREE.Group();
-      var geometry = new global.THREE.Geometry();
-      const xInit = initPoint.x;
-      const yInit = initPoint.y;
-      const zInit = initPoint.z;
-      for (let i = 0; i<linepoints.length;i++){
-          geometry.vertices.push( 
-          new global.THREE.Vector3	(linepoints[i].x - xInit,linepoints[i].y - yInit,	linepoints[i].z - zInit));
-      }
-      var line = new global.THREE.Line(
-          geometry, new global.THREE.LineBasicMaterial( {color: 0xffff00} )
-      );
-      group.add(line);
-      return group
-  }
-
-
   const MasterLineData = (horizon, VerticalDataList, superElevation, beginStation) => {
     let lineResult = LineGenerator2(horizon, beginStation);
     let parabolaData = [];
@@ -1256,6 +1238,8 @@
     return resultPoint;
   };
 
+  // import { LiteGraph, THREE, sceneAdder } from "global";
+
   function MasterLine(){
     this.addInput("horizon","arr");
     this.addInput("vertical","arr");
@@ -1277,13 +1261,13 @@
     this.setOutputData(1,line);
   };
 
-  MasterLine.prototype.on3DExecute = function() {
-    let initPoint = { x: 178341809.1588868,
-                      y: 552237726.8852764,
-                      z: 26934.34284538262};
-    let mesh = LineToThree(this.points,initPoint);
-    global.sceneAdder({id:0,mesh:mesh});
-  };
+  // MasterLine.prototype.on3DExecute = function() {
+  //   let initPoint = { x: 178341809.1588868,
+  //                     y: 552237726.8852764,
+  //                     z: 26934.34284538262}
+  //   let mesh = LineToThree(this.points,initPoint)
+  //   sceneAdder({id:0,mesh:mesh});
+  // };
 
   function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput) {
       const angle = 0;
@@ -1480,7 +1464,7 @@
       resultPoint.offset = sign * Math.sqrt((resultPoint.x - newMasterPoint.x) ** 2 + (resultPoint.y - newMasterPoint.y) ** 2).toFixed(4) * 1;
       if (sign>0){
         resultPoint.z = newMasterPoint.z + newMasterPoint.rightGradient * resultPoint.offset;
-      }else{
+      }else {
         resultPoint.z = newMasterPoint.z + newMasterPoint.leftGradient * resultPoint.offset;
       }
       resultPoint.gradientX = newMasterPoint.gradientX;
@@ -1531,599 +1515,34 @@
     const c2 = x2 - a2 - b2;
     return { a1: a1, b1: b1, c1: c1, a2: a2, b2: b2, c2: c2 }
   };
-  // export function GirderLayoutGenerator(girderLayoutInput, hLine, VerticalDataList, SuperElevation) {
-  //     let result = {
-  //         masterLine: { },
-  //         girderLine :[],
-  //         centralSupportPoint:[],
-  //         girderSupportPoint :[],
-  //         // girderInfoList :[],
-  //         // girderLengthList :[],
-  //         girderSpanPoint:[]
-  //     }
-  //     let girderInfoObj = {
-  //         number: 0,
-  //         baseLine: { },
-  //         alignOffset: 0,
-  //         girderLine: { },
-  //         outerBeam: false
-  //     }
-  //     // let GirderLengthObj = {
-  //     //     crTotalLength: 0,
-  //     //     girderTotalLength: 0,
-  //     //     crSpanLength: [],
-  //     //     griderSpanLength: []
-  //     // }
-  //     let supportDataList = girderLayoutInput.supportData
-  //     // let beginShapeDataList = girderLayoutInput.SEShape.start   // 시점부
-  //     // let endShapeDataList = girderLayoutInput.SEShape.end       // 종점부
-  //     let girderDataList = girderLayoutInput.getGirderList
-  //     let supportStation = girderLayoutInput.baseValue.bridgeBeginStation;
-  //     for (let i = 0; i < hLine.length; i++) {
-  //         if (hLine[i].slaveOrMaster == true) {
-  //             result.masterLine = {...hLine[i]}
-  //         }
-  //     }
-  //     let i = 0
-  //     let girderInfoList = []
-  //     for (let j = 0; j < girderDataList.length;j++) {
-  //         let girderInfo = { ...girderInfoObj }
-  //         girderInfo.number = i
-  //         for (let k = 0; k < hLine.length; k++) {
-  //             if ('align' + String(k + 1) == girderDataList[j].baseAlign) {
-  //                 girderInfoObj.baseLine = hLine[k]
-  //             }
-  //         }
-  //         girderInfo.girderLine = OffsetLine(girderDataList[j].alignOffset,girderInfoObj.baseLine)
-  //         girderInfo.alignOffset = girderDataList[j].alignOffset
-  //         girderInfo.outerBeam = girderDataList[j].isBeam? true : false
-  //         girderInfoList.push(girderInfo)
-  //         i += 1
-  //     }
-  //     //console.log(supportDataList)
-  //     result.centralSupportPoint.push(PointGenerator(supportStation, result.masterLine,supportDataList[0].angle))
-  //     for (i = 1; i < supportDataList.length; i++) {
-  //             supportStation = supportStation + supportDataList[i].spanLength
-  //             result.centralSupportPoint.push(PointGenerator(supportStation, result.masterLine,supportDataList[i].angle))
-  //     }
-  //     for (let i = 0; i< girderInfoList.length;i++) {
-  //         result.girderSupportPoint.push(SupportSkewPointGenerator(result.centralSupportPoint, result.masterLine, girderInfoList[i].girderLine, supportDataList, VerticalDataList, SuperElevation))
-  //         result.girderLine.push(girderInfoList[i].girderLine);
-  //     }
-  //     for (let i = 0; i < result.girderSupportPoint.length;i++){ // i:girderIndex
-  //         let PointsList = [];
-  //         for (let j = 1; j < result.girderSupportPoint[i].length -2 ;j++){ // j:supportIndex
-  //             let Points = [];
-  //             Points.push(result.girderSupportPoint[i][j])
-  //             for (let k = 0; k < girderInfoList[i].girderLine.points.length;k++){
-  //                 if (girderInfoList[i].girderLine.points[k].masterStationNumber>result.girderSupportPoint[i][j].masterStationNumber 
-  //                     && girderInfoList[i].girderLine.points[k].masterStationNumber < result.girderSupportPoint[i][j+1].masterStationNumber){
-  //                 Points.push(girderInfoList[i].girderLine.points[k]);
-  //                 }
-  //             }
-  //             Points.push(result.girderSupportPoint[i][j+1])
-  //             PointsList.push(Points)
-  //         }
-  //         result.girderSpanPoint.push(PointsList);
-  //     }
-  //     return result
-  // }
 
-  // function SupportSkewPointGenerator(centralSupportPoint, masterLine, girderLine, supportDatalist, VerticalDataList, SuperElevation) {
-  //   let resultPoint = []
-  //   for (let i = 0; i < centralSupportPoint.length; i++) {
-  //     let skew = supportDatalist[i].angle
-  //     if (skew !== 0) {
-  //         let dummyPoint = LineMatch(centralSupportPoint[i], masterLine, girderLine, skew, VerticalDataList, SuperElevation)
-  //         resultPoint.push(dummyPoint)
-  //     } else {
-  //       console.log('Skew value is not available');
-  //       resultPoint = null;
-  //     }
-  // }   
-  //   return resultPoint
-  // }
+  function GridStationList(pointDict){
+    let gs = [];
+    let cs = [];
+    for (let k in pointDict){
+      let girderIndex = k.substr(1, 1) - 1;
+      if (gs.length <= girderIndex){
+        for (let i=0; i<=girderIndex - gs.length;i++){
+          gs.push([]);
+        }
+      }
 
-  // export const OffsetLine = (offset, line) => {
-  // let lineResult = {
-  //     vectors: line.vectors,
-  //     curves: line.curves,
-  //     segments: line.segments,
-  //     beginStationNumber: line.beginStationNumber,
-  //     endStationNumber: line.endStationNumber,
-  //     startPoint: [],
-  //     slaveOrMaster: false,
-  //     input: line.inputs,
-  //     points : []
-  //     };
+      if (k.substr(0, 1) === "G") {
+          let s = pointDict[k].masterStationNumber;
+          if (s>=pointDict["G"+(girderIndex+1)+"K1"].masterStationNumber&&
+            s<=pointDict["G"+(girderIndex+1)+"K6"].masterStationNumber){
+            gs[girderIndex].push({station:pointDict[k].masterStationNumber,key:k, point:pointDict[k]});
+          }
+        }else {
+          cs.push({station:pointDict[k].masterStationNumber,key:k, point:pointDict[k]});
+        }
 
-  //   //let lineResult = {...line}
-  // //   let points = [];
-  //   for (let i = 0; i<line.points.length;i++){
-  //     let resultPoint = {
-  //         stationNumber:line.points[i].stationNumber,
-  //         x: line.points[i].x  + line.points[i].normalCos * offset,
-  //         y: line.points[i].y  + line.points[i].normalSin * offset,
-  //         z: 0,
-  //         normalCos: line.points[i].normalCos,
-  //         normalSin: line.points[i].normalSin,
-  //         masterStationNumber: line.points[i].stationNumber,
-  //         offset: offset,
-  //         virtual: false
-  //         };
-  //     lineResult.points.push(resultPoint)
-
-  //   }
-
-  //   return lineResult
-  // }
-
-  // export const LineMatch = (masterPoint, masterLine, slaveLine, skew, VerticalDataList, SuperElevation) => {
-  //   let resultPoint = {
-  //     stationNumber : 0,
-  //     x: 0,
-  //     y: 0,
-  //     z: 0,
-  //     normalCos: 0,
-  //     normalSin: 0,
-  //     masterStationNumber: 0,
-  //     offset: 0,
-  //     virtual: false,
-  //     skew:skew,
-  //     gradientX:0,
-  //     gradientY:0,
-  //   };
-  //   const unitVx = -1 * masterPoint.normalSin;
-  //   const unitVy = masterPoint.normalCos;
-  //   const skewRadian = skew * Math.PI / 180;
-  //   let dX = unitVx * Math.cos(skewRadian) - unitVy * Math.sin(skewRadian);
-  //   let dY = unitVx * Math.sin(skewRadian) + unitVy * Math.cos(skewRadian);
-  //   let alpha = dY;
-  //   let beta = -1 * dX;
-  //   let gamma = - alpha * masterPoint.x - beta * masterPoint.y;
-  //   let dummy1 = 0;
-  //   let dummy2 = 0;
-  //   let sign = 1;
-  //   for (let i = 0; i<slaveLine.points.length -1;i++){
-  //     dummy1 = alpha * slaveLine.points[i].x + beta * slaveLine.points[i].y + gamma;
-  //     dummy2 = alpha * slaveLine.points[i+1].x + beta * slaveLine.points[i+1].y + gamma;
-  //     if (dummy1 ===0){
-  //       resultPoint = slaveLine.points[i]    
-  //       break;
-  //     }
-  //     else if (dummy2 ===0) {
-  //       resultPoint = slaveLine.points[i+1]    
-  //       break;
-  //     }
-  //     else if (dummy1*dummy2 < 0){
-  //       let coe = splineCoefficient(slaveLine.points[i],slaveLine.points[i+1]);
-  //       let a = alpha * coe.a2 + beta * coe.a1;
-  //       let b = alpha * coe.b2 + beta * coe.b1;
-  //       let c = alpha * coe.c2 + beta * coe.c1 + gamma;
-  //       let t = 0;
-  //       if (a == 0){
-  //           t = -c/b;
-  //       }else{
-  //         t = (-b + Math.sqrt(b**2 - 4*a*c))/(2*a);
-  //         if (t>1 || t<-1){
-  //             t = (-b - Math.sqrt(b**2 - 4*a*c))/(2*a);
-  //         };
-  //       }
-        
-  //       let deltaX = 2* coe.a2 * (t) + coe.b2;
-  //       let deltaY = 2* coe.a1 * (t) + coe.b1;
-  //       let len = Math.sqrt(deltaX**2 + deltaY**2);
-  //       resultPoint.normalCos = - deltaY/len;
-  //       resultPoint.normalSin = deltaX/len;
-  //       resultPoint.x = coe.a2 * (t**2) + coe.b2* t + coe.c2;
-  //       resultPoint.y = coe.a1 * (t**2) + coe.b1* t + coe.c1;
-  //     //   let segLen = splineLength(slaveLine.points[i],slaveLine.points[i+1]);
-  //     //   let resultLen = splineLength(slaveLine.points[i],resultPoint);
-  //     //   resultPoint.stationNumber = slaveLine.points[i].stationNumber + (slaveLine.points[i+1].stationNumber - slaveLine.points[i].stationNumber) * resultLen/segLen;
-  //       let MasterPoint = PointLineMatch(resultPoint,masterLine)
-  //       resultPoint.masterStationNumber = MasterPoint.masterStationNumber.toFixed(4)*1
-  //       resultPoint.stationNumber = resultPoint.masterStationNumber
-  //       if (MasterPoint.normalCos * (resultPoint.x - MasterPoint.x) + MasterPoint.normalSin * (resultPoint.y - MasterPoint.y) >= 0) {
-  //         sign = 1
-  //       }
-  //       else {
-  //         sign = -1
-  //       }
-  //       resultPoint.offset = sign * Math.sqrt((resultPoint.x-MasterPoint.x)**2 + (resultPoint.y-MasterPoint.y)**2).toFixed(4)*1;
-  //       let verticalInfo =  VerticalPositionGenerator(VerticalDataList, SuperElevation, resultPoint)
-  //       resultPoint.z = verticalInfo.elevation
-  //       resultPoint.gradientX = verticalInfo.gradientX;
-  //       resultPoint.gradientY = verticalInfo.gradientY;
-  //       break;
-  //     }
-  //   }
-  //   return resultPoint
-  // }
-
-  // export const PointLineMatch = (targetPoint, masterLine) =>{
-  //     let resultPoint = {};
-  //     let point1 = {};
-  //     let point2 = {};
-  //     let crossproduct1 = 0;
-  //     let crossproduct2 = 0;
-  //     let innerproduct = 1;
-  //     let station1 = 0;
-  //     let station2 = 0;
-  //     let station3 = 0;
-  //     const err = 0.1;
-  //     let num_iter = 0;
-  //     let a = true;
-
-  //     //matser_segment = variables.Segment_station_number(master_line_datalist)
-
-  //     for (let i = 0; i< masterLine.segments.start.length;i++){
-  //         station1 = masterLine.segments.start[i];
-  //         station2 = masterLine.segments.end[i];
-  //         point1 = PointGenerator(station1, masterLine,90)
-  //         point2 = PointGenerator(station2, masterLine,90)
-  //         crossproduct1 = (targetPoint.x - point1.x) * point1.normalSin - (targetPoint.y - point1.y) * point1.normalCos
-  //         crossproduct2 = (targetPoint.x - point2.x) * point2.normalSin - (targetPoint.y - point2.y) * point2.normalCos
-
-  //         if (crossproduct1 * crossproduct2 < 0){
-  //             a = false;
-  //             break;
-  //         }else if (Math.abs(crossproduct1) < err){
-  //             resultPoint = {...point1};
-  //             break;
-  //         } else if (Math.abs(crossproduct2) < err){
-  //             resultPoint = {...point2};
-  //             break;
-  //         }
-  //     }
-  //     if (a == false){
-  //         while (Math.abs(innerproduct) > err){
-  //             innerproduct = (targetPoint.x - point1.x) * (-point1.normalSin) + (targetPoint.y - point1.y) * (point1.normalCos)
-  //             station3 = station1 + innerproduct
-  //             point1 = PointGenerator(station3, masterLine,90)
-  //             station1 = point1.stationNumber
-  //             crossproduct1 = (targetPoint.x - point1.x) * point1.normalSin - (targetPoint.y - point1.y) * point1.normalCos
-  //             resultPoint = {...point1}
-  //             num_iter += 1
-  //             if (num_iter == 200){
-  //                 break;
-  //             }
-  //         }
-  //     };
-  //     //targetPoint.master_station_number = result.station_number
-  //     return resultPoint
-  //  };
-   
-  // export const splineCoefficient = (point1, point2) =>{
-  //     const x1 = point1.x;
-  //     const y1 = point1.y;
-  //     const x2 = point2.x;
-  //     const y2 = point2.y;
-
-  //     let b1 = (y2 - y1) / 2;
-  //     let b2 = (x2 - x1) / 2;
-  //     let a1 = 0.0;
-  //     let a2 = 0.0;
-  //     let df1 = 0.0;
-  //     let df2 = 0.0;
-  //     if (point1.normalSin === 0){
-  //         if (point2.normalSin === 0){
-  //             // return Math.abs(y2 - y1)
-  //         }
-  //         else{
-  //             df2 = -point2.normalCos / point2.normalSin
-  //             a2 = b2 / 2
-  //             a1 = (-b1 + df2 * (2 * a2 + b2)) / 2
-  //         } 
-  //     } else if (point2.normalSin === 0){
-  //         if (point2.normalSin === 0){
-  //             // return Math.abs(y2 - y1)
-  //         }else{
-  //             df1 = -point1.normalCos / point1.normalSin
-  //             a2 = b2 / -2
-  //             a1 = (-b1 + df1 * (-2 * a2 + b2)) / -2
-  //         }
-  //     }else{
-  //         df1 = -point1.normalCos / point1.normalSin
-  //         df2 = -point2.normalCos / point2.normalSin
-
-  //         if (df1 === df2){
-  //             a1 = 0
-  //             a2 = 0
-  //         }else{
-  //             a2 = (2*b1-(df1+df2)*b2)/(2*(df2-df1))
-  //             a1 = (-b1 + df1 * (-2 * a2 + b2)) / -2
-  //         }
-  //     }
-  //     const c1 = y2 - a1 - b1;
-  //     const c2 = x2 - a2 - b2;
-  //  return {a1:a1,b1:b1,c1:c1,a2:a2,b2:b2,c2:c2}
-  // }
-
-  // export const splineLength =(point1, point2) =>{
-  //     const coe = splineCoefficient(point1,point2)
-  //     const w1 = 5/9
-  //     const w2 = 8/9
-  //     const w3 = w1
-  //     const t1 = -0.77459666924
-  //     const t2 = 0
-  //     const t3 = 0.77459666924
-
-  //     let length = Math.sqrt(Math.pow((2 * coe.a1 * t1 + coe.b1), 2) + Math.pow((2 * coe.a2 * t1 + coe.b2),2)) * w1 
-  //             + Math.sqrt(Math.pow((2 * coe.a1 * t2 + coe.b1), 2) + Math.pow((2 * coe.a2 * t2 + coe.b2),2)) * w2
-  //             + Math.sqrt(Math.pow((2 * coe.a1 * t3 + coe.b1), 2) + Math.pow((2 * coe.a2 * t3 + coe.b2),2)) * w3
-  //     return length.toFixed(4)*1
-  // }
-
-  // export function OffsetSkewCalculator(masterPoint, masterSkew, offset, masterLine){
-  //     const startSkew = masterSkew
-  //     let offsetStation = masterPoint.masterStationNumber + offset
-  //     const offsetPoint = PointGenerator(offsetStation, masterLine)
-  //     let sign = 1;
-  //     if (masterPoint.normalCos * offsetPoint.normalSin - masterPoint.normalSin * offsetPoint.normalCos >= 0){
-  //         sign = 1;
-  //     }else{
-  //         sign = -1;
-  //     }
-  //     let deltaSkew = (Math.acos(masterPoint.normalCos * offsetPoint.normalCos + masterPoint.normalSin * offsetPoint.normalSin) * 180 / Math.PI).toFixed(4)*1
-  //     let offsetSkew = startSkew - sign * (deltaSkew)
-  //     if (offsetSkew > 90){ offsetSkew -= 180;}
-  //     else if (offsetSkew< -90){ offsetSkew +=180;}
-  //     return offsetSkew
-  // }
-
-  // export function SplinePointGenerator(masterPoint, slavePoints, VerticalDataList, SuperElevation){
-  //     let resultPoint = {
-  //         stationNumber:0,
-  //         x: 0,
-  //         y: 0,
-  //         z: 0,
-  //         normalCos: 0,
-  //         normalSin: 0,
-  //         masterStationNumber:0,
-  //         offset: 0,
-  //         virtual: false,
-  //         skew:90
-  //       };
-
-  //       let dX = masterPoint.normalCos;
-  //       let dY = masterPoint.normalSin;
-  //       let alpha = dY;
-  //       let beta = -1 * dX;
-  //       let gamma = - alpha * masterPoint.x - beta * masterPoint.y;
-  //       let dummy1 = 0;
-  //       let dummy2 = 0;
-  //       let sign = 1;
-  //       for (let i = 0; i<slavePoints.length -1;i++){
-  //         dummy1 = alpha * slavePoints[i].x + beta * slavePoints[i].y + gamma;
-  //         dummy2 = alpha * slavePoints[i+1].x + beta * slavePoints[i+1].y + gamma;
-  //         if (dummy1 ===0){
-  //           resultPoint = slavePoints[i]
-  //           break;
-  //         }
-  //         else if (dummy2 ===0) {
-  //           resultPoint = slavePoints[i+1]
-  //           break;
-  //         }
-  //         else if (dummy1*dummy2 < 0){
-  //           let coe = splineCoefficient(slavePoints[i],slavePoints[i+1]);
-  //           let a = alpha * coe.a2 + beta * coe.a1;
-  //           let b = alpha * coe.b2 + beta * coe.b1;
-  //           let c = alpha * coe.c2 + beta * coe.c1 + gamma;
-  //           let t = 0;
-  //           if (a == 0){
-  //               t = -c/b;
-  //           }else{
-  //             t = (-b + Math.sqrt(b**2 - 4*a*c))/(2*a);
-  //             if (t>1 || t<-1){
-  //                 t = (-b - Math.sqrt(b**2 - 4*a*c))/(2*a);
-  //             };
-  //           }
-  //           let deltaX = 2* coe.a2 * (t) + coe.b2;
-  //           let deltaY = 2* coe.a1 * (t) + coe.b1;
-  //           let len = Math.sqrt(deltaX**2 + deltaY**2);
-  //           resultPoint.normalCos = - deltaY/len;
-  //           resultPoint.normalSin = deltaX/len;
-  //           resultPoint.x = coe.a2 * (t**2) + coe.b2* t + coe.c2;
-  //           resultPoint.y = coe.a1 * (t**2) + coe.b1* t + coe.c1;
-  //           resultPoint.masterStationNumber = masterPoint.masterStationNumber.toFixed(4)*1
-  //           resultPoint.stationNumber = resultPoint.masterStationNumber
-  //           if (masterPoint.normalCos * (resultPoint.x - masterPoint.x) + masterPoint.normalSin * (resultPoint.y - masterPoint.y) >= 0) {
-  //             sign = 1
-  //           }
-  //           else {
-  //             sign = -1
-  //           }
-  //           resultPoint.offset = sign * Math.sqrt((resultPoint.x-masterPoint.x)**2 + (resultPoint.y-masterPoint.y)**2).toFixed(4)*1;
-  //           let verticalInfo =  VerticalPositionGenerator(VerticalDataList, SuperElevation, resultPoint)
-  //           resultPoint.z = verticalInfo.elevation
-  //           resultPoint.gradientX = verticalInfo.gradientX;
-  //           resultPoint.gradientY = verticalInfo.gradientY;
-  //           break;
-  //         }
-  //       }
-  //       return resultPoint
-  // }
-
-  // export function GridPointGenerator2(masterLine,girderLayout, SEShape, startSkew, endSkew, 
-  //                                     VerticalDataList, SuperElevation,diaPhragmLocate, vStiffLocate, splice, joint, height,taperedPoint){
-  //     let gridPointStation = [];
-  //     let stationDictList = [];
-  //     let nameToPointDict = {};
-  //     const girderNumber = girderLayout.girderSupportPoint.length
-  //     const spanNumber = girderLayout.girderSpanPoint[0].length
-  //     let pointName = ""
-      
-
-  //     for (let i = 0; i< girderNumber;i++){
-  //         let kNum = 1;
-  //         let ptsList = []
-  //         let stationDict = []
-  //         for (let j = 0; j<spanNumber;j++){
-  //             let pts = []
-  //             let stationToNameDict = {}
-  //             pointName = "G" + (i+1) + "S" + (j+1)
-  //             stationToNameDict[girderLayout.girderSupportPoint[i][j+1].masterStationNumber] = pointName
-  //             nameToPointDict[pointName] = girderLayout.girderSupportPoint[i][j+1];
-  //             pointName = "G" + (i+1) + "S" + (j+2)
-  //             stationToNameDict[girderLayout.girderSupportPoint[i][j+2].masterStationNumber] = pointName
-  //             if (j===spanNumber -1){            
-  //                 nameToPointDict[pointName] = girderLayout.girderSupportPoint[i][j+2];
-  //             }
-  //             let skewedStation = []
-  //             if (j===0){
-  //                 let masterPoint = girderLayout.centralSupportPoint[0]
-  //                 let offset = 0;
-  //                 for (let k = 0; k<3;k++){
-  //                     pointName = "G" + (i+1) + "K" + kNum;
-  //                     kNum +=1;
-  //                     if (k ===0){
-  //                         offset = SEShape.start.A + SEShape.start.D // neede to minus sign
-  //                     }else if (k===1){
-  //                         offset = SEShape.start.A + SEShape.start.D + SEShape.start.F // neede to minus sign
-  //                     }else{
-  //                         offset = SEShape.start.A + SEShape.start.D + SEShape.start.F + SEShape.start.G
-  //                     }
-  //                 let skew = OffsetSkewCalculator(masterPoint, startSkew, offset, masterLine)
-  //                 let centerPoint = PointGenerator(masterPoint.masterStationNumber + offset,masterLine, skew);
-  //                 let skewPoint = LineMatch(centerPoint, masterLine, girderLayout.girderLine[i], skew, VerticalDataList, SuperElevation)                
-  //                 skewedStation.push(skewPoint.masterStationNumber);
-  //                 stationToNameDict[skewPoint.masterStationNumber] = pointName;
-  //                 nameToPointDict[pointName] = skewPoint;
-  //                 }
-  //             } else if (j===spanNumber -1){
-  //                 let masterPoint = girderLayout.centralSupportPoint[girderLayout.centralSupportPoint.length - 1]
-  //                 let offset = 0;
-  //                 for (let k = 3; k<6;k++){
-  //                     pointName = "G" + (i+1) + "K" + kNum;
-  //                     kNum +=1;
-  //                     if (k ===3){
-  //                         offset = SEShape.end.A + SEShape.end.D + SEShape.end.F + SEShape.end.G
-  //                     }else if (k===4){
-  //                         offset = SEShape.end.A + SEShape.end.D + SEShape.end.F // neede to minus sign
-  //                     }else{
-  //                         offset = SEShape.end.A + SEShape.end.D // neede to minus sign
-  //                     }
-  //                 let skew = OffsetSkewCalculator(masterPoint, endSkew, -1*offset, masterLine)
-  //                 let centerPoint = PointGenerator(masterPoint.masterStationNumber - offset,masterLine, skew);
-  //                 let skewPoint = LineMatch(centerPoint, masterLine, girderLayout.girderLine[i], skew, VerticalDataList, SuperElevation)                
-  //                 skewedStation.push(skewPoint.masterStationNumber);
-  //                 stationToNameDict[skewPoint.masterStationNumber] = pointName;
-  //                 nameToPointDict[pointName] = skewPoint;
-  //                 }
-  //             }
-  //             pts.push(girderLayout.girderSupportPoint[i][j+1].masterStationNumber);
-  //             pts.push(girderLayout.girderSupportPoint[i][j+2].masterStationNumber);
-  //             pts.push(...skewedStation)
-  //             stationDict.push(stationToNameDict)
-  //             ptsList.push(pts);
-  //         }
-  //         gridPointStation.push(ptsList);
-  //         stationDictList.push(stationDict)
-  //     }
-  //     diaPhragmLocate.forEach(function(elem){
-  //         pointName = elem.name
-  //         let i = pointName.substr(1,1) * 1 -1
-  //         let masterstation = nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset
-  //         let masterPoint = PointGenerator(masterstation,masterLine)
-  //         for (let j=0;j<spanNumber;j++){
-  //             if( masterstation >= girderLayout.centralSupportPoint[j+1].masterStationNumber &&
-  //                 masterstation <= girderLayout.centralSupportPoint[j+2].masterStationNumber){
-  //                 stationDictList[i][j][masterstation] = pointName
-  //                 gridPointStation[i][j].push(masterstation)
-  //                 nameToPointDict[pointName] = SplinePointGenerator(masterPoint, girderLayout.girderSpanPoint[i][j],VerticalDataList, SuperElevation);
-  //                 break;
-  //             }
-  //         }
-  //     })
-      
-  //     vStiffLocate.forEach(function(elem){
-  //         pointName = elem.name
-  //         let i = pointName.substr(1,1) * 1 -1
-  //         let masterstation = nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset
-  //         let masterPoint = PointGenerator(masterstation,masterLine)
-  //         for (let j=0;j<spanNumber;j++){
-  //             if( masterstation >= girderLayout.centralSupportPoint[j+1].masterStationNumber &&
-  //                 masterstation <= girderLayout.centralSupportPoint[j+2].masterStationNumber){
-  //                 stationDictList[i][j][masterstation] = pointName
-  //                 gridPointStation[i][j].push(masterstation)
-  //                 nameToPointDict[pointName] = SplinePointGenerator(masterPoint, girderLayout.girderSpanPoint[i][j],VerticalDataList, SuperElevation);
-  //                 break;
-  //             }
-  //         }
-  //     })
-
-  //     splice.forEach(function(elem){
-  //         pointName = elem.name
-  //         let i = pointName.substr(1,1) * 1 -1
-  //         let masterstation = nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset
-  //         let masterPoint = PointGenerator(masterstation,masterLine)
-  //         for (let j=0;j<spanNumber;j++){
-  //             if( masterstation >= girderLayout.centralSupportPoint[j+1].masterStationNumber &&
-  //                 masterstation <= girderLayout.centralSupportPoint[j+2].masterStationNumber){
-  //                 stationDictList[i][j][masterstation] = pointName
-  //                 gridPointStation[i][j].push(masterstation)
-  //                 nameToPointDict[pointName] = SplinePointGenerator(masterPoint, girderLayout.girderSpanPoint[i][j],VerticalDataList, SuperElevation);
-  //                 break;
-  //             }
-  //         }
-  //     })
-  //     joint.forEach(function(elem){
-  //         pointName = elem.name
-  //         let i = pointName.substr(1,1) * 1 -1
-  //         let masterstation = nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset
-  //         let masterPoint = PointGenerator(masterstation,masterLine)
-  //         for (let j=0;j<spanNumber;j++){
-  //             if( masterstation >= girderLayout.centralSupportPoint[j+1].masterStationNumber &&
-  //                 masterstation <= girderLayout.centralSupportPoint[j+2].masterStationNumber){
-  //                 stationDictList[i][j][masterstation] = pointName
-  //                 gridPointStation[i][j].push(masterstation)
-  //                 nameToPointDict[pointName] = SplinePointGenerator(masterPoint, girderLayout.girderSpanPoint[i][j],VerticalDataList, SuperElevation);
-  //                 break;
-  //             }
-  //         }
-  //     })
-
-  //     height.forEach(function(elem){
-  //         pointName = elem.name
-  //         let i = pointName.substr(1,1) * 1 -1
-  //         let masterstation = nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset
-  //         let masterPoint = PointGenerator(masterstation,masterLine)
-  //         for (let j=0;j<spanNumber;j++){
-  //             if( masterstation >= girderLayout.centralSupportPoint[j+1].masterStationNumber &&
-  //                 masterstation <= girderLayout.centralSupportPoint[j+2].masterStationNumber){
-  //                 stationDictList[i][j][masterstation] = pointName
-  //                 gridPointStation[i][j].push(masterstation)
-  //                 nameToPointDict[pointName] = SplinePointGenerator(masterPoint, girderLayout.girderSpanPoint[i][j],VerticalDataList, SuperElevation);
-  //                 break;
-  //             }
-  //         }
-  //     })
-
-  //     taperedPoint.forEach(function(elem){
-  //         pointName = elem.name
-  //         let i = pointName.substr(1,1) * 1 -1
-  //         let masterstation = nameToPointDict[elem.BenchMark].masterStationNumber + elem.offset
-  //         let masterPoint = PointGenerator(masterstation,masterLine)
-  //         for (let j=0;j<spanNumber;j++){
-  //             if( masterstation >= girderLayout.centralSupportPoint[j+1].masterStationNumber &&
-  //                 masterstation <= girderLayout.centralSupportPoint[j+2].masterStationNumber){
-  //                 stationDictList[i][j][masterstation] = pointName
-  //                 gridPointStation[i][j].push(masterstation)
-  //                 nameToPointDict[pointName] = SplinePointGenerator(masterPoint, girderLayout.girderSpanPoint[i][j],VerticalDataList, SuperElevation);
-  //                 break;
-  //             }
-  //         }
-  //     })
-
-
-  //     for (let i in gridPointStation){
-  //         for(let j in gridPointStation[i]){
-  //             gridPointStation[i][j].sort()
-  //         }
-  //     }
-
-  //     return {gridPointStation, stationDictList, nameToPointDict}
-  // }
+    }
+    gs.forEach(function(elem){elem.sort(function (a, b) { return a.station < b.station ? -1 : 1; });});
+    cs.sort(function (a, b) { return a.station < b.station ? -1 : 1; });
+    
+    return   {girder:gs,centerLine:cs}
+  }
 
   // import { LiteGraph, meshArr, THREE } from "global";
   // import {_} from "global";
@@ -2165,12 +1584,26 @@
 
   // LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
 
+  function StationList(){
+    this.addInput("gridPoint","gridPoint");
+    this.addOutput("centerLineStation","centerLineStation");
+    this.addOutput("girderStation","girderStation");
+  }
+
+  StationList.prototype.onExecute = function() {
+    const gridPoint = this.getInputData(0);
+      
+    const result = GridStationList(gridPoint);
+    this.setOutputData(0, result.centerLine);
+    this.setOutputData(1, result.girder);
+  };
+
   function ToGlobalPoint(Point, node2D){
       let newPoint = {
           x:0, y:0, z:0
       };
-      const cos = - Point.normalCos;
-      const sin = - Point.normalSin;
+      const cos = Point.normalCos;
+      const sin = Point.normalSin;
       let skewCot = 0;
       if (Point.skew !=90){
           skewCot = - 1 / Math.tan(Point.skew * Math.PI/180); 
@@ -2192,7 +1625,7 @@
     if (point1.x === point2.x){
       x = point1.x;
       y = tan1 === null? null : tan1 * (x) + H;
-    }else{
+    }else {
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       x = tan1 === null? point1.x:(b - H) / (tan1 - a);
@@ -2211,7 +1644,7 @@
       x4 = point2.x + thickness;
       y3 = tan1 === null? null : tan1 * (x3 - point1.x) + point1.y;
       y4 = tan2 === null? null : tan2 * (x4 - point2.x) + point2.y;
-    }else{
+    }else {
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       let alpha = thickness * Math.sqrt(1 + 1/a**2);
@@ -2438,7 +1871,7 @@
                       R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i][2] + (R -Math.sqrt(R**2 - x1**2));
-                  }else{
+                  }else {
                       height = girderBaseInfo.height[i][2];
                   }
               }else if (girderBaseInfo.height[i][4] == "parabola"){
@@ -2448,10 +1881,10 @@
                   }else if (deltaH<0){
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i][2] - deltaH / L**2 * x1**2;
-                  }else{
+                  }else {
                       height = girderBaseInfo.height[i][2];
                   }
-              }else{  //straight
+              }else {  //straight
                   x1 = station - sp.masterStationNumber;
                   height = girderBaseInfo.height[i][2] - x1/L * deltaH;
               }
@@ -2472,20 +1905,7 @@
               slabThickness = slabLayout[i][2] * (l - x) / l + slabLayout[i + 1][2] * (x) / l;
           }
       }
-      // for (let i = 0; i < girderBaseInfo.slabThickness.length; i++) {
-      //     let sp = pointDict[girderBaseInfo.slabThickness[i].start];
-      //     let ep = pointDict[girderBaseInfo.slabThickness[i].end];
-      //     if (masterStation >= sp.masterStationNumber && masterStation <= ep.masterStationNumber) {
-      //         deltaH = girderBaseInfo.slabThickness[i].startH - girderBaseInfo.slabThickness[i].endH
-      //         L = ep.masterStationNumber - sp.masterStationNumber;
-      //         //straight
-      //         x1 = masterStation - sp.masterStationNumber;
-      //         slabThickness = girderBaseInfo.slabThickness[i].startH - x1 / L * deltaH
-      //         break;
-      //     } else {
-      //         slabThickness = 270; // slab thickness추후 예외상황없도록 수정
-      //     }
-      // }
+     
       forward.slabThickness = slabThickness;
       backward.slabThickness = slabThickness;
 
@@ -2566,233 +1986,6 @@
 
       return { forward, backward }
   }
-  // export function PointSectionInfo(station,skew, girderBaseInfo,pointDict){
-  //     let forward = {
-  //         height : 0,
-  //         slabThickness :0,
-  //         skew:skew,
-  //         uFlangeW : 0,
-  //         uFlangeThk : 0, 
-  //         lFlangeThk : 0, 
-  //         webThk : 0, 
-  //         uRibH : 0,
-  //         uRibThk : 0, 
-  //         uRibLO : [],
-  //         lRibH : 0,
-  //         lRibThk : 0,
-  //         lRibLO : [],
-  //     };
-  //     let backward = {
-  //         height : 0,
-  //         slabThickness :0,
-  //         skew:skew,
-  //         uFlangeW : 0,
-  //         uFlangeThk : 0, 
-  //         lFlangeThk : 0, 
-  //         webThk : 0, 
-  //         uRibH : 0,
-  //         uRibThk : 0, 
-  //         uRibLO : [],
-  //         lRibH : 0,
-  //         lRibThk : 0,
-  //         lRibLO : [],
-  //     };
-      
-  //     let R = 0;
-  //     let x1 = 0;
-  //     let deltaH = 0;
-  //     let L = 0;
-  //     let height = 0;
-  //     for (let i = 0; i< girderBaseInfo.height.length;i++){
-  //         let sp = pointDict[girderBaseInfo.height[i].start];
-  //         let ep = pointDict[girderBaseInfo.height[i].end];
-  //         if (station >= sp.masterStationNumber && station <= ep.masterStationNumber){
-  //             deltaH = girderBaseInfo.height[i].startH - girderBaseInfo.height[i].endH
-  //             L = ep.masterStationNumber - sp.masterStationNumber;
-  //             if (girderBaseInfo.height[i].type == "circle"){
-  //                 if (deltaH>0){
-  //                     R = Math.abs((L**2 + deltaH**2) / 2 / deltaH)
-  //                     x1 = ep.masterStationNumber - station;
-  //                     height = girderBaseInfo.height[i].endH + (R -Math.sqrt(R**2 - x1**2));
-  //                 }else if (deltaH<0){
-  //                     R = Math.abs((L**2 + deltaH**2) / 2 / deltaH)
-  //                     x1 = station - sp.masterStationNumber;
-  //                     height = girderBaseInfo.height[i].startH + (R -Math.sqrt(R**2 - x1**2))
-  //                 }else{
-  //                     height = girderBaseInfo.height[i].startH
-  //                 }
-  //             }else if (girderBaseInfo.height[i].type == "parabola"){
-  //                 if (deltaH>0){
-  //                     x1 = ep.masterStationNumber - station;
-  //                     height = girderBaseInfo.height[i].endH + deltaH / L**2 * x1**2;
-  //                 }else if (deltaH<0){
-  //                     x1 = station - sp.masterStationNumber;
-  //                     height = girderBaseInfo.height[i].startH - deltaH / L**2 * x1**2;
-  //                 }else{
-  //                     height = girderBaseInfo.height[i].startH
-  //                 }
-  //             }else{  //straight
-  //                 x1 = station - sp.masterStationNumber;
-  //                 height = girderBaseInfo.height[i].startH - x1/L * deltaH
-  //             }
-  //             break;
-  //         }
-  //     }
-  //     forward.height = height;
-  //     backward.height = height;
-
-
-  //     let slabThickness = 0;
-  //     for (let i = 0; i< girderBaseInfo.slabThickness.length;i++){
-  //         let sp = pointDict[girderBaseInfo.slabThickness[i].start];
-  //         let ep = pointDict[girderBaseInfo.slabThickness[i].end];
-  //         if (station >= sp.masterStationNumber && station <= ep.masterStationNumber){
-  //             deltaH = girderBaseInfo.slabThickness[i].startH - girderBaseInfo.slabThickness[i].endH
-  //             L = ep.masterStationNumber - sp.masterStationNumber;
-  //             //straight
-  //             x1 = station - sp.masterStationNumber;
-  //             slabThickness = girderBaseInfo.slabThickness[i].startH - x1/L * deltaH
-  //             break;
-  //         }else{
-  //             slabThickness = 270; // slab thickness추후 예외상황없도록 수정
-  //         }
-  //     }
-  //     forward.slabThickness = slabThickness;
-  //     backward.slabThickness = slabThickness;
-
-  //     var uFlange = girderBaseInfo.uFlange.filter(function(element){ 
-  //         return (station >= pointDict[element.start].masterStationNumber && station < pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(uFlange.length>0){
-  //         forward.uFlangeThk = uFlange[0].thickness
-  //         forward.uFlangeW = uFlange[0].startW + (uFlange[0].endW - uFlange[0].startW)* (station - pointDict[uFlange[0].start].masterStationNumber) / (pointDict[uFlange[0].end].masterStationNumber - pointDict[uFlange[0].start].masterStationNumber)
-  //     }
-  //     uFlange = girderBaseInfo.uFlange.filter(function(element){ 
-  //         return (station > pointDict[element.start].masterStationNumber && station <= pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(uFlange.length>0){
-  //         backward.uFlangeThk = uFlange[0].thickness
-  //         backward.uFlangeW = uFlange[0].startW + (uFlange[0].endW - uFlange[0].startW)* (station - pointDict[uFlange[0].start].masterStationNumber) / (pointDict[uFlange[0].end].masterStationNumber - pointDict[uFlange[0].start].masterStationNumber)
-  //     }
-
-  //     var lFlange = girderBaseInfo.lFlange.filter(function(element){ 
-  //         return (station >= pointDict[element.start].masterStationNumber && station < pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(lFlange.length>0){
-  //         forward.lFlangeThk = lFlange[0].thickness
-  //     }
-  //     lFlange = girderBaseInfo.lFlange.filter(function(element){ 
-  //         return (station > pointDict[element.start].masterStationNumber && station <= pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(lFlange.length>0){
-  //         backward.lFlangeThk = lFlange[0].thickness
-  //     }
-
-  //     var web = girderBaseInfo.web.filter(function(element){ 
-  //         return (station >= pointDict[element.start].masterStationNumber && station < pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(web.length>0){
-  //         forward.webThk = web[0].thickness
-  //     }
-  //     web = girderBaseInfo.web.filter(function(element){ 
-  //         return (station > pointDict[element.start].masterStationNumber && station <= pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(web.length>0){
-  //         backward.webThk = web[0].thickness
-  //     }
-
-  //     var uRib = girderBaseInfo.uRib.filter(function(element){ 
-  //         return (station >= pointDict[element.start].masterStationNumber && station < pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(uRib.length>0){
-  //         forward.uRibThk = uRib[0].thickness
-  //         forward.uRibH = uRib[0].height
-  //         forward.uRibLO = uRib[0].layout
-  //     }
-  //     uRib = girderBaseInfo.uRib.filter(function(element){ 
-  //         return (station > pointDict[element.start].masterStationNumber && station <= pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(uRib.length>0){
-  //         backward.uRibThk = uRib[0].thickness
-  //         backward.uRibH = uRib[0].height
-  //         backward.uRibLO = uRib[0].layout
-  //     }
-
-  //     var lRib = girderBaseInfo.lRib.filter(function(element){ 
-  //         return (station >= pointDict[element.start].masterStationNumber && station < pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(lRib.length>0){
-  //         forward.lRibThk = lRib[0].thickness
-  //         forward.lRibH = lRib[0].height
-  //         forward.lRibLO = lRib[0].layout
-  //     }
-  //     lRib = girderBaseInfo.lRib.filter(function(element){ 
-  //         return (station > pointDict[element.start].masterStationNumber && station <= pointDict[element.end].masterStationNumber)
-  //         })
-  //     if(lRib.length>0){
-  //         backward.lRibThk = lRib[0].thickness
-  //         backward.lRibH = lRib[0].height
-  //         backward.lRibLO = lRib[0].layout
-  //     }
-
-  //     return {forward, backward}
-  // }
-
-  // export function sectionPoint(sectionInfo, pointSectionInfo, gradient){
-  //     const height = pointSectionInfo.forward.height;
-  //     const centerThickness = 270 //  slab변수 추가
-  //     const lwb = {x: - sectionInfo.B/2, y:-sectionInfo.H}
-  //     const lwt = {x: - sectionInfo.UL, y:0}
-  //     const rwb = {x: sectionInfo.B/2, y:-sectionInfo.H}
-  //     const rwt = {x: sectionInfo.UR, y:0}
-  //     let forward = {};
-  //     let backward = {};
-  //     let ps = {};
-  //     let skew = pointSectionInfo.forward.skew; // gridPoint의 skew가 있어 사용여부 확인후 삭제요망
-  //     for (let i = 0; i < 2;i++){
-  //         if (i === 0) {
-  //             ps = pointSectionInfo.forward
-  //         } else {
-  //             ps = pointSectionInfo.backward
-  //         }
-  //         let slabThickness = ps.slabThickness - centerThickness
-          
-  //         let Rib = {}
-  //         for (let j in ps.lRibLO){
-  //         let lRib = [{x:ps.lRibLO[j] - ps.lRibThk/2,y:-height},{x:ps.lRibLO[j]- ps.lRibThk/2,y:-height+ps.lRibH},
-  //                     {x:ps.lRibLO[j] + ps.lRibThk/2,y:-height+ps.lRibH},{x:ps.lRibLO[j] + ps.lRibThk/2,y:-height}]
-  //         let keyname = "lRib" + j
-  //         Rib[keyname] = lRib                    
-  //          }
-
-           
-  //         // leftWeb
-  //         let lw1 = WebPoint(lwb,lwt,0,-height) //{x:blwX,y:-height}
-  //         let lw2 = WebPoint(lwb,lwt,gradient,-slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
-  //         let lWeb = PlateRestPoint(lw1,lw2,0,gradient,-ps.webThk);
-  //         // rightWeb
-  //         let rw1 = WebPoint(rwb,rwt,0,-height) //{x:brwX,y:-height}
-  //         let rw2 = WebPoint(rwb,rwt,gradient,-slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
-  //         let rWeb = PlateRestPoint(rw1,rw2,0,gradient,ps.webThk);
-  //         // bottomplate
-  //         let b1 = {x:lw1.x - sectionInfo.C1,y:-height}
-  //         let b2 = {x:rw1.x + sectionInfo.D1,y:-height}
-  //         let bottomPlate = PlateRestPoint(b1,b2,null,null,-ps.lFlangeThk)
-  //         // TopPlate
-  //         let tl1 = {x: lw2.x - sectionInfo.C, y: lw2.y + gradient*(- sectionInfo.C)};
-  //         let tl2 = {x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient*(- sectionInfo.C + ps.uFlangeW)};
-  //         let topPlate1 = PlateRestPoint(tl1,tl2,-1/gradient,-1/gradient,ps.uFlangeThk);
-  //         let tr1 = {x: rw2.x + sectionInfo.D, y: rw2.y + gradient*(sectionInfo.D)};
-  //         let tr2 = {x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient*(sectionInfo.D - ps.uFlangeW)};
-  //         let topPlate2 = PlateRestPoint(tr1,tr2,-1/gradient,-1/gradient,ps.uFlangeThk);;
-  //         if (i===0){
-  //             forward ={skew, bottomPlate:bottomPlate, leftTopPlate:topPlate1, rightTopPlate : topPlate2, lWeb:lWeb, rWeb:rWeb, ...Rib}    
-  //         }else {
-  //             backward ={skew, bottomPlate:bottomPlate, leftTopPlate:topPlate1, rightTopPlate : topPlate2, lWeb:lWeb, rWeb:rWeb, ...Rib}    
-  //         }
-  //     }
-  //     return {forward, backward}
-  //   }
 
   function SectionPoint(){
     this.addInput("gridPoint","gridPoint");
@@ -2811,267 +2004,140 @@
     this.setOutputData(0, sectionPointDict);
   };
 
-  function SteelBoxDict(gridPointList,stationDictList,nameToPointDict, sectionPointDict){
-      let steelBoxDict = {};
-      let pk1 = "";
-      let pk2 = "";
-      let UFi = 1;
-      let Bi = 1;
-      let LWi = 1;
-      let RWi = 1;
-      let Ribi = 1;
-      let keyname = "";
-      for (let i  in gridPointList){
-        for (let j in gridPointList[i]){
-          for (let k = 0; k< gridPointList[i][j].length -1;k++){
-            pk1 = stationDictList[i][j][gridPointList[i][j][k]];
-            pk2 = stationDictList[i][j][gridPointList[i][j][k+1]];
-            let point1 = nameToPointDict[pk1];
-            let point2 = nameToPointDict[pk2];
+  function SteelBoxDict2(girderStationList, sectionPointDict) {
+    console.log("sb", girderStationList, sectionPointDict);
+    let steelBoxDict = {};
+    let pk1 = "";
+    let pk2 = "";
+    let UFi = 1;
+    let Bi = 1;
+    let LWi = 1;
+    let RWi = 1;
+    let Ribi = 1;
+    let keyname = "";
 
-            keyname = "G"+(i*1+1).toString()+"TopPlate" + UFi;
-            if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
-            let L1 = sectionPointDict[pk1].forward.leftTopPlate;
-            let R1 = sectionPointDict[pk1].forward.rightTopPlate;
-            let L2 = sectionPointDict[pk2].backward.leftTopPlate;
-            let L3 = sectionPointDict[pk2].forward.leftTopPlate;
-            let R2 = sectionPointDict[pk2].backward.rightTopPlate;
-            let R3 = sectionPointDict[pk2].forward.rightTopPlate;
-              
-            if(L1[1].x>=R1[1].x){ //폐합인 경우 
-              let C1 = [L1[0],R1[0],R1[3],L1[3]];
-              C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
-            }else{
-              L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-              R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)));
-            }
-            let FisB = true;
-            for (let i in L2){ if(L2[i] !== L3[i] || R2[i] !== R3[i]){FisB = false;}}
-            if (!FisB || pk2.substr(2,1)==="K" || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP"|| k === gridPointList[i][j].length -2){
-              if(L2[1].x>=R2[1].x){ //폐합인 경우 
-                let C2 = [L2[0],R2[0],R2[3],L2[3]];
-                C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
-              }else{
-                L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-                R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)));
-              }
-            }
-            if(pk2.substr(2,1)==="K" || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP"){ UFi +=1; }
+      for (let i in girderStationList){
+        for (let j = 0; j<girderStationList[i].length -1;j++){
+          
+          let point1 = girderStationList[i][j].point;
+          let point2 = girderStationList[i][j+1].point;
 
+          pk1 = girderStationList[i][j].key;
+          pk2 = girderStationList[i][j+1].key;
 
-            keyname = "G"+(i*1+1).toString()+"BottomPlate" + Bi;
-            if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
-            L1 = sectionPointDict[pk1].forward.bottomPlate;
-            L2 = sectionPointDict[pk2].backward.bottomPlate;
-            L3 = sectionPointDict[pk2].forward.bottomPlate;
-              
+          keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi;
+          if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+          let L1 = sectionPointDict[pk1].forward.leftTopPlate;
+          let R1 = sectionPointDict[pk1].forward.rightTopPlate;
+          let L2 = sectionPointDict[pk2].backward.leftTopPlate;
+          let L3 = sectionPointDict[pk2].forward.leftTopPlate;
+          let R2 = sectionPointDict[pk2].backward.rightTopPlate;
+          let R3 = sectionPointDict[pk2].forward.rightTopPlate;
+
+          if (L1[1].x >= R1[1].x) { //폐합인 경우 
+            let C1 = [L1[0], R1[0], R1[3], L1[3]];
+            C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
+          } else {
             L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-            
-            FisB = true;
-            for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
-            if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP"|| k === gridPointList[i][j].length -2){
-                L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+            R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)));
+          }
+          let FisB = true;
+          for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false; } }
+          if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+            if (L2[1].x >= R2[1].x) { //폐합인 경우 
+              let C2 = [L2[0], R2[0], R2[3], L2[3]];
+              C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
+            } else {
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+              R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)));
             }
-            if(pk2.substr(2,2)==="BF" || pk2.substr(2,2)==="SP"){ Bi +=1; }
+          }
+          if (pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP") { UFi += 1; }
 
-            keyname = "G"+(i*1+1).toString()+"LeftWeB" + LWi;
-            if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
-            L1 = sectionPointDict[pk1].forward.lWeb;
-            L2 = sectionPointDict[pk2].backward.lWeb;
-            L3 = sectionPointDict[pk2].forward.lWeb;
-            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-            FisB = true;
-            for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
-            if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || k === gridPointList[i][j].length -2){
-                L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-            }
-            if(pk2.substr(2,2)==="LW" || pk2.substr(2,2)==="SP" ){ LWi +=1; }
 
-            keyname = "G"+(i*1+1).toString()+"RightWeB" + RWi;
-            if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
-            L1 = sectionPointDict[pk1].forward.rWeb;
-            L2 = sectionPointDict[pk2].backward.rWeb;
-            L3 = sectionPointDict[pk2].forward.rWeb;
-            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-            FisB = true;
-            for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
-            if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || k === gridPointList[i][j].length -2){
-                L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-            }
-            if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){ RWi +=1; }
+          keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi;
+          if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+          L1 = sectionPointDict[pk1].forward.bottomPlate;
+          L2 = sectionPointDict[pk2].backward.bottomPlate;
+          L3 = sectionPointDict[pk2].forward.bottomPlate;
 
-            let RibList = [];
-            for (let ii in  sectionPointDict[pk1].forward){
-              if (ii.includes("Rib"))
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+
+          FisB = true;
+          for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
+          if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
+            L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+          }
+          if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1; }
+
+          keyname = "G"+(i*1+1).toString()+"LeftWeB" + LWi;
+          if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
+          L1 = sectionPointDict[pk1].forward.lWeb;
+          L2 = sectionPointDict[pk2].backward.lWeb;
+          L3 = sectionPointDict[pk2].forward.lWeb;
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+          FisB = true;
+          for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
+          if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || pk2.substr(2, 2) === "K6"){
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+          }
+          if(pk2.substr(2,2)==="LW" || pk2.substr(2,2)==="SP" ){ LWi +=1; }
+
+          keyname = "G"+(i*1+1).toString()+"RightWeB" + RWi;
+          if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
+          L1 = sectionPointDict[pk1].forward.rWeb;
+          L2 = sectionPointDict[pk2].backward.rWeb;
+          L3 = sectionPointDict[pk2].forward.rWeb;
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+          FisB = true;
+          for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
+          if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || pk2.substr(2, 2) === "K6"){
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+          }
+          if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){ RWi +=1; }
+
+          let RibList = [];
+          for (let ii in sectionPointDict[pk1].forward) {
+            if (ii.includes("Rib"))
               RibList.push(ii);
+          }
+          for (let Ribkey of RibList) {
+            keyname = "G" + (i * 1 + 1).toString() + "lRib" + Ribi;
+            if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+            L1 = sectionPointDict[pk1].forward[Ribkey];
+            L2 = sectionPointDict[pk2].backward[Ribkey];
+            L3 = sectionPointDict[pk2].forward[Ribkey];
+            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+            FisB = true;
+            for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false; }
+            if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+              Ribi += 1;
             }
-            for (let Ribkey of RibList){
-              keyname = "G"+(i*1+1).toString()+"lRib" + Ribi;
-              if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
-              L1 = sectionPointDict[pk1].forward[Ribkey];
-              L2 = sectionPointDict[pk2].backward[Ribkey];
-              L3 = sectionPointDict[pk2].forward[Ribkey];
-
-              L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-              FisB = true;
-              for (let i in L2){ FisB = L3? (L2[i] !== L3[i]? false :true):false; }
-              if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || k === gridPointList[i][j].length -2){
-                  L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-                  Ribi +=1;
-              }
-              // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){  }
+            // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){  }
           }
 
-          }
-          }
+        }
       }
+    // }
 
-      return steelBoxDict
+    return steelBoxDict
   }
 
-
-  function SteelBoxView(steelBoxDict,initPoint){
-      let group = new global.THREE.Group();
-      // var meshMaterial = new THREE.MeshLambertMaterial( {
-      //     color: 0x00ff00,
-      //     emissive: 0x44aa44,
-      //     opacity: 1,
-      //     side:THREE.DoubleSide,
-      //     transparent: false,
-      //     wireframe : false
-      //   } );
-      let meshMaterial = new global.THREE.MeshNormalMaterial();
-          meshMaterial.side = global.THREE.DoubleSide;
-      for (let key in steelBoxDict){
-          
-          steelBoxDict[key]["points"].forEach(function(plist){
-              if(plist.length>0){
-              let geometry = new global.THREE.Geometry();
-              for (let i = 0; i< plist.length;i++){
-                  geometry.vertices.push(new global.THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z));
-              }
-          
-              for (let i = 0; i< plist.length/4 -1;i++){
-                  for (let j= 0; j<4;j++){
-                      let k = j+1 === 4? 0: j+1;
-                      geometry.faces.push(new global.THREE.Face3(i*4+j,i*4+k,(i+1)*4+j));
-                      geometry.faces.push(new global.THREE.Face3(i*4+k,(i+1)*4+k,(i+1)*4+j));
-                  }
-                  if (i===0){
-                      geometry.faces.push(new global.THREE.Face3(0,1,2));
-                      geometry.faces.push(new global.THREE.Face3(0,2,3));
-                  }else if(i===(plist.length/4 -2)){
-                      geometry.faces.push(new global.THREE.Face3((i+1)*4,(i+1)*4+1,(i+1)*4+2));
-                      geometry.faces.push(new global.THREE.Face3((i+1)*4,(i+1)*4+2,(i+1)*4+3));
-                  }
-              }
-              
-              geometry.computeFaceNormals();
-              group.add( new global.THREE.Mesh(geometry,meshMaterial) );
-              }
-          });
-      }
-      return group
-  }
+  // import { sceneAdder } from "global";
 
   function SteelBox(){
-    this.addInput("gridPoint","gridPoint");
+    this.addInput("girderStation","girderStation");
     this.addInput("sectionPointDict","sectionPointDict");
     this.addOutput("steelBoxDict","steelBoxDict");
   }
 
   SteelBox.prototype.onExecute = function() {
-    const gridPointList = this.getInputData(0).gridPointStation;
-    const stationDictList = this.getInputData(0).stationDictList;
-    const nameToPointDict = this.getInputData(0).nameToPointDict;
+    const girderStation = this.getInputData(0);
     const sectionPointDict = this.getInputData(1);
-    const result = SteelBoxDict(gridPointList,stationDictList,nameToPointDict, sectionPointDict);
-    
+    const result = SteelBoxDict2(girderStation, sectionPointDict);
     this.setOutputData(0, result);
   };
-
-  global.LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
-
-  function SteelPlateView(){
-    this.addInput("steelBoxDict","steelBoxDict");
-    this.addInput("Point","Point");
-  }
-
-  SteelPlateView.prototype.onExecute = function() {
-    const steeBoxDict = this.getInputData(0);
-    const initPoint = this.getInputData(1);
-    const group = SteelBoxView(steeBoxDict,initPoint);
-    global.meshArr.current.push({ id: 0, mesh: group}); 
-  };
-
-  global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
-
-
-  function InitPoint(){
-    this.addInput("gridPoint","gridPoint");
-    this.addOutput("Point","Point");
-  }
-
-  InitPoint.prototype.onExecute = function() {
-    this.getInputData(0);
-    this.setOutputData(0, this.getInputData(0).nameToPointDict["G1S1"]);
-  };
-
-  global.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
-
-  function DiaView(nameToPointDict, diaDict,initPoint){
-      var group = new global.THREE.Group();
-      // var meshMaterial = new THREE.MeshLambertMaterial( {
-      //     color: 0x00ffff,
-      //     emissive: 0x44aaaa,
-      //     opacity: 1,
-      //     side:THREE.DoubleSide,
-      //     transparent: false,
-      //     wireframe : false
-      //   } );
-      var meshMaterial = new global.THREE.MeshNormalMaterial();
-      for (let diakey in diaDict){
-         let point = nameToPointDict[diakey];
-         for (let partkey in diaDict[diakey]){
-         let shapeNode = diaDict[diakey][partkey].points;
-         let Thickness = diaDict[diakey][partkey].Thickness;
-         let zPosition = diaDict[diakey][partkey].z;
-         let rotationY = diaDict[diakey][partkey].rotationY;
-         let rotationX = diaDict[diakey][partkey].rotationX;
-         let hole = diaDict[diakey][partkey].hole;
-         group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
-          }
-      }
-      return group
-  }
-
-  function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial){
-      var shape = new global.THREE.Shape();
-      var shapeNodeVectors = [];
-      for (let i = 0; i<shapeNode.length;i++){
-          shapeNodeVectors.push(new global.THREE.Vector2( shapeNode[i].x,shapeNode[i].y));
-      }
-      shape.setFromPoints(shapeNodeVectors);
-      if (hole.length > 0){
-          var holeVectors = [];
-          for (let i = 0; i<hole.length;i++){
-              holeVectors.push(new global.THREE.Vector2( hole[i].x, hole[i].y));
-          }
-          var holeShape = new global.THREE.Shape();
-          holeShape.setFromPoints(holeVectors);
-          shape.holes.push(holeShape);
-      }
-
-      var geometry = new global.THREE.ExtrudeBufferGeometry(shape,{depth: Thickness, steps: 1,bevelEnabled: false});
-      var mesh = new global.THREE.Mesh(geometry, meshMaterial);
-      var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2;  //+ 
-      
-      mesh.rotation.set(rotationX,rotationY,0); //(rotationY - 90)*Math.PI/180
-      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
-      mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
-      mesh.translateZ(zPosition);
-      return mesh
-  }
 
   function DiaShapeDict(
     sectionPointDict,
@@ -3254,6 +2320,7 @@
       let lcos = (leftline[1].x - leftline[0].x) / Math.sqrt((leftline[1].x - leftline[0].x)**2 + (leftline[1].y - leftline[0].y)**2);
       let ltan = (leftline[1].y - leftline[0].y) / (leftline[1].x - leftline[0].x);
       let lsin = lcos * ltan;
+      // 슬래브 기준두께에 따라 브레이싱의 상단좌표가 이동해야 하나, 현재 기준은 0,0을 기준점으로 하고 있어 수정이 필요함 20.03.17 by drlim
       let newleftline = [
         {x:leftline[0].x - (ds.spc - lcos * ds.pts[0]) / ltan, y: leftline[0].y - (ds.spc - lcos * ds.pts[0])},
         {x:leftline[1].x + (ds.spc - lsin * ds.pts[0]), y: leftline[1].y + ltan * (ds.spc - lsin * ds.pts[0])}
@@ -3581,6 +2648,9 @@
      }
   }
 
+  // import { LiteGraph, meshArr } from "global";
+
+
   function DiaDict(){
     this.addInput("sectionPointDict","sectionPointDict");
     this.addInput("diaphragmLayout","diaphragmLayout");
@@ -3595,23 +2665,6 @@
     const result = DiaShapeDict(sectionPointDict,diaphragmLayout,diaphragmSectionList);
     this.setOutputData(0, result);
   };
-  global.LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
-
-  function DiaPhragmView(){
-    this.addInput("gridPoint","gridPoint");
-    this.addInput("diaDict","diaDict");
-    this.addInput("Point","Point");
-  }
-
-  DiaPhragmView.prototype.onExecute = function() {
-    const nameToPointDict = this.getInputData(0).nameToPointDict;
-    const diaDict = this.getInputData(1);
-    const initPoint = this.getInputData(2);
-    const group = DiaView(nameToPointDict, diaDict,initPoint);
-    global.meshArr.current.push({ id: 0, mesh: group}); 
-  };
-
-  global.LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
 
   function VstiffDict(){
     this.addInput("sectionPointDict","sectionPointDict");
@@ -3627,14 +2680,197 @@
     const result = VstiffShapeDict(sectionPointDict,vStiffLayout,vStiffSectionList);
     this.setOutputData(0, result);
   };
-  global.LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
+
+  function LineView(linepoints, initPoint, color){
+      var group = new global.THREE.Group();
+      var geometry = new global.THREE.Geometry();
+      const xInit = initPoint.x;
+      const yInit = initPoint.y;
+      const zInit = initPoint.z;
+      for (let i = 0; i<linepoints.length;i++){
+          geometry.vertices.push( 
+          new global.THREE.Vector3	(linepoints[i].x - xInit,linepoints[i].y - yInit,	linepoints[i].z - zInit));
+      }
+      var colorCode = color? color:0xffff00;
+      var line = new global.THREE.Line(
+          geometry, new global.THREE.LineBasicMaterial( {color: colorCode} )
+      );
+      group.add(line);
+      return group
+  }
+
+  function SteelBoxView(steelBoxDict,initPoint){
+      let group = new global.THREE.Group();
+      // var meshMaterial = new THREE.MeshLambertMaterial( {
+      //     color: 0x00ff00,
+      //     emissive: 0x44aa44,
+      //     opacity: 1,
+      //     side:THREE.DoubleSide,
+      //     transparent: false,
+      //     wireframe : false
+      //   } );
+      let meshMaterial = new global.THREE.MeshNormalMaterial();
+          meshMaterial.side = global.THREE.DoubleSide;
+      for (let key in steelBoxDict){
+          
+          steelBoxDict[key]["points"].forEach(function(plist){
+              if(plist.length>0){
+              let geometry = new global.THREE.Geometry();
+              for (let i = 0; i< plist.length;i++){
+                  geometry.vertices.push(new global.THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z));
+              }
+          
+              for (let i = 0; i< plist.length/4 -1;i++){
+                  for (let j= 0; j<4;j++){
+                      let k = j+1 === 4? 0: j+1;
+                      geometry.faces.push(new global.THREE.Face3(i*4+j,i*4+k,(i+1)*4+j));
+                      geometry.faces.push(new global.THREE.Face3(i*4+k,(i+1)*4+k,(i+1)*4+j));
+                  }
+                  if (i===0){
+                      geometry.faces.push(new global.THREE.Face3(0,1,2));
+                      geometry.faces.push(new global.THREE.Face3(0,2,3));
+                  }else if(i===(plist.length/4 -2)){
+                      geometry.faces.push(new global.THREE.Face3((i+1)*4,(i+1)*4+1,(i+1)*4+2));
+                      geometry.faces.push(new global.THREE.Face3((i+1)*4,(i+1)*4+2,(i+1)*4+3));
+                  }
+              }
+              
+              geometry.computeFaceNormals();
+              group.add( new global.THREE.Mesh(geometry,meshMaterial) );
+              }
+          });
+      }
+      return group
+  }
+
+  function DiaView(nameToPointDict, diaDict,initPoint){
+      var group = new global.THREE.Group();
+      // var meshMaterial = new THREE.MeshLambertMaterial( {
+      //     color: 0x00ffff,
+      //     emissive: 0x44aaaa,
+      //     opacity: 1,
+      //     side:THREE.DoubleSide,
+      //     transparent: false,
+      //     wireframe : false
+      //   } );
+      var meshMaterial = new global.THREE.MeshNormalMaterial();
+      for (let diakey in diaDict){
+         let point = nameToPointDict[diakey];
+         for (let partkey in diaDict[diakey]){
+         let shapeNode = diaDict[diakey][partkey].points;
+         let Thickness = diaDict[diakey][partkey].Thickness;
+         let zPosition = diaDict[diakey][partkey].z;
+         let rotationY = diaDict[diakey][partkey].rotationY;
+         let rotationX = diaDict[diakey][partkey].rotationX;
+         let hole = diaDict[diakey][partkey].hole;
+         group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
+          }
+      }
+      return group
+  }
+
+  function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial){
+      var shape = new global.THREE.Shape();
+      var shapeNodeVectors = [];
+      for (let i = 0; i<shapeNode.length;i++){
+          shapeNodeVectors.push(new global.THREE.Vector2( shapeNode[i].x,shapeNode[i].y));
+      }
+      shape.setFromPoints(shapeNodeVectors);
+      if (hole.length > 0){
+          var holeVectors = [];
+          for (let i = 0; i<hole.length;i++){
+              holeVectors.push(new global.THREE.Vector2( hole[i].x, hole[i].y));
+          }
+          var holeShape = new global.THREE.Shape();
+          holeShape.setFromPoints(holeVectors);
+          shape.holes.push(holeShape);
+      }
+
+      var geometry = new global.THREE.ExtrudeBufferGeometry(shape,{depth: Thickness, steps: 1,bevelEnabled: false});
+      var mesh = new global.THREE.Mesh(geometry, meshMaterial);
+      var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2;  //+ 
+      
+      mesh.rotation.set(rotationX,rotationY,0); //(rotationY - 90)*Math.PI/180
+      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
+      mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
+      mesh.translateZ(zPosition);
+      return mesh
+  }
+
+  function LineViewer(){
+    this.addInput("points","points");
+    this.addInput("initPoint","point");
+    this.addInput("color","number");
+  }
+  LineViewer.prototype.onExecute = function() {
+  };
+
+  LineViewer.prototype.on3DExecute = function() {
+    const points = this.getInputData(0);
+    const initPoint = this.getInputData(1);
+    const color = this.getInputData(2);
+    let mesh = LineView(points,initPoint,color);
+    global.sceneAdder({id:0,mesh:mesh});
+  };
+
+  function SteelPlateView(){
+    this.addInput("steelBoxDict","steelBoxDict");
+    this.addInput("Point","Point");
+  }
+
+  SteelPlateView.prototype.onExecute = function() {
+    const steeBoxDict = this.getInputData(0);
+    const initPoint = this.getInputData(1);
+    const group = SteelBoxView(steeBoxDict,initPoint);
+    global.sceneAdder({ id: 0, mesh: group}); 
+  };
+
+  function DiaPhragmView(){
+    this.addInput("gridPoint","gridPoint");
+    this.addInput("diaDict","diaDict");
+    this.addInput("Point","Point");
+  }
+
+  DiaPhragmView.prototype.onExecute = function() {
+    const pointDict = this.getInputData(0);
+    const diaDict = this.getInputData(1);
+    const initPoint = this.getInputData(2);
+    const group = DiaView(pointDict, diaDict,initPoint);
+    global.sceneAdder({ id: 0, mesh: group}); 
+  };
+
+
+
+  function InitPoint(){
+    this.addInput("gridPoint","gridPoint");
+    this.addOutput("Point","Point");
+  }
+
+  InitPoint.prototype.onExecute = function() {
+    this.getInputData(0);
+    this.setOutputData(0, this.getInputData(0)["G1S1"]);
+  };
 
   // import { defaultValues } from "./defaultValues";
 
   global.LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
   global.LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
   global.LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
+  global.LiteGraph.registerNodeType("nexivil/GridStationList", StationList);
   global.LiteGraph.registerNodeType("nexivil/SectionPoint", SectionPoint);
+  global.LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
+
+  global.LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
+  global.LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
+
+
+
+  global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
+  global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
+  global.LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
+  global.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
+
+
   // const {
   //   horizon,
   //   vertical,
