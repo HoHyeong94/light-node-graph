@@ -50,10 +50,12 @@ export function VstiffShapeDict(
   vStiffLayout,
   vStiffSectionList
 ) {
+  const position = 0;
+  const section = 1 ;
   let result = {};
   for (let i = 0; i < vStiffLayout.length; i++) {
-    let gridkey = vStiffLayout[i].position;
-    let vSection = vStiffSectionList[vStiffLayout[i].section];
+    let gridkey = vStiffLayout[i][position];
+    let vSection = vStiffSectionList[vStiffLayout[i][section]];
     let webPoints = [
       sectionPointDict[gridkey].forward.lWeb[0],
       sectionPointDict[gridkey].forward.lWeb[1],

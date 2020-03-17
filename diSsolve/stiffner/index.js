@@ -19,7 +19,7 @@ DiaDict.prototype.onExecute = function() {
 
 export function VstiffDict(){
   this.addInput("sectionPointDict","sectionPointDict");
-  this.addInput("vStiffLayout","vStiffLayout");
+  this.addInput("vStiffLayout","arr");
   this.addInput("vStiffSectionList","vStiffSectionList");
   this.addOutput("diaDict","diaDict");
 }

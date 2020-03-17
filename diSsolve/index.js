@@ -14,11 +14,8 @@ LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
 LiteGraph.registerNodeType("nexivil/GridStationList", StationList);
 LiteGraph.registerNodeType("nexivil/SectionPoint", SectionPoint);
 LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
-
 LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
 LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
-
-
 
 LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
 LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
