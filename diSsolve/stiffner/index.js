@@ -4,7 +4,7 @@ import {DiaShapeDict, VstiffShapeDict} from "./module"
 
 export function DiaDict(){
   this.addInput("sectionPointDict","sectionPointDict");
-  this.addInput("diaphragmLayout","diaphragmLayout");
+  this.addInput("diaphragmLayout","arr");
   this.addInput("diaphragmSectionList","diaphragmSectionList");
   this.addOutput("diaDict","diaDict");
 }

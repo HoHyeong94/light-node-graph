@@ -1464,7 +1464,7 @@
       resultPoint.offset = sign * Math.sqrt((resultPoint.x - newMasterPoint.x) ** 2 + (resultPoint.y - newMasterPoint.y) ** 2).toFixed(4) * 1;
       if (sign>0){
         resultPoint.z = newMasterPoint.z + newMasterPoint.rightGradient * resultPoint.offset;
-      }else {
+      }else{
         resultPoint.z = newMasterPoint.z + newMasterPoint.leftGradient * resultPoint.offset;
       }
       resultPoint.gradientX = newMasterPoint.gradientX;
@@ -1533,7 +1533,7 @@
             s<=pointDict["G"+(girderIndex+1)+"K6"].masterStationNumber){
             gs[girderIndex].push({station:pointDict[k].masterStationNumber,key:k, point:pointDict[k]});
           }
-        }else {
+        }else{
           cs.push({station:pointDict[k].masterStationNumber,key:k, point:pointDict[k]});
         }
 
@@ -1625,7 +1625,7 @@
     if (point1.x === point2.x){
       x = point1.x;
       y = tan1 === null? null : tan1 * (x) + H;
-    }else {
+    }else{
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       x = tan1 === null? point1.x:(b - H) / (tan1 - a);
@@ -1644,7 +1644,7 @@
       x4 = point2.x + thickness;
       y3 = tan1 === null? null : tan1 * (x3 - point1.x) + point1.y;
       y4 = tan2 === null? null : tan2 * (x4 - point2.x) + point2.y;
-    }else {
+    }else{
       let a = (point1.y - point2.y) / (point1.x - point2.x);
       let b = point1.y - a * point1.x;
       let alpha = thickness * Math.sqrt(1 + 1/a**2);
@@ -1871,7 +1871,7 @@
                       R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i][2] + (R -Math.sqrt(R**2 - x1**2));
-                  }else {
+                  }else{
                       height = girderBaseInfo.height[i][2];
                   }
               }else if (girderBaseInfo.height[i][4] == "parabola"){
@@ -1881,10 +1881,10 @@
                   }else if (deltaH<0){
                       x1 = station - sp.masterStationNumber;
                       height = girderBaseInfo.height[i][2] - deltaH / L**2 * x1**2;
-                  }else {
+                  }else{
                       height = girderBaseInfo.height[i][2];
                   }
-              }else {  //straight
+              }else{  //straight
                   x1 = station - sp.masterStationNumber;
                   height = girderBaseInfo.height[i][2] - x1/L * deltaH;
               }
@@ -2144,10 +2144,12 @@
     diaphragmLayout,
     diaphragmSectionList
   ) {
+    const position = 0;
+    const section = 1 ;
     let result = {};
     for (let i = 0; i < diaphragmLayout.length; i++) {
-      let gridkey = diaphragmLayout[i].position;
-      let diaSection = diaphragmSectionList[diaphragmLayout[i].section];
+      let gridkey = diaphragmLayout[i][position];
+      let diaSection = diaphragmSectionList[diaphragmLayout[i][section]];
       let webPoints = [
         sectionPointDict[gridkey].forward.lWeb[0],
         sectionPointDict[gridkey].forward.lWeb[1],
@@ -2161,14 +2163,14 @@
         sectionPointDict[gridkey].forward.rightTopPlate[2]
       ];
       let skew = sectionPointDict[gridkey].forward.skew;
-      if (diaphragmLayout[i].section == "diaType1") {
+      if (diaphragmLayout[i][section] == "diaType1") {
         result[gridkey] = diaphragmSection(
           webPoints,
           skew,
           uflangePoints,
           diaSection
         );
-      } else if (diaphragmLayout[i].section == "diaType2") {
+      } else if (diaphragmLayout[i][section] == "diaType2") {
         result[gridkey] = diaphragmSection2(
           webPoints,
           skew,
@@ -2653,7 +2655,7 @@
 
   function DiaDict(){
     this.addInput("sectionPointDict","sectionPointDict");
-    this.addInput("diaphragmLayout","diaphragmLayout");
+    this.addInput("diaphragmLayout","arr");
     this.addInput("diaphragmSectionList","diaphragmSectionList");
     this.addOutput("diaDict","diaDict");
   }

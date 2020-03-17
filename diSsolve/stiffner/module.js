@@ -7,10 +7,12 @@ export function DiaShapeDict(
   diaphragmLayout,
   diaphragmSectionList
 ) {
+  const position = 0;
+  const section = 1 ;
   let result = {};
   for (let i = 0; i < diaphragmLayout.length; i++) {
-    let gridkey = diaphragmLayout[i].position;
-    let diaSection = diaphragmSectionList[diaphragmLayout[i].section];
+    let gridkey = diaphragmLayout[i][position];
+    let diaSection = diaphragmSectionList[diaphragmLayout[i][section]];
     let webPoints = [
       sectionPointDict[gridkey].forward.lWeb[0],
       sectionPointDict[gridkey].forward.lWeb[1],
@@ -24,14 +26,14 @@ export function DiaShapeDict(
       sectionPointDict[gridkey].forward.rightTopPlate[2]
     ];
     let skew = sectionPointDict[gridkey].forward.skew;
-    if (diaphragmLayout[i].section == "diaType1") {
+    if (diaphragmLayout[i][section] == "diaType1") {
       result[gridkey] = diaphragmSection(
         webPoints,
         skew,
         uflangePoints,
         diaSection
       );
-    } else if (diaphragmLayout[i].section == "diaType2") {
+    } else if (diaphragmLayout[i][section] == "diaType2") {
       result[gridkey] = diaphragmSection2(
         webPoints,
         skew,
