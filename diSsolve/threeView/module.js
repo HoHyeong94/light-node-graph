@@ -84,7 +84,7 @@ export function DiaView(diaDict,initPoint){
        let rotationX = diaDict[diakey][partkey].rotationX
        let hole = diaDict[diakey][partkey].hole
        let point = diaDict[diakey].point?diaDict[diakey].point:diaDict[diakey][partkey].point
-       if (parktky !== "point"){
+       if (partkey !== "point"){
        group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
     }
         }
