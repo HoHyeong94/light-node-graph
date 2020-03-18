@@ -2140,6 +2140,7 @@
   };
 
   function DiaShapeDict(
+    gridPoint,
     sectionPointDict,
     diaphragmLayout,
     diaphragmSectionList
@@ -2178,11 +2179,14 @@
           diaSection
         );
       }
+      result[gridkey].point = gridPoint[gridKey];
     }
+    
     return result;
   }
 
   function VstiffShapeDict(
+    gridPoint,
     sectionPointDict,
     vStiffLayout,
     vStiffSectionList
@@ -2207,7 +2211,9 @@
       ];
       let skew = sectionPointDict[gridkey].forward.skew;
       result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection);
+      result[gridkey].point = gridPoint[gridKey];
     }
+    
     return result;
   }
 
@@ -2257,7 +2263,7 @@
             sectionPointDict[pk1].forward.rWeb[0],
             sectionPointDict[pk1].forward.rWeb[1]
           ];
-          hBracingPlateDict[pk1] = hBracingPlate(right, webPoints1, hBSection);
+          hBracingPlateDict[pk1] = hBracingPlate(point1, right, webPoints1, hBSection);
         }
         if (hBracingLayout[i][platelayout[1]]) {
           right = hBracingLayout[i][leftToright] ? true : false;
@@ -2267,7 +2273,7 @@
             sectionPointDict[pk2].forward.rWeb[0],
             sectionPointDict[pk2].forward.rWeb[1]
           ];
-          hBracingPlateDict[pk2] = hBracingPlate(right, webPoints2, hBSection);
+          hBracingPlateDict[pk2] = hBracingPlate(point2, right, webPoints2, hBSection);
         }
       }
     
@@ -2779,7 +2785,7 @@
     return { line:Brline, points:[pointslist, pointslist2,[]]};
   }
 
-  function hBracingPlate(right, webPoints, hBSection){
+  function hBracingPlate(point, right, webPoints, hBSection){
     const bl = webPoints[0];
     const tl = webPoints[1];
     const br = webPoints[2];
@@ -2823,13 +2829,14 @@
       plateShape.push({x:position.x + ps[i].x *cos - ps[i].y*sin, y: ps[i].y*cos + ps[i].x*sin});
     }
 
-    return {plate: {points:plateShape,Thickness: sideTopThickness,z:position.y, rotationX:0, rotationY:rotationY,hole:[]}}
+    return {point:point, plate: {points:plateShape,Thickness: sideTopThickness,z:position.y, rotationX:0, rotationY:rotationY,hole:[]}}
   }
 
   // import { LiteGraph, meshArr } from "global";
 
 
   function DiaDict(){
+      this.addInput("gridPoint","gridPoint");
     this.addInput("sectionPointDict","sectionPointDict");
     this.addInput("diaphragmLayout","arr");
     this.addInput("diaphragmSectionList","diaphragmSectionList");
@@ -2837,14 +2844,16 @@
   }
 
   DiaDict.prototype.onExecute = function() {
-    const sectionPointDict = this.getInputData(0);
-    const diaphragmLayout = this.getInputData(1);
-    const diaphragmSectionList = this.getInputData(2);
-    const result = DiaShapeDict(sectionPointDict,diaphragmLayout,diaphragmSectionList);
+      const gridPoint = this.getInputData(0);
+      const sectionPointDict = this.getInputData(1);
+    const diaphragmLayout = this.getInputData(2);
+    const diaphragmSectionList = this.getInputData(3);
+    const result = DiaShapeDict(gridPoint, sectionPointDict,diaphragmLayout,diaphragmSectionList);
     this.setOutputData(0, result);
   };
 
   function VstiffDict(){
+      this.addInput("gridPoint","gridPoint");
     this.addInput("sectionPointDict","sectionPointDict");
     this.addInput("vStiffLayout","arr");
     this.addInput("vStiffSectionList","vStiffSectionList");
@@ -2852,10 +2861,11 @@
   }
 
   VstiffDict.prototype.onExecute = function() {
-    const sectionPointDict = this.getInputData(0);
-    const vStiffLayout = this.getInputData(1);
-    const vStiffSectionList = this.getInputData(2);
-    const result = VstiffShapeDict(sectionPointDict,vStiffLayout,vStiffSectionList);
+      const gridPoint = this.getInputData(0);
+      const sectionPointDict = this.getInputData(1);
+    const vStiffLayout = this.getInputData(2);
+    const vStiffSectionList = this.getInputData(3);
+    const result = VstiffShapeDict(gridPoint, sectionPointDict,vStiffLayout,vStiffSectionList);
     this.setOutputData(0, result);
   };
 
@@ -3429,7 +3439,7 @@
       return group
   }
 
-  function DiaView(nameToPointDict, diaDict,initPoint){
+  function DiaView(diaDict,initPoint){
       var group = new global.THREE.Group();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0x00ffff,
@@ -3441,7 +3451,6 @@
       //   } );
       var meshMaterial = new global.THREE.MeshNormalMaterial();
       for (let diakey in diaDict){
-         let point = nameToPointDict[diakey];
          for (let partkey in diaDict[diakey]){
          let shapeNode = diaDict[diakey][partkey].points;
          let Thickness = diaDict[diakey][partkey].Thickness;
@@ -3449,6 +3458,7 @@
          let rotationY = diaDict[diakey][partkey].rotationY;
          let rotationX = diaDict[diakey][partkey].rotationX;
          let hole = diaDict[diakey][partkey].hole;
+         let point = diaDict[diakey].point?diaDict[diakey].point:diaDict[diakey][partkey].point;
          group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
           }
       }
@@ -3483,7 +3493,7 @@
       return mesh
   }
 
-  function HBracingPlateView(pointDict, hBraicngPlateDict, initPoint){
+  function HBracingPlateView(hBraicngPlateDict, initPoint){
       var group = new global.THREE.Group();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0x00ffff,
@@ -3495,7 +3505,7 @@
       //   } );
       var meshMaterial = new global.THREE.MeshNormalMaterial();
       for (let pk in hBraicngPlateDict){
-         let point = pointDict[pk];
+      //    let point = pointDict[pk]
          for (let partkey in hBraicngPlateDict[pk]){
          let shapeNode = hBraicngPlateDict[pk][partkey].points;
          let Thickness = hBraicngPlateDict[pk][partkey].Thickness;
@@ -3503,6 +3513,7 @@
          let rotationY = hBraicngPlateDict[pk][partkey].rotationY;
          let rotationX = hBraicngPlateDict[pk][partkey].rotationX;
          let hole = hBraicngPlateDict[pk][partkey].hole;
+         let point = diaDict[diakey].point?diaDict[diakey].point:diaDict[diakey][partkey].point;
          group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
           }
       }
@@ -3571,31 +3582,27 @@
   };
 
   function DiaPhragmView(){
-    this.addInput("gridPoint","gridPoint");
     this.addInput("diaDict","diaDict");
     this.addInput("Point","Point");
   }
 
   DiaPhragmView.prototype.onExecute = function() {
-    const pointDict = this.getInputData(0);
-    const diaDict = this.getInputData(1);
-    const initPoint = this.getInputData(2);
-    const group = DiaView(pointDict, diaDict,initPoint);
+    const diaDict = this.getInputData(0);
+    const initPoint = this.getInputData(1);
+    const group = DiaView(diaDict,initPoint);
     global.sceneAdder({ id: 0, mesh: group}); 
   };
 
   function HorBracingView(){
-      this.addInput("gridPoint","gridPoint");
       this.addInput("hBracingDict","hBracingDict");
       this.addInput("Point","Point");
     }
     
     HorBracingView.prototype.onExecute = function() {
-      const pointDict = this.getInputData(0);
-      const hb = this.getInputData(1);
-      const initPoint = this.getInputData(2);
+      const hb = this.getInputData(0);
+      const initPoint = this.getInputData(1);
       const group = HBracingView(hb.hBracingDict,initPoint);
-      const group2 = HBracingPlateView(pointDict, hb.hBracingPlateDict,initPoint);
+      const group2 = HBracingPlateView(hb.hBracingPlateDict,initPoint);
       global.sceneAdder({ id: 0, mesh: group}); 
       global.sceneAdder({ id: 0, mesh: group2}); 
     };
