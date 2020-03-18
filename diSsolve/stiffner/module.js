@@ -42,7 +42,7 @@ export function DiaShapeDict(
         diaSection
       );
     }
-    result[gridkey].point = gridPoint[gridKey];
+    result[gridkey].point = gridPoint[gridkey];
   }
   
   return result;
@@ -74,7 +74,7 @@ export function VstiffShapeDict(
     ];
     let skew = sectionPointDict[gridkey].forward.skew;
     result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection);
-    result[gridkey].point = gridPoint[gridKey]
+    result[gridkey].point = gridPoint[gridkey]
   }
   
   return result;
