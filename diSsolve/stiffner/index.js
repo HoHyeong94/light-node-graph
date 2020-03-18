@@ -3,6 +3,7 @@ import {DiaShapeDict, VstiffShapeDict, HBracingDict} from "./module"
 
 
 export function DiaDict(){
+    this.addInput("gridPoint","gridPoint");
   this.addInput("sectionPointDict","sectionPointDict");
   this.addInput("diaphragmLayout","arr");
   this.addInput("diaphragmSectionList","diaphragmSectionList");
@@ -10,14 +11,16 @@ export function DiaDict(){
 }
 
 DiaDict.prototype.onExecute = function() {
-  const sectionPointDict = this.getInputData(0);
-  const diaphragmLayout = this.getInputData(1);
-  const diaphragmSectionList = this.getInputData(2);
-  const result = DiaShapeDict(sectionPointDict,diaphragmLayout,diaphragmSectionList)
+    const gridPoint = this.getInputData(0);
+    const sectionPointDict = this.getInputData(1);
+  const diaphragmLayout = this.getInputData(2);
+  const diaphragmSectionList = this.getInputData(3);
+  const result = DiaShapeDict(gridPoint, sectionPointDict,diaphragmLayout,diaphragmSectionList)
   this.setOutputData(0, result)
 }
 
 export function VstiffDict(){
+    this.addInput("gridPoint","gridPoint");
   this.addInput("sectionPointDict","sectionPointDict");
   this.addInput("vStiffLayout","arr");
   this.addInput("vStiffSectionList","vStiffSectionList");
@@ -25,10 +28,11 @@ export function VstiffDict(){
 }
 
 VstiffDict.prototype.onExecute = function() {
-  const sectionPointDict = this.getInputData(0);
-  const vStiffLayout = this.getInputData(1);
-  const vStiffSectionList = this.getInputData(2);
-  const result = VstiffShapeDict(sectionPointDict,vStiffLayout,vStiffSectionList)
+    const gridPoint = this.getInputData(0);
+    const sectionPointDict = this.getInputData(1);
+  const vStiffLayout = this.getInputData(2);
+  const vStiffSectionList = this.getInputData(3);
+  const result = VstiffShapeDict(gridPoint, sectionPointDict,vStiffLayout,vStiffSectionList)
   this.setOutputData(0, result)
 }
 

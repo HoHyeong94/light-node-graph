@@ -64,7 +64,7 @@ export function SteelBoxView(steelBoxDict,initPoint){
     return group
 }
 
-export function DiaView(nameToPointDict, diaDict,initPoint){
+export function DiaView(diaDict,initPoint){
     var group = new THREE.Group();
     // var meshMaterial = new THREE.MeshLambertMaterial( {
     //     color: 0x00ffff,
@@ -76,7 +76,6 @@ export function DiaView(nameToPointDict, diaDict,initPoint){
     //   } );
     var meshMaterial = new THREE.MeshNormalMaterial()
     for (let diakey in diaDict){
-       let point = nameToPointDict[diakey]
        for (let partkey in diaDict[diakey]){
        let shapeNode = diaDict[diakey][partkey].points
        let Thickness = diaDict[diakey][partkey].Thickness
@@ -84,6 +83,7 @@ export function DiaView(nameToPointDict, diaDict,initPoint){
        let rotationY = diaDict[diakey][partkey].rotationY
        let rotationX = diaDict[diakey][partkey].rotationX
        let hole = diaDict[diakey][partkey].hole
+       let point = diaDict[diakey].point?diaDict[diakey].point:diaDict[diakey][partkey].point
        group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
         }
     }
@@ -118,7 +118,7 @@ export function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotat
     return mesh
 }
 
-export function HBracingPlateView(pointDict, hBraicngPlateDict, initPoint){
+export function HBracingPlateView(hBraicngPlateDict, initPoint){
     var group = new THREE.Group();
     // var meshMaterial = new THREE.MeshLambertMaterial( {
     //     color: 0x00ffff,
@@ -130,7 +130,7 @@ export function HBracingPlateView(pointDict, hBraicngPlateDict, initPoint){
     //   } );
     var meshMaterial = new THREE.MeshNormalMaterial()
     for (let pk in hBraicngPlateDict){
-       let point = pointDict[pk]
+    //    let point = pointDict[pk]
        for (let partkey in hBraicngPlateDict[pk]){
        let shapeNode = hBraicngPlateDict[pk][partkey].points
        let Thickness = hBraicngPlateDict[pk][partkey].Thickness
@@ -138,6 +138,7 @@ export function HBracingPlateView(pointDict, hBraicngPlateDict, initPoint){
        let rotationY = hBraicngPlateDict[pk][partkey].rotationY
        let rotationX = hBraicngPlateDict[pk][partkey].rotationX
        let hole = hBraicngPlateDict[pk][partkey].hole
+       let point = diaDict[diakey].point?diaDict[diakey].point:diaDict[diakey][partkey].point
        group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
         }
     }

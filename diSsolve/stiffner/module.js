@@ -3,6 +3,7 @@ import { THREE } from "global";
 import {ToGlobalPoint, PlateRestPoint, WebPoint, Kframe, scallop, Fillet2D ,PlateSize, PlateSize2, PointLength} from "../geometryModule"
 
 export function DiaShapeDict(
+  gridPoint,
   sectionPointDict,
   diaphragmLayout,
   diaphragmSectionList
@@ -41,11 +42,14 @@ export function DiaShapeDict(
         diaSection
       );
     }
+    result[gridkey].point = gridPoint[gridKey];
   }
+  
   return result;
 }
 
 export function VstiffShapeDict(
+  gridPoint,
   sectionPointDict,
   vStiffLayout,
   vStiffSectionList
@@ -70,7 +74,9 @@ export function VstiffShapeDict(
     ];
     let skew = sectionPointDict[gridkey].forward.skew;
     result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection);
+    result[gridkey].point = gridPoint[gridKey]
   }
+  
   return result;
 }
 
@@ -120,7 +126,7 @@ export function HBracingDict(
           sectionPointDict[pk1].forward.rWeb[0],
           sectionPointDict[pk1].forward.rWeb[1]
         ];
-        hBracingPlateDict[pk1] = hBracingPlate(right, webPoints1, hBSection);
+        hBracingPlateDict[pk1] = hBracingPlate(point1, right, webPoints1, hBSection);
       }
       if (hBracingLayout[i][platelayout[1]]) {
         right = hBracingLayout[i][leftToright] ? true : false;
@@ -130,7 +136,7 @@ export function HBracingDict(
           sectionPointDict[pk2].forward.rWeb[0],
           sectionPointDict[pk2].forward.rWeb[1]
         ];
-        hBracingPlateDict[pk2] = hBracingPlate(right, webPoints2, hBSection);
+        hBracingPlateDict[pk2] = hBracingPlate(point2, right, webPoints2, hBSection);
       }
     }
   
@@ -643,7 +649,7 @@ export function hBracingSection(point1, point2, webPoints, hBSection){
   return { line:Brline, points:[pointslist, pointslist2,[]]};
 }
 
-export function hBracingPlate(right, webPoints, hBSection){
+export function hBracingPlate(point, right, webPoints, hBSection){
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
@@ -688,5 +694,5 @@ export function hBracingPlate(right, webPoints, hBSection){
     plateShape.push({x:position.x + ps[i].x *cos - ps[i].y*sin, y: ps[i].y*cos + ps[i].x*sin})
   }
 
-  return {plate: {points:plateShape,Thickness: sideTopThickness,z:position.y, rotationX:0, rotationY:rotationY,hole:[]}}
+  return {point:point, plate: {points:plateShape,Thickness: sideTopThickness,z:position.y, rotationX:0, rotationY:rotationY,hole:[]}}
 }

@@ -30,31 +30,27 @@ SteelPlateView.prototype.onExecute = function() {
 }
 
 export function DiaPhragmView(){
-  this.addInput("gridPoint","gridPoint");
   this.addInput("diaDict","diaDict");
   this.addInput("Point","Point");
 }
 
 DiaPhragmView.prototype.onExecute = function() {
-  const pointDict = this.getInputData(0);
-  const diaDict = this.getInputData(1);
-  const initPoint = this.getInputData(2);
-  const group = DiaView(pointDict, diaDict,initPoint);
+  const diaDict = this.getInputData(0);
+  const initPoint = this.getInputData(1);
+  const group = DiaView(diaDict,initPoint);
   sceneAdder({ id: 0, mesh: group}); 
 }
 
 export function HorBracingView(){
-    this.addInput("gridPoint","gridPoint");
     this.addInput("hBracingDict","hBracingDict");
     this.addInput("Point","Point");
   }
   
   HorBracingView.prototype.onExecute = function() {
-    const pointDict = this.getInputData(0);
-    const hb = this.getInputData(1);
-    const initPoint = this.getInputData(2);
+    const hb = this.getInputData(0);
+    const initPoint = this.getInputData(1);
     const group = HBracingView(hb.hBracingDict,initPoint);
-    const group2 = HBracingPlateView(pointDict, hb.hBracingPlateDict,initPoint);
+    const group2 = HBracingPlateView(hb.hBracingPlateDict,initPoint);
     sceneAdder({ id: 0, mesh: group}); 
     sceneAdder({ id: 0, mesh: group2}); 
   }
