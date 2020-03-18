@@ -5,21 +5,21 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
   let result = {};
   for (let k in pointDict) {
     if (k.substr(0, 1) === "G") {
-      let point = pointDict[k]
-      let girderIndex = k.substr(1, 1) - 1
+      let point = pointDict[k];
+      let girderIndex = k.substr(1, 1) - 1;
 
       let station = point.masterStationNumber;
       let gradient = point.gradientY;
       let skew = point.skew;
-      let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict)
-      let sectionInfo = girderBaseInfo[girderIndex].section
+      let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
+      let sectionInfo = girderBaseInfo[girderIndex].section;
 
       const height = pointSectionInfo.forward.height;
-      const centerThickness = slabInfo.slabThickness //  slab변수 추가
-      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H }
-      const lwt = { x: - sectionInfo.UL, y: 0 }
-      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H }
-      const rwt = { x: sectionInfo.UR, y: 0 }
+      const centerThickness = slabInfo.slabThickness; //  slab변수 추가
+      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H };
+      const lwt = { x: - sectionInfo.UL, y: 0 };
+      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H };
+      const rwt = { x: sectionInfo.UR, y: 0 };
       let forward = {};
       let backward = {};
       let ps = {};

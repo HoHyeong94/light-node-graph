@@ -1,7 +1,6 @@
 import {ToGlobalPoint} from "../geometryModule"
 
 export function SteelBoxDict2(girderStationList, sectionPointDict) {
-  console.log("sb", girderStationList, sectionPointDict)
   let steelBoxDict = {};
   let pk1 = ""
   let pk2 = ""
