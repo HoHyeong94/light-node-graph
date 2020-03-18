@@ -6,18 +6,22 @@ export function XbeamDict(
     xbeamLayout,
     xbeamSectionList
   ) {
+      const iNode = 0;
+      const jNode =1;
+      const section =2;
+
     let xbeamSectionDict = {};
     let xbeamPointDict = {};
     for (let i = 0; i < xbeamLayout.length; i++) {
-      let iNodekey = xbeamLayout[i].iNode;
-      let jNodekey = xbeamLayout[i].jNode;
-      let xbeamSection = xbeamSectionList[xbeamLayout[i].section];
+      let iNodekey = xbeamLayout[i][iNode];
+      let jNodekey = xbeamLayout[i][jNode];
+      let xbeamSection = xbeamSectionList[xbeamLayout[i][section]];
       let iSectionPoint = sectionPointDict[iNodekey].forward;
       let jSectionPoint = sectionPointDict[jNodekey].forward;
       let iPoint = nameToPointDict[iNodekey];
       let jPoint = nameToPointDict[jNodekey];
       // let cbkey = 'CB' + iNodekey + 'To' + jNodekey
-      if (xbeamLayout[i].section == "xbeamI") {
+      if (xbeamLayout[i][section] == "xbeamI") {
         xbeamSectionDict[iNodekey] = XbeamSection(
           iPoint,
           jPoint,
@@ -25,7 +29,7 @@ export function XbeamDict(
           jSectionPoint,
           xbeamSection
         );
-      } else if (xbeamLayout[i].section == "xbeamK") {
+      } else if (xbeamLayout[i][section] == "xbeamK") {
         xbeamSectionDict[iNodekey] = XbeamSectionK(
           iPoint,
           jPoint,

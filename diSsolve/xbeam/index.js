@@ -5,7 +5,7 @@ export function Xbeam(){
     this.addInput("sectionPointDict","sectionPointDict");
     this.addInput("xbeamLayout","arr");
     this.addInput("xbeamSectionList","xbeamSectionList");
-    this.addOutput("xbeamDict","xbeamDict");
+    this.addOutput("diaDict","diaDict");
   }
   
   Xbeam.prototype.onExecute = function() {
