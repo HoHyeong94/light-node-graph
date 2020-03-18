@@ -41,7 +41,7 @@ export function XbeamDict(
       // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
       // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
     }
-    return { xbeamSectionDict, xbeamPointDict };
+    return xbeamSectionDict;
   }
 
 export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
