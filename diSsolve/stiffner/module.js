@@ -94,7 +94,6 @@ export function HBracingDict(
     let hBracingDict = {};
     let hBracingPlateDict = {};
     let right = true;
-    console.log(hBracingectionList, hBracingLayout)
     for (let i = 0; i < hBracingLayout.length; i++) {
       let hBSection = hBracingectionList[hBracingLayout[i][section]];
       let pk1 = hBracingLayout[i][from];

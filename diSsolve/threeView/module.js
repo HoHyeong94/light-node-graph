@@ -74,6 +74,7 @@ export function DiaView(diaDict,initPoint){
     //     transparent: false,
     //     wireframe : false
     //   } );
+    console.log(diaDict)
     var meshMaterial = new THREE.MeshNormalMaterial()
     for (let diakey in diaDict){
        for (let partkey in diaDict[diakey]){
