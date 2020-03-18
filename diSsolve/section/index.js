@@ -1,4 +1,3 @@
-import { LiteGraph } from "global";
 import { SectionPointDict } from "./module"
 
 export function SectionPoint(){

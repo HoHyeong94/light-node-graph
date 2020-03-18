@@ -1,5 +1,5 @@
 // import { LiteGraph, THREE, sceneAdder } from "global";
-import {LineToThree, MasterLineData,  } from "./module"
+import { MasterLineData, } from "./module"
 
 export function MasterLine(){
   this.addInput("horizon","arr");

@@ -1,5 +1,5 @@
 import { defaultValues, addedValues } from "./defaultValues";
-import { LiteGraph, meshArr, THREE } from "global";
+import { LiteGraph } from "global";
 
 const {
   horizon,

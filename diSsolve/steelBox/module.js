@@ -1,5 +1,3 @@
-import { THREE } from "global";
-
 import {ToGlobalPoint} from "../geometryModule"
 
 export function SteelBoxDict2(girderStationList, sectionPointDict) {
