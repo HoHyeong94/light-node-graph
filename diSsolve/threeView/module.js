@@ -180,7 +180,7 @@ export function convexMesh(plist, initPoint, meshMaterial) {
     return new THREE.Mesh(geometry, meshMaterial)
 }
 
-export function DeckView(deckPointDict, initPoint, opacity) {
+export function DeckPointView(deckPointDict, initPoint, opacity) {
     let group = new THREE.Group();
     var meshMaterial = new THREE.MeshLambertMaterial({
         color: 0x000000,

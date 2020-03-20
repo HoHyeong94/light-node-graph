@@ -1,5 +1,5 @@
 import { sceneAdder } from "global";
-import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckView as DV} from "./module"
+import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView} from "./module"
 
 export function LineViewer(){
   this.addInput("points","points");
@@ -63,7 +63,7 @@ export function HorBracingView(){
   
   DeckView.prototype.onExecute = function() {
     sceneAdder({ id: 0, 
-        mesh: DV(this.getInputData(0),this.getInputData(1),this.getInputData(2))
+        mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
     }); 
   }
 
