@@ -1,4 +1,4 @@
-import { PlateRestPoint, WebPoint, ZMove } from "../geometryModule"
+import { PlateRestPoint, WebPoint, ZMove, ToGlobalPoint } from "../geometryModule"
 import { LineMatch2 } from "../girder/module"
 import { OffsetPoint } from "../line/module"
 
