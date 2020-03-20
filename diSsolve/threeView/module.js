@@ -192,22 +192,24 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
     });
     // let meshMaterial = new THREE.MeshNormalMaterial()
     //     meshMaterial.side = THREE.DoubleSide
-    for (let part in deckPointDict) {
-        let pNum = deckPointDict[part][0].points.length
-        let geometry = new THREE.Geometry();
-        for (let key in deckPointDict[part]) {
-            deckPointDict[part][key].points.forEach(function (Point) {
-                geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
-            })
-        }
-        for (let i = 0; i < deckPointDict[part].length - 1; i++) {
-            for (let j = 0; j < pNum - 1; j++) {
-                geometry.faces.push(new THREE.Face3(i * pNum + j, i * pNum + j + 1, (i + 1) * pNum + j));
-                geometry.faces.push(new THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
-            }
-        }
-        geometry.computeFaceNormals();
-        group.add(new THREE.Mesh(geometry, meshMaterial));
+    let pNum = deckPointDict[0].slabUpperPoints.length + deckPointDict[0].slabLower.length
+    let geometry = new THREE.Geometry();
+    for (let key in deckPointDict) {
+        deckPointDict[key].slabUpperPoints.forEach(function (Point) {
+            geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
+        })
+        deckPointDict[key].slabLowerPoints.reverse().forEach(function (Point) {
+            geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
+        })
     }
+    for (let i = 0; i < deckPointDict[part].length - 1; i++) {
+        for (let j = 0; j < pNum - 1; j++) {
+            geometry.faces.push(new THREE.Face3(i * pNum + j, i * pNum + j + 1, (i + 1) * pNum + j));
+            geometry.faces.push(new THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
+        }
+    }
+    geometry.computeFaceNormals();
+    group.add(new THREE.Mesh(geometry, meshMaterial));
+
     return group
 }

@@ -251,8 +251,9 @@ export function DeckSectionPoint(
     girderBaseInfo,
     pointDict,
   ) {
-    let slab1 = [];
-    let slab2 = [];
+    let result = [];
+    // let slab1 = [];
+    // let slab2 = [];
     const position = 0;
     const T = 1;
     const H = 2;
@@ -302,10 +303,10 @@ export function DeckSectionPoint(
         lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)))
       }
       slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT })
-      slab1.push({ name: masterStation, points: slabUpperPoints })
-      slab2.push({ name: masterStation, points: slabLowerPoints })
+      result.push.push({ name: masterStation, slabUpperPoints, slabLowerPoints })
+    
     }
-    return { slab1, slab2 }
+    return result //{ slab1, slab2 }
   }
   //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
   export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
