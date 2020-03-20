@@ -204,9 +204,9 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
     }
     for (let i = 0; i < deckPointDict.length - 1; i++) {
         for (let j = 0; j < pNum; j++) {
-            let k = j < pNum-1? j:0;
-            geometry.faces.push(new THREE.Face3(i * pNum + k, i * pNum + k + 1, (i + 1) * pNum + k));
-            geometry.faces.push(new THREE.Face3(i * pNum + k + 1, (i + 1) * pNum + k, (i + 1) * pNum + k + 1));
+            let k = j === pNum-1? 0: j+1;
+            geometry.faces.push(new THREE.Face3(i * pNum + j, i * pNum + k, (i + 1) * pNum + j));
+            geometry.faces.push(new THREE.Face3(i * pNum + k, (i + 1) * pNum + j, (i + 1) * pNum + k));
         }
     }
     geometry.computeFaceNormals();
