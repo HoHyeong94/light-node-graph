@@ -192,7 +192,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
     });
     // let meshMaterial = new THREE.MeshNormalMaterial()
     //     meshMaterial.side = THREE.DoubleSide
-    let pNum = deckPointDict[0].slabUpperPoints.length + deckPointDict[0].slabLower.length
+    let pNum = deckPointDict[0].slabUpperPoints.length + deckPointDict[0].slabLowerPoints.length
     let geometry = new THREE.Geometry();
     for (let key in deckPointDict) {
         deckPointDict[key].slabUpperPoints.forEach(function (Point) {
