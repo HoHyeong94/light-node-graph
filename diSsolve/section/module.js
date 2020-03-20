@@ -325,7 +325,6 @@ export function DeckSectionPoint(
     const rwt = { x: sectionInfo.UR, y: 0 }
     let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
     let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
-    console.log(lw2,sectionInfo,slabInfo )
     // TopPlate
     let tl1 = { x: lw2.x - sectionInfo.C - slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C - slabInfo.w1) };
     let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
@@ -335,5 +334,6 @@ export function DeckSectionPoint(
     dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; })
     points.push(...dummy) //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
     // }
+    console.log(points)
     return points
   }
