@@ -20,7 +20,7 @@ SectionPoint.prototype.onExecute = function() {
 
 export function DeckPoint(){
     this.addInput("masterLine","line");
-    this.addInput("centerLineStations","centerLineStations");
+    this.addInput("centerLineStation","centerLineStation");
     this.addInput("girderLayout","girderLayout");
     this.addInput("slabInfo","slabInfo");
     this.addInput("slabLayout","arr");
