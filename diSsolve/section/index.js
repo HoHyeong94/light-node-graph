@@ -30,7 +30,7 @@ export function DeckPoint(){
   }
 
   DeckPoint.prototype.onExecute = function(){
-    this.setOutPutData(0,DeckSectionPoint(
+    this.setOutputData(0,DeckSectionPoint(
         this.getInputData(0),
         this.getInputData(1),
         this.getInputData(2),
