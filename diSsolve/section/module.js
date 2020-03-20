@@ -297,7 +297,6 @@ export function DeckSectionPoint(
         let girderLine = girderLayout.girderLine[j]
         let girderPoint = LineMatch2(masterPoint, masterLine, girderLine)
         let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout)
-        console.log(girderPoint, lw)
         //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
         //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
         lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)))
@@ -326,6 +325,7 @@ export function DeckSectionPoint(
     const rwt = { x: sectionInfo.UR, y: 0 }
     let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
     let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
+    console.log(lw2,sectionInfo,slabInfo )
     // TopPlate
     let tl1 = { x: lw2.x - sectionInfo.C - slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C - slabInfo.w1) };
     let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
