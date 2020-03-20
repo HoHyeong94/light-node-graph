@@ -192,15 +192,15 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
     });
     // let meshMaterial = new THREE.MeshNormalMaterial()
     //     meshMaterial.side = THREE.DoubleSide
-    for (let i in deckPointDict) {
-        let pNum = deckPointDict[i][0].points.length
+    for (let part in deckPointDict) {
+        let pNum = deckPointDict[part][0].points.length
         let geometry = new THREE.Geometry();
-        for (let key in deckPointDict[i]) {
-            deckPointDict[i][key].points.forEach(function (Point) {
+        for (let key in deckPointDict[part]) {
+            deckPointDict[part][key].points.forEach(function (Point) {
                 geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
             })
         }
-        for (let i = 0; i < deckPointDict[i].length - 1; i++) {
+        for (let i = 0; i < deckPointDict[part].length - 1; i++) {
             for (let j = 0; j < pNum - 1; j++) {
                 geometry.faces.push(new THREE.Face3(i * pNum + j, i * pNum + j + 1, (i + 1) * pNum + j));
                 geometry.faces.push(new THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
