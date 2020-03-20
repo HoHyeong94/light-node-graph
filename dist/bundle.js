@@ -1238,6 +1238,70 @@
     return resultPoint;
   };
 
+  const OffsetPoint = (masterPoint,masterLine,offset) => {
+      let resultPoint = {
+        x: 0,
+        y: 0,
+        z: 0,
+        normalCos: 0,
+        normalSin: 0,
+        masterStationNumber: 0,
+        gradientX:masterPoint.gradientX,
+        gradientY: 0,
+        skew:masterPoint.skew,
+        offset:offset
+      };
+      if (masterPoint.skew === 90){
+        resultPoint.x =  masterPoint.x + masterPoint.normalCos * offset;
+        resultPoint.y = masterPoint.y + masterPoint.normalSin * offset;
+        resultPoint.normalCos =  masterPoint.normalCos;
+        resultPoint.normalSin = masterPoint.normalSin;
+        resultPoint.masterStationNumber = masterPoint.masterStationNumber;
+        resultPoint.gradientY = offset>0? masterPoint.rightGradient:masterPoint.leftGradient;
+        resultPoint.z = masterPoint.z + resultPoint.gradientY * offset;
+      } else {
+        let skewRad = (masterPoint.skew-90)*Math.PI/180;
+        let cos = Math.cos(skewRad);
+        let sin = Math.sin(skewRad);
+        let skewCos = masterPoint.normalCos*cos - masterPoint.normalSin*sin;
+        let skewSin = masterPoint.normalCos*sin + masterPoint.normalSin*cos;
+        let skewC = masterPoint.x * skewSin - masterPoint.y * skewCos;
+        let newP = {};
+        let x = 0;
+        let y=0;
+        let delta = 0;
+        let dist = 0;
+        let ms = masterPoint.masterStationNumber+Math.tan(skewRad)*offset;
+        for (let i=0;i<30;i++){
+          newP = MasterPointGenerator(ms,masterLine);
+          let newCos = newP.normalCos;
+          let newSin = newP.normalSin;
+          let newC = newP.x * newSin - newP.y * newCos;
+          let sign = offset>0?1:-1;
+          x = (skewCos*newC - newCos * skewC)/(skewCos *newSin - skewSin * newCos);
+          y = (skewSin*newC - newSin * skewC)/(skewCos *newSin - skewSin * newCos);
+          dist = Math.sqrt((newP.x - x)**2 + (newP.y - y)**2);
+          if (Math.abs(Math.abs(offset) - dist) < 0.1){
+            break;
+          }else {
+            let icos = newCos*skewCos + newSin*skewSin;
+            let isin = Math.sqrt(1-icos**2);
+            delta = sign*(dist - Math.abs(offset))*isin/icos; //추후 검토가 필요함
+            ms += delta;
+          }
+          
+        }
+        resultPoint.x =  x;
+        resultPoint.y = y;
+        resultPoint.normalCos =  newP.normalCos;
+        resultPoint.normalSin = newP.normalSin;
+        resultPoint.masterStationNumber = newP.masterStationNumber;
+        resultPoint.gradientY = offset>0? newP.rightGradient:newP.leftGradient;
+        resultPoint.z = newP.z + resultPoint.gradientY * offset;
+      }
+      return resultPoint
+    };
+
   // import { LiteGraph, THREE, sceneAdder } from "global";
 
   function MasterLine(){
@@ -1598,7 +1662,7 @@
     this.setOutputData(1, result.girder);
   };
 
-  function ToGlobalPoint(Point, node2D){
+  function ToGlobalPoint$1(Point, node2D){
       let newPoint = {
           x:0, y:0, z:0
       };
@@ -1748,6 +1812,10 @@
     return Math.sqrt((point1.x-point2.x)**2 + (point1.y-point2.y)**2)
   }
 
+  function ZMove(point, z) {
+    return { x: point.x, y: point.y, z: point.z + z }
+  }
+
   function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
     let result = {};
     for (let k in pointDict) {
@@ -1817,7 +1885,6 @@
     }
     return result
   }
-
 
   function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict) {
       let forward = {
@@ -1987,6 +2054,97 @@
       return { forward, backward }
   }
 
+  function DeckSectionPoint(
+      masterLine,
+      centerLineStations,
+      girderLayout,
+      slabInfo,
+      slabLayout,
+      girderBaseInfo,
+      pointDict,
+    ) {
+      let slab1 = [];
+      let slab2 = [];
+    
+    
+      let centerSlabThickness = slabInfo.slabThickness;
+      let haunch = slabInfo.haunchHeight;
+      let endT = 0;
+      let leftOffset = 0;
+      let rightOffset = 0;
+      let slabThickness = 0;
+      for (let i = 1; i < centerLineStations.length - 1; i++) {
+    
+        let masterPoint = centerLineStations[i].point;
+        let masterStation = masterPoint.masterStationNumber;
+        //deckSectionInfo로 분리예정
+        for (let i = 0; i < slabLayout.length - 1; i++) {
+          let ss = pointDict[slabLayout[i].position].masterStationNumber;
+          let es = pointDict[slabLayout[i + 1].position].masterStationNumber;
+          if (masterStation >= ss && masterStation <= es) {
+            let x = masterStation - ss;
+            let l = es - ss;
+            leftOffset = slabLayout[i].leftOffset * (l - x) / l + slabLayout[i + 1].leftOffset * (x) / l;
+            rightOffset = slabLayout[i].rightOffset * (l - x) / l + slabLayout[i + 1].rightOffset * (x) / l;
+            slabThickness = slabLayout[i].H * (l - x) / l + slabLayout[i + 1].H * (x) / l;
+            endT = slabLayout[i].T * (l - x) / l + slabLayout[i + 1].T * (x) / l;
+          }
+        }
+        //deckSectionInfo로 분리예정
+        let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
+        let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
+    
+        let slabUpperPoints = [ZMove(leftPoint, centerSlabThickness + haunch),
+        ZMove(masterPoint, centerSlabThickness + haunch),
+        ZMove(rightPoint, centerSlabThickness + haunch),];
+        let slabLowerPoints = [];
+        slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z + centerSlabThickness + haunch - endT });
+    
+        for (let j in girderLayout.girderLine) {
+          // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
+          let girderLine = girderLayout.girderLine[j];
+          let girderPoint = LineMatch2(masterPoint, masterLine, girderLine);
+          let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+          //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
+          //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
+          lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
+        }
+        slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT });
+        slab1.push({ name: masterStation, points: slabUpperPoints });
+        slab2.push({ name: masterStation, points: slabLowerPoints });
+      }
+      return { slab1, slab2 }
+    }
+    //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
+    function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
+      let points = [];
+      // for (let i in girderBaseInfo){
+      let station = girderPoint.masterStationNumber;
+      let gradient = girderPoint.gradientY;
+      let skew = girderPoint.skew;
+      let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict); // slabThickness만 필요한 경우에는 흠...
+      let sectionInfo = girderBaseInfo.section;
+      let ps = pointSectionInfo.forward.uFlangeW === 0 ? pointSectionInfo.backward : pointSectionInfo.forward;
+      let slabThickness = ps.slabThickness - slabInfo.slabThickness;
+    
+      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H };
+      const lwt = { x: - sectionInfo.UL, y: 0 };
+      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H };
+      const rwt = { x: sectionInfo.UR, y: 0 };
+      let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness); //{x:tlwX,y:gradient*tlwX - slabThickness}
+      let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness); //{x:trwX,y:gradient*trwX - slabThickness}
+      // TopPlate
+      let tl1 = { x: lw2.x - sectionInfo.C - slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C - slabInfo.w1) };
+      let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
+      let tr1 = { x: rw2.x + sectionInfo.D + slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D + slabInfo.w1) };
+      let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
+      let dummy = [tl1, tl2, tr1, tr2];
+      dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; });
+      points.push(...dummy); //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
+      // }
+      return points
+    }
+
   function SectionPoint(){
     this.addInput("gridPoint","gridPoint");
     this.addInput("girderBaseInfo","girderBaseInfo");
@@ -2004,8 +2162,31 @@
     this.setOutputData(0, sectionPointDict);
   };
 
+
+  function DeckPoint(){
+      this.addInput("masterLine","line");
+      this.addInput("centerLineStations","arr");
+      this.addInput("girderLayout","girderLayout");
+      this.addInput("slabInfo","slabInfo");
+      this.addInput("slabLayout","arr");
+      this.addInput("girderBaseInfo","arr");
+      this.addInput("pointDict","pointDict");
+      this.addOutput("DeckPointDict","DeckPointDict");
+    }
+
+    DeckPoint.prototype.onExecute = function(){
+      this.setOutPutData(0,DeckSectionPoint(
+          this.getInputData(0),
+          this.getInputData(1),
+          this.getInputData(2),
+          this.getInputData(3),
+          this.getInputData(4),
+          this.getInputData(5),
+          this.getInputData(6)
+        ));
+    };
+
   function SteelBoxDict2(girderStationList, sectionPointDict) {
-    console.log("sb", girderStationList, sectionPointDict);
     let steelBoxDict = {};
     let pk1 = "";
     let pk2 = "";
@@ -2036,20 +2217,20 @@
 
           if (L1[1].x >= R1[1].x) { //폐합인 경우 
             let C1 = [L1[0], R1[0], R1[3], L1[3]];
-            C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
+            C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint$1(point1, element)));
           } else {
-            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-            R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)));
+            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
+            R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint$1(point1, element)));
           }
           let FisB = true;
           for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false; } }
           if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
             if (L2[1].x >= R2[1].x) { //폐합인 경우 
               let C2 = [L2[0], R2[0], R2[3], L2[3]];
-              C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
+              C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint$1(point2, element)));
             } else {
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-              R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)));
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
+              R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint$1(point2, element)));
             }
           }
           if (pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP") { UFi += 1; }
@@ -2061,12 +2242,12 @@
           L2 = sectionPointDict[pk2].backward.bottomPlate;
           L3 = sectionPointDict[pk2].forward.bottomPlate;
 
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
 
           FisB = true;
           for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
           if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
-            L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+            L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
           }
           if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1; }
 
@@ -2075,11 +2256,11 @@
           L1 = sectionPointDict[pk1].forward.lWeb;
           L2 = sectionPointDict[pk2].backward.lWeb;
           L3 = sectionPointDict[pk2].forward.lWeb;
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
           FisB = true;
           for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
           if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || pk2.substr(2, 2) === "K6"){
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
           }
           if(pk2.substr(2,2)==="LW" || pk2.substr(2,2)==="SP" ){ LWi +=1; }
 
@@ -2088,11 +2269,11 @@
           L1 = sectionPointDict[pk1].forward.rWeb;
           L2 = sectionPointDict[pk2].backward.rWeb;
           L3 = sectionPointDict[pk2].forward.rWeb;
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
           FisB = true;
           for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
           if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || pk2.substr(2, 2) === "K6"){
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
           }
           if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){ RWi +=1; }
 
@@ -2107,11 +2288,11 @@
             L1 = sectionPointDict[pk1].forward[Ribkey];
             L2 = sectionPointDict[pk2].backward[Ribkey];
             L3 = sectionPointDict[pk2].forward[Ribkey];
-            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
             FisB = true;
             for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false; }
             if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
               Ribi += 1;
             }
             // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){  }
@@ -2179,7 +2360,7 @@
           diaSection
         );
       }
-      result[gridkey].point = gridPoint[gridKey];
+      result[gridkey].point = gridPoint[gridkey];
     }
     
     return result;
@@ -2211,7 +2392,7 @@
       ];
       let skew = sectionPointDict[gridkey].forward.skew;
       result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection);
-      result[gridkey].point = gridPoint[gridKey];
+      result[gridkey].point = gridPoint[gridkey];
     }
     
     return result;
@@ -2745,8 +2926,8 @@
     let node1 = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y: tl.y -(upperHeight + sideTopThickness)};
     let node2 = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y: tr.y -(upperHeight + sideTopThickness)};
     let Brline = [
-      ToGlobalPoint(point1, node1),
-      ToGlobalPoint(point2, node2)
+      ToGlobalPoint$1(point1, node1),
+      ToGlobalPoint$1(point2, node2)
     ];
     let Vector = [Brline[1].x - Brline[0].x, 
                   Brline[1].y - Brline[0].y, 
@@ -2892,18 +3073,21 @@
       xbeamLayout,
       xbeamSectionList
     ) {
+        const iNode = 0;
+        const jNode =1;
+        const section =2;
+
       let xbeamSectionDict = {};
-      let xbeamPointDict = {};
       for (let i = 0; i < xbeamLayout.length; i++) {
-        let iNodekey = xbeamLayout[i].iNode;
-        let jNodekey = xbeamLayout[i].jNode;
-        let xbeamSection = xbeamSectionList[xbeamLayout[i].section];
+        let iNodekey = xbeamLayout[i][iNode];
+        let jNodekey = xbeamLayout[i][jNode];
+        let xbeamSection = xbeamSectionList[xbeamLayout[i][section]];
         let iSectionPoint = sectionPointDict[iNodekey].forward;
         let jSectionPoint = sectionPointDict[jNodekey].forward;
         let iPoint = nameToPointDict[iNodekey];
         let jPoint = nameToPointDict[jNodekey];
         // let cbkey = 'CB' + iNodekey + 'To' + jNodekey
-        if (xbeamLayout[i].section == "xbeamI") {
+        if (xbeamLayout[i][section] == "xbeamI") {
           xbeamSectionDict[iNodekey] = XbeamSection(
             iPoint,
             jPoint,
@@ -2911,7 +3095,7 @@
             jSectionPoint,
             xbeamSection
           );
-        } else if (xbeamLayout[i].section == "xbeamK") {
+        } else if (xbeamLayout[i][section] == "xbeamK") {
           xbeamSectionDict[iNodekey] = XbeamSectionK(
             iPoint,
             jPoint,
@@ -2923,7 +3107,7 @@
         // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
         // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
       }
-      return { xbeamSectionDict, xbeamPointDict };
+      return xbeamSectionDict;
     }
 
   function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
@@ -2945,8 +3129,8 @@
       const cot = Math.abs(1 / Math.tan(iPoint.skew * Math.PI / 180));
     
       // 기준점은 iTopNode라고 가정, 가로보는 반드시 skew각도와 일치해야함.
-      let iNode = ToGlobalPoint(iPoint, iSectionPoint.rightTopPlate[0]);
-      let jNode = ToGlobalPoint(jPoint, jSectionPoint.leftTopPlate[0]);
+      let iNode = ToGlobalPoint$1(iPoint, iSectionPoint.rightTopPlate[0]);
+      let jNode = ToGlobalPoint$1(jPoint, jSectionPoint.leftTopPlate[0]);
       let length = Math.sqrt((jNode.x - iNode.x) ** 2 + (jNode.y - iNode.y) ** 2);
       let vec = { x: (jNode.x - iNode.x) / length, y: (jNode.y - iNode.y) / length };
       let grd = (jNode.z - iNode.z) / length;
@@ -2961,8 +3145,8 @@
       let lFlangeL = (iSectionPoint.rWeb[2].x - iSectionPoint.rightTopPlate[0].x) * cosec;
       let rFlangeL = (jSectionPoint.lWeb[2].x - jSectionPoint.leftTopPlate[0].x) * cosec;
     
-      let iBottom = ToGlobalPoint(iPoint, iSectionPoint.bottomPlate[1]);
-      let jBottom = ToGlobalPoint(jPoint, jSectionPoint.bottomPlate[0]);
+      let iBottom = ToGlobalPoint$1(iPoint, iSectionPoint.bottomPlate[1]);
+      let jBottom = ToGlobalPoint$1(jPoint, jSectionPoint.bottomPlate[0]);
       let lengthB = Math.sqrt((jBottom.x - iBottom.x) ** 2 + (jBottom.y - iBottom.y) ** 2);
       let vecB = { x: (jBottom.x - iBottom.x) / lengthB, y: (jBottom.y - iBottom.y) / lengthB };
       let grdB = (jBottom.z - iBottom.z) / lengthB;
@@ -3073,8 +3257,8 @@
         point: bottomPoint
       };
     
-      let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[2]);
-      let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[2]);
+      let iTopNode = ToGlobalPoint$1(iPoint, iSectionPoint.rWeb[2]);
+      let jTopNode = ToGlobalPoint$1(jPoint, jSectionPoint.lWeb[2]);
       let cblength = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
       let cbVec = { x: (jTopNode.x - iTopNode.x) / cblength, y: (jTopNode.y - iTopNode.y) / cblength };
       let gradient = (jTopNode.z - iTopNode.z) / cblength;
@@ -3167,8 +3351,8 @@
       let diaFrameEndOffset = xbeamSection.diaFrameEndOffset;
       const pts = xbeamSection.pts;
     
-      let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
-      let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1]);
+      let iTopNode = ToGlobalPoint$1(iPoint, iSectionPoint.rWeb[1]);
+      let jTopNode = ToGlobalPoint$1(jPoint, jSectionPoint.lWeb[1]);
     
       let length = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
       let xlength = Math.abs(jTopNode.x - iTopNode.x);
@@ -3365,7 +3549,7 @@
       this.addInput("sectionPointDict","sectionPointDict");
       this.addInput("xbeamLayout","arr");
       this.addInput("xbeamSectionList","xbeamSectionList");
-      this.addOutput("xbeamDict","xbeamDict");
+      this.addOutput("diaDict","diaDict");
     }
     
     Xbeam.prototype.onExecute = function() {
@@ -3459,7 +3643,9 @@
          let rotationX = diaDict[diakey][partkey].rotationX;
          let hole = diaDict[diakey][partkey].hole;
          let point = diaDict[diakey].point?diaDict[diakey].point:diaDict[diakey][partkey].point;
+         if (partkey !== "point"){
          group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
+      }
           }
       }
       return group
@@ -3625,6 +3811,7 @@
   global.LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
   global.LiteGraph.registerNodeType("nexivil/GridStationList", StationList);
   global.LiteGraph.registerNodeType("nexivil/SectionPoint", SectionPoint);
+  global.LiteGraph.registerNodeType("nexivil/DeckPoint", DeckPoint);
   global.LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
   global.LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
   global.LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);

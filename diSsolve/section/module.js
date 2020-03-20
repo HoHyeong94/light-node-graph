@@ -1,4 +1,6 @@
-import {PlateRestPoint, WebPoint} from "../geometryModule"
+import { PlateRestPoint, WebPoint, ZMove } from "../geometryModule"
+import { LineMatch2 } from "../girder/module"
+import { OffsetPoint } from "../line/module"
 
 
 export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
@@ -71,7 +73,6 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
   }
   return result
 }
-
 
 export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict) {
     let forward = {
@@ -241,3 +242,93 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     return { forward, backward }
 }
 
+export function DeckSectionPoint(
+    masterLine,
+    centerLineStations,
+    girderLayout,
+    slabInfo,
+    slabLayout,
+    girderBaseInfo,
+    pointDict,
+  ) {
+    let slab1 = [];
+    let slab2 = [];
+  
+  
+    let centerSlabThickness = slabInfo.slabThickness;
+    let haunch = slabInfo.haunchHeight;
+    let endT = 0;
+    let leftOffset = 0;
+    let rightOffset = 0;
+    let slabThickness = 0;
+    for (let i = 1; i < centerLineStations.length - 1; i++) {
+  
+      let masterPoint = centerLineStations[i].point
+      let masterStation = masterPoint.masterStationNumber;
+      //deckSectionInfo로 분리예정
+      for (let i = 0; i < slabLayout.length - 1; i++) {
+        let ss = pointDict[slabLayout[i].position].masterStationNumber;
+        let es = pointDict[slabLayout[i + 1].position].masterStationNumber
+        if (masterStation >= ss && masterStation <= es) {
+          let x = masterStation - ss
+          let l = es - ss
+          leftOffset = slabLayout[i].leftOffset * (l - x) / l + slabLayout[i + 1].leftOffset * (x) / l
+          rightOffset = slabLayout[i].rightOffset * (l - x) / l + slabLayout[i + 1].rightOffset * (x) / l
+          slabThickness = slabLayout[i].H * (l - x) / l + slabLayout[i + 1].H * (x) / l
+          endT = slabLayout[i].T * (l - x) / l + slabLayout[i + 1].T * (x) / l
+        }
+      }
+      //deckSectionInfo로 분리예정
+      let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset)
+      let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset)
+  
+      let slabUpperPoints = [ZMove(leftPoint, centerSlabThickness + haunch),
+      ZMove(masterPoint, centerSlabThickness + haunch),
+      ZMove(rightPoint, centerSlabThickness + haunch),];
+      let slabLowerPoints = [];
+      slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z + centerSlabThickness + haunch - endT })
+  
+      for (let j in girderLayout.girderLine) {
+        // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
+        let girderLine = girderLayout.girderLine[j]
+        let girderPoint = LineMatch2(masterPoint, masterLine, girderLine)
+        let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout)
+        //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
+        //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
+        lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)))
+      }
+      slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT })
+      slab1.push({ name: masterStation, points: slabUpperPoints })
+      slab2.push({ name: masterStation, points: slabLowerPoints })
+    }
+    return { slab1, slab2 }
+  }
+  //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
+  export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
+    let points = [];
+    // for (let i in girderBaseInfo){
+    let station = girderPoint.masterStationNumber;
+    let gradient = girderPoint.gradientY;
+    let skew = girderPoint.skew;
+    let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict) // slabThickness만 필요한 경우에는 흠...
+    let sectionInfo = girderBaseInfo.section
+    let ps = pointSectionInfo.forward.uFlangeW === 0 ? pointSectionInfo.backward : pointSectionInfo.forward;
+    let slabThickness = ps.slabThickness - slabInfo.slabThickness
+  
+    const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H }
+    const lwt = { x: - sectionInfo.UL, y: 0 }
+    const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H }
+    const rwt = { x: sectionInfo.UR, y: 0 }
+    let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
+    let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
+    // TopPlate
+    let tl1 = { x: lw2.x - sectionInfo.C - slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C - slabInfo.w1) };
+    let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
+    let tr1 = { x: rw2.x + sectionInfo.D + slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D + slabInfo.w1) };
+    let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
+    let dummy = [tl1, tl2, tr1, tr2];
+    dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; })
+    points.push(...dummy) //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
+    // }
+    return points
+  }

@@ -150,3 +150,42 @@ export function PlateSize2(points,index,thickness,width){
 export function PointLength(point1,point2){
   return Math.sqrt((point1.x-point2.x)**2 + (point1.y-point2.y)**2)
 }
+
+export function ZOffsetLine(points, z) {
+  let result = [];
+  let vec = [];
+  let cos = [];
+  let err = 0.001;
+  for (let i = 0; i < points.length - 1; i++) {
+    let l = Math.sqrt((points[i].x - points[i + 1].x) ** 2 + (points[i].y - points[i + 1].y) ** 2 + (points[i].z - points[i + 1].z) ** 2);
+    vec.push({ x: (points[i + 1].x - points[i].x) / l, y: (points[i + 1].y - points[i].y) / l, z: (points[i + 1].z - points[i].z) / l })
+    cos.push(Math.sqrt((points[i].x - points[i + 1].x) ** 2 + (points[i].y - points[i + 1].y) ** 2) / l)
+  }
+  if (cos[0] == 0) {
+    result.push(ZMove(points[0], z));
+  } else {
+    result.push(ZMove(points[0], z / cos[0]));
+  }
+  for (let i = 0; i < vec.length - 1; i++) {
+    let costheta = -vec[i + 1].x * vec[i].x - vec[i + 1].y * vec[i].y - vec[i + 1].z * vec[i].z
+    if (costheta >= 1 - err || costheta <= -1 + err) {
+      if (cos[i] == 0) {
+        result.push(ZMove(points[i + 1], z));
+      } else {
+        result.push(ZMove(points[i + 1], z / cos[i]));
+      }
+    } else {
+      let sinHalftheta = Math.sqrt((1 - costheta) / 2);
+      let z2 = sinHalftheta === 0 ? z : z / sinHalftheta;
+      let vecSum = { x: (vec[i + 1].x - vec[i].x), y: (vec[i + 1].y - vec[i].y), z: (vec[i + 1].z - vec[i].z) }
+      let l2 = Math.sqrt(vecSum.x ** 2 + vecSum.y ** 2 + vecSum.z ** 2)
+      result.push({ x: points[i + 1].x + vecSum.x / l2 * z2, y: points[i + 1].y + vecSum.y / l2 * z2, z: points[i + 1].z + vecSum.z / l2 * z2 });
+    }
+  }
+  result.push(ZMove(points[points.length - 1], z / cos[cos.length - 1]));
+  return result
+}
+
+export function ZMove(point, z) {
+  return { x: point.x, y: point.y, z: point.z + z }
+}

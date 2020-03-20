@@ -3,7 +3,7 @@ import { LiteGraph } from "global";
 import "./inputNodes"
 import {MasterLine} from "./line/index"
 import {GirderLayout,GridPoint, StationList} from "./girder/index"
-import {SectionPoint} from "./section/index"
+import {SectionPoint, DeckPoint} from "./section/index"
 import {SteelBox } from "./steelBox/index"
 import { VstiffDict, DiaDict, HBracing } from "./stiffner/index"
 import { Xbeam } from "./xbeam/index"
@@ -14,6 +14,7 @@ LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
 LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
 LiteGraph.registerNodeType("nexivil/GridStationList", StationList);
 LiteGraph.registerNodeType("nexivil/SectionPoint", SectionPoint);
+LiteGraph.registerNodeType("nexivil/DeckPoint", DeckPoint);
 LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
 LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
 LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);

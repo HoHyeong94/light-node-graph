@@ -511,3 +511,69 @@ export const PointGenerator = (stationNumber, line, skew) => {
   }
   return resultPoint;
 };
+
+export const OffsetPoint = (masterPoint,masterLine,offset) => {
+    let resultPoint = {
+      x: 0,
+      y: 0,
+      z: 0,
+      normalCos: 0,
+      normalSin: 0,
+      masterStationNumber: 0,
+      gradientX:masterPoint.gradientX,
+      gradientY: 0,
+      skew:masterPoint.skew,
+      offset:offset
+    };
+    if (masterPoint.skew === 90){
+      resultPoint.x =  masterPoint.x + masterPoint.normalCos * offset;
+      resultPoint.y = masterPoint.y + masterPoint.normalSin * offset;
+      resultPoint.normalCos =  masterPoint.normalCos;
+      resultPoint.normalSin = masterPoint.normalSin;
+      resultPoint.masterStationNumber = masterPoint.masterStationNumber;
+      resultPoint.gradientY = offset>0? masterPoint.rightGradient:masterPoint.leftGradient;
+      resultPoint.z = masterPoint.z + resultPoint.gradientY * offset;
+    } else {
+      let skewRad = (masterPoint.skew-90)*Math.PI/180;
+      let cos = Math.cos(skewRad);
+      let sin = Math.sin(skewRad);
+      let skewCos = masterPoint.normalCos*cos - masterPoint.normalSin*sin
+      let skewSin = masterPoint.normalCos*sin + masterPoint.normalSin*cos
+      let skewC = masterPoint.x * skewSin - masterPoint.y * skewCos
+      let newP = {}
+      let x = 0;
+      let y=0;
+      let delta = 0;
+      let iter = 0
+      let dist = 0
+      let ms = masterPoint.masterStationNumber+Math.tan(skewRad)*offset
+      for (let i=0;i<30;i++){
+        newP = MasterPointGenerator(ms,masterLine)
+        let newCos = newP.normalCos
+        let newSin = newP.normalSin
+        let newC = newP.x * newSin - newP.y * newCos
+        let sign = offset>0?1:-1;
+        x = (skewCos*newC - newCos * skewC)/(skewCos *newSin - skewSin * newCos)
+        y = (skewSin*newC - newSin * skewC)/(skewCos *newSin - skewSin * newCos)
+        dist = Math.sqrt((newP.x - x)**2 + (newP.y - y)**2)
+        iter = i;
+        if (Math.abs(Math.abs(offset) - dist) < 0.1){
+          break;
+        }else{
+          let icos = newCos*skewCos + newSin*skewSin
+          let isin = Math.sqrt(1-icos**2)
+          delta = sign*(dist - Math.abs(offset))*isin/icos //추후 검토가 필요함
+          ms += delta
+        }
+        
+      }
+      resultPoint.x =  x;
+      resultPoint.y = y;
+      resultPoint.normalCos =  newP.normalCos;
+      resultPoint.normalSin = newP.normalSin;
+      resultPoint.masterStationNumber = newP.masterStationNumber;
+      resultPoint.gradientY = offset>0? newP.rightGradient:newP.leftGradient;
+      resultPoint.z = newP.z + resultPoint.gradientY * offset;
+    }
+    return resultPoint
+  }
