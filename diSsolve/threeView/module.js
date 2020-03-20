@@ -202,10 +202,11 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
         })
     }
-    for (let i = 0; i < deckPointDict[part].length - 1; i++) {
-        for (let j = 0; j < pNum - 1; j++) {
-            geometry.faces.push(new THREE.Face3(i * pNum + j, i * pNum + j + 1, (i + 1) * pNum + j));
-            geometry.faces.push(new THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
+    for (let i = 0; i < deckPointDict.length - 1; i++) {
+        for (let j = 0; j < pNum; j++) {
+            let k = j < pNum-1? j:0;
+            geometry.faces.push(new THREE.Face3(i * pNum + k, i * pNum + k + 1, (i + 1) * pNum + k));
+            geometry.faces.push(new THREE.Face3(i * pNum + k + 1, (i + 1) * pNum + k, (i + 1) * pNum + k + 1));
         }
     }
     geometry.computeFaceNormals();
