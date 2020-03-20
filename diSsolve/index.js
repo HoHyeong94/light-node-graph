@@ -7,7 +7,7 @@ import {SectionPoint, DeckPoint} from "./section/index"
 import {SteelBox } from "./steelBox/index"
 import { VstiffDict, DiaDict, HBracing } from "./stiffner/index"
 import { Xbeam } from "./xbeam/index"
-import { LineViewer, SteelPlateView, InitPoint, DiaPhragmView,HorBracingView } from "./threeView/index"
+import { LineViewer, SteelPlateView, InitPoint, DiaPhragmView,HorBracingView, DeckView } from "./threeView/index"
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -26,6 +26,7 @@ LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
 LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
 LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
 LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
+LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
 
 
 // const {
