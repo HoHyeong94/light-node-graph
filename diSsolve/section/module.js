@@ -253,7 +253,11 @@ export function DeckSectionPoint(
   ) {
     let slab1 = [];
     let slab2 = [];
-  
+    const position = 0;
+    const T = 1;
+    const H = 2;
+    // const leftOffset = 3;
+    // const rightOffset = 4;
   
     let centerSlabThickness = slabInfo.slabThickness;
     let haunch = slabInfo.haunchHeight;
@@ -267,15 +271,15 @@ export function DeckSectionPoint(
       let masterStation = masterPoint.masterStationNumber;
       //deckSectionInfo로 분리예정
       for (let i = 0; i < slabLayout.length - 1; i++) {
-        let ss = pointDict[slabLayout[i].position].masterStationNumber;
-        let es = pointDict[slabLayout[i + 1].position].masterStationNumber
+        let ss = pointDict[slabLayout[i][position]].masterStationNumber;
+        let es = pointDict[slabLayout[i + 1][position]].masterStationNumber
         if (masterStation >= ss && masterStation <= es) {
           let x = masterStation - ss
           let l = es - ss
-          leftOffset = slabLayout[i].leftOffset * (l - x) / l + slabLayout[i + 1].leftOffset * (x) / l
-          rightOffset = slabLayout[i].rightOffset * (l - x) / l + slabLayout[i + 1].rightOffset * (x) / l
-          slabThickness = slabLayout[i].H * (l - x) / l + slabLayout[i + 1].H * (x) / l
-          endT = slabLayout[i].T * (l - x) / l + slabLayout[i + 1].T * (x) / l
+          leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l
+          rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l
+          slabThickness = slabLayout[i][H] * (l - x) / l + slabLayout[i + 1][H] * (x) / l
+          endT = slabLayout[i][T] * (l - x) / l + slabLayout[i + 1][T] * (x) / l
         }
       }
       //deckSectionInfo로 분리예정
