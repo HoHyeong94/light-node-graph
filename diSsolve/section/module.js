@@ -334,6 +334,5 @@ export function DeckSectionPoint(
     dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; })
     points.push(...dummy) //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
     // }
-    console.log(points)
     return points
   }
