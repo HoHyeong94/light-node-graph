@@ -304,7 +304,7 @@ export function DeckSectionPoint(
         lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)))
         offsetPoint.push(girderPoint.offset);
       }
-      offsetPoint.push(rightPoint)
+      offsetPoint.push(rightOffset)
       slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT })
       result.push({ name: masterStation, slabUpperPoints, slabLowerPoints, offsetPoint })
     
