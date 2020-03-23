@@ -208,6 +208,16 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             geometry.faces.push(new THREE.Face3(i * pNum + j, i * pNum + k, (i + 1) * pNum + j));
             geometry.faces.push(new THREE.Face3(i * pNum + k, (i + 1) * pNum + k, (i + 1) * pNum + j));
         }
+        if (i===0 || i === deckPointDict.length -2){
+            if (i === deckPointDict.length -2 ){
+                i +=1;
+            }
+            geometry.faces.push(new THREE.Face3(i * pNum, i * pNum + 1, (i + 1) * pNum - 1));
+            geometry.faces.push(new THREE.Face3(i * pNum + 1, i * pNum + 2, i * pNum + 3));
+            for (let j = 1; j < pNum -3;j++){
+                geometry.faces.push(new THREE.Face3((i+1) * pNum - j, i * pNum + 1, (i + 1) * pNum - j -1));
+            }
+        }
     }
     geometry.computeFaceNormals();
     group.add(new THREE.Mesh(geometry, meshMaterial));
