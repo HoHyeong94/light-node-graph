@@ -273,40 +273,40 @@ export function DeckSectionPoint(
       //deckSectionInfo로 분리예정
       for (let i = 0; i < slabLayout.length - 1; i++) {
         let ss = pointDict[slabLayout[i][position]].masterStationNumber;
-        let es = pointDict[slabLayout[i + 1][position]].masterStationNumber
+        let es = pointDict[slabLayout[i + 1][position]].masterStationNumber;
         if (masterStation >= ss && masterStation <= es) {
-          let x = masterStation - ss
-          let l = es - ss
-          leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l
-          rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l
-          slabThickness = slabLayout[i][H] * (l - x) / l + slabLayout[i + 1][H] * (x) / l
-          endT = slabLayout[i][T] * (l - x) / l + slabLayout[i + 1][T] * (x) / l
+          let x = masterStation - ss;
+          let l = es - ss;
+          leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l;
+          rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l;
+          slabThickness = slabLayout[i][H] * (l - x) / l + slabLayout[i + 1][H] * (x) / l;
+          endT = slabLayout[i][T] * (l - x) / l + slabLayout[i + 1][T] * (x) / l;
         }
       }
       //deckSectionInfo로 분리예정
-      let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset)
-      let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset)
+      let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
+      let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
   
       let slabUpperPoints = [ZMove(leftPoint, centerSlabThickness + haunch),
-      ZMove(masterPoint, centerSlabThickness + haunch),
-      ZMove(rightPoint, centerSlabThickness + haunch),];
+                            ZMove(masterPoint, centerSlabThickness + haunch),
+                            ZMove(rightPoint, centerSlabThickness + haunch),];
       let slabLowerPoints = [];
-      slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z + centerSlabThickness + haunch - endT })
+      slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z + centerSlabThickness + haunch - endT });
        let offsetPoint = [leftOffset];
 
       for (let j in girderLayout.girderLine) {
         // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
-        let girderLine = girderLayout.girderLine[j]
-        let girderPoint = LineMatch2(masterPoint, masterLine, girderLine)
-        let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout)
+        let girderLine = girderLayout.girderLine[j];
+        let girderPoint = LineMatch2(masterPoint, masterLine, girderLine);
+        let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
         //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
         //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
-        lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)))
+        lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
         offsetPoint.push(girderPoint.offset);
       }
-      offsetPoint.push(rightOffset)
-      slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT })
-      result.push({ name: masterStation, slabUpperPoints, slabLowerPoints, offsetPoint })
+      offsetPoint.push(rightOffset);
+      slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT });
+      result.push({ name: masterStation, slabUpperPoints, slabLowerPoints, offsetPoint });
     
     }
     return result //{ slab1, slab2 }

@@ -186,7 +186,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
         color: 0x000000,
         emissive: 0x777777,
         opacity: opacity,
-        side: THREE.DoubleSide,
+        // side: THREE.DoubleSide,
         transparent: true,
         wireframe: false
     });
