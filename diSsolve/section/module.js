@@ -292,7 +292,8 @@ export function DeckSectionPoint(
       ZMove(rightPoint, centerSlabThickness + haunch),];
       let slabLowerPoints = [];
       slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z + centerSlabThickness + haunch - endT })
-  
+       let offsetPoint = [leftOffset];
+
       for (let j in girderLayout.girderLine) {
         // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
         let girderLine = girderLayout.girderLine[j]
@@ -301,9 +302,11 @@ export function DeckSectionPoint(
         //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
         //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
         lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)))
+        offsetPoint.push(girderPoint.offset);
       }
+      offsetPoint.push(rightPoint)
       slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT })
-      result.push({ name: masterStation, slabUpperPoints, slabLowerPoints })
+      result.push({ name: masterStation, slabUpperPoints, slabLowerPoints, offsetPoint })
     
     }
     return result //{ slab1, slab2 }
