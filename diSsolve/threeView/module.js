@@ -212,10 +212,10 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             if (i === deckPointDict.length -2 ){
                 i +=1;
             }
-            geometry.faces.push(new THREE.Face3(i * pNum, i * pNum + 1, (i + 1) * pNum - 1));
-            geometry.faces.push(new THREE.Face3(i * pNum + 1, i * pNum + 2, i * pNum + 3));
+            geometry.faces.push(new THREE.Face3(i * pNum, (i + 1) * pNum - 1, i * pNum + 1));
+            geometry.faces.push(new THREE.Face3(i * pNum + 1, i * pNum + 3, i * pNum + 2));
             for (let j = 1; j < pNum -3;j++){
-                geometry.faces.push(new THREE.Face3((i+1) * pNum - j, i * pNum + 1, (i + 1) * pNum - j -1));
+                geometry.faces.push(new THREE.Face3((i+1) * pNum - j, (i + 1) * pNum - j -1, i * pNum + 1));
             }
         }
     }
