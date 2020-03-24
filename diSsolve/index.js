@@ -8,6 +8,7 @@ import {SteelBox } from "./steelBox/index"
 import { VstiffDict, DiaDict, HBracing } from "./stiffner/index"
 import { Xbeam } from "./xbeam/index"
 import { LineViewer, SteelPlateView, InitPoint, DiaPhragmView,HorBracingView, DeckView } from "./threeView/index"
+import { Support, SapJoint } from "./analysis/index"
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -20,6 +21,8 @@ LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
 LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
 LiteGraph.registerNodeType("HMECS/hBracing", HBracing);
 LiteGraph.registerNodeType("HMECS/xbeam", Xbeam);
+LiteGraph.registerNodeType("nexivil/support",Support);
+LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
 
 LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
 LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);

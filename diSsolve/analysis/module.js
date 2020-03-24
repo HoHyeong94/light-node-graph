@@ -133,3 +133,118 @@ export function DCBsection(sa, materials) {
     }
     return [stage1,stage2,stage3]
 }
+
+export function SupportGenerator(supportFixed, supportData, gridPoint) {
+    let support = {}
+    let girderHeight = 2000;    //임시로 2000이라고 가정함. 추후 girderSection정보로부터 받아올수 있도록 함.
+    let fixedPoint = []
+    let isFixed = false
+    let angle = 0;
+    let sign = 1;
+    let type = ""
+    let name = ""
+    let point = {}
+    const dof = {
+        고정단: [true, true, true, false, false, false],
+        양방향단: [false, false, true, false, false, false],
+        횡방향가동: [false, true, true, false, false, false],
+        종방향가동: [true, false, true, false, false, false],
+    }
+    let fixedCoord = { x: 0, y: 0, z: 0 }
+    // 고정단기준이 체크되지 않거나, 고정단이 없을 경우에는 접선방향으로 받침을 계산함
+    if (supportFixed) {
+        fixedPoint = supportData.filter(function (value) { return value[1] == '고정단' })
+    }
+    if (fixedPoint.length > 0) {
+        isFixed = true
+        let fixed = gridPoint[fixedPoint[0].point];
+        let skew = fixed.skew * Math.PI / 180
+        let offset = fixedPoint[0].offset
+        fixedCoord = {
+            x: fixed.x - (Math.cos(skew) * (-1) * fixed.normalSin - Math.sin(skew) * fixed.normalCos) * offset,
+            y: fixed.y - (Math.sin(skew) * (-1) * fixed.normalSin + Math.cos(skew) * fixed.normalCos) * offset,
+            z: fixed.z - girderHeight
+        }
+    }
+
+    for (let index in supportData) {
+        name = supportData[index][0] //.point
+        type = supportData[index][1] //.type
+        let offset = supportData[index][2] //.offset
+        point = gridPoint[name]
+        let skew = point.skew * Math.PI / 180
+        let newPoint = {
+            x: point.x - (Math.cos(skew) * (-1) * point.normalSin - Math.sin(skew) * point.normalCos) * offset,
+            y: point.y - (Math.sin(skew) * (-1) * point.normalSin + Math.cos(skew) * point.normalCos) * offset,
+            z: point.z - girderHeight
+        }
+        if (isFixed && name !== fixedPoint[0].point) {
+
+            if (name.slice(2) === fixedPoint[0].point.slice(2)) {
+                angle = Math.atan2(newPoint.y - fixedCoord.y, newPoint.x - fixedCoord.x) * 180 / Math.PI + 90;
+            } else {
+                angle = Math.atan2(newPoint.y - fixedCoord.y, newPoint.x - fixedCoord.x) * 180 / Math.PI;
+            }
+        } else {
+            sign = point.normalCos >= 0 ? 1 : -1;
+            angle = sign * Math.acos(-point.normalSin) * 180 / Math.PI;
+        }
+        support[index] = {
+            angle: angle > 90 ? angle - 180 : angle < -90 ? angle + 180 : angle,
+            point: newPoint,
+            basePointName : name,
+            key : "SPPT" + index,
+            type: dof[type], //[x,y,z,rx,ry,rz]
+        }
+    }
+    return support
+
+}
+    /**
+    <summary>
+    각 요소별 포함하고 있는 노드의 리스트를 출력 및 sap.s2k 인풋결과 출력을 하며, 동시에 받침점에 대한 Local angle을 정의함
+    </summary>
+    <param name="girder_point_dict"></param>
+    <param name="xbeam_info"></param>
+    <param name="stringer_info"></param>
+    <returns></returns>
+    **/
+    export function SapJointGenerator(girderStation,supportNode, xbeamData ){//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
+        let nodeNum = 1; 
+        let node = {command : "JOINT", data : []};
+        let local = {command : "LOCAL", data: []}
+        let boundary = {command : "RESTRAINT", data: []}
+        let rigid = {command : "CONSTRAINT", data : []}
+        let nodeNumDict = {};
+        
+        for (let i in girderStation){
+            for (let j in girderStation[i]){
+                node.data.push({nodeNum : nodeNum, coord : [girderStation[i][j].point.x,girderStation[i][j].point.y,girderStation[i][j].point.z]})
+                nodeNumDict[girderStation[i][j].key] = nodeNum
+                nodeNum++
+            }
+        }
+        // let supportNode = SupportGenerator(supportFixed, supportData, gridPoint) // <-- 추후 함수 밖으로 보내야함
+        for (let i in supportNode){
+            node.data.push({nodeNum : nodeNum, coord : [supportNode[i].point.x,supportNode[i].point.y,supportNode[i].point.z]})
+            nodeNumDict[supportNode[i].key] = nodeNum
+            local.data.push({nodeNum : nodeNum, ANG : supportNode[i].angle})
+            boundary.data.push({nodeNum : nodeNum, ANG : supportNode[i].type})
+            nodeNum++
+        }
+        //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
+        for (let i in xbeamData){
+            if (xbeamData[i].isKframe){
+                for (let j in xbeamData[i].data){
+                    node.data.push({nodeNum : nodeNum, coord : [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z]});
+                    nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum
+                    nodeNum++
+                }
+                rigid.data.push({master : nodeNumDict[xbeamData[i].inode], slave : [nodeNumDict[xbeamData[i].key + "P0"],nodeNumDict[xbeamData[i].key + "P2"]]})
+                rigid.data.push({master : nodeNumDict[xbeamData[i].jnode], slave : [nodeNumDict[xbeamData[i].key + "P1"],nodeNumDict[xbeamData[i].key + "P3"]]})
+            }
+        }
+        // xbeam stringer에 대한 절점 추가 입력 필요
+        // stringerLayout input 추가 필요
+        return {nodeNumDict, input:{node,local,bounary,rigid}}
+}

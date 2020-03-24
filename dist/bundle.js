@@ -1662,7 +1662,7 @@
     this.setOutputData(1, result.girder);
   };
 
-  function ToGlobalPoint$1(Point, node2D){
+  function ToGlobalPoint(Point, node2D){
       let newPoint = {
           x:0, y:0, z:0
       };
@@ -2063,9 +2063,14 @@
       girderBaseInfo,
       pointDict,
     ) {
-      let slab1 = [];
-      let slab2 = [];
-    
+      let result = [];
+      // let slab1 = [];
+      // let slab2 = [];
+      const position = 0;
+      const T = 1;
+      const H = 2;
+      // const leftOffset = 3;
+      // const rightOffset = 4;
     
       let centerSlabThickness = slabInfo.slabThickness;
       let haunch = slabInfo.haunchHeight;
@@ -2079,15 +2084,15 @@
         let masterStation = masterPoint.masterStationNumber;
         //deckSectionInfo로 분리예정
         for (let i = 0; i < slabLayout.length - 1; i++) {
-          let ss = pointDict[slabLayout[i].position].masterStationNumber;
-          let es = pointDict[slabLayout[i + 1].position].masterStationNumber;
+          let ss = pointDict[slabLayout[i][position]].masterStationNumber;
+          let es = pointDict[slabLayout[i + 1][position]].masterStationNumber;
           if (masterStation >= ss && masterStation <= es) {
             let x = masterStation - ss;
             let l = es - ss;
-            leftOffset = slabLayout[i].leftOffset * (l - x) / l + slabLayout[i + 1].leftOffset * (x) / l;
-            rightOffset = slabLayout[i].rightOffset * (l - x) / l + slabLayout[i + 1].rightOffset * (x) / l;
-            slabThickness = slabLayout[i].H * (l - x) / l + slabLayout[i + 1].H * (x) / l;
-            endT = slabLayout[i].T * (l - x) / l + slabLayout[i + 1].T * (x) / l;
+            leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l;
+            rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l;
+            slabThickness = slabLayout[i][H] * (l - x) / l + slabLayout[i + 1][H] * (x) / l;
+            endT = slabLayout[i][T] * (l - x) / l + slabLayout[i + 1][T] * (x) / l;
           }
         }
         //deckSectionInfo로 분리예정
@@ -2095,11 +2100,12 @@
         let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
     
         let slabUpperPoints = [ZMove(leftPoint, centerSlabThickness + haunch),
-        ZMove(masterPoint, centerSlabThickness + haunch),
-        ZMove(rightPoint, centerSlabThickness + haunch),];
+                              ZMove(masterPoint, centerSlabThickness + haunch),
+                              ZMove(rightPoint, centerSlabThickness + haunch),];
         let slabLowerPoints = [];
         slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z + centerSlabThickness + haunch - endT });
-    
+         let offsetPoint = [leftOffset];
+
         for (let j in girderLayout.girderLine) {
           // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
           let girderLine = girderLayout.girderLine[j];
@@ -2108,12 +2114,14 @@
           //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
           //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
           lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
+          offsetPoint.push(girderPoint.offset);
         }
+        offsetPoint.push(rightOffset);
         slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT });
-        slab1.push({ name: masterStation, points: slabUpperPoints });
-        slab2.push({ name: masterStation, points: slabLowerPoints });
+        result.push({ name: masterStation, slabUpperPoints, slabLowerPoints, offsetPoint });
+      
       }
-      return { slab1, slab2 }
+      return result //{ slab1, slab2 }
     }
     //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
     function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
@@ -2165,7 +2173,7 @@
 
   function DeckPoint(){
       this.addInput("masterLine","line");
-      this.addInput("centerLineStations","arr");
+      this.addInput("centerLineStation","centerLineStation");
       this.addInput("girderLayout","girderLayout");
       this.addInput("slabInfo","slabInfo");
       this.addInput("slabLayout","arr");
@@ -2175,7 +2183,7 @@
     }
 
     DeckPoint.prototype.onExecute = function(){
-      this.setOutPutData(0,DeckSectionPoint(
+      this.setOutputData(0,DeckSectionPoint(
           this.getInputData(0),
           this.getInputData(1),
           this.getInputData(2),
@@ -2217,20 +2225,20 @@
 
           if (L1[1].x >= R1[1].x) { //폐합인 경우 
             let C1 = [L1[0], R1[0], R1[3], L1[3]];
-            C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint$1(point1, element)));
+            C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
           } else {
-            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
-            R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint$1(point1, element)));
+            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+            R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)));
           }
           let FisB = true;
           for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false; } }
           if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
             if (L2[1].x >= R2[1].x) { //폐합인 경우 
               let C2 = [L2[0], R2[0], R2[3], L2[3]];
-              C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint$1(point2, element)));
+              C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
             } else {
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
-              R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint$1(point2, element)));
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+              R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)));
             }
           }
           if (pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP") { UFi += 1; }
@@ -2242,12 +2250,12 @@
           L2 = sectionPointDict[pk2].backward.bottomPlate;
           L3 = sectionPointDict[pk2].forward.bottomPlate;
 
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
 
           FisB = true;
           for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
           if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
-            L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
+            L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
           }
           if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1; }
 
@@ -2256,11 +2264,11 @@
           L1 = sectionPointDict[pk1].forward.lWeb;
           L2 = sectionPointDict[pk2].backward.lWeb;
           L3 = sectionPointDict[pk2].forward.lWeb;
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
           FisB = true;
           for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
           if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || pk2.substr(2, 2) === "K6"){
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
           }
           if(pk2.substr(2,2)==="LW" || pk2.substr(2,2)==="SP" ){ LWi +=1; }
 
@@ -2269,11 +2277,11 @@
           L1 = sectionPointDict[pk1].forward.rWeb;
           L2 = sectionPointDict[pk2].backward.rWeb;
           L3 = sectionPointDict[pk2].forward.rWeb;
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
           FisB = true;
           for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
           if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || pk2.substr(2, 2) === "K6"){
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
           }
           if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){ RWi +=1; }
 
@@ -2288,11 +2296,11 @@
             L1 = sectionPointDict[pk1].forward[Ribkey];
             L2 = sectionPointDict[pk2].backward[Ribkey];
             L3 = sectionPointDict[pk2].forward[Ribkey];
-            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point1, element)));
+            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
             FisB = true;
             for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false; }
             if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint$1(point2, element)));
+              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
               Ribi += 1;
             }
             // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){  }
@@ -2926,8 +2934,8 @@
     let node1 = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y: tl.y -(upperHeight + sideTopThickness)};
     let node2 = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y: tr.y -(upperHeight + sideTopThickness)};
     let Brline = [
-      ToGlobalPoint$1(point1, node1),
-      ToGlobalPoint$1(point2, node2)
+      ToGlobalPoint(point1, node1),
+      ToGlobalPoint(point2, node2)
     ];
     let Vector = [Brline[1].x - Brline[0].x, 
                   Brline[1].y - Brline[0].y, 
@@ -3078,6 +3086,7 @@
         const section =2;
 
       let xbeamSectionDict = {};
+      let xbeamData = [];
       for (let i = 0; i < xbeamLayout.length; i++) {
         let iNodekey = xbeamLayout[i][iNode];
         let jNodekey = xbeamLayout[i][jNode];
@@ -3086,32 +3095,45 @@
         let jSectionPoint = sectionPointDict[jNodekey].forward;
         let iPoint = nameToPointDict[iNodekey];
         let jPoint = nameToPointDict[jNodekey];
+        let xbData = [];
         // let cbkey = 'CB' + iNodekey + 'To' + jNodekey
         if (xbeamLayout[i][section] == "xbeamI") {
-          xbeamSectionDict[iNodekey] = XbeamSection(
+           let xbeam = XbeamSection(
             iPoint,
             jPoint,
             iSectionPoint,
             jSectionPoint,
             xbeamSection
           );
+          xbeamSectionDict[iNodekey] = xbeam.result;
+          xbData = xbeam.data;
         } else if (xbeamLayout[i][section] == "xbeamK") {
-          xbeamSectionDict[iNodekey] = XbeamSectionK(
+            let xbeam  = XbeamSectionK(
             iPoint,
             jPoint,
             iSectionPoint,
             jSectionPoint,
             xbeamSection
           );
+          xbeamSectionDict[iNodekey] = xbeam.result;
+          xbData = xbeam.data;
         }
         // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
         // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
+      //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
+      let key = i<10? "X0" + i: "X"+i;
+      let isKframe = xbeamLayout[i][section] == "xbeamK"? true: false;
+      xbeamData.push({
+            inode : iNodekey, jnode : jNodekey, key : key, isKframe:isKframe, data:xbData
+        });
       }
-      return xbeamSectionDict;
+      
+      return {xbeamSectionDict, xbeamData};
     }
 
   function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
       const result = {};
+      const data = [];
       const connectorLength = xbeamSection.connectorLength;
       const connectorWidth = xbeamSection.connectorWidth;
       const upperFlangeThickness = xbeamSection.upperFlangeThickness;
@@ -3129,8 +3151,8 @@
       const cot = Math.abs(1 / Math.tan(iPoint.skew * Math.PI / 180));
     
       // 기준점은 iTopNode라고 가정, 가로보는 반드시 skew각도와 일치해야함.
-      let iNode = ToGlobalPoint$1(iPoint, iSectionPoint.rightTopPlate[0]);
-      let jNode = ToGlobalPoint$1(jPoint, jSectionPoint.leftTopPlate[0]);
+      let iNode = ToGlobalPoint(iPoint, iSectionPoint.rightTopPlate[0]);
+      let jNode = ToGlobalPoint(jPoint, jSectionPoint.leftTopPlate[0]);
       let length = Math.sqrt((jNode.x - iNode.x) ** 2 + (jNode.y - iNode.y) ** 2);
       let vec = { x: (jNode.x - iNode.x) / length, y: (jNode.y - iNode.y) / length };
       let grd = (jNode.z - iNode.z) / length;
@@ -3145,8 +3167,8 @@
       let lFlangeL = (iSectionPoint.rWeb[2].x - iSectionPoint.rightTopPlate[0].x) * cosec;
       let rFlangeL = (jSectionPoint.lWeb[2].x - jSectionPoint.leftTopPlate[0].x) * cosec;
     
-      let iBottom = ToGlobalPoint$1(iPoint, iSectionPoint.bottomPlate[1]);
-      let jBottom = ToGlobalPoint$1(jPoint, jSectionPoint.bottomPlate[0]);
+      let iBottom = ToGlobalPoint(iPoint, iSectionPoint.bottomPlate[1]);
+      let jBottom = ToGlobalPoint(jPoint, jSectionPoint.bottomPlate[0]);
       let lengthB = Math.sqrt((jBottom.x - iBottom.x) ** 2 + (jBottom.y - iBottom.y) ** 2);
       let vecB = { x: (jBottom.x - iBottom.x) / lengthB, y: (jBottom.y - iBottom.y) / lengthB };
       let grdB = (jBottom.z - iBottom.z) / lengthB;
@@ -3257,8 +3279,8 @@
         point: bottomPoint
       };
     
-      let iTopNode = ToGlobalPoint$1(iPoint, iSectionPoint.rWeb[2]);
-      let jTopNode = ToGlobalPoint$1(jPoint, jSectionPoint.lWeb[2]);
+      let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[2]);
+      let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[2]);
       let cblength = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
       let cbVec = { x: (jTopNode.x - iTopNode.x) / cblength, y: (jTopNode.y - iTopNode.y) / cblength };
       let gradient = (jTopNode.z - iTopNode.z) / cblength;
@@ -3332,12 +3354,14 @@
         hole: [],
         point: iPoint
       };
-      // console.log('icos:', iCos)   
-      return result
+      // console.log('icos:', iCos) 
+      data = [cbWeb[0].x, length - cbWeb[3]]; //임시 강역값 입력 20.03.24  by jhlim  
+      return {result, data}
     }
     
     function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
       const result = {};
+      let data = [];
       //K형가로보는 skew를 허용하지 않고 생성됨.
       const topOffset = xbeamSection.topOffset;
       const bottomOffset = xbeamSection.bottomOffset;
@@ -3351,8 +3375,8 @@
       let diaFrameEndOffset = xbeamSection.diaFrameEndOffset;
       const pts = xbeamSection.pts;
     
-      let iTopNode = ToGlobalPoint$1(iPoint, iSectionPoint.rWeb[1]);
-      let jTopNode = ToGlobalPoint$1(jPoint, jSectionPoint.lWeb[1]);
+      let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
+      let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1]);
     
       let length = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
       let xlength = Math.abs(jTopNode.x - iTopNode.x);
@@ -3540,8 +3564,8 @@
         hole: [],
         point: centerPoint
       };
-    
-      return result
+      data = [...points, bottomCenter];
+      return {result, data}
     }
 
   function Xbeam(){
@@ -3550,6 +3574,7 @@
       this.addInput("xbeamLayout","arr");
       this.addInput("xbeamSectionList","xbeamSectionList");
       this.addOutput("diaDict","diaDict");
+      this.addOutput("xbeamData","xbaemData");
     }
     
     Xbeam.prototype.onExecute = function() {
@@ -3558,28 +3583,30 @@
       const xbeamLayout = this.getInputData(2);
       const xbeamSectionList = this.getInputData(3);
       const result = XbeamDict(gridPoint, sectionPointDict, xbeamLayout, xbeamSectionList);
-      this.setOutputData(0, result);
+      this.setOutputData(0, result.xbeamSectionDict);
+      this.setOutputData(1, result.xbeamData);
+
     };
 
-  function LineView(linepoints, initPoint, color){
+  function LineView(linepoints, initPoint, color) {
       var group = new global.THREE.Group();
       var geometry = new global.THREE.Geometry();
       const xInit = initPoint.x;
       const yInit = initPoint.y;
       const zInit = initPoint.z;
-      for (let i = 0; i<linepoints.length;i++){
-          geometry.vertices.push( 
-          new global.THREE.Vector3	(linepoints[i].x - xInit,linepoints[i].y - yInit,	linepoints[i].z - zInit));
+      for (let i = 0; i < linepoints.length; i++) {
+          geometry.vertices.push(
+              new global.THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
       }
-      var colorCode = color? color:0xffff00;
+      var colorCode = color ? color : 0xffff00;
       var line = new global.THREE.Line(
-          geometry, new global.THREE.LineBasicMaterial( {color: colorCode} )
+          geometry, new global.THREE.LineBasicMaterial({ color: colorCode })
       );
       group.add(line);
       return group
   }
 
-  function SteelBoxView(steelBoxDict,initPoint){
+  function SteelBoxView(steelBoxDict, initPoint) {
       let group = new global.THREE.Group();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0x00ff00,
@@ -3590,40 +3617,40 @@
       //     wireframe : false
       //   } );
       let meshMaterial = new global.THREE.MeshNormalMaterial();
-          meshMaterial.side = global.THREE.DoubleSide;
-      for (let key in steelBoxDict){
-          
-          steelBoxDict[key]["points"].forEach(function(plist){
-              if(plist.length>0){
-              let geometry = new global.THREE.Geometry();
-              for (let i = 0; i< plist.length;i++){
-                  geometry.vertices.push(new global.THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z));
-              }
-          
-              for (let i = 0; i< plist.length/4 -1;i++){
-                  for (let j= 0; j<4;j++){
-                      let k = j+1 === 4? 0: j+1;
-                      geometry.faces.push(new global.THREE.Face3(i*4+j,i*4+k,(i+1)*4+j));
-                      geometry.faces.push(new global.THREE.Face3(i*4+k,(i+1)*4+k,(i+1)*4+j));
+      meshMaterial.side = global.THREE.DoubleSide;
+      for (let key in steelBoxDict) {
+
+          steelBoxDict[key]["points"].forEach(function (plist) {
+              if (plist.length > 0) {
+                  let geometry = new global.THREE.Geometry();
+                  for (let i = 0; i < plist.length; i++) {
+                      geometry.vertices.push(new global.THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z));
                   }
-                  if (i===0){
-                      geometry.faces.push(new global.THREE.Face3(0,1,2));
-                      geometry.faces.push(new global.THREE.Face3(0,2,3));
-                  }else if(i===(plist.length/4 -2)){
-                      geometry.faces.push(new global.THREE.Face3((i+1)*4,(i+1)*4+1,(i+1)*4+2));
-                      geometry.faces.push(new global.THREE.Face3((i+1)*4,(i+1)*4+2,(i+1)*4+3));
+
+                  for (let i = 0; i < plist.length / 4 - 1; i++) {
+                      for (let j = 0; j < 4; j++) {
+                          let k = j + 1 === 4 ? 0 : j + 1;
+                          geometry.faces.push(new global.THREE.Face3(i * 4 + j, i * 4 + k, (i + 1) * 4 + j));
+                          geometry.faces.push(new global.THREE.Face3(i * 4 + k, (i + 1) * 4 + k, (i + 1) * 4 + j));
+                      }
+                      if (i === 0) {
+                          geometry.faces.push(new global.THREE.Face3(0, 1, 2));
+                          geometry.faces.push(new global.THREE.Face3(0, 2, 3));
+                      } else if (i === (plist.length / 4 - 2)) {
+                          geometry.faces.push(new global.THREE.Face3((i + 1) * 4, (i + 1) * 4 + 1, (i + 1) * 4 + 2));
+                          geometry.faces.push(new global.THREE.Face3((i + 1) * 4, (i + 1) * 4 + 2, (i + 1) * 4 + 3));
+                      }
                   }
-              }
-              
-              geometry.computeFaceNormals();
-              group.add( new global.THREE.Mesh(geometry,meshMaterial) );
+
+                  geometry.computeFaceNormals();
+                  group.add(new global.THREE.Mesh(geometry, meshMaterial));
               }
           });
       }
       return group
   }
 
-  function DiaView(diaDict,initPoint){
+  function DiaView(diaDict, initPoint) {
       var group = new global.THREE.Group();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0x00ffff,
@@ -3634,52 +3661,52 @@
       //     wireframe : false
       //   } );
       var meshMaterial = new global.THREE.MeshNormalMaterial();
-      for (let diakey in diaDict){
-         for (let partkey in diaDict[diakey]){
-         let shapeNode = diaDict[diakey][partkey].points;
-         let Thickness = diaDict[diakey][partkey].Thickness;
-         let zPosition = diaDict[diakey][partkey].z;
-         let rotationY = diaDict[diakey][partkey].rotationY;
-         let rotationX = diaDict[diakey][partkey].rotationX;
-         let hole = diaDict[diakey][partkey].hole;
-         let point = diaDict[diakey].point?diaDict[diakey].point:diaDict[diakey][partkey].point;
-         if (partkey !== "point"){
-         group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
-      }
+      for (let diakey in diaDict) {
+          for (let partkey in diaDict[diakey]) {
+              let shapeNode = diaDict[diakey][partkey].points;
+              let Thickness = diaDict[diakey][partkey].Thickness;
+              let zPosition = diaDict[diakey][partkey].z;
+              let rotationY = diaDict[diakey][partkey].rotationY;
+              let rotationX = diaDict[diakey][partkey].rotationX;
+              let hole = diaDict[diakey][partkey].hole;
+              let point = diaDict[diakey].point ? diaDict[diakey].point : diaDict[diakey][partkey].point;
+              if (partkey !== "point") {
+                  group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
+              }
           }
       }
       return group
   }
 
-  function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial){
+  function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial) {
       var shape = new global.THREE.Shape();
       var shapeNodeVectors = [];
-      for (let i = 0; i<shapeNode.length;i++){
-          shapeNodeVectors.push(new global.THREE.Vector2( shapeNode[i].x,shapeNode[i].y));
+      for (let i = 0; i < shapeNode.length; i++) {
+          shapeNodeVectors.push(new global.THREE.Vector2(shapeNode[i].x, shapeNode[i].y));
       }
       shape.setFromPoints(shapeNodeVectors);
-      if (hole.length > 0){
+      if (hole.length > 0) {
           var holeVectors = [];
-          for (let i = 0; i<hole.length;i++){
-              holeVectors.push(new global.THREE.Vector2( hole[i].x, hole[i].y));
+          for (let i = 0; i < hole.length; i++) {
+              holeVectors.push(new global.THREE.Vector2(hole[i].x, hole[i].y));
           }
           var holeShape = new global.THREE.Shape();
           holeShape.setFromPoints(holeVectors);
           shape.holes.push(holeShape);
       }
 
-      var geometry = new global.THREE.ExtrudeBufferGeometry(shape,{depth: Thickness, steps: 1,bevelEnabled: false});
+      var geometry = new global.THREE.ExtrudeBufferGeometry(shape, { depth: Thickness, steps: 1, bevelEnabled: false });
       var mesh = new global.THREE.Mesh(geometry, meshMaterial);
-      var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2;  //+ 
-      
-      mesh.rotation.set(rotationX,rotationY,0); //(rotationY - 90)*Math.PI/180
-      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
-      mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
+      var rad = Math.atan(- point.normalCos / point.normalSin) + Math.PI / 2;  //+ 
+
+      mesh.rotation.set(rotationX, rotationY, 0); //(rotationY - 90)*Math.PI/180
+      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0, 0, 1), rad);
+      mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z);
       mesh.translateZ(zPosition);
       return mesh
   }
 
-  function HBracingPlateView(hBraicngPlateDict, initPoint){
+  function HBracingPlateView(hBraicngPlateDict, initPoint) {
       var group = new global.THREE.Group();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0x00ffff,
@@ -3690,23 +3717,23 @@
       //     wireframe : false
       //   } );
       var meshMaterial = new global.THREE.MeshNormalMaterial();
-      for (let pk in hBraicngPlateDict){
-      //    let point = pointDict[pk]
-         for (let partkey in hBraicngPlateDict[pk]){
-         let shapeNode = hBraicngPlateDict[pk][partkey].points;
-         let Thickness = hBraicngPlateDict[pk][partkey].Thickness;
-         let zPosition = hBraicngPlateDict[pk][partkey].z;
-         let rotationY = hBraicngPlateDict[pk][partkey].rotationY;
-         let rotationX = hBraicngPlateDict[pk][partkey].rotationX;
-         let hole = hBraicngPlateDict[pk][partkey].hole;
-         let point = diaDict[diakey].point?diaDict[diakey].point:diaDict[diakey][partkey].point;
-         group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
+      for (let pk in hBraicngPlateDict) {
+          //    let point = pointDict[pk]
+          for (let partkey in hBraicngPlateDict[pk]) {
+              let shapeNode = hBraicngPlateDict[pk][partkey].points;
+              let Thickness = hBraicngPlateDict[pk][partkey].Thickness;
+              let zPosition = hBraicngPlateDict[pk][partkey].z;
+              let rotationY = hBraicngPlateDict[pk][partkey].rotationY;
+              let rotationX = hBraicngPlateDict[pk][partkey].rotationX;
+              let hole = hBraicngPlateDict[pk][partkey].hole;
+              let point = diaDict[diakey].point ? diaDict[diakey].point : diaDict[diakey][partkey].point;
+              group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
           }
       }
       return group
   }
 
-  function HBracingView(hBracingDict,initPoint){
+  function HBracingView(hBracingDict, initPoint) {
       var group = new global.THREE.Group();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0x00ffff,
@@ -3717,26 +3744,74 @@
       //     wireframe : false
       //   } );
       var meshMaterial = new global.THREE.MeshNormalMaterial();
-      for (let i in hBracingDict){
-         group.add(convexMesh(hBracingDict[i].points[0],initPoint,meshMaterial));
-         group.add(convexMesh(hBracingDict[i].points[1],initPoint,meshMaterial));
+      for (let i in hBracingDict) {
+          group.add(convexMesh(hBracingDict[i].points[0], initPoint, meshMaterial));
+          group.add(convexMesh(hBracingDict[i].points[1], initPoint, meshMaterial));
       }
       return group
   }
 
-  function convexMesh(plist,initPoint,meshMaterial){
+  function convexMesh(plist, initPoint, meshMaterial) {
       let geometry = new global.THREE.Geometry();
-      for (let i in plist){
+      for (let i in plist) {
           geometry.vertices.push(new global.THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z));
       }
-      let j = plist.length/2;
-      for (let i = 0; i<j;i++){
-          let k = i+1===j?0:i+1;
-          geometry.faces.push(new global.THREE.Face3(k,i,i+j));
-          geometry.faces.push(new global.THREE.Face3(k,i+j,k+j));
+      let j = plist.length / 2;
+      for (let i = 0; i < j; i++) {
+          let k = i + 1 === j ? 0 : i + 1;
+          geometry.faces.push(new global.THREE.Face3(k, i, i + j));
+          geometry.faces.push(new global.THREE.Face3(k, i + j, k + j));
       }
       geometry.computeFaceNormals();
-      return new global.THREE.Mesh(geometry,meshMaterial)
+      return new global.THREE.Mesh(geometry, meshMaterial)
+  }
+
+  function DeckPointView(deckPointDict, initPoint, opacity) {
+      let group = new global.THREE.Group();
+      var meshMaterial = new global.THREE.MeshLambertMaterial({
+          color: 0x000000,
+          emissive: 0x777777,
+          opacity: opacity,
+          // side: THREE.DoubleSide,
+          transparent: true,
+          wireframe: false
+      });
+      // let meshMaterial = new THREE.MeshNormalMaterial()
+      //     meshMaterial.side = THREE.DoubleSide
+      let pNum = deckPointDict[0].slabUpperPoints.length + deckPointDict[0].slabLowerPoints.length;
+      let geometry = new global.THREE.Geometry();
+      for (let key in deckPointDict) {
+          deckPointDict[key].slabUpperPoints.forEach(function (Point) {
+              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+          });
+          deckPointDict[key].slabLowerPoints.reverse().forEach(function (Point) {
+              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+          });
+      }
+      for (let i = 0; i < deckPointDict.length - 1; i++) {
+          for (let j = 0; j < pNum; j++) {
+              let k = j === pNum-1? 0: j+1;
+              geometry.faces.push(new global.THREE.Face3(i * pNum + j, i * pNum + k, (i + 1) * pNum + j));
+              geometry.faces.push(new global.THREE.Face3(i * pNum + k, (i + 1) * pNum + k, (i + 1) * pNum + j));
+          }
+          if (i===0){
+              geometry.faces.push(new global.THREE.Face3(i * pNum, (i + 1) * pNum - 1, i * pNum + 1));
+              geometry.faces.push(new global.THREE.Face3(i * pNum + 1, i * pNum + 3, i * pNum + 2));
+              for (let j = 1; j < pNum -3;j++){
+                  geometry.faces.push(new global.THREE.Face3((i+1) * pNum - j, (i + 1) * pNum - j -1, i * pNum + 1));
+              }
+          } else if (i === deckPointDict.length -2){
+              geometry.faces.push(new global.THREE.Face3((i+1) * pNum, (i+1) * pNum + 1, (i + 2) * pNum - 1, ));
+              geometry.faces.push(new global.THREE.Face3((i+1) * pNum + 1, (i+1) * pNum + 2 , (i+1) * pNum + 3 ));
+              for (let j = 1; j < pNum -3;j++){
+                  geometry.faces.push(new global.THREE.Face3((i+2) * pNum - j, (i+1) * pNum + 1, (i + 2) * pNum - j -1 ));
+              }
+          }
+      }
+      geometry.computeFaceNormals();
+      group.add(new global.THREE.Mesh(geometry, meshMaterial));
+
+      return group
   }
 
   function LineViewer(){
@@ -3793,6 +3868,18 @@
       global.sceneAdder({ id: 0, mesh: group2}); 
     };
     
+    function DeckView(){
+      this.addInput("deckPointDict","deckPointDict");  
+      this.addInput("Point","Point");
+      this.addInput("opacity","number");
+    }
+    
+    DeckView.prototype.onExecute = function() {
+      global.sceneAdder({ id: 0, 
+          mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
+      }); 
+    };
+
 
   function InitPoint(){
     this.addInput("gridPoint","gridPoint");
@@ -3802,6 +3889,145 @@
   InitPoint.prototype.onExecute = function() {
     this.getInputData(0);
     this.setOutputData(0, this.getInputData(0)["G1S1"]);
+  };
+
+  function SupportGenerator(supportFixed, supportData, gridPoint) {
+      let support = {};
+      let girderHeight = 2000;    //임시로 2000이라고 가정함. 추후 girderSection정보로부터 받아올수 있도록 함.
+      let fixedPoint = [];
+      let isFixed = false;
+      let angle = 0;
+      let sign = 1;
+      let type = "";
+      let name = "";
+      let point = {};
+      const dof = {
+          고정단: [true, true, true, false, false, false],
+          양방향단: [false, false, true, false, false, false],
+          횡방향가동: [false, true, true, false, false, false],
+          종방향가동: [true, false, true, false, false, false],
+      };
+      let fixedCoord = { x: 0, y: 0, z: 0 };
+      // 고정단기준이 체크되지 않거나, 고정단이 없을 경우에는 접선방향으로 받침을 계산함
+      if (supportFixed) {
+          fixedPoint = supportData.filter(function (value) { return value[1] == '고정단' });
+      }
+      if (fixedPoint.length > 0) {
+          isFixed = true;
+          let fixed = gridPoint[fixedPoint[0].point];
+          let skew = fixed.skew * Math.PI / 180;
+          let offset = fixedPoint[0].offset;
+          fixedCoord = {
+              x: fixed.x - (Math.cos(skew) * (-1) * fixed.normalSin - Math.sin(skew) * fixed.normalCos) * offset,
+              y: fixed.y - (Math.sin(skew) * (-1) * fixed.normalSin + Math.cos(skew) * fixed.normalCos) * offset,
+              z: fixed.z - girderHeight
+          };
+      }
+
+      for (let index in supportData) {
+          name = supportData[index][0]; //.point
+          type = supportData[index][1]; //.type
+          let offset = supportData[index][2]; //.offset
+          point = gridPoint[name];
+          let skew = point.skew * Math.PI / 180;
+          let newPoint = {
+              x: point.x - (Math.cos(skew) * (-1) * point.normalSin - Math.sin(skew) * point.normalCos) * offset,
+              y: point.y - (Math.sin(skew) * (-1) * point.normalSin + Math.cos(skew) * point.normalCos) * offset,
+              z: point.z - girderHeight
+          };
+          if (isFixed && name !== fixedPoint[0].point) {
+
+              if (name.slice(2) === fixedPoint[0].point.slice(2)) {
+                  angle = Math.atan2(newPoint.y - fixedCoord.y, newPoint.x - fixedCoord.x) * 180 / Math.PI + 90;
+              } else {
+                  angle = Math.atan2(newPoint.y - fixedCoord.y, newPoint.x - fixedCoord.x) * 180 / Math.PI;
+              }
+          } else {
+              sign = point.normalCos >= 0 ? 1 : -1;
+              angle = sign * Math.acos(-point.normalSin) * 180 / Math.PI;
+          }
+          support[index] = {
+              angle: angle > 90 ? angle - 180 : angle < -90 ? angle + 180 : angle,
+              point: newPoint,
+              basePointName : name,
+              key : "SPPT" + index,
+              type: dof[type], //[x,y,z,rx,ry,rz]
+          };
+      }
+      return support
+
+  }
+      /**
+      <summary>
+      각 요소별 포함하고 있는 노드의 리스트를 출력 및 sap.s2k 인풋결과 출력을 하며, 동시에 받침점에 대한 Local angle을 정의함
+      </summary>
+      <param name="girder_point_dict"></param>
+      <param name="xbeam_info"></param>
+      <param name="stringer_info"></param>
+      <returns></returns>
+      **/
+      function SapJointGenerator(girderStation,supportNode, xbeamData ){//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
+          let nodeNum = 1; 
+          let node = {command : "JOINT", data : []};
+          let local = {command : "LOCAL", data: []};
+          let boundary = {command : "RESTRAINT", data: []};
+          let rigid = {command : "CONSTRAINT", data : []};
+          let nodeNumDict = {};
+          
+          for (let i in girderStation){
+              for (let j in girderStation[i]){
+                  node.data.push({nodeNum : nodeNum, coord : [girderStation[i][j].point.x,girderStation[i][j].point.y,girderStation[i][j].point.z]});
+                  nodeNumDict[girderStation[i][j].key] = nodeNum;
+                  nodeNum++;
+              }
+          }
+          // let supportNode = SupportGenerator(supportFixed, supportData, gridPoint) // <-- 추후 함수 밖으로 보내야함
+          for (let i in supportNode){
+              node.data.push({nodeNum : nodeNum, coord : [supportNode[i].point.x,supportNode[i].point.y,supportNode[i].point.z]});
+              nodeNumDict[supportNode[i].key] = nodeNum;
+              local.data.push({nodeNum : nodeNum, ANG : supportNode[i].angle});
+              boundary.data.push({nodeNum : nodeNum, ANG : supportNode[i].type});
+              nodeNum++;
+          }
+          //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
+          for (let i in xbeamData){
+              if (xbeamData[i].isKframe){
+                  for (let j in xbeamData[i].data){
+                      node.data.push({nodeNum : nodeNum, coord : [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z]});
+                      nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum;
+                      nodeNum++;
+                  }
+                  rigid.data.push({master : nodeNumDict[xbeamData[i].inode], slave : [nodeNumDict[xbeamData[i].key + "P0"],nodeNumDict[xbeamData[i].key + "P2"]]});
+                  rigid.data.push({master : nodeNumDict[xbeamData[i].jnode], slave : [nodeNumDict[xbeamData[i].key + "P1"],nodeNumDict[xbeamData[i].key + "P3"]]});
+              }
+          }
+          // xbeam stringer에 대한 절점 추가 입력 필요
+          // stringerLayout input 추가 필요
+          return {nodeNumDict, input:{node,local,bounary,rigid}}
+  }
+
+  function Support() {
+      this.addInput("supportFixed", "boolean");
+      this.addInput("supportLayout", "arr");
+      this.addInput("gridPoint", "gridPoint");
+      this.addOutput("supportdata", "supportdata");
+  }
+
+  Support.prototype.onExecute = function () {
+      const result = SupportGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2));
+      this.setOutputData(0, result);
+  };
+
+  function SapJoint() {
+      this.addInput("girderStation", "girderStation");
+      this.addInput("supportData", "supportData");
+      this.addInput("xbeamData", "xbeamData");
+      this.addOutput("nodeInput", "nodeInput");
+  }
+
+  SapJoint.prototype.onExecute = function () {
+      const result = SapJointGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2));
+      this.setOutputData(0, result);
   };
 
   // import { defaultValues } from "./defaultValues";
@@ -3817,12 +4043,15 @@
   global.LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
   global.LiteGraph.registerNodeType("HMECS/hBracing", HBracing);
   global.LiteGraph.registerNodeType("HMECS/xbeam", Xbeam);
+  global.LiteGraph.registerNodeType("nexivil/support",Support);
+  global.LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
 
   global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
   global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
   global.LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
   global.LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
   global.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
+  global.LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
 
 
   // const {

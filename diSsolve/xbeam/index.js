@@ -6,6 +6,7 @@ export function Xbeam(){
     this.addInput("xbeamLayout","arr");
     this.addInput("xbeamSectionList","xbeamSectionList");
     this.addOutput("diaDict","diaDict");
+    this.addOutput("xbeamData","xbaemData");
   }
   
   Xbeam.prototype.onExecute = function() {
@@ -14,5 +15,7 @@ export function Xbeam(){
     const xbeamLayout = this.getInputData(2);
     const xbeamSectionList = this.getInputData(3);
     const result = XbeamDict(gridPoint, sectionPointDict, xbeamLayout, xbeamSectionList)
-    this.setOutputData(0, result)
+    this.setOutputData(0, result.xbeamSectionDict)
+    this.setOutputData(1, result.xbeamData)
+
   }

@@ -12,6 +12,7 @@ export function XbeamDict(
 
     let xbeamSectionDict = {};
     let xbeamPointDict = {};
+    let xbeamData = []
     for (let i = 0; i < xbeamLayout.length; i++) {
       let iNodekey = xbeamLayout[i][iNode];
       let jNodekey = xbeamLayout[i][jNode];
@@ -20,32 +21,45 @@ export function XbeamDict(
       let jSectionPoint = sectionPointDict[jNodekey].forward;
       let iPoint = nameToPointDict[iNodekey];
       let jPoint = nameToPointDict[jNodekey];
+      let xbData = [];
       // let cbkey = 'CB' + iNodekey + 'To' + jNodekey
       if (xbeamLayout[i][section] == "xbeamI") {
-        xbeamSectionDict[iNodekey] = XbeamSection(
+         let xbeam = XbeamSection(
           iPoint,
           jPoint,
           iSectionPoint,
           jSectionPoint,
           xbeamSection
         );
+        xbeamSectionDict[iNodekey] = xbeam.result
+        xbData = xbeam.data
       } else if (xbeamLayout[i][section] == "xbeamK") {
-        xbeamSectionDict[iNodekey] = XbeamSectionK(
+          let xbeam  = XbeamSectionK(
           iPoint,
           jPoint,
           iSectionPoint,
           jSectionPoint,
           xbeamSection
         );
+        xbeamSectionDict[iNodekey] = xbeam.result
+        xbData = xbeam.data
       }
       // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
       // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
+    //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
+    let key = i<10? "X0" + i: "X"+i;
+    let isKframe = xbeamLayout[i][section] == "xbeamK"? true: false;
+    xbeamData.push({
+          inode : iNodekey, jnode : jNodekey, key : key, isKframe:isKframe, data:xbData
+      })
     }
-    return xbeamSectionDict;
+    
+    return {xbeamSectionDict, xbeamData};
   }
 
 export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
     const result = {}
+    const data = []
     const connectorLength = xbeamSection.connectorLength
     const connectorWidth = xbeamSection.connectorWidth
     const upperFlangeThickness = xbeamSection.upperFlangeThickness
@@ -267,12 +281,14 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
       hole: [],
       point: iPoint
     }
-    // console.log('icos:', iCos)   
-    return result
+    // console.log('icos:', iCos) 
+    data = [cbWeb[0].x, length - cbWeb[3]]; //임시 강역값 입력 20.03.24  by jhlim  
+    return {result, data}
   }
   
   export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
-    const result = {}
+    const result = {};
+    let data = [];
     //K형가로보는 skew를 허용하지 않고 생성됨.
     const topOffset = xbeamSection.topOffset
     const bottomOffset = xbeamSection.bottomOffset
@@ -476,6 +492,6 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
       hole: [],
       point: centerPoint
     }
-  
-    return result
+    data = [...points, bottomCenter]
+    return {result, data}
   }
