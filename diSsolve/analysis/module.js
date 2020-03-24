@@ -246,5 +246,5 @@ export function SupportGenerator(supportFixed, supportData, gridPoint) {
         }
         // xbeam stringer에 대한 절점 추가 입력 필요
         // stringerLayout input 추가 필요
-        return {nodeNumDict, input:{node,local,bounary,rigid}}
+        return {nodeNumDict, input:{node,local,boundary,rigid}}
 }
