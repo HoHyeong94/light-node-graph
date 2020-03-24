@@ -39,6 +39,7 @@ DiaPhragmView.prototype.onExecute = function() {
   const initPoint = this.getInputData(1);
   const group = DiaView(diaDict,initPoint);
   let n = Math.random().toFixed(5)
+  console.log("random", n)
   sceneAdder({ layer: 0, mesh: group},"dia"+ n ); 
 }
 
