@@ -16,10 +16,12 @@ export function SapJoint() {
     this.addInput("girderStation", "girderStation");
     this.addInput("supportData", "supportData");
     this.addInput("xbeamData", "xbeamData");
+    this.addOutput("nodeNumDict", "nodeNumDict");
     this.addOutput("nodeInput", "nodeInput");
 }
 
 SapJoint.prototype.onExecute = function () {
     const result = SapJointGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2))
-    this.setOutputData(0, result)
+    this.setOutputData(0, result.nodeNumDict)
+    this.setOutputData(1, result.input)
 }
