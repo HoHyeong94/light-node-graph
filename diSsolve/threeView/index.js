@@ -14,7 +14,7 @@ LineViewer.prototype.on3DExecute = function() {
   const initPoint = this.getInputData(1);
   const color = this.getInputData(2);
   let mesh = LineView(points,initPoint,color)
-  sceneAdder({id:0,mesh:mesh});
+  sceneAdder({layer:0,mesh:mesh},"line");
 };
 
 export function SteelPlateView(){
@@ -26,7 +26,7 @@ SteelPlateView.prototype.onExecute = function() {
   const steeBoxDict = this.getInputData(0);
   const initPoint = this.getInputData(1);
   const group = SteelBoxView(steeBoxDict,initPoint);
-  sceneAdder({ id: 0, mesh: group}); 
+  sceneAdder({ layer: 0, mesh: group},"steelbox"); 
 }
 
 export function DiaPhragmView(){
@@ -38,7 +38,7 @@ DiaPhragmView.prototype.onExecute = function() {
   const diaDict = this.getInputData(0);
   const initPoint = this.getInputData(1);
   const group = DiaView(diaDict,initPoint);
-  sceneAdder({ id: 0, mesh: group}); 
+  sceneAdder({ layer: 0, mesh: group},"dia"); 
 }
 
 export function HorBracingView(){
@@ -51,8 +51,8 @@ export function HorBracingView(){
     const initPoint = this.getInputData(1);
     const group = HBracingView(hb.hBracingDict,initPoint);
     const group2 = HBracingPlateView(hb.hBracingPlateDict,initPoint);
-    sceneAdder({ id: 0, mesh: group}); 
-    sceneAdder({ id: 0, mesh: group2}); 
+    sceneAdder({ layer: 0, mesh: group}, "hbracing"); 
+    sceneAdder({ layer: 0, mesh: group2},"hbracingPlate"); 
   }
   
   export function DeckView(){
@@ -62,9 +62,9 @@ export function HorBracingView(){
   }
   
   DeckView.prototype.onExecute = function() {
-    sceneAdder({ id: 0, 
+    sceneAdder({ layer: 0, 
         mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
-    }); 
+    },"deck"); 
   }
 
 

@@ -1669,8 +1669,9 @@
       const cos = Point.normalCos;
       const sin = Point.normalSin;
       let skewCot = 0;
+      let skew = Point.skew? Point.skew : 90;
       if (Point.skew !=90){
-          skewCot = - 1 / Math.tan(Point.skew * Math.PI/180); 
+          skewCot = - 1 / Math.tan(skew * Math.PI/180); 
       }    let X = node2D.x;
       let Y = X * skewCot; 
       let Z = node2D.y;
@@ -3133,7 +3134,7 @@
 
   function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
       const result = {};
-      const data = [];
+      let data = [];
       const connectorLength = xbeamSection.connectorLength;
       const connectorWidth = xbeamSection.connectorWidth;
       const upperFlangeThickness = xbeamSection.upperFlangeThickness;
@@ -3355,7 +3356,8 @@
         point: iPoint
       };
       // console.log('icos:', iCos) 
-      data = [cbWeb[0].x, length - cbWeb[3]]; //임시 강역값 입력 20.03.24  by jhlim  
+      let tlength = Math.sqrt((iPoint.x - jPoint.x)**2 + (iPoint.y - jPoint.y)**2);
+      data = [cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
       return {result, data}
     }
     
@@ -3564,7 +3566,8 @@
         hole: [],
         point: centerPoint
       };
-      data = [...points, bottomCenter];
+      let dummyPoints = [...points, bottomCenter];
+      dummyPoints.forEach(function(elem){data.push(ToGlobalPoint(centerPoint,elem));});
       return {result, data}
     }
 
@@ -3827,7 +3830,7 @@
     const initPoint = this.getInputData(1);
     const color = this.getInputData(2);
     let mesh = LineView(points,initPoint,color);
-    global.sceneAdder({id:0,mesh:mesh});
+    global.sceneAdder({layer:0,mesh:mesh},"line");
   };
 
   function SteelPlateView(){
@@ -3839,7 +3842,7 @@
     const steeBoxDict = this.getInputData(0);
     const initPoint = this.getInputData(1);
     const group = SteelBoxView(steeBoxDict,initPoint);
-    global.sceneAdder({ id: 0, mesh: group}); 
+    global.sceneAdder({ layer: 0, mesh: group},"steelbox"); 
   };
 
   function DiaPhragmView(){
@@ -3851,7 +3854,7 @@
     const diaDict = this.getInputData(0);
     const initPoint = this.getInputData(1);
     const group = DiaView(diaDict,initPoint);
-    global.sceneAdder({ id: 0, mesh: group}); 
+    global.sceneAdder({ layer: 0, mesh: group},"dia"); 
   };
 
   function HorBracingView(){
@@ -3864,8 +3867,8 @@
       const initPoint = this.getInputData(1);
       const group = HBracingView(hb.hBracingDict,initPoint);
       const group2 = HBracingPlateView(hb.hBracingPlateDict,initPoint);
-      global.sceneAdder({ id: 0, mesh: group}); 
-      global.sceneAdder({ id: 0, mesh: group2}); 
+      global.sceneAdder({ layer: 0, mesh: group}, "hbracing"); 
+      global.sceneAdder({ layer: 0, mesh: group2},"hbracingPlate"); 
     };
     
     function DeckView(){
@@ -3875,9 +3878,9 @@
     }
     
     DeckView.prototype.onExecute = function() {
-      global.sceneAdder({ id: 0, 
+      global.sceneAdder({ layer: 0, 
           mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
-      }); 
+      },"deck"); 
     };
 
 
@@ -3929,6 +3932,7 @@
           type = supportData[index][1]; //.type
           let offset = supportData[index][2]; //.offset
           point = gridPoint[name];
+          console.log(name, point);
           let skew = point.skew * Math.PI / 180;
           let newPoint = {
               x: point.x - (Math.cos(skew) * (-1) * point.normalSin - Math.sin(skew) * point.normalCos) * offset,
@@ -3986,7 +3990,7 @@
               node.data.push({nodeNum : nodeNum, coord : [supportNode[i].point.x,supportNode[i].point.y,supportNode[i].point.z]});
               nodeNumDict[supportNode[i].key] = nodeNum;
               local.data.push({nodeNum : nodeNum, ANG : supportNode[i].angle});
-              boundary.data.push({nodeNum : nodeNum, ANG : supportNode[i].type});
+              boundary.data.push({nodeNum : nodeNum, DOF : supportNode[i].type});
               nodeNum++;
           }
           //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
@@ -4003,7 +4007,7 @@
           }
           // xbeam stringer에 대한 절점 추가 입력 필요
           // stringerLayout input 추가 필요
-          return {nodeNumDict, input:{node,local,bounary,rigid}}
+          return {nodeNumDict, input:{node,local,boundary,rigid}}
   }
 
   function Support() {
@@ -4022,12 +4026,14 @@
       this.addInput("girderStation", "girderStation");
       this.addInput("supportData", "supportData");
       this.addInput("xbeamData", "xbeamData");
+      this.addOutput("nodeNumDict", "nodeNumDict");
       this.addOutput("nodeInput", "nodeInput");
   }
 
   SapJoint.prototype.onExecute = function () {
       const result = SapJointGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2));
-      this.setOutputData(0, result);
+      this.setOutputData(0, result.nodeNumDict);
+      this.setOutputData(1, result.input);
   };
 
   // import { defaultValues } from "./defaultValues";

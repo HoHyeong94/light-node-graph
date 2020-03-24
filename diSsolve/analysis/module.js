@@ -249,3 +249,101 @@ export function SupportGenerator(supportFixed, supportData, gridPoint) {
         // stringerLayout input 추가 필요
         return {nodeNumDict, input:{node,local,boundary,rigid}}
 }
+
+export function SapFrameGenerator( girderStation, xbeamData, nodeNumDict,sectionPropDict, materials){//consStep, all_material, girder_section_info, all_beam_section_info){
+        let allElement = []; // As New List(Of Element_3d)
+        let elemNum = 1; // As Integer = 1
+        let sectionNameDict = {}
+
+        for (let i in girderStation){
+            for (let j= 0; j< girderStation[i].length -1; j++){
+                let inode = girderStation[i][j].key
+                let jnode = girderStation[i][j+1].key
+                let sectionName = "noname" // 임시로 작성 추후 수정 바람.
+                sectionNameDict[sectionName] = [sectionPropDict[inode],sectionPropDict[jnode]]
+                let elem = {
+                    iNode : nodeNumDict[inode],
+                    jNode : nodeNumDict[jnode],
+                    sectionName : sectionName, // node_group.Key & added_index,
+                    endOffset : false,
+                    number : elemNum
+                }
+                allElement.push(elem)
+                elemNum++
+            }
+        }
+        //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[], section:[상형,하현,사재]}];
+        for (let i in xbeamData){
+            if (xbeamData[i].isKframe){
+                let KLink = [[0,1],[2,4], [3,4], [0,4], [1,4]] // 상현, 하현1, 하현2, 사재1, 사재2
+                let sectionName = [xbeamData[i].section[0],xbeamData[i].section[1],xbeamData[i].section[1],xbeamData[i].section[2],xbeamData[i].section[2]]
+                for (let j=0;j<5;j++){
+                    let inode = xbeamData[i].key + "P" + KLink[j][0]
+                    let jnode = xbeamData[i].key + "P" + KLink[j][1]
+                    let elem = {
+                        iNode : nodeNumDict[inode],
+                        jNode : nodeNumDict[jnode],
+                        sectionName : sectionName[j], // node_group.Key & added_index,
+                        endOffset : false,
+                        number : elemNum
+                    }
+                    allElement.push(elem)
+                    elemNum++
+                }
+            }else{
+                let sectionName = "noname" // 임시로 작성 추후 수정 바람.
+                sectionNameDict[sectionName] = [sectionPropDict[xbeamData[i].key]]  //가로보는 변단면 반영하지 않음.
+
+                let elem = {
+                    iNode : nodeNumDict[xbeamData[i].inode],
+                    jNode : nodeNumDict[xbeamData[i].jnode],
+                    sectionName : sectionName[j], // node_group.Key & added_index,
+                    endOffset : true,
+                    number : elemNum,
+                    IOFF : xbeamData[i].data[0],
+                    JOFF : xbeamData[i].data[1] 
+                }
+                allElement.push(elem)
+                elemNum++
+            }
+        }
+        let generalSection = {
+            Name : "",
+            Mat : "",
+            A : 0,
+            I : [0,0],
+            J : 0
+         }
+        let taperedSection = {
+            Name : "",
+            type : "Nonpr",
+            Sec : ["",""],  //isection, jsection
+            Eivar : [2,1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+            Vl : 0
+         }
+
+        // deck, stringer  추후 작성
+       // sectionDB운용방안 마련
+        //    const materials = {
+        //     slabConc: { name: "slabConc", elast: 28825.3, shearElast: 12318.5, poissonRatio: 0.17 w : 25}, // 강도와 재료 입력으로 자동생성
+        //     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
+        //     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
+        //     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
+        // }
+
+        let material = {command : "MATERIAL", data: []}
+        for (let i in materials){
+            material.data.push({NAME : materials[i].name,
+            IDES : "C", // 강재는 S, concrte C
+            M : materials[i].weight / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
+            W : materials[i].weight / 1000, // ton to kg
+            E : materials[i].elast,
+            U : materials[i].poissonRatio
+            })
+        }
+         let frame = {command : "FRAME", data : []};
+         let section = {command : "FRAME SECTION", data : []}
+        
+
+        return {sectionNameDict, input : {frame,section,material}}
+    }
