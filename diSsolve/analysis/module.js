@@ -230,7 +230,7 @@ export function SupportGenerator(supportFixed, supportData, gridPoint) {
             node.data.push({nodeNum : nodeNum, coord : [supportNode[i].point.x,supportNode[i].point.y,supportNode[i].point.z]})
             nodeNumDict[supportNode[i].key] = nodeNum
             local.data.push({nodeNum : nodeNum, ANG : supportNode[i].angle})
-            boundary.data.push({nodeNum : nodeNum, ANG : supportNode[i].type})
+            boundary.data.push({nodeNum : nodeNum, DOF : supportNode[i].type})
             nodeNum++
         }
         //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
