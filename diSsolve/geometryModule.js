@@ -7,8 +7,9 @@ export function ToGlobalPoint(Point, node2D){
     const cos = Point.normalCos;
     const sin = Point.normalSin;
     let skewCot = 0;
+    let skew = Point.skew? Point.skew : 90;
     if (Point.skew !=90){
-        skewCot = - 1 / Math.tan(Point.skew * Math.PI/180) 
+        skewCot = - 1 / Math.tan(skew * Math.PI/180) 
     };
     let X = node2D.x
     let Y = X * skewCot; 
