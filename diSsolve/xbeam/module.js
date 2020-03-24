@@ -59,7 +59,7 @@ export function XbeamDict(
 
 export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
     const result = {}
-    const data = []
+    let data = []
     const connectorLength = xbeamSection.connectorLength
     const connectorWidth = xbeamSection.connectorWidth
     const upperFlangeThickness = xbeamSection.upperFlangeThickness
