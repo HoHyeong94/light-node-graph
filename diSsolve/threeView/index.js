@@ -38,7 +38,8 @@ DiaPhragmView.prototype.onExecute = function() {
   const diaDict = this.getInputData(0);
   const initPoint = this.getInputData(1);
   const group = DiaView(diaDict,initPoint);
-  sceneAdder({ layer: 0, mesh: group},"dia"); 
+  let n = Math.random().toFixed(5)
+  sceneAdder({ layer: 0, mesh: group},"dia"+ n ); 
 }
 
 export function HorBracingView(){
