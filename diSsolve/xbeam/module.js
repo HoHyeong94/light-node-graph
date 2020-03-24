@@ -282,7 +282,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
       point: iPoint
     }
     // console.log('icos:', iCos) 
-    data = [cbWeb[0].x, length - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
+    data = [cbWeb[0].x, length, cbWeb[3].x, iCos]; //임시 강역값 입력 20.03.24  by jhlim  
     return {result, data}
   }
   
