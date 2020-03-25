@@ -1,17 +1,18 @@
-import {ToGlobalPoint, Kframe, XYOffset, Vector, scallop } from "../geometryModule"
+import { ToGlobalPoint, Kframe, XYOffset, Vector, scallop } from "../geometryModule"
+import { PTS } from "../DB/module"
 
 export function XbeamDict(
     nameToPointDict,
     sectionPointDict,
     xbeamLayout,
-    xbeamSectionList
+    xbeamSectionList,
+    sectionDB
   ) {
       const iNode = 0;
       const jNode =1;
       const section =2;
 
     let xbeamSectionDict = {};
-    let xbeamPointDict = {};
     let xbeamData = []
     for (let i = 0; i < xbeamLayout.length; i++) {
       let iNodekey = xbeamLayout[i][iNode];
@@ -39,7 +40,8 @@ export function XbeamDict(
           jPoint,
           iSectionPoint,
           jSectionPoint,
-          xbeamSection
+          xbeamSection,
+          sectionDB
         );
         xbeamSectionDict[iNodekey] = xbeam.result
         xbData = xbeam.data
@@ -284,10 +286,12 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     // console.log('icos:', iCos) 
     let tlength = Math.sqrt((iPoint.x - jPoint.x)**2 + (iPoint.y - jPoint.y)**2)
     data = [cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
-    return {result, data}
+    let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2
+    section = [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ]
+    return {result, data, section}
   }
   
-  export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
+  export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection, sectionDB) {
     const result = {};
     let data = [];
     //K형가로보는 skew를 허용하지 않고 생성됨.
@@ -301,7 +305,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     const gussetCenterWidth = xbeamSection.gussetCenterWidth
     let hFrameEndOffset = xbeamSection.hFrameEndOffset
     let diaFrameEndOffset = xbeamSection.diaFrameEndOffset
-    const pts = xbeamSection.pts
+    const pts = PTS("L150x150x12",true,1,sectionDB) 
   
     let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1])
     let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1])
@@ -495,5 +499,6 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     }
     let dummyPoints = [...points, bottomCenter]
     dummyPoints.forEach(function(elem){data.push(ToGlobalPoint(centerPoint,elem))})
-    return {result, data}
+    let section = ["상현단면","하현단면","사재단면"]; //사용자로부터 받은 단면요소의 값을 객체로 저장
+    return {result, data, section}
   }

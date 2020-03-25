@@ -9,13 +9,12 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
     if (k.substr(0, 1) === "G") {
       let point = pointDict[k];
       let girderIndex = k.substr(1, 1) - 1;
-
+      let baseInput = {}
       let station = point.masterStationNumber;
       let gradient = point.gradientY;
       let skew = point.skew;
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
       let sectionInfo = girderBaseInfo[girderIndex].section;
-
       const height = pointSectionInfo.forward.height;
       const centerThickness = slabInfo.slabThickness; //  slab변수 추가
       const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H };
@@ -62,10 +61,34 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         let tr1 = { x: rw2.x + sectionInfo.D, y: rw2.y + gradient * (sectionInfo.D) };
         let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW) };
         let topPlate2 = PlateRestPoint(tr1, tr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);;
+        
+        baseInput = {
+            isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
+            isClosedTop: tl2.x < tr1.x?true:false,         
+            B1: rw1.x - lw1.x ,                                 //강거더 하부 내부폭
+            B2: rw2.x - lw2.x ,                                 //강거더 상부 내부폭
+            B3: 3500,  //바닥판 콘크리트 폭                      //슬래브에 대한 정보는 외부에서 받아와야 함
+            wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
+            wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
+            wuf: tl2.x < tr1.x?ps.uFlangeW:tr2.x - tl1.x,       //상부플랜지 폭
+            wlf: b2.x - b1.x,                                   //하부플랜지 폭
+            H: height -slabThickness,                           //강거더 높이
+            tlf: ps.lFlangeThk ,                                //하부플랜지 두께
+            tuf: ps.uFlangeThk,                                 //상부플랜지두께
+            tw: ps.webThk,                                      //웹두께
+            Tcu: ps.slabThickness,                              //바닥판콘크리트 두께          
+            Th: slabInfo.Th ,                                   //헌치두께
+            Tcl: 0,                       //지점콘크리트 두께     //지점콘크리트에 대한 입력 변수 추가
+            blf: (sectionInfo.C1 + sectionInfo.D1)/2,            //하부플랜지 외부폭
+            buf: (sectionInfo.C + sectionInfo.D)/2,             //상부플랜지 외부폭
+            Urib: { thickness: uRibThk, height: uRibH, layout: uRibLO },
+            Lrib: { thickness: ps.lRibThk, height: ps.lRibH, layout: ps.lRibLO }, 
+            horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
+          }
         if (i === 0) {
-          forward = { skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib }
+          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib }
         } else {
-          backward = { skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib }
+          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib }
         }
       }
       result[k] = { forward, backward }
@@ -339,4 +362,8 @@ export function DeckSectionPoint(
     points.push(...dummy) //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
     // }
     return points
+  }
+
+  export function Point2DLength(point1, point2) {
+    return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2)
   }

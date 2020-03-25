@@ -1,35 +1,37 @@
-export function partProperty(width,thickness,Dy,Dz,cos) {
+export function partProperty(width, thickness, Dy, Dz, cos) {
     // cos는 수직부재 1, 수평부재 0
-    const sin = Math.sqrt(1-cos**2)
+    const sin = Math.sqrt(1 - cos ** 2)
     let area = width * thickness
-    let Ioyy = width * thickness / 12 * ((width * cos) ** 2  + (thickness*sin) ** 2 ) 
-    let Iozz = width * thickness / 12 * ((width * sin) ** 2  + (thickness*cos) ** 2 )
-    return {area,Ioyy,Iozz,Dy,Dz}
+    let Ioyy = width * thickness / 12 * ((width * cos) ** 2 + (thickness * sin) ** 2)
+    let Iozz = width * thickness / 12 * ((width * sin) ** 2 + (thickness * cos) ** 2)
+    return { area, Ioyy, Iozz, Dy, Dz }
 }
 
 const SectionAnalysisInput = {
-    Double_composite : true,
-    Closed_top : true,
-    B1 : 0 ,  //강거더 하부 내부폭
-    B2 : 0 ,  //강거더 상부 내부폭
-    B3 : 0 ,  //바닥판 콘크리트 폭
-    wlw : 0,   //좌측웹 폭
-    wrw : 0,    //우측웹 폭
-    wuf : 0,    //상부플랜지 폭
-    wlf : 0,    //하부플랜지 폭
-    H : 0 ,   //강거더 높이
-    tlf : 0 ,  //하부플랜지 두께
-    tuf : 0 ,  //상부플랜지두께
-    tw : 0 ,  //웹두께
-    Tcu : 0 , //바닥판콘크리트 두께
-    Th : 0 ,  //헌치두께
-    Tcl : 0 , //지점콘크리트 두께
-    blf : 0 , //하부플랜지 외부폭
-    buf : 0 , //상부플랜지 외부폭
-    Urib : {thickness :0 , height : 0, layout:[]}, 
-    Lrib : {thickness :0 , height : 0, layout:[]},
-    horizontal_bracing : {d0:0, vbArea:0, dbArea:0}, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
+    isDoubleComposite: true,
+    isClosedTop: true,
+    B1: 0,  //강거더 하부 내부폭
+    B2: 0,  //강거더 상부 내부폭
+    B3: 0,  //바닥판 콘크리트 폭    //슬래브에 대한 정보는 외부에서 받아와야 함
+    wlw: 0,   //좌측웹 폭
+    wrw: 0,    //우측웹 폭
+    wuf: 0,    //상부플랜지 폭
+    wlf: 0,    //하부플랜지 폭
+    H: 0,   //강거더 높이
+    tlf: 0,  //하부플랜지 두께
+    tuf: 0,  //상부플랜지두께
+    tw: 0,  //웹두께
+    Tcu: 0, //바닥판콘크리트 두께   //슬래브에 대한 정보는 외부에서 받아와야 함
+    Th: 0,  //헌치두께              //슬래브에 대한 정보는 외부에서 받아와야 함
+    Tcl: 0, //지점콘크리트 두께     //지점콘크리트에 대한 입력 변수 추가
+    blf: 0, //하부플랜지 외부폭
+    buf: 0, //상부플랜지 외부폭
+    Urib: { thickness: 0, height: 0, layout: [] },
+    Lrib: { thickness: 0, height: 0, layout: [] },
+    horizontal_bracing: { d0: 0, vbArea: 0, dbArea: 0 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
 }
+
+
 
 const materials = {
     slabConc: { name: "slabConc", elast: 28825.3, shearElast: 12318.5, poissonRatio: 0.17 }, // 강도와 재료 입력으로 자동생성
@@ -37,42 +39,100 @@ const materials = {
     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
 }
+const xbeamInput = {
+    tfw : 0,
+    tft : 0,
+    wh : 0,
+    wt : 0,
+    bfw : 0,
+    bft : 0,
+}
+const slab = {T : 270, W : 2000, Th : 0}    // 슬래브에 대한 변수는 추후 외부에서 받아와야 함!
 
+//I형 가로보의 시공단계별 단면계수 생성
+export function Isection(xi, materials, slab){
+
+    let stage1 = {};
+    let stage2 = {};
+    let stage3 = {};
+    let n1 = materials.Steel.elast / materials.slabConc.elast;  //상부바닥판 탄성계수비
+    let isteel = [];
+    isteel.push(partProperty(xi.tfw, xi.tft, xi.wh/2 + xi.tft / 2, 0, 0))
+    isteel.push(partProperty(xi.bfw, xi.bft, -xi.wh/2 - xi.bft / 2, 0, 0))
+    isteel.push(partProperty(xi.wh, xi.wt, 0, 0, 1))
+
+    //합성전 강재 단면
+    let ADy = 0;
+    let ADz = 0;
+
+    stage1.A = 0;
+    for (let i in isteel) {
+        stage1.A += isteel[i].ara
+        ADy += isteel[i].area * isteel[i].Dy
+        ADz += isteel[i].area * isteel[i].Dz
+    }
+    stage1.Cy = ADy / stage1.A
+    stage1.Cz = ADz / stage1.A
+    stage1.Iyy = 0;
+    stage1.Izz = 0;
+    for (let i of isteel) {
+        stage1.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage1.Cy) ** 2
+        stage1.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage1.Cz) ** 2
+    }
+    // 단일 합성후 가로보단면 변화 없음
+    stage2 = stage1
+    //이중합성후 합성단면의 단면계수 계산
+        let deckConc = partProperty(slab.W / n1, slab.T, xi.wh / 2 + slab.T / 2 + slab.Th, 0, 0)
+        isteel.push(deckConc)
+        ADy += deckConc.area * deckConc.Dy
+        ADz += deckConc.area * deckConc.Dz
+        stage3.A = stage2.A + deckConc.area;
+        stage3.Cy = ADy / stage3.A
+        stage3.Cz = ADz / stage3.A
+        stage3.Iyy = 0;
+        stage3.Izz = 0;
+        for (let i of isteel) {
+            stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2
+            stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2
+        }
+
+    return [stage1, stage2, stage3]
+}
+//이중합성 거더의 시공단계별 단면계수 생성
 export function DCBsection(sa, materials) {
-    let resultSection = {}
     let n1 = materials.Steel.elast / materials.slabConc.elast;  //상부바닥판 탄성계수비
     let n2 = materials.Steel.elast / materials.BottomConc.elast;  //하부콘크리트 탄성계수비
-    let lcos = sa.H/sa.wlw
-    let rcos = sa.H/sa.wrw
+    let lcos = sa.H / sa.wlw
+    let rcos = sa.H / sa.wrw
     let sb = [];
-    
-    if(sa.Closed_top){
-        sb.push(partProperty(sa.wuf,sa.tuf,sa.H/2 + sa.tuf/2, sa.B2/2, 0))
-        sb.push(partProperty(sa.wuf,sa.tuf,sa.H/2 + sa.tuf/2, -sa.B2/2, 0))
-    }else{
-        sb.push(partProperty(sa.wuf,sa.tuf,sa.H/2 + sa.tuf/2, 0, 0))
+
+    if (sa.isClosedTop) {
+        sb.push(partProperty(sa.wuf, sa.tuf, sa.H / 2 + sa.tuf / 2, sa.B2 / 2, 0))
+        sb.push(partProperty(sa.wuf, sa.tuf, sa.H / 2 + sa.tuf / 2, -sa.B2 / 2, 0))
+    } else {
+        sb.push(partProperty(sa.wuf, sa.tuf, sa.H / 2 + sa.tuf / 2, 0, 0))
     }
-    sb.push(partProperty(sa.wlf,sa.tlf,-sa.H/2 - sa.tlf/2, 0, 0))
-    sb.push(partProperty(sa.ww,sa.tw,0, -(sa.B2 + sa.B1)/4, lcos))
-    sb.push(partProperty(sa.ww,sa.tw,0, (sa.B2 + sa.B1)/4, rcos))
-    sa.Urib.layout.forEach(function(elem){
-        sb.push(partProperty(sa.Urib.height, sa.Urib.thickness, sa.H/2 - sa.Urib.height/2, elem, 1))
+    sb.push(partProperty(sa.wlf, sa.tlf, -sa.H / 2 - sa.tlf / 2, 0, 0))
+    sb.push(partProperty(sa.ww, sa.tw, 0, -(sa.B2 + sa.B1) / 4, lcos))
+    sb.push(partProperty(sa.ww, sa.tw, 0, (sa.B2 + sa.B1) / 4, rcos))
+    sa.Urib.layout.forEach(function (elem) {
+        sb.push(partProperty(sa.Urib.height, sa.Urib.thickness, sa.H / 2 - sa.Urib.height / 2, elem, 1))
     })
-    sa.Lrib.layout.forEach(function(elem){
-        sb.push(partProperty(sa.Lrib.height, sa.Lrib.thickness, -sa.H/2 + sa.Lrib.height/2, elem, 1))
+    sa.Lrib.layout.forEach(function (elem) {
+        sb.push(partProperty(sa.Lrib.height, sa.Lrib.thickness, -sa.H / 2 + sa.Lrib.height / 2, elem, 1))
     })
     let stage1 = {}
     let stage2 = {}
     let stage3 = {}
 
     //비틀림 강성 계산을 위한 수평브레이싱 등가 두께 계산
-    
-    if (input.Closed_top === false) {
+
+    if (input.isClosedTop === false) {
         let hb = sa.horizontal_bracingbracing
         let bracing_length = Math.Sqrt(hb.d0 ** 2 + sa.B2 ** 2)
         //tr = material.Steel.elast / material.Steel.shear_elast * .lamda * .B2 / (bracing_length ^ 3 / .horizontal_bracing.Area + 2 / 3 * .B2 / (.b_2 * .t2))
         let tr = materials.Steel.elast / materials.Steel.shear_elast * hb.d0 * sa.B2 / (bracing_length ** 3 / hb.dbArea + 2 / 3 * sa.B2 / (sa.wuf * sa.tuf)) //<--- 임시로 작성
-        stage1.Ixx = 4 * ((sa.B2 + sa.B1) * sa.H / 2) ** 2 / (sa.B2 / tr + sa.wlw / sa.tw  + sa.wrw / sa.tw + sa.B1 / sa.tlf)
+        stage1.Ixx = 4 * ((sa.B2 + sa.B1) * sa.H / 2) ** 2 / (sa.B2 / tr + sa.wlw / sa.tw + sa.wrw / sa.tw + sa.B1 / sa.tlf)
     } else {
         stage1.Ixx = 4 * ((sa.B2 + sa.B1) * sa.H / 2) ** 2 / (sa.B2 / sa.tuf + sa.wlw / sa.tw + sa.wrw / sa.tw + sa.B1 / sa.tlf)
     }
@@ -100,16 +160,16 @@ export function DCBsection(sa, materials) {
     }
 
     //단일합성후 합성단면의 단면계수 계산
-    let botConc = partProperty(sa.B1 / n2,sa.Tcl,-sa.H/2 + sa.Tcl/2, 0, 0)
+    let botConc = partProperty(sa.B1 / n2, sa.Tcl, -sa.H / 2 + sa.Tcl / 2, 0, 0)
     sb.push(botConc)
-    if (input.Double_composite === false) {
+    if (input.isDoubleComposite === false) {
         stage2 = stage1
     } else {
         ADy += botConc.area * botConc.Dy
         ADz += botConc.area * botConc.Dz
         stage2.A = stage1.A + botConc.area;
-        stage2.Cy = ADy  / stage2.A
-        stage2.Cz = ADz  / stage2.A
+        stage2.Cy = ADy / stage2.A
+        stage2.Cz = ADz / stage2.A
         stage2.Iyy = 0;
         stage2.Izz = 0;
         for (let i of sb) {
@@ -118,20 +178,20 @@ export function DCBsection(sa, materials) {
         }
     }
     //이중합성후 합성단면의 단면계수 계산
-    let deckConc = partProperty(sa.B3 / n1, sa.Tcu, sa.H/2 + sa.Tcu/2 + sa.Th, 0, 0)
+    let deckConc = partProperty(sa.B3 / n1, sa.Tcu, sa.H / 2 + sa.Tcu / 2 + sa.Th, 0, 0)
     sb.push(deckConc)
-    ADy += botConc.area * botConc.Dy
-    ADz += botConc.area * botConc.Dz
-    stage3.A = resultSection.A + deckConc.area;
+    ADy += deckConc.area * deckConc.Dy
+    ADz += deckConc.area * deckConc.Dz
+    stage3.A = stage2.A + deckConc.area;
     stage3.Cy = ADy / stage3.A
     stage3.Cz = ADz / stage3.A
     stage3.Iyy = 0;
     stage3.Izz = 0;
     for (let i of sb) {
-        stage3.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - resultSection.Cy2) ** 2
-        stage3.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - resultSection.Cz2) ** 2
+        stage3.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage3.Cy) ** 2
+        stage3.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage3.Cz) ** 2
     }
-    return [stage1,stage2,stage3]
+    return [stage1, stage2, stage3]
 }
 
 export function SupportGenerator(supportFixed, supportData, gridPoint) {
@@ -193,157 +253,181 @@ export function SupportGenerator(supportFixed, supportData, gridPoint) {
         support[index] = {
             angle: angle > 90 ? angle - 180 : angle < -90 ? angle + 180 : angle,
             point: newPoint,
-            basePointName : name,
-            key : "SPPT" + index,
+            basePointName: name,
+            key: "SPPT" + index,
             type: dof[type], //[x,y,z,rx,ry,rz]
         }
     }
     return support
 
 }
-    /**
-    <summary>
-    각 요소별 포함하고 있는 노드의 리스트를 출력 및 sap.s2k 인풋결과 출력을 하며, 동시에 받침점에 대한 Local angle을 정의함
-    </summary>
-    <param name="girder_point_dict"></param>
-    <param name="xbeam_info"></param>
-    <param name="stringer_info"></param>
-    <returns></returns>
-    **/
-    export function SapJointGenerator(girderStation,supportNode, xbeamData ){//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
-        let nodeNum = 1; 
-        let node = {command : "JOINT", data : []};
-        let local = {command : "LOCAL", data: []}
-        let boundary = {command : "RESTRAINT", data: []}
-        let rigid = {command : "CONSTRAINT", data : []}
-        let nodeNumDict = {};
-        
-        for (let i in girderStation){
-            for (let j in girderStation[i]){
-                node.data.push({nodeNum : nodeNum, coord : [girderStation[i][j].point.x,girderStation[i][j].point.y,girderStation[i][j].point.z]})
-                nodeNumDict[girderStation[i][j].key] = nodeNum
-                nodeNum++
-            }
-        }
-        // let supportNode = SupportGenerator(supportFixed, supportData, gridPoint) // <-- 추후 함수 밖으로 보내야함
-        for (let i in supportNode){
-            node.data.push({nodeNum : nodeNum, coord : [supportNode[i].point.x,supportNode[i].point.y,supportNode[i].point.z]})
-            nodeNumDict[supportNode[i].key] = nodeNum
-            local.data.push({nodeNum : nodeNum, ANG : supportNode[i].angle})
-            boundary.data.push({nodeNum : nodeNum, DOF : supportNode[i].type})
+/**
+<summary>
+각 요소별 포함하고 있는 노드의 리스트를 출력 및 sap.s2k 인풋결과 출력을 하며, 동시에 받침점에 대한 Local angle을 정의함
+</summary>
+<param name="girder_point_dict"></param>
+<param name="xbeam_info"></param>
+<param name="stringer_info"></param>
+<returns></returns>
+**/
+export function SapJointGenerator(girderStation, supportNode, xbeamData) {//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
+    let nodeNum = 1;
+    let node = { command: "JOINT", data: [] };
+    let local = { command: "LOCAL", data: [] }
+    let boundary = { command: "RESTRAINT", data: [] }
+    let rigid = { command: "CONSTRAINT", data: [] }
+    let nodeNumDict = {};
+
+    for (let i in girderStation) {
+        for (let j in girderStation[i]) {
+            node.data.push({ nodeNum: nodeNum, coord: [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z] })
+            nodeNumDict[girderStation[i][j].key] = nodeNum
             nodeNum++
         }
-        //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
-        for (let i in xbeamData){
-            if (xbeamData[i].isKframe){
-                for (let j in xbeamData[i].data){
-                    node.data.push({nodeNum : nodeNum, coord : [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z]});
-                    nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum
-                    nodeNum++
-                }
-                rigid.data.push({master : nodeNumDict[xbeamData[i].inode], slave : [nodeNumDict[xbeamData[i].key + "P0"],nodeNumDict[xbeamData[i].key + "P2"]]})
-                rigid.data.push({master : nodeNumDict[xbeamData[i].jnode], slave : [nodeNumDict[xbeamData[i].key + "P1"],nodeNumDict[xbeamData[i].key + "P3"]]})
+    }
+    // let supportNode = SupportGenerator(supportFixed, supportData, gridPoint) // <-- 추후 함수 밖으로 보내야함
+    for (let i in supportNode) {
+        node.data.push({ nodeNum: nodeNum, coord: [supportNode[i].point.x, supportNode[i].point.y, supportNode[i].point.z] })
+        nodeNumDict[supportNode[i].key] = nodeNum
+        local.data.push({ nodeNum: nodeNum, ANG: supportNode[i].angle })
+        boundary.data.push({ nodeNum: nodeNum, DOF: supportNode[i].type })
+        nodeNum++
+    }
+    //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
+    for (let i in xbeamData) {
+        if (xbeamData[i].isKframe) {
+            for (let j in xbeamData[i].data) {
+                node.data.push({ nodeNum: nodeNum, coord: [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z] });
+                nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum
+                nodeNum++
             }
+            rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P2"]] })
+            rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P3"]] })
         }
-        // xbeam stringer에 대한 절점 추가 입력 필요
-        // stringerLayout input 추가 필요
-        return {nodeNumDict, input:{node,local,boundary,rigid}}
+    }
+    // xbeam stringer에 대한 절점 추가 입력 필요
+    // stringerLayout input 추가 필요
+    return { nodeNumDict, input: { node, local, boundary, rigid } }
+}
+// 합성전단계에 대해서 일단 우선 생성
+// stringer/외측빔에 대한 단면정보 생성은 추후 결정
+export function AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData) {
+    let sectionPropDict = {};
+    for (let i in girderStation){
+        for (let j in girderStation[i]){
+            sectionPropDict[key] = {forward : {}, backward : {}}
+            let key = girderStation[i][j].key
+            let sa = sectionPointDict[key].forward.input
+            let sa2 = sectionPointDict[key].backward.input
+            sectionPropDict[key].forward= DCBsection(sa,materials)
+            sectionPropDict[key].backward= DCBsection(sa2,materials)
+        }
+    }
+    for (let i in xbeamData){
+        if (xbeamData[i].isKframe === false){
+            let key = xbeamData[i].key
+            sectionPropDict[key] = Isection(xbeamData[i].section)
+        }
+    }
+    return sectionPropDict;
 }
 
-export function SapFrameGenerator( girderStation, xbeamData, nodeNumDict,sectionPropDict, materials){//consStep, all_material, girder_section_info, all_beam_section_info){
-        let allElement = []; // As New List(Of Element_3d)
-        let elemNum = 1; // As Integer = 1
-        let sectionNameDict = {}
+export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, nodeNumDict, materials) {//consStep, all_material, girder_section_info, all_beam_section_info){
+    let allElement = []; // As New List(Of Element_3d)
+    let elemNum = 1; // As Integer = 1
+    let sectionNameDict = {}
+    let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, xbeamData)
 
-        for (let i in girderStation){
-            for (let j= 0; j< girderStation[i].length -1; j++){
-                let inode = girderStation[i][j].key
-                let jnode = girderStation[i][j+1].key
-                let sectionName = "noname" // 임시로 작성 추후 수정 바람.
-                sectionNameDict[sectionName] = [sectionPropDict[inode],sectionPropDict[jnode]]
-                let elem = {
-                    iNode : nodeNumDict[inode],
-                    jNode : nodeNumDict[jnode],
-                    sectionName : sectionName, // node_group.Key & added_index,
-                    endOffset : false,
-                    number : elemNum
-                }
-                allElement.push(elem)
-                elemNum++
+    for (let i in girderStation) {
+        for (let j = 0; j < girderStation[i].length - 1; j++) {
+            let inode = girderStation[i][j].key
+            let jnode = girderStation[i][j + 1].key
+            let sectionName = "noname" // 임시로 작성 추후 수정 바람.
+            sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
+            let elem = {
+                iNode: nodeNumDict[inode],
+                jNode: nodeNumDict[jnode],
+                sectionName: sectionName, // node_group.Key & added_index,
+                endOffset: false,
+                number: elemNum
             }
+            allElement.push(elem)
+            elemNum++
         }
-        //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[], section:[상형,하현,사재]}];
-        for (let i in xbeamData){
-            if (xbeamData[i].isKframe){
-                let KLink = [[0,1],[2,4], [3,4], [0,4], [1,4]] // 상현, 하현1, 하현2, 사재1, 사재2
-                let sectionName = [xbeamData[i].section[0],xbeamData[i].section[1],xbeamData[i].section[1],xbeamData[i].section[2],xbeamData[i].section[2]]
-                for (let j=0;j<5;j++){
-                    let inode = xbeamData[i].key + "P" + KLink[j][0]
-                    let jnode = xbeamData[i].key + "P" + KLink[j][1]
-                    let elem = {
-                        iNode : nodeNumDict[inode],
-                        jNode : nodeNumDict[jnode],
-                        sectionName : sectionName[j], // node_group.Key & added_index,
-                        endOffset : false,
-                        number : elemNum
-                    }
-                    allElement.push(elem)
-                    elemNum++
-                }
-            }else{
-                let sectionName = "noname" // 임시로 작성 추후 수정 바람.
-                sectionNameDict[sectionName] = [sectionPropDict[xbeamData[i].key]]  //가로보는 변단면 반영하지 않음.
-
-                let elem = {
-                    iNode : nodeNumDict[xbeamData[i].inode],
-                    jNode : nodeNumDict[xbeamData[i].jnode],
-                    sectionName : sectionName[j], // node_group.Key & added_index,
-                    endOffset : true,
-                    number : elemNum,
-                    IOFF : xbeamData[i].data[0],
-                    JOFF : xbeamData[i].data[1] 
-                }
-                allElement.push(elem)
-                elemNum++
-            }
-        }
-        let generalSection = {
-            Name : "",
-            Mat : "",
-            A : 0,
-            I : [0,0],
-            J : 0
-         }
-        let taperedSection = {
-            Name : "",
-            type : "Nonpr",
-            Sec : ["",""],  //isection, jsection
-            Eivar : [2,1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
-            Vl : 0
-         }
-
-        // deck, stringer  추후 작성
-       // sectionDB운용방안 마련
-        //    const materials = {
-        //     slabConc: { name: "slabConc", elast: 28825.3, shearElast: 12318.5, poissonRatio: 0.17 w : 25}, // 강도와 재료 입력으로 자동생성
-        //     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
-        //     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
-        //     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
-        // }
-
-        let material = {command : "MATERIAL", data: []}
-        for (let i in materials){
-            material.data.push({NAME : materials[i].name,
-            IDES : "C", // 강재는 S, concrte C
-            M : materials[i].weight / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
-            W : materials[i].weight / 1000, // ton to kg
-            E : materials[i].elast,
-            U : materials[i].poissonRatio
-            })
-        }
-         let frame = {command : "FRAME", data : []};
-         let section = {command : "FRAME SECTION", data : []}
-        
-
-        return {sectionNameDict, input : {frame,section,material}}
     }
+    //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[], section:[상형,하현,사재]}];
+    for (let i in xbeamData) {
+        if (xbeamData[i].isKframe) {
+            let KLink = [[0, 1], [2, 4], [3, 4], [0, 4], [1, 4]] // 상현, 하현1, 하현2, 사재1, 사재2
+            let sectionName = [xbeamData[i].section[0], xbeamData[i].section[1], xbeamData[i].section[1], xbeamData[i].section[2], xbeamData[i].section[2]]
+            for (let j = 0; j < 5; j++) {
+                let inode = xbeamData[i].key + "P" + KLink[j][0]
+                let jnode = xbeamData[i].key + "P" + KLink[j][1]
+                let elem = {
+                    iNode: nodeNumDict[inode],
+                    jNode: nodeNumDict[jnode],
+                    sectionName: sectionName[j], // node_group.Key & added_index,
+                    endOffset: false,
+                    number: elemNum
+                }
+                allElement.push(elem)
+                elemNum++
+            }
+        } else {
+            let sectionName = xbeamData[i].key // 임시로 작성 추후 수정 바람.
+            sectionNameDict[sectionName] = [sectionPropDict[sectionName]]  //가로보는 변단면 반영하지 않음.
+            let elem = {
+                iNode: nodeNumDict[xbeamData[i].inode],
+                jNode: nodeNumDict[xbeamData[i].jnode],
+                sectionName: sectionName, // node_group.Key & added_index,
+                endOffset: true,
+                number: elemNum,
+                IOFF: xbeamData[i].data[0],
+                JOFF: xbeamData[i].data[1]
+            }
+            allElement.push(elem)
+            elemNum++
+        }
+    }
+    for ()
+    let generalSection = {
+        Name: "",
+        Mat: "",
+        A: 0,
+        I: [0, 0],
+        J: 0
+    }
+    let taperedSection = {
+        Name: "",
+        type: "Nonpr",
+        Sec: ["", ""],  //isection, jsection
+        Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+        Vl: 0
+    }
+
+    // deck, stringer  추후 작성
+    // sectionDB운용방안 마련
+    //    const materials = {
+    //     slabConc: { name: "slabConc", elast: 28825.3, shearElast: 12318.5, poissonRatio: 0.17 w : 25}, // 강도와 재료 입력으로 자동생성
+    //     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
+    //     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
+    //     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
+    // }
+
+    let material = { command: "MATERIAL", data: [] }
+    for (let i in materials) {
+        material.data.push({
+            NAME: materials[i].name,
+            IDES: "C", // 강재는 S, concrte C
+            M: materials[i].weight / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
+            W: materials[i].weight / 1000, // ton to kg
+            E: materials[i].elast,
+            U: materials[i].poissonRatio
+        })
+    }
+    let frame = { command: "FRAME", data: [] };
+    let section = { command: "FRAME SECTION", data: [] }
+
+
+    return { sectionNameDict, input: { frame, section, material } }
+}
