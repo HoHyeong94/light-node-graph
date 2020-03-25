@@ -389,7 +389,6 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
             elemNum++
         }
     }
-    for ()
     let generalSection = {
         Name: "",
         Mat: "",

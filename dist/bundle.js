@@ -1823,13 +1823,12 @@
       if (k.substr(0, 1) === "G") {
         let point = pointDict[k];
         let girderIndex = k.substr(1, 1) - 1;
-
+        let baseInput = {};
         let station = point.masterStationNumber;
         let gradient = point.gradientY;
         let skew = point.skew;
         let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
         let sectionInfo = girderBaseInfo[girderIndex].section;
-
         const height = pointSectionInfo.forward.height;
         const centerThickness = slabInfo.slabThickness; //  slab변수 추가
         const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H };
@@ -1875,10 +1874,34 @@
           let topPlate1 = PlateRestPoint(tl1, tl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);
           let tr1 = { x: rw2.x + sectionInfo.D, y: rw2.y + gradient * (sectionInfo.D) };
           let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW) };
-          let topPlate2 = PlateRestPoint(tr1, tr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);        if (i === 0) {
-            forward = { skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib };
+          let topPlate2 = PlateRestPoint(tr1, tr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);        
+          baseInput = {
+              isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
+              isClosedTop: tl2.x < tr1.x?true:false,         
+              B1: rw1.x - lw1.x ,                                 //강거더 하부 내부폭
+              B2: rw2.x - lw2.x ,                                 //강거더 상부 내부폭
+              B3: 3500,  //바닥판 콘크리트 폭                      //슬래브에 대한 정보는 외부에서 받아와야 함
+              wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
+              wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
+              wuf: tl2.x < tr1.x?ps.uFlangeW:tr2.x - tl1.x,       //상부플랜지 폭
+              wlf: b2.x - b1.x,                                   //하부플랜지 폭
+              H: height -slabThickness,                           //강거더 높이
+              tlf: ps.lFlangeThk ,                                //하부플랜지 두께
+              tuf: ps.uFlangeThk,                                 //상부플랜지두께
+              tw: ps.webThk,                                      //웹두께
+              Tcu: ps.slabThickness,                              //바닥판콘크리트 두께          
+              Th: slabInfo.Th ,                                   //헌치두께
+              Tcl: 0,                       //지점콘크리트 두께     //지점콘크리트에 대한 입력 변수 추가
+              blf: (sectionInfo.C1 + sectionInfo.D1)/2,            //하부플랜지 외부폭
+              buf: (sectionInfo.C + sectionInfo.D)/2,             //상부플랜지 외부폭
+              Urib: { thickness: uRibThk, height: uRibH, layout: uRibLO },
+              Lrib: { thickness: ps.lRibThk, height: ps.lRibH, layout: ps.lRibLO }, 
+              horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
+            };
+          if (i === 0) {
+            forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib };
           } else {
-            backward = { skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib };
+            backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib };
           }
         }
         result[k] = { forward, backward };
@@ -2152,6 +2175,10 @@
       points.push(...dummy); //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
       // }
       return points
+    }
+
+    function Point2DLength(point1, point2) {
+      return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2)
     }
 
   function SectionPoint(){
@@ -3076,11 +3103,40 @@
       this.setOutputData(0, result);
     };
 
+  // Cy, Cz 0: left, bottom 1: center, 2: right, top
+  function PTS(name, Yinverse, Cy, sectionDB) {
+      let pts = [0, 0, 0, 0, 0];
+      let base = 0;
+      switch (Cy) {
+          case 0:
+              base = Yinverse? sectionDB[name].shape[1] : 0;
+              break;
+          case 1:
+              base = Yinverse? sectionDB[name].Cy : -sectionDB[name].Cy;
+              break;
+          case 2:
+              base = Yinverse? 0: - sectionDB[name].shape[1];
+              break;
+          default:
+              base = 0;
+      }
+      let sign = Yinverse? 1:-1;
+
+      pts[0] = base;
+      pts[1] = base - sign * sectionDB[name].shape[2];
+      pts[2] = base - sign * sectionDB[name].shape[1];
+      pts[3] = sectionDB[name].shape[0];
+      pts[4] = sectionDB[name].shape[3];
+
+      return pts
+  }
+
   function XbeamDict(
       nameToPointDict,
       sectionPointDict,
       xbeamLayout,
-      xbeamSectionList
+      xbeamSectionList,
+      sectionDB
     ) {
         const iNode = 0;
         const jNode =1;
@@ -3114,7 +3170,8 @@
             jPoint,
             iSectionPoint,
             jSectionPoint,
-            xbeamSection
+            xbeamSection,
+            sectionDB
           );
           xbeamSectionDict[iNodekey] = xbeam.result;
           xbData = xbeam.data;
@@ -3358,10 +3415,12 @@
       // console.log('icos:', iCos) 
       let tlength = Math.sqrt((iPoint.x - jPoint.x)**2 + (iPoint.y - jPoint.y)**2);
       data = [cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
-      return {result, data}
+      let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2;
+      section = [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ];
+      return {result, data, section}
     }
     
-    function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
+    function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection, sectionDB) {
       const result = {};
       let data = [];
       //K형가로보는 skew를 허용하지 않고 생성됨.
@@ -3375,7 +3434,7 @@
       const gussetCenterWidth = xbeamSection.gussetCenterWidth;
       let hFrameEndOffset = xbeamSection.hFrameEndOffset;
       let diaFrameEndOffset = xbeamSection.diaFrameEndOffset;
-      const pts = xbeamSection.pts;
+      const pts = PTS("L150x150x12",true,1,sectionDB); 
     
       let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
       let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1]);
@@ -3568,7 +3627,8 @@
       };
       let dummyPoints = [...points, bottomCenter];
       dummyPoints.forEach(function(elem){data.push(ToGlobalPoint(centerPoint,elem));});
-      return {result, data}
+      let section = ["상현단면","하현단면","사재단면"]; //사용자로부터 받은 단면요소의 값을 객체로 저장
+      return {result, data, section}
     }
 
   function Xbeam(){
@@ -3576,6 +3636,7 @@
       this.addInput("sectionPointDict","sectionPointDict");
       this.addInput("xbeamLayout","arr");
       this.addInput("xbeamSectionList","xbeamSectionList");
+      this.addInput("sectionDB","sectionDB");
       this.addOutput("diaDict","diaDict");
       this.addOutput("xbeamData","xbaemData");
     }
@@ -3585,7 +3646,7 @@
       const sectionPointDict = this.getInputData(1);
       const xbeamLayout = this.getInputData(2);
       const xbeamSectionList = this.getInputData(3);
-      const result = XbeamDict(gridPoint, sectionPointDict, xbeamLayout, xbeamSectionList);
+      const result = XbeamDict(gridPoint, sectionPointDict, xbeamLayout, xbeamSectionList, this.getInputData(4));
       this.setOutputData(0, result.xbeamSectionDict);
       this.setOutputData(1, result.xbeamData);
 
@@ -3830,7 +3891,7 @@
     const initPoint = this.getInputData(1);
     const color = this.getInputData(2);
     let mesh = LineView(points,initPoint,color);
-    global.sceneAdder({layer:0,mesh:mesh},"line");
+    global.sceneAdder({layer:1, mesh:mesh},"line");
   };
 
   function SteelPlateView(){
@@ -3854,7 +3915,9 @@
     const diaDict = this.getInputData(0);
     const initPoint = this.getInputData(1);
     const group = DiaView(diaDict,initPoint);
-    global.sceneAdder({ layer: 0, mesh: group},"dia"); 
+    let n = Math.random().toFixed(5);
+    console.log("random", n);
+    global.sceneAdder({ layer: 0, mesh: group},"dia-"+ n ); 
   };
 
   function HorBracingView(){
@@ -3953,61 +4016,61 @@
           support[index] = {
               angle: angle > 90 ? angle - 180 : angle < -90 ? angle + 180 : angle,
               point: newPoint,
-              basePointName : name,
-              key : "SPPT" + index,
+              basePointName: name,
+              key: "SPPT" + index,
               type: dof[type], //[x,y,z,rx,ry,rz]
           };
       }
       return support
 
   }
-      /**
-      <summary>
-      각 요소별 포함하고 있는 노드의 리스트를 출력 및 sap.s2k 인풋결과 출력을 하며, 동시에 받침점에 대한 Local angle을 정의함
-      </summary>
-      <param name="girder_point_dict"></param>
-      <param name="xbeam_info"></param>
-      <param name="stringer_info"></param>
-      <returns></returns>
-      **/
-      function SapJointGenerator(girderStation,supportNode, xbeamData ){//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
-          let nodeNum = 1; 
-          let node = {command : "JOINT", data : []};
-          let local = {command : "LOCAL", data: []};
-          let boundary = {command : "RESTRAINT", data: []};
-          let rigid = {command : "CONSTRAINT", data : []};
-          let nodeNumDict = {};
-          
-          for (let i in girderStation){
-              for (let j in girderStation[i]){
-                  node.data.push({nodeNum : nodeNum, coord : [girderStation[i][j].point.x,girderStation[i][j].point.y,girderStation[i][j].point.z]});
-                  nodeNumDict[girderStation[i][j].key] = nodeNum;
-                  nodeNum++;
-              }
-          }
-          // let supportNode = SupportGenerator(supportFixed, supportData, gridPoint) // <-- 추후 함수 밖으로 보내야함
-          for (let i in supportNode){
-              node.data.push({nodeNum : nodeNum, coord : [supportNode[i].point.x,supportNode[i].point.y,supportNode[i].point.z]});
-              nodeNumDict[supportNode[i].key] = nodeNum;
-              local.data.push({nodeNum : nodeNum, ANG : supportNode[i].angle});
-              boundary.data.push({nodeNum : nodeNum, DOF : supportNode[i].type});
+  /**
+  <summary>
+  각 요소별 포함하고 있는 노드의 리스트를 출력 및 sap.s2k 인풋결과 출력을 하며, 동시에 받침점에 대한 Local angle을 정의함
+  </summary>
+  <param name="girder_point_dict"></param>
+  <param name="xbeam_info"></param>
+  <param name="stringer_info"></param>
+  <returns></returns>
+  **/
+  function SapJointGenerator(girderStation, supportNode, xbeamData) {//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
+      let nodeNum = 1;
+      let node = { command: "JOINT", data: [] };
+      let local = { command: "LOCAL", data: [] };
+      let boundary = { command: "RESTRAINT", data: [] };
+      let rigid = { command: "CONSTRAINT", data: [] };
+      let nodeNumDict = {};
+
+      for (let i in girderStation) {
+          for (let j in girderStation[i]) {
+              node.data.push({ nodeNum: nodeNum, coord: [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z] });
+              nodeNumDict[girderStation[i][j].key] = nodeNum;
               nodeNum++;
           }
-          //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
-          for (let i in xbeamData){
-              if (xbeamData[i].isKframe){
-                  for (let j in xbeamData[i].data){
-                      node.data.push({nodeNum : nodeNum, coord : [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z]});
-                      nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum;
-                      nodeNum++;
-                  }
-                  rigid.data.push({master : nodeNumDict[xbeamData[i].inode], slave : [nodeNumDict[xbeamData[i].key + "P0"],nodeNumDict[xbeamData[i].key + "P2"]]});
-                  rigid.data.push({master : nodeNumDict[xbeamData[i].jnode], slave : [nodeNumDict[xbeamData[i].key + "P1"],nodeNumDict[xbeamData[i].key + "P3"]]});
+      }
+      // let supportNode = SupportGenerator(supportFixed, supportData, gridPoint) // <-- 추후 함수 밖으로 보내야함
+      for (let i in supportNode) {
+          node.data.push({ nodeNum: nodeNum, coord: [supportNode[i].point.x, supportNode[i].point.y, supportNode[i].point.z] });
+          nodeNumDict[supportNode[i].key] = nodeNum;
+          local.data.push({ nodeNum: nodeNum, ANG: supportNode[i].angle });
+          boundary.data.push({ nodeNum: nodeNum, DOF: supportNode[i].type });
+          nodeNum++;
+      }
+      //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
+      for (let i in xbeamData) {
+          if (xbeamData[i].isKframe) {
+              for (let j in xbeamData[i].data) {
+                  node.data.push({ nodeNum: nodeNum, coord: [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z] });
+                  nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum;
+                  nodeNum++;
               }
+              rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P2"]] });
+              rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P3"]] });
           }
-          // xbeam stringer에 대한 절점 추가 입력 필요
-          // stringerLayout input 추가 필요
-          return {nodeNumDict, input:{node,local,boundary,rigid}}
+      }
+      // xbeam stringer에 대한 절점 추가 입력 필요
+      // stringerLayout input 추가 필요
+      return { nodeNumDict, input: { node, local, boundary, rigid } }
   }
 
   function Support() {
@@ -4036,6 +4099,21 @@
       this.setOutputData(1, result.input);
   };
 
+  function SectionDB() {
+      this.addOutput("sectionDB", "sectionDB");
+  }
+
+  SectionDB.prototype.onExecute = function () {
+      //T형강일 경우, 역T를 기준으로 하단좌측이 원점, y축 수평, z축 수직
+      //L형강일 경우, ㄴ자를 기준으로 하단좌측이 원점, y축 수평, z축 수직
+      const result = {
+          "T150x150x6.5x9": { type: "T", shape: [150, 150, 6.5, 9], A: 2266.5, Ix: 122669.3, Iy: 4598193, Iz: 2534477, Cy: 75, Cz: 34.8276 },
+          "L100x100x10": { type: "L", shape: [100, 100, 10, 10], A: 1900, Ix: 63300, Iy: 1750000, Iz: 1750000, Cy: 28.2, Cz: 28.2 },
+          "L150x150x12": { type: "L", shape: [150, 150, 12, 12], A: 3477, Ix: 166000, Iy: 7400000, Iz: 7400000, Cy: 41.4, Cz: 41.4 }
+      };
+      this.setOutputData(0, result);
+  };
+
   // import { defaultValues } from "./defaultValues";
 
   global.LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
@@ -4051,6 +4129,7 @@
   global.LiteGraph.registerNodeType("HMECS/xbeam", Xbeam);
   global.LiteGraph.registerNodeType("nexivil/support",Support);
   global.LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
+  global.LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
 
   global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
   global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
