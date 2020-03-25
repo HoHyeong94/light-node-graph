@@ -26,6 +26,7 @@ export function VstiffDict(){
   this.addInput("sectionPointDict","sectionPointDict");
   this.addInput("vStiffLayout","arr");
   this.addInput("vStiffSectionList","vStiffSectionList");
+  this.addInput("sectionDB","sectionDB");
   this.addOutput("diaDict","diaDict");
 }
 
@@ -34,7 +35,7 @@ VstiffDict.prototype.onExecute = function() {
     const sectionPointDict = this.getInputData(1);
   const vStiffLayout = this.getInputData(2);
   const vStiffSectionList = this.getInputData(3);
-  const result = VstiffShapeDict(gridPoint, sectionPointDict,vStiffLayout,vStiffSectionList)
+  const result = VstiffShapeDict(gridPoint, sectionPointDict,vStiffLayout,vStiffSectionList, this.getInputData(4))
   this.setOutputData(0, result)
 }
 

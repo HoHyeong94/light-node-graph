@@ -55,7 +55,8 @@ export function VstiffShapeDict(
   gridPoint,
   sectionPointDict,
   vStiffLayout,
-  vStiffSectionList
+  vStiffSectionList,
+  sectionDB
 ) {
   const position = 0;
   const section = 1 ;
@@ -76,7 +77,7 @@ export function VstiffShapeDict(
       sectionPointDict[gridkey].forward.rightTopPlate[2]
     ];
     let skew = sectionPointDict[gridkey].forward.skew;
-    result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection);
+    result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection,sectionDB);
     result[gridkey].point = gridPoint[gridkey]
   }
   
@@ -530,7 +531,7 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
     return result
   }
 
-  export function vStiffSection(webPoints, skew, uflangePoint, vSection){
+  export function vStiffSection(webPoints, skew, uflangePoint, vSection, sectionDB){
 
     const bl = webPoints[0];
     const tl = webPoints[1];
@@ -553,7 +554,8 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
     let sideScallopOffset = vSection.sideScallopOffset;
     //L100x100x10 section point, origin = (0,0)
     let spc = vSection.spc;
-    let pts = vSection.pts;
+    let pts = PTS(vSection.tFrameName,false,0,sectionDB)
+    // let pts = vSection.pts;
     let rotationY = (skew - 90)*Math.PI/180
   ///left stiffener
     let leftplate = [
