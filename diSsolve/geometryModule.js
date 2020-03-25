@@ -67,10 +67,10 @@ export function Kframe(node1, node2, ioffset, joffset, pts){
                 XYOffset(node1,vec,ioffset,pts[1]),
                 XYOffset(node1,vec,(length-joffset),pts[1]),
                 XYOffset(node1,vec,(length-joffset),pts[0]), ]
-  let plate2 = [ XYOffset(node1,vec,ioffset,pts[1]),
-                XYOffset(node1,vec,ioffset,pts[2]),
-                XYOffset(node1,vec,(length-joffset),pts[2]),
-                XYOffset(node1,vec,(length-joffset),pts[1]),]
+  let plate2 = [ XYOffset(node1,vec,ioffset,pts[2]),
+                XYOffset(node1,vec,ioffset,pts[3]),
+                XYOffset(node1,vec,(length-joffset),pts[3]),
+                XYOffset(node1,vec,(length-joffset),pts[2]),]
   return [plate1, plate2]
 }
 

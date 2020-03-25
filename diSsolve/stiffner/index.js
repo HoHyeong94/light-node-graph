@@ -44,6 +44,7 @@ export function HBracing(){
     this.addInput("sectionPointDict","sectionPointDict");
     this.addInput("hBracingLayout","arr");
     this.addInput("hBracingSectionList","hBracingSectionList");
+    this.addInput("sectionDB","sectionDB");
     this.addOutput("hBracingDict","hBracingDict");
   }
   
@@ -52,6 +53,6 @@ export function HBracing(){
     const sectionPointDict = this.getInputData(1);
     const hBracingLayout = this.getInputData(2);
     const hBracingSectionList = this.getInputData(3);
-    const result = HBracingDict(gridPoint, sectionPointDict,hBracingLayout,hBracingSectionList)
+    const result = HBracingDict(gridPoint, sectionPointDict,hBracingLayout,hBracingSectionList,this.getInputData(4))
     this.setOutputData(0, result)
   }

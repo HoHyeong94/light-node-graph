@@ -88,7 +88,8 @@ export function HBracingDict(
     pointDict,
     sectionPointDict,
     hBracingLayout,
-    hBracingectionList
+    hBracingectionList,
+    sectionDB
   ) {
     const from = 0;
     const to = 1;
@@ -121,7 +122,7 @@ export function HBracingDict(
       let point1 = pointDict[pk1];
       let point2 = pointDict[pk2];
   
-      hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection);
+      hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection,sectionDB);
       if (hBracingLayout[i][platelayout[0]]) {
         right = hBracingLayout[i][leftToright] ? false : true;
         let webPoints1 = [
@@ -263,12 +264,12 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
     // 슬래브 기준두께에 따라 브레이싱의 상단좌표가 이동해야 하나, 현재 기준은 0,0을 기준점으로 하고 있어 수정이 필요함 20.03.17 by drlim
     let pts = PTS(ds.dFrameName,false,1,sectionDB)
     let newleftline = [
-      {x:leftline[0].x - (ds.spc - lcos * pts[2]) / ltan, y: leftline[0].y - (ds.spc - lcos * pts[2])},
-      {x:leftline[1].x + (ds.spc - lsin * pts[2]), y: leftline[1].y + ltan * (ds.spc - lsin * pts[2])}
+      {x:leftline[0].x - (ds.spc - lcos * pts[3]) / ltan, y: leftline[0].y - (ds.spc - lcos * pts[3])},
+      {x:leftline[1].x + (ds.spc - lsin * pts[3]), y: leftline[1].y + ltan * (ds.spc - lsin * pts[3])}
     ]
     let [leftframe1,leftframe2] = Kframe(newleftline[1],newleftline[0],0,0,pts)
-    result["leftframe1"] = {points:leftframe1, Thickness:pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
-    result["leftframe2"] = {points:leftframe2, Thickness:pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+    result["leftframe1"] = {points:leftframe1, Thickness:pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
+    result["leftframe2"] = {points:leftframe2, Thickness:pts[5],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
       size:{Label:"L-100x100x10x"+PointLength(...newleftline).toFixed(0)},
       anchor:[[newleftline[1].x-20,newleftline[1].y],[newleftline[0].x-20,newleftline[0].y]]}
     
@@ -277,12 +278,12 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
     let rtan = (rightline[1].y - rightline[0].y) / (rightline[1].x - rightline[0].x)
     let rsin = rcos * rtan
     let newrightline = [
-      {x:rightline[0].x - (ds.spc + rcos * pts[2]) / rtan, y: rightline[0].y - (ds.spc + rcos * pts[2])},
-      {x:rightline[1].x - (ds.spc - rsin * pts[2]), y: rightline[1].y - rtan * (ds.spc - rsin * pts[2])}
+      {x:rightline[0].x - (ds.spc + rcos * pts[3]) / rtan, y: rightline[0].y - (ds.spc + rcos * pts[3])},
+      {x:rightline[1].x - (ds.spc - rsin * pts[3]), y: rightline[1].y - rtan * (ds.spc - rsin * pts[3])}
     ]
     let [rightframe1,rightframe2] = Kframe(newrightline[0],newrightline[1],0,0,pts)
-    result["rightframe1"] = {points:rightframe1, Thickness:pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
-    result["rightframe2"] = {points:rightframe2, Thickness:pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+    result["rightframe1"] = {points:rightframe1, Thickness:pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
+    result["rightframe2"] = {points:rightframe2, Thickness:pts[5],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
       size:{Label:"L-100x100x10x"+PointLength(...newrightline).toFixed(0)},
       anchor:[[newrightline[0].x+20,newrightline[0].y],[newrightline[1].x+20,newrightline[1].y]]
     }
@@ -586,13 +587,13 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
   return {
     leftshape: {points:leftPoints,Thickness:sideThickness,z: -sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}, 
     rightShape: {points:rightPoints,Thickness:sideThickness,z:-sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-    upperframe1:{points:upperframe1, Thickness:pts[3],z:sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-    upperframe2:{points:upperframe2, Thickness:pts[4],z:sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
+    upperframe1:{points:upperframe1, Thickness:pts[4],z:sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
+    upperframe2:{points:upperframe2, Thickness:pts[5],z:sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
    }
 }
 
 
-export function hBracingSection(point1, point2, webPoints, hBSection){
+export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB){
   // let sideToplength = 700;
   // let sideTopwidth = 300;
   // let B = 2000;
@@ -610,7 +611,7 @@ export function hBracingSection(point1, point2, webPoints, hBSection){
   let upperHeight = hBSection.upperHeight;
   let sideTopThickness = hBSection.sideTopThickness;
   let spc = hBSection.spc
-  let pts = hBSection.pts
+  let pts = PTS(hBSection.dFrameName,false,1,sectionDB) //hBSection.pts
 
   let node1 = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y: tl.y -(upperHeight + sideTopThickness)};
   let node2 = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y: tr.y -(upperHeight + sideTopThickness)};
