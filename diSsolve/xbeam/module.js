@@ -305,7 +305,13 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     const gussetCenterWidth = xbeamSection.gussetCenterWidth
     let hFrameEndOffset = xbeamSection.hFrameEndOffset
     let diaFrameEndOffset = xbeamSection.diaFrameEndOffset
-    const pts = PTS("L150x150x12",true,1,sectionDB) 
+    let tFrame = xbeamSection.tFrameName
+    let bFrame = xbeamSection.bFrameName
+    let dFrame = xbeamSection.dFrameName
+    const pts1 = PTS(tFrame,true,1,sectionDB) 
+    const pts2 = PTS(bFrame,true,1,sectionDB) 
+    const pts3 = PTS(dFrame,true,1,sectionDB) 
+
   
     let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1])
     let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1])
@@ -335,10 +341,10 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
       { x: -xlength / 2 - (iheight - bottomOffset) * iCot, y: -xlength / 2 * grd - (iheight - bottomOffset) },
     ]
     let bottomCenter = { x: (points[2].x + points[3].x) / 2, y: (points[2].y + points[3].y) / 2 }
-    let topFrame = Kframe(points[0], points[1], hFrameEndOffset, hFrameEndOffset, pts)
-    let bottomFrame = Kframe(points[3], points[2], hFrameEndOffset, hFrameEndOffset, pts)
-    let leftFrame = Kframe(points[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts)
-    let rightFrame = Kframe(bottomCenter, points[1], diaFrameEndOffset, diaFrameEndOffset, pts)
+    let topFrame = Kframe(points[0], points[1], hFrameEndOffset, hFrameEndOffset, pts1)
+    let bottomFrame = Kframe(points[3], points[2], hFrameEndOffset, hFrameEndOffset, pts2)
+    let leftFrame = Kframe(points[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts3)
+    let rightFrame = Kframe(bottomCenter, points[1], diaFrameEndOffset, diaFrameEndOffset, pts3)
   
     let topVec = Vector(points[0], points[1])
     let leftVec = Vector(points[0], bottomCenter)
@@ -347,19 +353,19 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
   
     let leftTopGussetPlate = [
       { x: -xlength / 2 - gussetWeldingOffset * iCot, y: -xlength / 2 * grd - gussetWeldingOffset },
-      XYOffset(points[0], topVec, hFrameEndOffset + gussetBondingLength, pts[0] + gussetWeldingOffset),
-      XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts[0] + gussetWeldingOffset),
-      XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts[2] - gussetWeldingOffset),
+      XYOffset(points[0], topVec, hFrameEndOffset + gussetBondingLength, pts1[0] + gussetWeldingOffset),
+      XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[0] + gussetWeldingOffset),
+      XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[2] - gussetWeldingOffset),
       { x: -xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * iCot, y: -xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
     ]
     result['centerGusset'] = {
       points: [
-        XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts[2] - gussetWeldingOffset),
-        XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts[2] - gussetWeldingOffset),
-        XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts[2] - gussetWeldingOffset),
-        XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
-        XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
-        XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts[2] - gussetWeldingOffset),
+        XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[2] - gussetWeldingOffset),
+        XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[2] - gussetWeldingOffset),
+        XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[2] - gussetWeldingOffset),
+        XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+        XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+        XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[2] - gussetWeldingOffset),
       ],
       Thickness: gussetThickness,
       z: -gussetThickness / 2,
@@ -380,9 +386,9 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     result['rightTopGusset'] = {
       points: [
         { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
-        XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
-        XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
-        XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts[2] - gussetWeldingOffset),
+        XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
+        XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+        XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[2] - gussetWeldingOffset),
         { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
       ],
       Thickness: gussetThickness,
@@ -395,8 +401,8 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     result['leftBottomGusset'] = {
       points: [
         { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
-        XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts[2] - gussetWeldingOffset),
-        XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts[0] + gussetWeldingOffset),
+        XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[2] - gussetWeldingOffset),
+        XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
         { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
       ],
       Thickness: gussetThickness,
@@ -410,8 +416,8 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     result['rightBottomGusset'] = {
       points: [
         { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
-        XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts[2] - gussetWeldingOffset),
-        XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
+        XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[2] - gussetWeldingOffset),
+        XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
         { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
       ],
       Thickness: gussetThickness,
@@ -424,7 +430,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
   
     result['topFrame1'] = {
       points: topFrame[0],
-      Thickness: pts[3],
+      Thickness: pts1[3],
       z: gussetThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: 0,
@@ -433,7 +439,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     }
     result['topFrame2'] = {
       points: topFrame[1],
-      Thickness: pts[4],
+      Thickness: pts1[4],
       z: gussetThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: 0,
@@ -444,7 +450,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
   
     result['bottomFrame1'] = {
       points: bottomFrame[0],
-      Thickness: pts[3],
+      Thickness: pts2[3],
       z: gussetThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: 0,
@@ -453,7 +459,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     }
     result['bottomFrame2'] = {
       points: bottomFrame[1],
-      Thickness: pts[4],
+      Thickness: pts2[4],
       z: gussetThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: 0,
@@ -463,7 +469,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
   
     result['leftFrame1'] = {
       points: leftFrame[0],
-      Thickness: pts[3],
+      Thickness: pts3[3],
       z: gussetThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: 0,
@@ -472,7 +478,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     }
     result['leftFrame2'] = {
       points: leftFrame[1],
-      Thickness: pts[4],
+      Thickness: pts3[4],
       z: gussetThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: 0,
@@ -481,7 +487,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     }
     result['righttFrame1'] = {
       points: rightFrame[0],
-      Thickness: pts[3],
+      Thickness: pts3[3],
       z: gussetThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: 0,
@@ -490,7 +496,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     }
     result['rightFrame2'] = {
       points: rightFrame[1],
-      Thickness: pts[4],
+      Thickness: pts3[4],
       z: gussetThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: 0,
