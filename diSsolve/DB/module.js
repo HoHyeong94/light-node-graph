@@ -26,8 +26,8 @@ export function PTS(name, Yinverse, Cy, sectionDB) {
     } else if (sectionDB[name].type === "T") {
         pts[0] = base - sign * sectionDB[name].shape[1]
         pts[1] = base
-        pts[2] = base - sign * sectionDB[name].Cy - sectionDB[name].shape[2]/2
-        pts[3] = base - sign * sectionDB[name].Cy + sectionDB[name].shape[2]/2
+        pts[2] = base - sign * sectionDB[name].Cy - sign * sectionDB[name].shape[2]/2
+        pts[3] = base - sign * sectionDB[name].Cy + sign * sectionDB[name].shape[2]/2
         pts[4] = -sectionDB[name].shape[3]
         pts[5] = -sectionDB[name].shape[0]
     }
