@@ -24,13 +24,13 @@ export function PTS(name, Yinverse, Cy, sectionDB) {
         pts[4] = sectionDB[name].shape[0]
         pts[5] = sectionDB[name].shape[3]
     } else if (sectionDB[name].type === "T") {
-        pts[0] = base
-        pts[1] = base - sign * sectionDB[name].shape[1]
+        pts[0] = base - sign * sectionDB[name].shape[1]
+        pts[1] = base
         pts[2] = base - sign * sectionDB[name].Cy - sectionDB[name].shape[2]/2
         pts[3] = base - sign * sectionDB[name].Cy + sectionDB[name].shape[2]/2
         pts[4] = -sectionDB[name].shape[3]
         pts[5] = -sectionDB[name].shape[0]
     }
-
+    // 각 형강에 대한 결과 순서가 통일성이 없음 추후 수정 바람 20.03.25 by drlim
     return pts
 }
