@@ -1,12 +1,14 @@
 import { THREE } from "global";
 
 import {ToGlobalPoint, PlateRestPoint, WebPoint, Kframe, scallop, Fillet2D ,PlateSize, PlateSize2, PointLength} from "../geometryModule"
+import {PTS} from "../DB/module"
 
 export function DiaShapeDict(
   gridPoint,
   sectionPointDict,
   diaphragmLayout,
-  diaphragmSectionList
+  diaphragmSectionList,
+  sectionDB
 ) {
   const position = 0;
   const section = 1 ;
@@ -32,7 +34,8 @@ export function DiaShapeDict(
         webPoints,
         skew,
         uflangePoints,
-        diaSection
+        diaSection,
+        sectionDB
       );
     } else if (diaphragmLayout[i][section] == "diaType2") {
       result[gridkey] = diaphragmSection2(
@@ -143,7 +146,7 @@ export function HBracingDict(
     return { hBracingDict, hBracingPlateDict };
   }
 
-export function diaphragmSection(webPoints, skew, uflangePoint, ds){ //ribPoint needed
+export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
     let result = {}
     const bl = webPoints[0];
@@ -257,13 +260,14 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds){ //ribPoint 
     let ltan = (leftline[1].y - leftline[0].y) / (leftline[1].x - leftline[0].x)
     let lsin = lcos * ltan
     // 슬래브 기준두께에 따라 브레이싱의 상단좌표가 이동해야 하나, 현재 기준은 0,0을 기준점으로 하고 있어 수정이 필요함 20.03.17 by drlim
+    let pts = PTS(ds.dFrameName,false,1,sectionDB)
     let newleftline = [
-      {x:leftline[0].x - (ds.spc - lcos * ds.pts[0]) / ltan, y: leftline[0].y - (ds.spc - lcos * ds.pts[0])},
-      {x:leftline[1].x + (ds.spc - lsin * ds.pts[0]), y: leftline[1].y + ltan * (ds.spc - lsin * ds.pts[0])}
+      {x:leftline[0].x - (ds.spc - lcos * pts[0]) / ltan, y: leftline[0].y - (ds.spc - lcos * pts[0])},
+      {x:leftline[1].x + (ds.spc - lsin * pts[0]), y: leftline[1].y + ltan * (ds.spc - lsin * pts[0])}
     ]
-    let [leftframe1,leftframe2] = Kframe(newleftline[1],newleftline[0],0,0,ds.pts)
-    result["leftframe1"] = {points:leftframe1, Thickness:ds.pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
-    result["leftframe2"] = {points:leftframe2, Thickness:ds.pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+    let [leftframe1,leftframe2] = Kframe(newleftline[1],newleftline[0],0,0,pts)
+    result["leftframe1"] = {points:leftframe1, Thickness:pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
+    result["leftframe2"] = {points:leftframe2, Thickness:pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
       size:{Label:"L-100x100x10x"+PointLength(...newleftline).toFixed(0)},
       anchor:[[newleftline[1].x-20,newleftline[1].y],[newleftline[0].x-20,newleftline[0].y]]}
     
@@ -272,12 +276,12 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds){ //ribPoint 
     let rtan = (rightline[1].y - rightline[0].y) / (rightline[1].x - rightline[0].x)
     let rsin = rcos * rtan
     let newrightline = [
-      {x:rightline[0].x - (ds.spc + rcos * ds.pts[0]) / rtan, y: rightline[0].y - (ds.spc + rcos * ds.pts[0])},
-      {x:rightline[1].x - (ds.spc - rsin * ds.pts[0]), y: rightline[1].y - rtan * (ds.spc - rsin * ds.pts[0])}
+      {x:rightline[0].x - (ds.spc + rcos * pts[0]) / rtan, y: rightline[0].y - (ds.spc + rcos * pts[0])},
+      {x:rightline[1].x - (ds.spc - rsin * pts[0]), y: rightline[1].y - rtan * (ds.spc - rsin * pts[0])}
     ]
-    let [rightframe1,rightframe2] = Kframe(newrightline[0],newrightline[1],0,0,ds.pts)
-    result["rightframe1"] = {points:rightframe1, Thickness:ds.pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
-    result["rightframe2"] = {points:rightframe2, Thickness:ds.pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+    let [rightframe1,rightframe2] = Kframe(newrightline[0],newrightline[1],0,0,pts)
+    result["rightframe1"] = {points:rightframe1, Thickness:pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
+    result["rightframe2"] = {points:rightframe2, Thickness:pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
       size:{Label:"L-100x100x10x"+PointLength(...newrightline).toFixed(0)},
       anchor:[[newrightline[0].x+20,newrightline[0].y],[newrightline[1].x+20,newrightline[1].y]]
     }

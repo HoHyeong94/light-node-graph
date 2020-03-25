@@ -7,6 +7,7 @@ export function DiaDict(){
   this.addInput("sectionPointDict","sectionPointDict");
   this.addInput("diaphragmLayout","arr");
   this.addInput("diaphragmSectionList","diaphragmSectionList");
+  this.addInput("sectionDB","sectionDB");
   this.addOutput("diaDict","diaDict");
 }
 
@@ -15,7 +16,8 @@ DiaDict.prototype.onExecute = function() {
     const sectionPointDict = this.getInputData(1);
   const diaphragmLayout = this.getInputData(2);
   const diaphragmSectionList = this.getInputData(3);
-  const result = DiaShapeDict(gridPoint, sectionPointDict,diaphragmLayout,diaphragmSectionList)
+
+  const result = DiaShapeDict(gridPoint, sectionPointDict,diaphragmLayout,diaphragmSectionList, this.getInputData(4))
   this.setOutputData(0, result)
 }
 
