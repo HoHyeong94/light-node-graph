@@ -262,8 +262,8 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
     // 슬래브 기준두께에 따라 브레이싱의 상단좌표가 이동해야 하나, 현재 기준은 0,0을 기준점으로 하고 있어 수정이 필요함 20.03.17 by drlim
     let pts = PTS(ds.dFrameName,false,1,sectionDB)
     let newleftline = [
-      {x:leftline[0].x - (ds.spc - lcos * pts[0]) / ltan, y: leftline[0].y - (ds.spc - lcos * pts[0])},
-      {x:leftline[1].x + (ds.spc - lsin * pts[0]), y: leftline[1].y + ltan * (ds.spc - lsin * pts[0])}
+      {x:leftline[0].x - (ds.spc - lcos * pts[2]) / ltan, y: leftline[0].y - (ds.spc - lcos * pts[2])},
+      {x:leftline[1].x + (ds.spc - lsin * pts[2]), y: leftline[1].y + ltan * (ds.spc - lsin * pts[2])}
     ]
     let [leftframe1,leftframe2] = Kframe(newleftline[1],newleftline[0],0,0,pts)
     result["leftframe1"] = {points:leftframe1, Thickness:pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
@@ -276,8 +276,8 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
     let rtan = (rightline[1].y - rightline[0].y) / (rightline[1].x - rightline[0].x)
     let rsin = rcos * rtan
     let newrightline = [
-      {x:rightline[0].x - (ds.spc + rcos * pts[0]) / rtan, y: rightline[0].y - (ds.spc + rcos * pts[0])},
-      {x:rightline[1].x - (ds.spc - rsin * pts[0]), y: rightline[1].y - rtan * (ds.spc - rsin * pts[0])}
+      {x:rightline[0].x - (ds.spc + rcos * pts[2]) / rtan, y: rightline[0].y - (ds.spc + rcos * pts[2])},
+      {x:rightline[1].x - (ds.spc - rsin * pts[2]), y: rightline[1].y - rtan * (ds.spc - rsin * pts[2])}
     ]
     let [rightframe1,rightframe2] = Kframe(newrightline[0],newrightline[1],0,0,pts)
     result["rightframe1"] = {points:rightframe1, Thickness:pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}
