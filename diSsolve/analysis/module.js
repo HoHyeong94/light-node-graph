@@ -55,7 +55,7 @@ export function Isection(xi, materials, slab){
     let stage1 = {};
     let stage2 = {};
     let stage3 = {};
-    let n1 = materials.Steel.elast / materials.slabConc.elast;  //상부바닥판 탄성계수비
+    let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
     let isteel = [];
     isteel.push(partProperty(xi.tfw, xi.tft, xi.wh/2 + xi.tft / 2, 0, 0))
     isteel.push(partProperty(xi.bfw, xi.bft, -xi.wh/2 - xi.bft / 2, 0, 0))
@@ -100,8 +100,8 @@ export function Isection(xi, materials, slab){
 }
 //이중합성 거더의 시공단계별 단면계수 생성
 export function DCBsection(sa, materials) {
-    let n1 = materials.Steel.elast / materials.slabConc.elast;  //상부바닥판 탄성계수비
-    let n2 = materials.Steel.elast / materials.BottomConc.elast;  //하부콘크리트 탄성계수비
+    let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
+    let n2 = materials[2][1] / materials[1][1];  //하부콘크리트 탄성계수비
     let lcos = sa.H / sa.wlw
     let rcos = sa.H / sa.wrw
     let sb = [];
@@ -131,7 +131,7 @@ export function DCBsection(sa, materials) {
         let hb = sa.horizontal_bracingbracing
         let bracing_length = Math.Sqrt(hb.d0 ** 2 + sa.B2 ** 2)
         //tr = material.Steel.elast / material.Steel.shear_elast * .lamda * .B2 / (bracing_length ^ 3 / .horizontal_bracing.Area + 2 / 3 * .B2 / (.b_2 * .t2))
-        let tr = materials.Steel.elast / materials.Steel.shear_elast * hb.d0 * sa.B2 / (bracing_length ** 3 / hb.dbArea + 2 / 3 * sa.B2 / (sa.wuf * sa.tuf)) //<--- 임시로 작성
+        let tr = materials[2][1] / materials[2][2] * hb.d0 * sa.B2 / (bracing_length ** 3 / hb.dbArea + 2 / 3 * sa.B2 / (sa.wuf * sa.tuf)) //<--- 임시로 작성
         stage1.Ixx = 4 * ((sa.B2 + sa.B1) * sa.H / 2) ** 2 / (sa.B2 / tr + sa.wlw / sa.tw + sa.wrw / sa.tw + sa.B1 / sa.tlf)
     } else {
         stage1.Ixx = 4 * ((sa.B2 + sa.B1) * sa.H / 2) ** 2 / (sa.B2 / sa.tuf + sa.wlw / sa.tw + sa.wrw / sa.tw + sa.B1 / sa.tlf)
@@ -315,10 +315,10 @@ export function AllSectionGenerator(girderStation, sectionPointDict, materials, 
     let sectionPropDict = {};
     for (let i in girderStation){
         for (let j in girderStation[i]){
-            sectionPropDict[key] = {forward : {}, backward : {}}
             let key = girderStation[i][j].key
             let sa = sectionPointDict[key].forward.input
             let sa2 = sectionPointDict[key].backward.input
+            sectionPropDict[key] = {forward : {}, backward : {}}
             sectionPropDict[key].forward= DCBsection(sa,materials)
             sectionPropDict[key].backward= DCBsection(sa2,materials)
         }
