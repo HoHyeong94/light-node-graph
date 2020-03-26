@@ -113,8 +113,8 @@ export function DCBsection(sa, materials) {
         sb.push(partProperty(sa.wuf, sa.tuf, sa.H / 2 + sa.tuf / 2, 0, 0))
     }
     sb.push(partProperty(sa.wlf, sa.tlf, -sa.H / 2 - sa.tlf / 2, 0, 0))
-    sb.push(partProperty(sa.ww, sa.tw, 0, -(sa.B2 + sa.B1) / 4, lcos))
-    sb.push(partProperty(sa.ww, sa.tw, 0, (sa.B2 + sa.B1) / 4, rcos))
+    sb.push(partProperty(sa.wlw, sa.tw, 0, -(sa.B2 + sa.B1) / 4, lcos))
+    sb.push(partProperty(sa.wrw, sa.tw, 0, (sa.B2 + sa.B1) / 4, rcos))
     sa.Urib.layout.forEach(function (elem) {
         sb.push(partProperty(sa.Urib.height, sa.Urib.thickness, sa.H / 2 - sa.Urib.height / 2, elem, 1))
     })
