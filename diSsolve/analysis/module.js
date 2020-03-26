@@ -172,7 +172,7 @@ export function DCBsection(sa, materials) {
         stage2.Cz = ADz / stage2.A
         stage2.Iyy = 0;
         stage2.Izz = 0;
-        for (let i of sb) {
+        for (let i in sb) {
             stage2.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage2.Cy) ** 2
             stage2.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage2.Cz) ** 2
         }
@@ -187,7 +187,7 @@ export function DCBsection(sa, materials) {
     stage3.Cz = ADz / stage3.A
     stage3.Iyy = 0;
     stage3.Izz = 0;
-    for (let i of sb) {
+    for (let i in sb) {
         stage3.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage3.Cy) ** 2
         stage3.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage3.Cz) ** 2
     }
