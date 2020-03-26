@@ -1728,10 +1728,10 @@
                   XYOffset(node1,vec,ioffset,pts[1]),
                   XYOffset(node1,vec,(length-joffset),pts[1]),
                   XYOffset(node1,vec,(length-joffset),pts[0]), ];
-    let plate2 = [ XYOffset(node1,vec,ioffset,pts[1]),
-                  XYOffset(node1,vec,ioffset,pts[2]),
-                  XYOffset(node1,vec,(length-joffset),pts[2]),
-                  XYOffset(node1,vec,(length-joffset),pts[1]),];
+    let plate2 = [ XYOffset(node1,vec,ioffset,pts[2]),
+                  XYOffset(node1,vec,ioffset,pts[3]),
+                  XYOffset(node1,vec,(length-joffset),pts[3]),
+                  XYOffset(node1,vec,(length-joffset),pts[2]),];
     return [plate1, plate2]
   }
 
@@ -1890,11 +1890,11 @@
               tuf: ps.uFlangeThk,                                 //상부플랜지두께
               tw: ps.webThk,                                      //웹두께
               Tcu: ps.slabThickness,                              //바닥판콘크리트 두께          
-              Th: slabInfo.Th ,                                   //헌치두께
+              Th: slabInfo.haunchHeight ,                                   //헌치두께
               Tcl: 0,                       //지점콘크리트 두께     //지점콘크리트에 대한 입력 변수 추가
               blf: (sectionInfo.C1 + sectionInfo.D1)/2,            //하부플랜지 외부폭
               buf: (sectionInfo.C + sectionInfo.D)/2,             //상부플랜지 외부폭
-              Urib: { thickness: uRibThk, height: uRibH, layout: uRibLO },
+              Urib: { thickness: ps.uRibThk, height: ps.uRibH, layout: ps.uRibLO },
               Lrib: { thickness: ps.lRibThk, height: ps.lRibH, layout: ps.lRibLO }, 
               horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
             };
@@ -2356,11 +2356,49 @@
     this.setOutputData(0, result);
   };
 
+  // Cy, Cz 0: left, bottom 1: center, 2: right, top
+  function PTS(name, Yinverse, Cy, sectionDB) {
+      let pts = [0, 0, 0, 0, 0, 0];
+      let base = 0;
+      switch (Cy) {
+          case 0:
+              base = Yinverse ? sectionDB[name].shape[1] : 0;
+              break;
+          case 1:
+              base = Yinverse ? sectionDB[name].Cy : -sectionDB[name].Cy;
+              break;
+          case 2:
+              base = Yinverse ? 0 : - sectionDB[name].shape[1];
+              break;
+          default:
+              base = 0;
+      }
+      let sign = Yinverse ? 1 : -1;
+      if (sectionDB[name].type === "L") {
+          pts[0] = base;
+          pts[1] = base - sign * sectionDB[name].shape[2];
+          pts[2] = pts[1];
+          pts[3] = base - sign * sectionDB[name].shape[1];
+          pts[4] = sectionDB[name].shape[0];
+          pts[5] = sectionDB[name].shape[3];
+      } else if (sectionDB[name].type === "T") {
+          pts[0] = base - sign * sectionDB[name].shape[1];
+          pts[1] = base;
+          pts[2] = base - sign * sectionDB[name].Cy - sign * sectionDB[name].shape[2]/2;
+          pts[3] = base - sign * sectionDB[name].Cy + sign * sectionDB[name].shape[2]/2;
+          pts[4] = -sectionDB[name].shape[3];
+          pts[5] = -sectionDB[name].shape[0];
+      }
+      // 각 형강에 대한 결과 순서가 통일성이 없음 추후 수정 바람 20.03.25 by drlim
+      return pts
+  }
+
   function DiaShapeDict(
     gridPoint,
     sectionPointDict,
     diaphragmLayout,
-    diaphragmSectionList
+    diaphragmSectionList,
+    sectionDB
   ) {
     const position = 0;
     const section = 1 ;
@@ -2386,7 +2424,8 @@
           webPoints,
           skew,
           uflangePoints,
-          diaSection
+          diaSection,
+          sectionDB
         );
       } else if (diaphragmLayout[i][section] == "diaType2") {
         result[gridkey] = diaphragmSection2(
@@ -2406,7 +2445,8 @@
     gridPoint,
     sectionPointDict,
     vStiffLayout,
-    vStiffSectionList
+    vStiffSectionList,
+    sectionDB
   ) {
     const position = 0;
     const section = 1 ;
@@ -2427,7 +2467,7 @@
         sectionPointDict[gridkey].forward.rightTopPlate[2]
       ];
       let skew = sectionPointDict[gridkey].forward.skew;
-      result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection);
+      result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection,sectionDB);
       result[gridkey].point = gridPoint[gridkey];
     }
     
@@ -2438,7 +2478,8 @@
       pointDict,
       sectionPointDict,
       hBracingLayout,
-      hBracingectionList
+      hBracingectionList,
+      sectionDB
     ) {
       const from = 0;
       const to = 1;
@@ -2471,7 +2512,7 @@
         let point1 = pointDict[pk1];
         let point2 = pointDict[pk2];
     
-        hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection);
+        hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection,sectionDB);
         if (hBracingLayout[i][platelayout[0]]) {
           right = hBracingLayout[i][leftToright] ? false : true;
           let webPoints1 = [
@@ -2497,7 +2538,7 @@
       return { hBracingDict, hBracingPlateDict };
     }
 
-  function diaphragmSection(webPoints, skew, uflangePoint, ds){ //ribPoint needed
+  function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ //ribPoint needed
       // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
       let result = {};
       const bl = webPoints[0];
@@ -2611,13 +2652,14 @@
       let ltan = (leftline[1].y - leftline[0].y) / (leftline[1].x - leftline[0].x);
       let lsin = lcos * ltan;
       // 슬래브 기준두께에 따라 브레이싱의 상단좌표가 이동해야 하나, 현재 기준은 0,0을 기준점으로 하고 있어 수정이 필요함 20.03.17 by drlim
+      let pts = PTS(ds.dFrameName,false,1,sectionDB);
       let newleftline = [
-        {x:leftline[0].x - (ds.spc - lcos * ds.pts[0]) / ltan, y: leftline[0].y - (ds.spc - lcos * ds.pts[0])},
-        {x:leftline[1].x + (ds.spc - lsin * ds.pts[0]), y: leftline[1].y + ltan * (ds.spc - lsin * ds.pts[0])}
+        {x:leftline[0].x - (ds.spc - lcos * pts[3]) / ltan, y: leftline[0].y - (ds.spc - lcos * pts[3])},
+        {x:leftline[1].x + (ds.spc - lsin * pts[3]), y: leftline[1].y + ltan * (ds.spc - lsin * pts[3])}
       ];
-      let [leftframe1,leftframe2] = Kframe(newleftline[1],newleftline[0],0,0,ds.pts);
-      result["leftframe1"] = {points:leftframe1, Thickness:ds.pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]};
-      result["leftframe2"] = {points:leftframe2, Thickness:ds.pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      let [leftframe1,leftframe2] = Kframe(newleftline[1],newleftline[0],0,0,pts);
+      result["leftframe1"] = {points:leftframe1, Thickness:pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]};
+      result["leftframe2"] = {points:leftframe2, Thickness:pts[5],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
         size:{Label:"L-100x100x10x"+PointLength(...newleftline).toFixed(0)},
         anchor:[[newleftline[1].x-20,newleftline[1].y],[newleftline[0].x-20,newleftline[0].y]]};
       
@@ -2626,12 +2668,12 @@
       let rtan = (rightline[1].y - rightline[0].y) / (rightline[1].x - rightline[0].x);
       let rsin = rcos * rtan;
       let newrightline = [
-        {x:rightline[0].x - (ds.spc + rcos * ds.pts[0]) / rtan, y: rightline[0].y - (ds.spc + rcos * ds.pts[0])},
-        {x:rightline[1].x - (ds.spc - rsin * ds.pts[0]), y: rightline[1].y - rtan * (ds.spc - rsin * ds.pts[0])}
+        {x:rightline[0].x - (ds.spc + rcos * pts[3]) / rtan, y: rightline[0].y - (ds.spc + rcos * pts[3])},
+        {x:rightline[1].x - (ds.spc - rsin * pts[3]), y: rightline[1].y - rtan * (ds.spc - rsin * pts[3])}
       ];
-      let [rightframe1,rightframe2] = Kframe(newrightline[0],newrightline[1],0,0,ds.pts);
-      result["rightframe1"] = {points:rightframe1, Thickness:ds.pts[3],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]};
-      result["rightframe2"] = {points:rightframe2, Thickness:ds.pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
+      let [rightframe1,rightframe2] = Kframe(newrightline[0],newrightline[1],0,0,pts);
+      result["rightframe1"] = {points:rightframe1, Thickness:pts[4],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]};
+      result["rightframe2"] = {points:rightframe2, Thickness:pts[5],z: ds.sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[],
         size:{Label:"L-100x100x10x"+PointLength(...newrightline).toFixed(0)},
         anchor:[[newrightline[0].x+20,newrightline[0].y],[newrightline[1].x+20,newrightline[1].y]]
       };
@@ -2879,7 +2921,7 @@
       return result
     }
 
-    function vStiffSection(webPoints, skew, uflangePoint, vSection){
+    function vStiffSection(webPoints, skew, uflangePoint, vSection, sectionDB){
 
       const bl = webPoints[0];
       const tl = webPoints[1];
@@ -2902,7 +2944,8 @@
       let sideScallopOffset = vSection.sideScallopOffset;
       //L100x100x10 section point, origin = (0,0)
       let spc = vSection.spc;
-      let pts = vSection.pts;
+      let pts = PTS(vSection.tFrameName,false,0,sectionDB);
+      // let pts = vSection.pts;
       let rotationY = (skew - 90)*Math.PI/180;
     ///left stiffener
       let leftplate = [
@@ -2933,13 +2976,13 @@
     return {
       leftshape: {points:leftPoints,Thickness:sideThickness,z: -sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]}, 
       rightShape: {points:rightPoints,Thickness:sideThickness,z:-sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-      upperframe1:{points:upperframe1, Thickness:pts[3],z:sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
-      upperframe2:{points:upperframe2, Thickness:pts[4],z:sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
+      upperframe1:{points:upperframe1, Thickness:pts[4],z:sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
+      upperframe2:{points:upperframe2, Thickness:pts[5],z:sideThickness/2,rotationX:Math.PI/2, rotationY:rotationY, hole:[]},
      }
   }
 
 
-  function hBracingSection(point1, point2, webPoints, hBSection){
+  function hBracingSection(point1, point2, webPoints, hBSection, sectionDB){
     // let sideToplength = 700;
     // let sideTopwidth = 300;
     // let B = 2000;
@@ -2957,7 +3000,7 @@
     let upperHeight = hBSection.upperHeight;
     let sideTopThickness = hBSection.sideTopThickness;
     let spc = hBSection.spc;
-    let pts = hBSection.pts;
+    let pts = PTS(hBSection.dFrameName,false,1,sectionDB); //hBSection.pts
 
     let node1 = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y: tl.y -(upperHeight + sideTopThickness)};
     let node2 = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y: tr.y -(upperHeight + sideTopThickness)};
@@ -3057,6 +3100,7 @@
     this.addInput("sectionPointDict","sectionPointDict");
     this.addInput("diaphragmLayout","arr");
     this.addInput("diaphragmSectionList","diaphragmSectionList");
+    this.addInput("sectionDB","sectionDB");
     this.addOutput("diaDict","diaDict");
   }
 
@@ -3065,7 +3109,8 @@
       const sectionPointDict = this.getInputData(1);
     const diaphragmLayout = this.getInputData(2);
     const diaphragmSectionList = this.getInputData(3);
-    const result = DiaShapeDict(gridPoint, sectionPointDict,diaphragmLayout,diaphragmSectionList);
+
+    const result = DiaShapeDict(gridPoint, sectionPointDict,diaphragmLayout,diaphragmSectionList, this.getInputData(4));
     this.setOutputData(0, result);
   };
 
@@ -3074,6 +3119,7 @@
     this.addInput("sectionPointDict","sectionPointDict");
     this.addInput("vStiffLayout","arr");
     this.addInput("vStiffSectionList","vStiffSectionList");
+    this.addInput("sectionDB","sectionDB");
     this.addOutput("diaDict","diaDict");
   }
 
@@ -3082,7 +3128,7 @@
       const sectionPointDict = this.getInputData(1);
     const vStiffLayout = this.getInputData(2);
     const vStiffSectionList = this.getInputData(3);
-    const result = VstiffShapeDict(gridPoint, sectionPointDict,vStiffLayout,vStiffSectionList);
+    const result = VstiffShapeDict(gridPoint, sectionPointDict,vStiffLayout,vStiffSectionList, this.getInputData(4));
     this.setOutputData(0, result);
   };
 
@@ -3091,6 +3137,7 @@
       this.addInput("sectionPointDict","sectionPointDict");
       this.addInput("hBracingLayout","arr");
       this.addInput("hBracingSectionList","hBracingSectionList");
+      this.addInput("sectionDB","sectionDB");
       this.addOutput("hBracingDict","hBracingDict");
     }
     
@@ -3099,37 +3146,9 @@
       const sectionPointDict = this.getInputData(1);
       const hBracingLayout = this.getInputData(2);
       const hBracingSectionList = this.getInputData(3);
-      const result = HBracingDict(gridPoint, sectionPointDict,hBracingLayout,hBracingSectionList);
+      const result = HBracingDict(gridPoint, sectionPointDict,hBracingLayout,hBracingSectionList,this.getInputData(4));
       this.setOutputData(0, result);
     };
-
-  // Cy, Cz 0: left, bottom 1: center, 2: right, top
-  function PTS(name, Yinverse, Cy, sectionDB) {
-      let pts = [0, 0, 0, 0, 0];
-      let base = 0;
-      switch (Cy) {
-          case 0:
-              base = Yinverse? sectionDB[name].shape[1] : 0;
-              break;
-          case 1:
-              base = Yinverse? sectionDB[name].Cy : -sectionDB[name].Cy;
-              break;
-          case 2:
-              base = Yinverse? 0: - sectionDB[name].shape[1];
-              break;
-          default:
-              base = 0;
-      }
-      let sign = Yinverse? 1:-1;
-
-      pts[0] = base;
-      pts[1] = base - sign * sectionDB[name].shape[2];
-      pts[2] = base - sign * sectionDB[name].shape[1];
-      pts[3] = sectionDB[name].shape[0];
-      pts[4] = sectionDB[name].shape[3];
-
-      return pts
-  }
 
   function XbeamDict(
       nameToPointDict,
@@ -3416,7 +3435,7 @@
       let tlength = Math.sqrt((iPoint.x - jPoint.x)**2 + (iPoint.y - jPoint.y)**2);
       data = [cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
       let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2;
-      section = [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ];
+      let section = [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ];
       return {result, data, section}
     }
     
@@ -3434,7 +3453,13 @@
       const gussetCenterWidth = xbeamSection.gussetCenterWidth;
       let hFrameEndOffset = xbeamSection.hFrameEndOffset;
       let diaFrameEndOffset = xbeamSection.diaFrameEndOffset;
-      const pts = PTS("L150x150x12",true,1,sectionDB); 
+      let tFrame = xbeamSection.tFrameName;
+      let bFrame = xbeamSection.bFrameName;
+      let dFrame = xbeamSection.dFrameName;
+      const pts1 = PTS(tFrame,true,1,sectionDB); 
+      const pts2 = PTS(bFrame,true,1,sectionDB); 
+      const pts3 = PTS(dFrame,true,1,sectionDB); 
+
     
       let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
       let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1]);
@@ -3463,10 +3488,10 @@
         { x: -xlength / 2 - (iheight - bottomOffset) * iCot, y: -xlength / 2 * grd - (iheight - bottomOffset) },
       ];
       let bottomCenter = { x: (points[2].x + points[3].x) / 2, y: (points[2].y + points[3].y) / 2 };
-      let topFrame = Kframe(points[0], points[1], hFrameEndOffset, hFrameEndOffset, pts);
-      let bottomFrame = Kframe(points[3], points[2], hFrameEndOffset, hFrameEndOffset, pts);
-      let leftFrame = Kframe(points[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts);
-      let rightFrame = Kframe(bottomCenter, points[1], diaFrameEndOffset, diaFrameEndOffset, pts);
+      let topFrame = Kframe(points[0], points[1], hFrameEndOffset, hFrameEndOffset, pts1);
+      let bottomFrame = Kframe(points[3], points[2], hFrameEndOffset, hFrameEndOffset, pts2);
+      let leftFrame = Kframe(points[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts3);
+      let rightFrame = Kframe(bottomCenter, points[1], diaFrameEndOffset, diaFrameEndOffset, pts3);
     
       let topVec = Vector(points[0], points[1]);
       let leftVec = Vector(points[0], bottomCenter);
@@ -3475,19 +3500,19 @@
     
       let leftTopGussetPlate = [
         { x: -xlength / 2 - gussetWeldingOffset * iCot, y: -xlength / 2 * grd - gussetWeldingOffset },
-        XYOffset(points[0], topVec, hFrameEndOffset + gussetBondingLength, pts[0] + gussetWeldingOffset),
-        XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts[0] + gussetWeldingOffset),
-        XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts[2] - gussetWeldingOffset),
+        XYOffset(points[0], topVec, hFrameEndOffset + gussetBondingLength, pts1[0] + gussetWeldingOffset),
+        XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[0] + gussetWeldingOffset),
+        XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[3] - gussetWeldingOffset),
         { x: -xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * iCot, y: -xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
       ];
       result['centerGusset'] = {
         points: [
-          XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts[2] - gussetWeldingOffset),
-          XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts[2] - gussetWeldingOffset),
-          XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts[2] - gussetWeldingOffset),
-          XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
-          XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
-          XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts[2] - gussetWeldingOffset),
+          XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
+          XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
+          XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+          XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+          XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+          XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
         ],
         Thickness: gussetThickness,
         z: -gussetThickness / 2,
@@ -3508,9 +3533,9 @@
       result['rightTopGusset'] = {
         points: [
           { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
-          XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
-          XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
-          XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts[2] - gussetWeldingOffset),
+          XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
+          XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+          XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
           { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
         ],
         Thickness: gussetThickness,
@@ -3523,8 +3548,8 @@
       result['leftBottomGusset'] = {
         points: [
           { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
-          XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts[2] - gussetWeldingOffset),
-          XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts[0] + gussetWeldingOffset),
+          XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
+          XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
           { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
         ],
         Thickness: gussetThickness,
@@ -3538,8 +3563,8 @@
       result['rightBottomGusset'] = {
         points: [
           { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
-          XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts[2] - gussetWeldingOffset),
-          XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts[0] + gussetWeldingOffset),
+          XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
+          XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
           { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
         ],
         Thickness: gussetThickness,
@@ -3552,7 +3577,7 @@
     
       result['topFrame1'] = {
         points: topFrame[0],
-        Thickness: pts[3],
+        Thickness: pts1[4],
         z: gussetThickness / 2,
         rotationX: Math.PI / 2,
         rotationY: 0,
@@ -3561,7 +3586,7 @@
       };
       result['topFrame2'] = {
         points: topFrame[1],
-        Thickness: pts[4],
+        Thickness: pts1[5],
         z: gussetThickness / 2,
         rotationX: Math.PI / 2,
         rotationY: 0,
@@ -3572,7 +3597,7 @@
     
       result['bottomFrame1'] = {
         points: bottomFrame[0],
-        Thickness: pts[3],
+        Thickness: pts2[4],
         z: gussetThickness / 2,
         rotationX: Math.PI / 2,
         rotationY: 0,
@@ -3581,7 +3606,7 @@
       };
       result['bottomFrame2'] = {
         points: bottomFrame[1],
-        Thickness: pts[4],
+        Thickness: pts2[5],
         z: gussetThickness / 2,
         rotationX: Math.PI / 2,
         rotationY: 0,
@@ -3591,7 +3616,7 @@
     
       result['leftFrame1'] = {
         points: leftFrame[0],
-        Thickness: pts[3],
+        Thickness: pts3[4],
         z: gussetThickness / 2,
         rotationX: Math.PI / 2,
         rotationY: 0,
@@ -3600,7 +3625,7 @@
       };
       result['leftFrame2'] = {
         points: leftFrame[1],
-        Thickness: pts[4],
+        Thickness: pts3[5],
         z: gussetThickness / 2,
         rotationX: Math.PI / 2,
         rotationY: 0,
@@ -3609,7 +3634,7 @@
       };
       result['righttFrame1'] = {
         points: rightFrame[0],
-        Thickness: pts[3],
+        Thickness: pts3[4],
         z: gussetThickness / 2,
         rotationX: Math.PI / 2,
         rotationY: 0,
@@ -3618,7 +3643,7 @@
       };
       result['rightFrame2'] = {
         points: rightFrame[1],
-        Thickness: pts[4],
+        Thickness: pts3[5],
         z: gussetThickness / 2,
         rotationX: Math.PI / 2,
         rotationY: 0,
@@ -3627,7 +3652,7 @@
       };
       let dummyPoints = [...points, bottomCenter];
       dummyPoints.forEach(function(elem){data.push(ToGlobalPoint(centerPoint,elem));});
-      let section = ["상현단면","하현단면","사재단면"]; //사용자로부터 받은 단면요소의 값을 객체로 저장
+      let section = [tFrame,bFrame, dFrame];   //사용자로부터 받은 단면요소의 값을 객체로 저장
       return {result, data, section}
     }
 
@@ -3957,6 +3982,160 @@
     this.setOutputData(0, this.getInputData(0)["G1S1"]);
   };
 
+  function partProperty(width, thickness, Dy, Dz, cos) {
+      // cos는 수직부재 1, 수평부재 0
+      const sin = Math.sqrt(1 - cos ** 2);
+      let area = width * thickness;
+      let Ioyy = width * thickness / 12 * ((width * cos) ** 2 + (thickness * sin) ** 2);
+      let Iozz = width * thickness / 12 * ((width * sin) ** 2 + (thickness * cos) ** 2);
+      return { area, Ioyy, Iozz, Dy, Dz }
+  }
+
+  //I형 가로보의 시공단계별 단면계수 생성
+  function Isection(xi, materials, slab){
+
+      let stage1 = {};
+      let stage2 = {};
+      let stage3 = {};
+      let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
+      let isteel = [];
+      isteel.push(partProperty(xi.tfw, xi.tft, xi.wh/2 + xi.tft / 2, 0, 0));
+      isteel.push(partProperty(xi.bfw, xi.bft, -xi.wh/2 - xi.bft / 2, 0, 0));
+      isteel.push(partProperty(xi.wh, xi.wt, 0, 0, 1));
+
+      //합성전 강재 단면
+      let ADy = 0;
+      let ADz = 0;
+
+      stage1.A = 0;
+      for (let i in isteel) {
+          stage1.A += isteel[i].ara;
+          ADy += isteel[i].area * isteel[i].Dy;
+          ADz += isteel[i].area * isteel[i].Dz;
+      }
+      stage1.Cy = ADy / stage1.A;
+      stage1.Cz = ADz / stage1.A;
+      stage1.Iyy = 0;
+      stage1.Izz = 0;
+      for (let i of isteel) {
+          stage1.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage1.Cy) ** 2;
+          stage1.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage1.Cz) ** 2;
+      }
+      // 단일 합성후 가로보단면 변화 없음
+      stage2 = stage1;
+      //이중합성후 합성단면의 단면계수 계산
+          let deckConc = partProperty(slab.W / n1, slab.T, xi.wh / 2 + slab.T / 2 + slab.Th, 0, 0);
+          isteel.push(deckConc);
+          ADy += deckConc.area * deckConc.Dy;
+          ADz += deckConc.area * deckConc.Dz;
+          stage3.A = stage2.A + deckConc.area;
+          stage3.Cy = ADy / stage3.A;
+          stage3.Cz = ADz / stage3.A;
+          stage3.Iyy = 0;
+          stage3.Izz = 0;
+          for (let i of isteel) {
+              stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2;
+              stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2;
+          }
+
+      return [stage1, stage2, stage3]
+  }
+  //이중합성 거더의 시공단계별 단면계수 생성
+  function DCBsection(sa, materials) {
+      let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
+      let n2 = materials[2][1] / materials[1][1];  //하부콘크리트 탄성계수비
+      let lcos = sa.H / sa.wlw;
+      let rcos = sa.H / sa.wrw;
+      let sb = [];
+
+      if (sa.isClosedTop) {
+          sb.push(partProperty(sa.wuf, sa.tuf, sa.H / 2 + sa.tuf / 2, sa.B2 / 2, 0));
+          sb.push(partProperty(sa.wuf, sa.tuf, sa.H / 2 + sa.tuf / 2, -sa.B2 / 2, 0));
+      } else {
+          sb.push(partProperty(sa.wuf, sa.tuf, sa.H / 2 + sa.tuf / 2, 0, 0));
+      }
+      sb.push(partProperty(sa.wlf, sa.tlf, -sa.H / 2 - sa.tlf / 2, 0, 0));
+      sb.push(partProperty(sa.wlw, sa.tw, 0, -(sa.B2 + sa.B1) / 4, lcos));
+      sb.push(partProperty(sa.wrw, sa.tw, 0, (sa.B2 + sa.B1) / 4, rcos));
+      sa.Urib.layout.forEach(function (elem) {
+          sb.push(partProperty(sa.Urib.height, sa.Urib.thickness, sa.H / 2 - sa.Urib.height / 2, elem, 1));
+      });
+      sa.Lrib.layout.forEach(function (elem) {
+          sb.push(partProperty(sa.Lrib.height, sa.Lrib.thickness, -sa.H / 2 + sa.Lrib.height / 2, elem, 1));
+      });
+      let stage1 = {};
+      let stage2 = {};
+      let stage3 = {};
+
+      //비틀림 강성 계산을 위한 수평브레이싱 등가 두께 계산
+
+      if (sa.isClosedTop === false) {
+          let hb = sa.horizontal_bracingbracing;
+          let bracing_length = Math.Sqrt(hb.d0 ** 2 + sa.B2 ** 2);
+          //tr = material.Steel.elast / material.Steel.shear_elast * .lamda * .B2 / (bracing_length ^ 3 / .horizontal_bracing.Area + 2 / 3 * .B2 / (.b_2 * .t2))
+          let tr = materials[2][1] / materials[2][2] * hb.d0 * sa.B2 / (bracing_length ** 3 / hb.dbArea + 2 / 3 * sa.B2 / (sa.wuf * sa.tuf)); //<--- 임시로 작성
+          stage1.Ixx = 4 * ((sa.B2 + sa.B1) * sa.H / 2) ** 2 / (sa.B2 / tr + sa.wlw / sa.tw + sa.wrw / sa.tw + sa.B1 / sa.tlf);
+      } else {
+          stage1.Ixx = 4 * ((sa.B2 + sa.B1) * sa.H / 2) ** 2 / (sa.B2 / sa.tuf + sa.wlw / sa.tw + sa.wrw / sa.tw + sa.B1 / sa.tlf);
+      }
+      //가로보 시공 후 또는 바닥판 타설후 비틀림 강성은 의미가 없으므로, 해석시에는 합성전후 거더의 비틀림강성이 동일하다고 가정한다.
+      stage2.Ixx = stage1.Ixx;
+      stage3.Ixx = stage1.Ixx;
+
+      //합성전 강재 단면
+      let ADy = 0;
+      let ADz = 0;
+
+      stage1.A = 0;
+      for (let i in sb) {
+          stage1.A += sb[i].ara;
+          ADy += sb[i].area * sb[i].Dy;
+          ADz += sb[i].area * sb[i].Dz;
+      }
+      stage1.Cy = ADy / stage1.A;
+      stage1.Cz = ADz / stage1.A;
+      stage1.Iyy = 0;
+      stage1.Izz = 0;
+      for (let i of sb) {
+          stage1.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage1.Cy) ** 2;
+          stage1.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage1.Cz) ** 2;
+      }
+
+      //단일합성후 합성단면의 단면계수 계산
+      let botConc = partProperty(sa.B1 / n2, sa.Tcl, -sa.H / 2 + sa.Tcl / 2, 0, 0);
+      sb.push(botConc);
+      if (input.isDoubleComposite === false) {
+          stage2 = stage1;
+      } else {
+          ADy += botConc.area * botConc.Dy;
+          ADz += botConc.area * botConc.Dz;
+          stage2.A = stage1.A + botConc.area;
+          stage2.Cy = ADy / stage2.A;
+          stage2.Cz = ADz / stage2.A;
+          stage2.Iyy = 0;
+          stage2.Izz = 0;
+          for (let i of sb) {
+              stage2.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage2.Cy) ** 2;
+              stage2.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage2.Cz) ** 2;
+          }
+      }
+      //이중합성후 합성단면의 단면계수 계산
+      let deckConc = partProperty(sa.B3 / n1, sa.Tcu, sa.H / 2 + sa.Tcu / 2 + sa.Th, 0, 0);
+      sb.push(deckConc);
+      ADy += deckConc.area * deckConc.Dy;
+      ADz += deckConc.area * deckConc.Dz;
+      stage3.A = stage2.A + deckConc.area;
+      stage3.Cy = ADy / stage3.A;
+      stage3.Cz = ADz / stage3.A;
+      stage3.Iyy = 0;
+      stage3.Izz = 0;
+      for (let i of sb) {
+          stage3.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage3.Cy) ** 2;
+          stage3.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage3.Cz) ** 2;
+      }
+      return [stage1, stage2, stage3]
+  }
+
   function SupportGenerator(supportFixed, supportData, gridPoint) {
       let support = {};
       let girderHeight = 2000;    //임시로 2000이라고 가정함. 추후 girderSection정보로부터 받아올수 있도록 함.
@@ -4072,6 +4251,109 @@
       // stringerLayout input 추가 필요
       return { nodeNumDict, input: { node, local, boundary, rigid } }
   }
+  // 합성전단계에 대해서 일단 우선 생성
+  // stringer/외측빔에 대한 단면정보 생성은 추후 결정
+  function AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData) {
+      let sectionPropDict = {};
+      for (let i in girderStation){
+          for (let j in girderStation[i]){
+              let key = girderStation[i][j].key;
+              let sa = sectionPointDict[key].forward.input;
+              let sa2 = sectionPointDict[key].backward.input;
+              sectionPropDict[key] = {forward : {}, backward : {}};
+              sectionPropDict[key].forward= DCBsection(sa,materials);
+              sectionPropDict[key].backward= DCBsection(sa2,materials);
+          }
+      }
+      for (let i in xbeamData){
+          if (xbeamData[i].isKframe === false){
+              let key = xbeamData[i].key;
+              sectionPropDict[key] = Isection(xbeamData[i].section);
+          }
+      }
+      return sectionPropDict;
+  }
+
+  function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, nodeNumDict, materials) {//consStep, all_material, girder_section_info, all_beam_section_info){
+      let elemNum = 1; // As Integer = 1
+      let sectionNameDict = {};
+      let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, xbeamData);
+
+      for (let i in girderStation) {
+          for (let j = 0; j < girderStation[i].length - 1; j++) {
+              let inode = girderStation[i][j].key;
+              let jnode = girderStation[i][j + 1].key;
+              let sectionName = "G" + i +"N" + j;// 임시로 작성 추후 수정 바람.
+              sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward];
+              let elem = {
+                  iNode: nodeNumDict[inode],
+                  jNode: nodeNumDict[jnode],
+                  sectionName: sectionName, // node_group.Key & added_index,
+                  endOffset: false,
+                  number: elemNum
+              };
+              elemNum++;
+          }
+      }
+      //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[], section:[상형,하현,사재]}];
+      for (let i in xbeamData) {
+          if (xbeamData[i].isKframe) {
+              let KLink = [[0, 1], [2, 4], [3, 4], [0, 4], [1, 4]]; // 상현, 하현1, 하현2, 사재1, 사재2
+              let sectionName = [xbeamData[i].section[0], xbeamData[i].section[1], xbeamData[i].section[1], xbeamData[i].section[2], xbeamData[i].section[2]];
+              for (let j = 0; j < 5; j++) {
+                  let inode = xbeamData[i].key + "P" + KLink[j][0];
+                  let jnode = xbeamData[i].key + "P" + KLink[j][1];
+                  let elem = {
+                      iNode: nodeNumDict[inode],
+                      jNode: nodeNumDict[jnode],
+                      sectionName: sectionName[j], // node_group.Key & added_index,
+                      endOffset: false,
+                      number: elemNum
+                  };
+                  elemNum++;
+              }
+          } else {
+              let sectionName = xbeamData[i].key; // 임시로 작성 추후 수정 바람.
+              sectionNameDict[sectionName] = [sectionPropDict[sectionName]];  //가로보는 변단면 반영하지 않음.
+              let elem = {
+                  iNode: nodeNumDict[xbeamData[i].inode],
+                  jNode: nodeNumDict[xbeamData[i].jnode],
+                  sectionName: sectionName, // node_group.Key & added_index,
+                  endOffset: true,
+                  number: elemNum,
+                  IOFF: xbeamData[i].data[0],
+                  JOFF: xbeamData[i].data[1]
+              };
+              elemNum++;
+          }
+      }
+
+      // deck, stringer  추후 작성
+      // sectionDB운용방안 마련
+      //    const materials = {
+      //     slabConc: { name: "slabConc", elast: 28825.3, shearElast: 12318.5, poissonRatio: 0.17 w : 25}, // 강도와 재료 입력으로 자동생성
+      //     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
+      //     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
+      //     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
+      // }
+
+      let material = { command: "MATERIAL", data: [] };
+      for (let i in materials) {
+          material.data.push({
+              NAME: materials[i][0],
+              IDES: "C", // 강재는 S, concrte C
+              M: materials[i][4] / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
+              W: materials[i][4] / 1000, // ton to kg
+              E: materials[i][1],
+              U: materials[i][3]
+          });
+      }
+      let frame = { command: "FRAME", data: [] };
+      let section = { command: "FRAME SECTION", data: [] };
+
+
+      return { sectionPropDict, input: { frame, section, material } }
+  }
 
   function Support() {
       this.addInput("supportFixed", "boolean");
@@ -4099,6 +4381,22 @@
       this.setOutputData(1, result.input);
   };
 
+  function SapFrame() {
+      this.addInput("girderStation", "girderStation");
+      this.addInput("sectionPointDict", "sectionPointDict");
+      this.addInput("xbeamData", "xbeamData");
+      this.addInput("nodeNumDict", "nodeNumDict");
+      this.addInput("materials", "arr");
+      this.addOutput("sectionPropDict", "sectionPropDict");
+      this.addOutput("frameInput", "frameInput");
+  }
+
+  SapFrame.prototype.onExecute = function () {
+      const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4));
+      this.setOutputData(0, result.sectionPropDict);
+      this.setOutputData(1, result.input);
+  };
+
   function SectionDB() {
       this.addOutput("sectionDB", "sectionDB");
   }
@@ -4116,6 +4414,7 @@
 
   // import { defaultValues } from "./defaultValues";
 
+
   global.LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
   global.LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
   global.LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
@@ -4129,6 +4428,7 @@
   global.LiteGraph.registerNodeType("HMECS/xbeam", Xbeam);
   global.LiteGraph.registerNodeType("nexivil/support",Support);
   global.LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
+  global.LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
   global.LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
 
   global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);

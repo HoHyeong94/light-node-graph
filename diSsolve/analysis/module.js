@@ -102,8 +102,8 @@ export function Isection(xi, materials, slab){
 export function DCBsection(sa, materials) {
     let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
     let n2 = materials[2][1] / materials[1][1];  //하부콘크리트 탄성계수비
-    let lcos = sa.H / sa.wlw
-    let rcos = sa.H / sa.wrw
+    let lcos = sa.H / Math.sqrt(sa.H**2 + ((sa.B2-sa.B1)/2)**2)
+    let rcos = lcos
     let sb = [];
 
     if (sa.isClosedTop) {
