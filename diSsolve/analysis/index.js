@@ -27,7 +27,6 @@ SapJoint.prototype.onExecute = function () {
 }
 
 export function SapFrame() {
-    (girderStation, sectionPointDict, xbeamData, nodeNumDict, materials)
     this.addInput("girderStation", "girderStation");
     this.addInput("sectionPointDict", "sectionPointDict");
     this.addInput("xbeamData", "xbeamData");
