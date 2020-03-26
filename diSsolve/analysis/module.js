@@ -154,7 +154,7 @@ export function DCBsection(sa, materials) {
     stage1.Cz = ADz / stage1.A
     stage1.Iyy = 0;
     stage1.Izz = 0;
-    for (let i of sb) {
+    for (let i in sb) {
         stage1.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage1.Cy) ** 2
         stage1.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage1.Cz) ** 2
     }
