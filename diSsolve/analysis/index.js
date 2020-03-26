@@ -33,11 +33,12 @@ export function SapFrame() {
     this.addInput("xbeamData", "xbeamData");
     this.addInput("nodeNumDict", "nodeNumDict");
     this.addInput("materials", "arr");
+    this.addOutput("sectionPropDict", "sectionPropDict");
     this.addOutput("frameInput", "frameInput");
 }
 
 SapFrame.prototype.onExecute = function () {
     const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4))
-    this.setOutputData(0, result.sectionNameDict)
+    this.setOutputData(0, result.sectionPropDict)
     this.setOutputData(1, result.input)
 }
