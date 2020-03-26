@@ -23,6 +23,7 @@ export function XbeamDict(
       let iPoint = nameToPointDict[iNodekey];
       let jPoint = nameToPointDict[jNodekey];
       let xbData = [];
+      let xbSection = [];
       // let cbkey = 'CB' + iNodekey + 'To' + jNodekey
       if (xbeamLayout[i][section] == "xbeamI") {
          let xbeam = XbeamSection(
@@ -34,6 +35,7 @@ export function XbeamDict(
         );
         xbeamSectionDict[iNodekey] = xbeam.result
         xbData = xbeam.data
+        xbSection = xbeam.section
       } else if (xbeamLayout[i][section] == "xbeamK") {
           let xbeam  = XbeamSectionK(
           iPoint,
@@ -45,6 +47,7 @@ export function XbeamDict(
         );
         xbeamSectionDict[iNodekey] = xbeam.result
         xbData = xbeam.data
+        xbSection = xbeam.section
       }
       // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
       // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
@@ -52,7 +55,7 @@ export function XbeamDict(
     let key = i<10? "X0" + i: "X"+i;
     let isKframe = xbeamLayout[i][section] == "xbeamK"? true: false;
     xbeamData.push({
-          inode : iNodekey, jnode : jNodekey, key : key, isKframe:isKframe, data:xbData
+          inode : iNodekey, jnode : jNodekey, key : key, isKframe:isKframe, data:xbData, section : xbSection
       })
     }
     
