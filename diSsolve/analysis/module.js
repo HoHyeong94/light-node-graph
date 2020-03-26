@@ -342,7 +342,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
         for (let j = 0; j < girderStation[i].length - 1; j++) {
             let inode = girderStation[i][j].key
             let jnode = girderStation[i][j + 1].key
-            let sectionName = "noname" // 임시로 작성 추후 수정 바람.
+            let sectionName = "G" + i +"N" + j// 임시로 작성 추후 수정 바람.
             sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
             let elem = {
                 iNode: nodeNumDict[inode],
@@ -416,17 +416,17 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
     let material = { command: "MATERIAL", data: [] }
     for (let i in materials) {
         material.data.push({
-            NAME: materials[i].name,
+            NAME: materials[i][0],
             IDES: "C", // 강재는 S, concrte C
-            M: materials[i].weight / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
-            W: materials[i].weight / 1000, // ton to kg
-            E: materials[i].elast,
-            U: materials[i].poissonRatio
+            M: materials[i][4] / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
+            W: materials[i][4] / 1000, // ton to kg
+            E: materials[i][1],
+            U: materials[i][3]
         })
     }
     let frame = { command: "FRAME", data: [] };
     let section = { command: "FRAME SECTION", data: [] }
 
 
-    return { sectionNameDict, input: { frame, section, material } }
+    return { sectionPropDict, input: { frame, section, material } }
 }

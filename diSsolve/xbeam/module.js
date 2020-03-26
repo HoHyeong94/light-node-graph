@@ -505,6 +505,6 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     }
     let dummyPoints = [...points, bottomCenter]
     dummyPoints.forEach(function(elem){data.push(ToGlobalPoint(centerPoint,elem))})
-    let section = ["상현단면","하현단면","사재단면"]; //사용자로부터 받은 단면요소의 값을 객체로 저장
+    let section = [tFrame,bFrame, dFrame];   //사용자로부터 받은 단면요소의 값을 객체로 저장
     return {result, data, section}
   }
