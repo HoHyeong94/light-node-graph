@@ -162,7 +162,7 @@ export function DCBsection(sa, materials) {
     //단일합성후 합성단면의 단면계수 계산
     let botConc = partProperty(sa.B1 / n2, sa.Tcl, -sa.H / 2 + sa.Tcl / 2, 0, 0)
     sb.push(botConc)
-    if (input.isDoubleComposite === false) {
+    if (sa.isDoubleComposite === false) {
         stage2 = stage1
     } else {
         ADy += botConc.area * botConc.Dy
