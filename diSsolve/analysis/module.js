@@ -326,7 +326,7 @@ export function AllSectionGenerator(girderStation, sectionPointDict, materials, 
     for (let i in xbeamData){
         if (xbeamData[i].isKframe === false){
             let key = xbeamData[i].key
-            sectionPropDict[key] = Isection(xbeamData[i].section)
+            sectionPropDict[key] = "edit" // Isection(xbeamData[i].section)
         }
     }
     return sectionPropDict;
