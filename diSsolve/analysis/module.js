@@ -325,8 +325,9 @@ export function AllSectionGenerator(girderStation, sectionPointDict, materials, 
     }
     for (let i in xbeamData){
         if (xbeamData[i].isKframe === false){
+            let slab = {W : 2000, T:270, Th :0}
             let key = xbeamData[i].key
-            sectionPropDict[key] = "edit" // Isection(xbeamData[i].section)
+            sectionPropDict[key] = Isection(xbeamData[i].section, materials, slab)
         }
     }
     return sectionPropDict;
@@ -424,7 +425,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
             U: materials[i][3]
         })
     }
-    let frame = { command: "FRAME", data: [] };
+    let frame = { command: "FRAME", data: allElement };
     let section = { command: "FRAME SECTION", data: [] }
 
 
