@@ -146,7 +146,7 @@ export function DCBsection(sa, materials) {
 
     stage1.A = 0;
     for (let i in sb) {
-        stage1.A += sb[i].ara
+        stage1.A += sb[i].area
         ADy += sb[i].area * sb[i].Dy
         ADz += sb[i].area * sb[i].Dz
     }
