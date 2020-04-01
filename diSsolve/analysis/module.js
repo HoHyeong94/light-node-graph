@@ -67,7 +67,7 @@ export function Isection(xi, materials, slab){
 
     stage1.A = 0;
     for (let i in isteel) {
-        stage1.A += isteel[i].ara
+        stage1.A += isteel[i].area
         ADy += isteel[i].area * isteel[i].Dy
         ADz += isteel[i].area * isteel[i].Dz
     }
@@ -336,7 +336,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
     let allElement = []; // As New List(Of Element_3d)
     let elemNum = 1; // As Integer = 1
     let sectionNameDict = {}
-    let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, xbeamData)
+    let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData)
 
     for (let i in girderStation) {
         for (let j = 0; j < girderStation[i].length - 1; j++) {
