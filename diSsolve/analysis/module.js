@@ -88,7 +88,7 @@ export function Isection(xi, materials, slab){
     // 단일 합성후 가로보단면 변화 없음
     stage2 = stage1
     //이중합성후 합성단면의 단면계수 계산
-        let deckConc = partProperty(slab.W / n1, slab.T, xi.wh / 2 + slab.T / 2 + slab.Th, 0, 0)
+        let deckConc = partProperty(slab.W / n1, slab.T, wh / 2 + slab.T / 2 + slab.Th, 0, 0)
         isteel.push(deckConc)
         ADy += deckConc.area * deckConc.Dy
         ADz += deckConc.area * deckConc.Dz
