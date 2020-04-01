@@ -81,7 +81,7 @@ export function Isection(xi, materials, slab){
     stage1.Cz = ADz / stage1.A
     stage1.Iyy = 0;
     stage1.Izz = 0;
-    for (let i of isteel) {
+    for (let i in isteel) {
         stage1.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage1.Cy) ** 2
         stage1.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage1.Cz) ** 2
     }
@@ -97,7 +97,7 @@ export function Isection(xi, materials, slab){
         stage3.Cz = ADz / stage3.A
         stage3.Iyy = 0;
         stage3.Izz = 0;
-        for (let i of isteel) {
+        for (let i in isteel) {
             stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2
             stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2
         }
