@@ -57,9 +57,15 @@ export function Isection(xi, materials, slab){
     let stage3 = {};
     let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
     let isteel = [];
-    isteel.push(partProperty(xi.tfw, xi.tft, xi.wh/2 + xi.tft / 2, 0, 0))
-    isteel.push(partProperty(xi.bfw, xi.bft, -xi.wh/2 - xi.bft / 2, 0, 0))
-    isteel.push(partProperty(xi.wh, xi.wt, 0, 0, 1))
+    let tfw = xi[0]
+    let tft = xi[1]
+    let bfw = xi[2]
+    let bft = xi[3]
+    let wh = xi[4]
+    let wt = xi[5]
+    isteel.push(partProperty(tfw, tft, wh/2 + tft / 2, 0, 0))
+    isteel.push(partProperty(bfw, bft, -wh/2 - bft / 2, 0, 0))
+    isteel.push(partProperty(wh, wt, 0, 0, 1))
 
     //합성전 강재 단면
     let ADy = 0;
