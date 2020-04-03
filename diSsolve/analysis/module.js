@@ -455,7 +455,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
     }
 
     DBSectionList.forEach(function(elem){
-        let section1 = sectionDB(elem)
+        let section1 = sectionDB[elem]
         generalSectionList.push({NAME : elem, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
     })
     
