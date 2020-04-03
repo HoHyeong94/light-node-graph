@@ -38,7 +38,7 @@ export function SapFrame() {
 }
 
 SapFrame.prototype.onExecute = function () {
-    const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4))
+    const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4),this.getInputData(5))
     this.setOutputData(0, result.sectionPropDict)
     this.setOutputData(1, result.input)
 }
