@@ -32,6 +32,7 @@ export function SapFrame() {
     this.addInput("xbeamData", "xbeamData");
     this.addInput("nodeNumDict", "nodeNumDict");
     this.addInput("materials", "arr");
+    this.addInput("sectionDB", "sectionDB");
     this.addOutput("sectionPropDict", "sectionPropDict");
     this.addOutput("frameInput", "frameInput");
 }
