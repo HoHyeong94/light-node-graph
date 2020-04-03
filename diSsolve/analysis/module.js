@@ -331,26 +331,75 @@ export function AllSectionGenerator(girderStation, sectionPointDict, materials, 
     }
     for (let i in xbeamData){
         if (xbeamData[i].isKframe === false){
-            let slab = {W : 2000, T:270, Th :0}
+            let slab = {W : 2000, T:270, Th :0} //추후 자동으로 계산되어야 함 20.04.01 by dr.lim
             let key = xbeamData[i].key
             sectionPropDict[key] = Isection(xbeamData[i].section, materials, slab)
         }
     }
     return sectionPropDict;
 }
-
-export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, nodeNumDict, materials) {//consStep, all_material, girder_section_info, all_beam_section_info){
+function SectionCompare(section1, section2){
+    let result = true
+    result = section1.A === section2.A && section1.Ixx && section2.Ixx && section1.Iyy === section2.Iyy 
+    && section1.Izz === section2.Izz? true:false
+    return result
+}
+export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
+    let step = 0;
     let allElement = []; // As New List(Of Element_3d)
     let elemNum = 1; // As Integer = 1
-    let sectionNameDict = {}
+    // let sectionNameDict = {}
     let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData)
-
+    let sectionNum = 1;
+    let tsectionNum = 1;
+    let generalSectionList = [];
+    let taperedSectionList = [];
     for (let i in girderStation) {
+        let tempSection = {name : "temp", A:0, Ixx:0, Iyy:0, Izz:0}
         for (let j = 0; j < girderStation[i].length - 1; j++) {
             let inode = girderStation[i][j].key
             let jnode = girderStation[i][j + 1].key
             let sectionName = "G" + i +"N" + j// 임시로 작성 추후 수정 바람.
-            sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
+            let section1 = sectionPropDict[inode].forward[step]
+            let section2 = sectionPropDict[jnode].backward[step]
+            if (SectionCompare(tempSection, section1)){
+                if (SectionCompare(section1,section2)){
+                    sectionName = tempSection.name
+                }
+                else{
+                    sectionName = "t" + tsectionNum
+                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx})
+                    taperedSectionList.push({
+                        Name: sectionName,
+                        type: "Nonpr",
+                        Sec: [tempSection.name, sectionNum],  //isection, jsection
+                        Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+                        Vl: 1
+                    })
+                    sectionNum ++
+                }
+            }
+            else{
+                if (SectionCompare(section1,section2)){
+                    sectionName = sectionNum
+                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+                }else{
+                    sectionName = "t" + tsectionNum
+                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+                    sectionNum++
+                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx})
+                    taperedSectionList.push({
+                        Name: sectionName,
+                        type: "Nonpr",
+                        Sec: [sectionNum -1, sectionNum],  //isection, jsection
+                        Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+                        Vl: 1
+                    })
+                    sectionNum ++
+                }
+
+            }
+            // sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
             let elem = {
                 iNode: nodeNumDict[inode],
                 jNode: nodeNumDict[jnode],
@@ -362,10 +411,16 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
             elemNum++
         }
     }
+    let DBSectionList = [];
     //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[], section:[상형,하현,사재]}];
     for (let i in xbeamData) {
         if (xbeamData[i].isKframe) {
             let KLink = [[0, 1], [2, 4], [3, 4], [0, 4], [1, 4]] // 상현, 하현1, 하현2, 사재1, 사재2
+            xbeamData[i].section.forEach(function(elem){
+                if (DBSectionList.includes(elem)===false){
+                    DBSectionList.push(elem)
+                }
+            })
             let sectionName = [xbeamData[i].section[0], xbeamData[i].section[1], xbeamData[i].section[1], xbeamData[i].section[2], xbeamData[i].section[2]]
             for (let j = 0; j < 5; j++) {
                 let inode = xbeamData[i].key + "P" + KLink[j][0]
@@ -382,7 +437,9 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
             }
         } else {
             let sectionName = xbeamData[i].key // 임시로 작성 추후 수정 바람.
-            sectionNameDict[sectionName] = [sectionPropDict[sectionName]]  //가로보는 변단면 반영하지 않음.
+            let section1 = sectionPropDict[xbeamData[i].key][step]
+            generalSectionList.push({NAME : sectionName, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+            // sectionNameDict[sectionName] = [sectionPropDict[sectionName]]  //가로보는 변단면 반영하지 않음.
             let elem = {
                 iNode: nodeNumDict[xbeamData[i].inode],
                 jNode: nodeNumDict[xbeamData[i].jnode],
@@ -396,21 +453,12 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
             elemNum++
         }
     }
-    let generalSection = {
-        Name: "",
-        Mat: "",
-        A: 0,
-        I: [0, 0],
-        J: 0
-    }
-    let taperedSection = {
-        Name: "",
-        type: "Nonpr",
-        Sec: ["", ""],  //isection, jsection
-        Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
-        Vl: 0
-    }
 
+    DCBSectionList.forEach(function(elem){
+        let section1 = sectionDB(elem)
+        generalSectionList.push({NAME : elem, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+    })
+    
     // deck, stringer  추후 작성
     // sectionDB운용방안 마련
     //    const materials = {
@@ -432,8 +480,6 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
         })
     }
     let frame = { command: "FRAME", data: allElement };
-    let section = { command: "FRAME SECTION", data: [] }
-
-
+    let section = { command: "FRAME SECTION", data: {generalSectionList, taperedSectionList} }
     return { sectionPropDict, input: { frame, section, material } }
 }
