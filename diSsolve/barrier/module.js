@@ -55,9 +55,9 @@ export function BarrierSectionPoint(
                             ZMove(l1,slabThickness + haunch + 1350),
                             ZMove(l1,slabThickness + haunch),]
         if (k===0){
-          leftBarrier.push({name:masterStation, points:points})
+          leftBarrier.push({name:masterStation, points:points.reverse()})
         }else{
-          rightBarrier.push({name:masterStation, points:points})
+          rightBarrier.push({name:masterStation, points:points.reverse()})
         }
       }
     }
