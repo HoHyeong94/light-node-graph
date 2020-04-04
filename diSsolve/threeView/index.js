@@ -77,7 +77,7 @@ export function HorBracingView(){
   SpliceBoltView.prototype.onExecute = function() {
     sceneAdder({ layer: 0, 
         mesh: boltView(this.getInputData(0),this.getInputData(1))
-    },"deck"); 
+    },"bolt"); 
   }
 
 

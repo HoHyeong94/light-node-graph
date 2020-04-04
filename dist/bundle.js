@@ -3172,6 +3172,7 @@
         let iPoint = nameToPointDict[iNodekey];
         let jPoint = nameToPointDict[jNodekey];
         let xbData = [];
+        let xbSection = [];
         // let cbkey = 'CB' + iNodekey + 'To' + jNodekey
         if (xbeamLayout[i][section] == "xbeamI") {
            let xbeam = XbeamSection(
@@ -3183,6 +3184,7 @@
           );
           xbeamSectionDict[iNodekey] = xbeam.result;
           xbData = xbeam.data;
+          xbSection = xbeam.section;
         } else if (xbeamLayout[i][section] == "xbeamK") {
             let xbeam  = XbeamSectionK(
             iPoint,
@@ -3194,6 +3196,7 @@
           );
           xbeamSectionDict[iNodekey] = xbeam.result;
           xbData = xbeam.data;
+          xbSection = xbeam.section;
         }
         // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
         // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
@@ -3201,7 +3204,7 @@
       let key = i<10? "X0" + i: "X"+i;
       let isKframe = xbeamLayout[i][section] == "xbeamK"? true: false;
       xbeamData.push({
-            inode : iNodekey, jnode : jNodekey, key : key, isKframe:isKframe, data:xbData
+            inode : iNodekey, jnode : jNodekey, key : key, isKframe:isKframe, data:xbData, section : xbSection
         });
       }
       
@@ -3903,6 +3906,57 @@
       return group
   }
 
+  function boltView(spliceDict,initPoint){
+      var group = new global.THREE.Group();
+      // var meshMaterial = new THREE.MeshNormalMaterial()
+      var meshMaterial = new global.THREE.MeshLambertMaterial( {
+          color: 0xffffff,
+          emissive: 0x000000,
+          opacity: 1,
+          side:global.THREE.DoubleSide,
+          transparent: false,
+          wireframe : false
+      } );
+      for (let key in spliceDict){
+      //    let point = nameToPointDict[diakey]
+
+         for (let partkey in spliceDict[key]){
+              let Thickness = spliceDict[key][partkey].Thickness;
+              let zPosition = spliceDict[key][partkey].z;
+              let rotationY = spliceDict[key][partkey].rotationY+Math.PI/2;
+              let rotationX = spliceDict[key][partkey].rotationX;
+              let point = spliceDict[key][partkey].point;
+              if (spliceDict[key][partkey].bolt){
+                  let bolt = spliceDict[key][partkey].bolt;
+                  for (let k in bolt){
+                      for (let i = 0;i<bolt[k].gNum;i++){
+                          for (let j=0;j<bolt[k].pNum;j++){
+                              let xtranslate = bolt[k].startPoint.x - i*bolt[k].G;
+                              let ytranslate= bolt[k].startPoint.y - j*bolt[k].P;
+                              group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial));
+                          }
+                      }
+                  }
+              }
+          }
+      }
+      return group
+  }
+
+  function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint, meshMaterial){
+      var radius = bolt.size/2;
+      var geometry = new global.THREE.CylinderBufferGeometry(radius,radius,bolt.t*2+bolt.l,6,1);
+      var mesh = new global.THREE.Mesh(geometry, meshMaterial);
+      var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2;  //+ 
+      mesh.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
+      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
+      mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
+      mesh.translateY(zPosition-bolt.l/2);
+      mesh.translateX(XYtranslate[1]);
+      mesh.translateZ(XYtranslate[0]);
+      return mesh
+  }
+
   function LineViewer(){
     this.addInput("points","points");
     this.addInput("initPoint","point");
@@ -3971,6 +4025,18 @@
       },"deck"); 
     };
 
+    function SpliceBoltView(){
+      this.addInput("spliceDict","diaDict");  
+      this.addInput("Point","Point");
+    }
+    
+    SpliceBoltView.prototype.onExecute = function() {
+      global.sceneAdder({ layer: 0, 
+          mesh: boltView(this.getInputData(0),this.getInputData(1))
+      },"deck"); 
+    };
+
+
 
   function InitPoint(){
     this.addInput("gridPoint","gridPoint");
@@ -3999,9 +4065,15 @@
       let stage3 = {};
       let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
       let isteel = [];
-      isteel.push(partProperty(xi.tfw, xi.tft, xi.wh/2 + xi.tft / 2, 0, 0));
-      isteel.push(partProperty(xi.bfw, xi.bft, -xi.wh/2 - xi.bft / 2, 0, 0));
-      isteel.push(partProperty(xi.wh, xi.wt, 0, 0, 1));
+      let tfw = xi[0];
+      let tft = xi[1];
+      let bfw = xi[2];
+      let bft = xi[3];
+      let wh = xi[4];
+      let wt = xi[5];
+      isteel.push(partProperty(tfw, tft, wh/2 + tft / 2, 0, 0));
+      isteel.push(partProperty(bfw, bft, -wh/2 - bft / 2, 0, 0));
+      isteel.push(partProperty(wh, wt, 0, 0, 1));
 
       //합성전 강재 단면
       let ADy = 0;
@@ -4009,7 +4081,7 @@
 
       stage1.A = 0;
       for (let i in isteel) {
-          stage1.A += isteel[i].ara;
+          stage1.A += isteel[i].area;
           ADy += isteel[i].area * isteel[i].Dy;
           ADz += isteel[i].area * isteel[i].Dz;
       }
@@ -4017,14 +4089,14 @@
       stage1.Cz = ADz / stage1.A;
       stage1.Iyy = 0;
       stage1.Izz = 0;
-      for (let i of isteel) {
+      for (let i in isteel) {
           stage1.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage1.Cy) ** 2;
           stage1.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage1.Cz) ** 2;
       }
       // 단일 합성후 가로보단면 변화 없음
       stage2 = stage1;
       //이중합성후 합성단면의 단면계수 계산
-          let deckConc = partProperty(slab.W / n1, slab.T, xi.wh / 2 + slab.T / 2 + slab.Th, 0, 0);
+          let deckConc = partProperty(slab.W / n1, slab.T, wh / 2 + slab.T / 2 + slab.Th, 0, 0);
           isteel.push(deckConc);
           ADy += deckConc.area * deckConc.Dy;
           ADz += deckConc.area * deckConc.Dz;
@@ -4033,7 +4105,7 @@
           stage3.Cz = ADz / stage3.A;
           stage3.Iyy = 0;
           stage3.Izz = 0;
-          for (let i of isteel) {
+          for (let i in isteel) {
               stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2;
               stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2;
           }
@@ -4044,8 +4116,8 @@
   function DCBsection(sa, materials) {
       let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
       let n2 = materials[2][1] / materials[1][1];  //하부콘크리트 탄성계수비
-      let lcos = sa.H / sa.wlw;
-      let rcos = sa.H / sa.wrw;
+      let lcos = sa.H / Math.sqrt(sa.H**2 + ((sa.B2-sa.B1)/2)**2);
+      let rcos = lcos;
       let sb = [];
 
       if (sa.isClosedTop) {
@@ -4088,7 +4160,7 @@
 
       stage1.A = 0;
       for (let i in sb) {
-          stage1.A += sb[i].ara;
+          stage1.A += sb[i].area;
           ADy += sb[i].area * sb[i].Dy;
           ADz += sb[i].area * sb[i].Dz;
       }
@@ -4096,7 +4168,7 @@
       stage1.Cz = ADz / stage1.A;
       stage1.Iyy = 0;
       stage1.Izz = 0;
-      for (let i of sb) {
+      for (let i in sb) {
           stage1.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage1.Cy) ** 2;
           stage1.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage1.Cz) ** 2;
       }
@@ -4104,7 +4176,7 @@
       //단일합성후 합성단면의 단면계수 계산
       let botConc = partProperty(sa.B1 / n2, sa.Tcl, -sa.H / 2 + sa.Tcl / 2, 0, 0);
       sb.push(botConc);
-      if (input.isDoubleComposite === false) {
+      if (sa.isDoubleComposite === false) {
           stage2 = stage1;
       } else {
           ADy += botConc.area * botConc.Dy;
@@ -4114,7 +4186,7 @@
           stage2.Cz = ADz / stage2.A;
           stage2.Iyy = 0;
           stage2.Izz = 0;
-          for (let i of sb) {
+          for (let i in sb) {
               stage2.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage2.Cy) ** 2;
               stage2.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage2.Cz) ** 2;
           }
@@ -4129,7 +4201,7 @@
       stage3.Cz = ADz / stage3.A;
       stage3.Iyy = 0;
       stage3.Izz = 0;
-      for (let i of sb) {
+      for (let i in sb) {
           stage3.Iyy += sb[i].Ioyy + sb[i].area * (sb[i].Dy - stage3.Cy) ** 2;
           stage3.Izz += sb[i].Iozz + sb[i].area * (sb[i].Dz - stage3.Cz) ** 2;
       }
@@ -4267,76 +4339,24 @@
       }
       for (let i in xbeamData){
           if (xbeamData[i].isKframe === false){
+              let slab = {W : 2000, T:270, Th :0}; //추후 자동으로 계산되어야 함 20.04.01 by dr.lim
               let key = xbeamData[i].key;
-              sectionPropDict[key] = Isection(xbeamData[i].section);
+              sectionPropDict[key] = Isection(xbeamData[i].section, materials, slab);
           }
       }
       return sectionPropDict;
   }
-
-  function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, nodeNumDict, materials) {//consStep, all_material, girder_section_info, all_beam_section_info){
+  function SectionCompare(section1, section2){
+      let result = true;
+      result = section1.A === section2.A && section1.Ixx && section2.Ixx && section1.Iyy === section2.Iyy 
+      && section1.Izz === section2.Izz? true:false;
+      return result
+  }
+  function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
+      let step = 0;
+      let allElement = []; // As New List(Of Element_3d)
       let elemNum = 1; // As Integer = 1
-      let sectionNameDict = {};
-      let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, xbeamData);
-
-      for (let i in girderStation) {
-          for (let j = 0; j < girderStation[i].length - 1; j++) {
-              let inode = girderStation[i][j].key;
-              let jnode = girderStation[i][j + 1].key;
-              let sectionName = "G" + i +"N" + j;// 임시로 작성 추후 수정 바람.
-              sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward];
-              let elem = {
-                  iNode: nodeNumDict[inode],
-                  jNode: nodeNumDict[jnode],
-                  sectionName: sectionName, // node_group.Key & added_index,
-                  endOffset: false,
-                  number: elemNum
-              };
-              elemNum++;
-          }
-      }
-      //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[], section:[상형,하현,사재]}];
-      for (let i in xbeamData) {
-          if (xbeamData[i].isKframe) {
-              let KLink = [[0, 1], [2, 4], [3, 4], [0, 4], [1, 4]]; // 상현, 하현1, 하현2, 사재1, 사재2
-              let sectionName = [xbeamData[i].section[0], xbeamData[i].section[1], xbeamData[i].section[1], xbeamData[i].section[2], xbeamData[i].section[2]];
-              for (let j = 0; j < 5; j++) {
-                  let inode = xbeamData[i].key + "P" + KLink[j][0];
-                  let jnode = xbeamData[i].key + "P" + KLink[j][1];
-                  let elem = {
-                      iNode: nodeNumDict[inode],
-                      jNode: nodeNumDict[jnode],
-                      sectionName: sectionName[j], // node_group.Key & added_index,
-                      endOffset: false,
-                      number: elemNum
-                  };
-                  elemNum++;
-              }
-          } else {
-              let sectionName = xbeamData[i].key; // 임시로 작성 추후 수정 바람.
-              sectionNameDict[sectionName] = [sectionPropDict[sectionName]];  //가로보는 변단면 반영하지 않음.
-              let elem = {
-                  iNode: nodeNumDict[xbeamData[i].inode],
-                  jNode: nodeNumDict[xbeamData[i].jnode],
-                  sectionName: sectionName, // node_group.Key & added_index,
-                  endOffset: true,
-                  number: elemNum,
-                  IOFF: xbeamData[i].data[0],
-                  JOFF: xbeamData[i].data[1]
-              };
-              elemNum++;
-          }
-      }
-
-      // deck, stringer  추후 작성
-      // sectionDB운용방안 마련
-      //    const materials = {
-      //     slabConc: { name: "slabConc", elast: 28825.3, shearElast: 12318.5, poissonRatio: 0.17 w : 25}, // 강도와 재료 입력으로 자동생성
-      //     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
-      //     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
-      //     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
-      // }
-
+      // let sectionNameDict = {}
       let material = { command: "MATERIAL", data: [] };
       for (let i in materials) {
           material.data.push({
@@ -4348,11 +4368,134 @@
               U: materials[i][3]
           });
       }
-      let frame = { command: "FRAME", data: [] };
-      let section = { command: "FRAME SECTION", data: [] };
 
+      let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData);
+      let selfWeight = {command : "LOAD", type :"Distributed Span", Name : "SteelBox", data : []};
+      let sectionNum = 1;
+      let tsectionNum = 1;
+      let generalSectionList = [];
+      let taperedSectionList = [];
+      for (let i in girderStation) {
+          let tempSection = {name : "temp", A:0, Ixx:0, Iyy:0, Izz:0};
+          for (let j = 0; j < girderStation[i].length - 1; j++) {
+              let inode = girderStation[i][j].key;
+              let jnode = girderStation[i][j + 1].key;
+              let sectionName = "noname"; // 임시로 작성 추후 수정 바람.
+              let section1 = sectionPropDict[inode].forward[step];
+              let section2 = sectionPropDict[jnode].backward[step];
+              if (SectionCompare(tempSection, section1)){
+                  if (SectionCompare(section1,section2)){
+                      sectionName = tempSection.name;
+                  }
+                  else {
+                      sectionName = "t" + tsectionNum;
+                      generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx});
+                      taperedSectionList.push({
+                          Name: sectionName,
+                          type: "Nonpr",
+                          Sec: [tempSection.name, sectionNum],  //isection, jsection
+                          Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+                          Vl: 1
+                      });
+                      sectionNum ++;
+                  }
+              }
+              else {
+                  if (SectionCompare(section1,section2)){
+                      sectionName = sectionNum;
+                      generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx});
+                  }else {
+                      sectionName = "t" + tsectionNum;
+                      generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx});
+                      sectionNum++;
+                      generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx});
+                      taperedSectionList.push({
+                          Name: sectionName,
+                          type: "Nonpr",
+                          Sec: [sectionNum -1, sectionNum],  //isection, jsection
+                          Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+                          Vl: 1
+                      });
+                      sectionNum ++;
+                  }
 
-      return { sectionPropDict, input: { frame, section, material } }
+              }
+              // sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
+              let elem = {
+                  iNode: nodeNumDict[inode],
+                  jNode: nodeNumDict[jnode],
+                  sectionName: sectionName, // node_group.Key & added_index,
+                  endOffset: false,
+                  number: elemNum
+              };
+              allElement.push(elem);
+              let p1 = -1 * section1.A * material.data[2].W;   //materials : steel
+              let p2 = -1 * section2.A * material.data[2].W;   //materials : steel
+              selfWeight.data.push({elem : elemNum, RD : [0, 1], Uzp : [p1,p2] });
+              elemNum++;
+          }
+      }
+      let DBSectionList = [];
+      //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[], section:[상형,하현,사재]}];
+      for (let i in xbeamData) {
+          if (xbeamData[i].isKframe) {
+              let KLink = [[0, 1], [2, 4], [3, 4], [0, 4], [1, 4]]; // 상현, 하현1, 하현2, 사재1, 사재2
+              xbeamData[i].section.forEach(function(elem){
+                  if (DBSectionList.includes(elem)===false){
+                      DBSectionList.push(elem);
+                  }
+              });
+              let sectionName = [xbeamData[i].section[0], xbeamData[i].section[1], xbeamData[i].section[1], xbeamData[i].section[2], xbeamData[i].section[2]];
+              for (let j = 0; j < 5; j++) {
+                  let inode = xbeamData[i].key + "P" + KLink[j][0];
+                  let jnode = xbeamData[i].key + "P" + KLink[j][1];
+                  let elem = {
+                      iNode: nodeNumDict[inode],
+                      jNode: nodeNumDict[jnode],
+                      sectionName: sectionName[j], // node_group.Key & added_index,
+                      endOffset: false,
+                      number: elemNum
+                  };
+                  allElement.push(elem);
+                  elemNum++;
+              }
+          } else {
+              let sectionName = xbeamData[i].key; // 임시로 작성 추후 수정 바람.
+              let section1 = sectionPropDict[xbeamData[i].key][step];
+              generalSectionList.push({NAME : sectionName, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx});
+              // sectionNameDict[sectionName] = [sectionPropDict[sectionName]]  //가로보는 변단면 반영하지 않음.
+              let elem = {
+                  iNode: nodeNumDict[xbeamData[i].inode],
+                  jNode: nodeNumDict[xbeamData[i].jnode],
+                  sectionName: sectionName, // node_group.Key & added_index,
+                  endOffset: true,
+                  number: elemNum,
+                  IOFF: xbeamData[i].data[0],
+                  JOFF: xbeamData[i].data[1]
+              };
+              allElement.push(elem);
+              elemNum++;
+          }
+      }
+      
+      DBSectionList.forEach(function(elem){
+          let section1 = sectionDB[elem];
+          generalSectionList.push({NAME : elem, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx});
+      });
+      
+      // deck, stringer  추후 작성
+      // sectionDB운용방안 마련
+      //    const materials = {
+      //     slabConc: { name: "slabConc", elast: 28825.3, shearElast: 12318.5, poissonRatio: 0.17 w : 25}, // 강도와 재료 입력으로 자동생성
+      //     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
+      //     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
+      //     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
+      // }
+
+      
+      let frame = { command: "FRAME", data: allElement };
+      let section = { command: "FRAME SECTION", data: {generalSectionList, taperedSectionList} };
+      return { sectionPropDict, input: { frame, section, material, selfWeight } }
   }
 
   function Support() {
@@ -4387,12 +4530,13 @@
       this.addInput("xbeamData", "xbeamData");
       this.addInput("nodeNumDict", "nodeNumDict");
       this.addInput("materials", "arr");
+      this.addInput("sectionDB", "sectionDB");
       this.addOutput("sectionPropDict", "sectionPropDict");
       this.addOutput("frameInput", "frameInput");
   }
 
   SapFrame.prototype.onExecute = function () {
-      const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4));
+      const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4),this.getInputData(5));
       this.setOutputData(0, result.sectionPropDict);
       this.setOutputData(1, result.input);
   };
@@ -4405,11 +4549,153 @@
       //T형강일 경우, 역T를 기준으로 하단좌측이 원점, y축 수평, z축 수직
       //L형강일 경우, ㄴ자를 기준으로 하단좌측이 원점, y축 수평, z축 수직
       const result = {
-          "T150x150x6.5x9": { type: "T", shape: [150, 150, 6.5, 9], A: 2266.5, Ix: 122669.3, Iy: 4598193, Iz: 2534477, Cy: 75, Cz: 34.8276 },
-          "L100x100x10": { type: "L", shape: [100, 100, 10, 10], A: 1900, Ix: 63300, Iy: 1750000, Iz: 1750000, Cy: 28.2, Cz: 28.2 },
-          "L150x150x12": { type: "L", shape: [150, 150, 12, 12], A: 3477, Ix: 166000, Iy: 7400000, Iz: 7400000, Cy: 41.4, Cz: 41.4 }
+          "T150x150x6.5x9": { type: "T", shape: [150, 150, 6.5, 9], A: 2266.5, Ixx: 122669.3, Iyy: 4598193, Izz: 2534477, Cy: 75, Cz: 34.8276 },
+          "L100x100x10": { type: "L", shape: [100, 100, 10, 10], A: 1900, Ixx: 63300, Iyy: 1750000, Izz: 1750000, Cy: 28.2, Cz: 28.2 },
+          "L150x150x12": { type: "L", shape: [150, 150, 12, 12], A: 3477, Ixx: 166000, Iyy: 7400000, Izz: 7400000, Cy: 41.4, Cz: 41.4 }
       };
       this.setOutputData(0, result);
+  };
+
+  function SplicePlate(iPoint, iSectionPoint) {
+      let result = {};
+      let iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[0]);
+      let jNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1]);
+      let centerPoint = {
+        x: (iNode.x + jNode.x) / 2,
+        y: (iNode.y + jNode.y) / 2,
+        z: (iNode.z + jNode.z) / 2,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+      let Web = [{ x: -900, y: -250 }, { x: -900, y: 250 }, { x: 900, y: 250 }, { x: 900, y: -250 }];
+      let WebBolt = [{ startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 },];
+      let lWebAngle = Math.PI - Math.atan((iSectionPoint.lWeb[1].y - iSectionPoint.lWeb[0].y) / (iSectionPoint.lWeb[1].x - iSectionPoint.lWeb[0].x));
+      let rWebAngle = Math.PI - Math.atan((iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y) / (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x));
+      result["lWeb"] = {
+        points: Web, point: centerPoint,
+        Thickness: 20, z: 14, rotationX: 0, rotationY: lWebAngle, hole: [], bolt: WebBolt
+      };
+      result["lWeb2"] = {
+        points: Web, point: centerPoint,
+        Thickness: 20, z: -20, rotationX: 0, rotationY: lWebAngle, hole: []
+      };
+    
+      iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[0]);
+      jNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
+      centerPoint = {
+        x: (iNode.x + jNode.x) / 2,
+        y: (iNode.y + jNode.y) / 2,
+        z: (iNode.z + jNode.z) / 2,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+      result["rWeb"] = {
+        points: Web, point: centerPoint,
+        Thickness: 20, z: 14, rotationX: 0, rotationY: rWebAngle, hole: [], bolt: WebBolt
+      };
+      result["rWeb2"] = {
+        points: Web, point: centerPoint,
+        Thickness: 20, z: -20, rotationX: 0, rotationY: rWebAngle, hole: []
+      };
+    
+      iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1]);
+      centerPoint = {
+        ...iNode,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+      let TopFlange = [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }];
+      let TopFlangeBolt = [{ startPoint: { x: 160, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 2, size: 37, t: 14, l: 54 },
+      { startPoint: { x: -80, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 2, size: 37, t: 14, l: 54 }];
+    
+      result["lTop"] = { points: TopFlange, point: centerPoint, Thickness: 20, z: 14, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: [], bolt: TopFlangeBolt };
+      result["lTop2"] = {
+        points: [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: -40, y: 250 }, { x: -40, y: -250 }],
+        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      };
+      result["lTop3"] = {
+        points: [{ x: 40, y: -250 }, { x: 40, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }],
+        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      };
+    
+      iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
+      centerPoint = {
+        ...iNode,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+    
+      result["rTop"] = { points: TopFlange, point: centerPoint, Thickness: 20, z: 14, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: [], bolt: TopFlangeBolt };
+      result["rTop2"] = {
+        points: [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: -40, y: 250 }, { x: -40, y: -250 }],
+        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      };
+      result["rTop3"] = {
+        points: [{ x: 40, y: -250 }, { x: 40, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }],
+        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      };
+    
+    
+      let BP = iSectionPoint.bottomPlate;
+      iNode = ToGlobalPoint(iPoint, BP[0]);
+      jNode = ToGlobalPoint(iPoint, BP[1]);
+      centerPoint = {
+        x: (iNode.x + jNode.x) / 2,
+        y: (iNode.y + jNode.y) / 2,
+        z: (iNode.z + jNode.z) / 2,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+      let bottomFlange = [{ x: BP[0].x, y: -250 }, { x: BP[0].x, y: 250 }, { x: BP[1].x, y: 250 }, { x: BP[1].x, y: -250 }];
+      let bottomFlangeBolt = [{ startPoint: { x: BP[0].x + 40, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 1, size: 37, t: 14, l: 54 },
+      { startPoint: { x: BP[1].x - 40, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 1, size: 37, t: 14, l: 54 },
+      { startPoint: { x: BP[1].x - 172, y: 150 }, P: 100, G: 140, pNum: 4, gNum: 6, size: 37, t: 14, l: 54 },
+      { startPoint: { x: BP[0].x + 172, y: 150 }, P: 100, G: -140, pNum: 4, gNum: 6, size: 37, t: 14, l: 54 }];
+    
+      result["bottom1"] = {
+        points: [{ x: BP[0].x, y: -250 }, { x: BP[0].x, y: 250 }, { x: BP[0].x + 80, y: 250 }, { x: BP[0].x + 80, y: -250 }],
+        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: [], bolt: bottomFlangeBolt
+      };
+      result["bottom2"] = {
+        points: [{ x: BP[1].x, y: -250 }, { x: BP[1].x, y: 250 }, { x: BP[1].x - 80, y: 250 }, { x: BP[1].x - 80, y: -250 }],
+        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
+      };
+      result["bottom3"] = {
+        points: [{ x: BP[0].x + 132, y: -250 }, { x: BP[0].x + 132, y: 250 }, { x: BP[1].x - 132, y: 250 }, { x: BP[1].x - 132, y: -250 }],
+        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
+      };
+      result["bottom4"] = {
+        points: bottomFlange,
+        point: centerPoint, Thickness: 20, z: -20 - 14, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
+      };
+      // result["bottom2"]={points:[{x:-200, y:-250},{x:-200, y:250},{x:-40, y:250},{x:-40, y:-250}],
+      //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+      // result["bottom3"]={points:[{x:40, y:-250},{x:40, y:250},{x:200, y:250},{x:200, y:-250}],
+      //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+    
+      return result
+    }
+
+  function SplicePart() {
+      this.addInput("spliceLayout","spliceLayout");
+      this.addInput("spliceSectionList","spliceSectionList");
+      this.addInput("gridPoint","gridPoint");
+      this.addInput("sectionPointDict","sectionPointDict");
+      this.addOutput("diaDict", "diaDict");
+  }
+
+  SplicePart.prototype.onExecute = function () {
+      //T형강일 경우, 역T를 기준으로 하단좌측이 원점, y축 수평, z축 수직
+      //L형강일 경우, ㄴ자를 기준으로 하단좌측이 원점, y축 수평, z축 수직
+      let gridPoint = this.getInputData(2);    let sectionPointDict = this.getInputData(3);
+      let spliceDict = {};
+      for (let key in gridPoint) {
+          if (key.includes("SP")) {
+            spliceDict[key] = SplicePlate(gridPoint[key], sectionPointDict[key].forward);
+          }
+        }
+      
+      this.setOutputData(0, spliceDict);
   };
 
   // import { defaultValues } from "./defaultValues";
@@ -4430,6 +4716,7 @@
   global.LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
   global.LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
   global.LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
+  global.LiteGraph.registerNodeType("HMECS/splice", SplicePart);
 
   global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
   global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
@@ -4437,6 +4724,7 @@
   global.LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
   global.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
   global.LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
+  global.LiteGraph.registerNodeType("3DVIEW/SpliceBoltView", SpliceBoltView);
 
 
   // const {
