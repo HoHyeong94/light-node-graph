@@ -9,6 +9,13 @@ export function BarrierSectionPoint(
     slabLayout,
     pointDict
   ){
+    // slabLayout object to list 
+    const position = 0;
+    const T = 1;
+    const H = 2;
+    // const leftOffset = 3;
+    // const rightOffset =4;
+
     let leftBarrier = [];
     let rightBarrier = [];
     let slabThickness = slabInfo.slabThickness;
@@ -22,15 +29,15 @@ export function BarrierSectionPoint(
       let masterStation = masterPoint.masterStationNumber;
       //deckSectionInfo로 분리예정
       for (let j = 0; j < slabLayout.length - 1; j++) {
-        let ss = pointDict[slabLayout[j].position].masterStationNumber;
-        let es = pointDict[slabLayout[j + 1].position].masterStationNumber
+        let ss = pointDict[slabLayout[j][position]].masterStationNumber;
+        let es = pointDict[slabLayout[j + 1][position]].masterStationNumber
         if (masterStation >= ss && masterStation <= es) {
           let x = masterStation - ss
           let l = es - ss
-          leftOffset = slabLayout[j].leftOffset * (l - x) / l + slabLayout[j + 1].leftOffset * (x) / l
-          rightOffset = slabLayout[j].rightOffset * (l - x) / l + slabLayout[j + 1].rightOffset * (x) / l
+          leftOffset = slabLayout[j][3] * (l - x) / l + slabLayout[j + 1][3] * (x) / l
+          rightOffset = slabLayout[j][4] * (l - x) / l + slabLayout[j + 1][4] * (x) / l
           // slabThickness = slabLayout[j].H * (l - x) / l + slabLayout[j + 1].H * (x) / l
-          endT = slabLayout[j].T * (l - x) / l + slabLayout[j + 1].T * (x) / l
+          endT = slabLayout[j][T] * (l - x) / l + slabLayout[j + 1][T] * (x) / l
         }
       }
       //deckSectionInfo로 분리예정
