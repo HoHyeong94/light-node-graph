@@ -20,7 +20,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     }
     result["lWeb2"] = {
       points: Web, point: centerPoint,
-      Thickness: -20, z: 0, rotationX: 0, rotationY: lWebAngle, hole: []
+      Thickness: 20, z: -20, rotationX: 0, rotationY: lWebAngle, hole: []
     }
   
     iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[0])
@@ -38,7 +38,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     }
     result["rWeb2"] = {
       points: Web, point: centerPoint,
-      Thickness: -20, z: 0, rotationX: 0, rotationY: rWebAngle, hole: []
+      Thickness: 20, z: -20, rotationX: 0, rotationY: rWebAngle, hole: []
     }
   
     iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1])
@@ -54,11 +54,11 @@ export function SplicePlate(iPoint, iSectionPoint) {
     result["lTop"] = { points: TopFlange, point: centerPoint, Thickness: 20, z: 14, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: [], bolt: TopFlangeBolt }
     result["lTop2"] = {
       points: [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: -40, y: 250 }, { x: -40, y: -250 }],
-      point: centerPoint, Thickness: -20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
     }
     result["lTop3"] = {
       points: [{ x: 40, y: -250 }, { x: 40, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }],
-      point: centerPoint, Thickness: -20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
     }
   
     iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1])
@@ -71,11 +71,11 @@ export function SplicePlate(iPoint, iSectionPoint) {
     result["rTop"] = { points: TopFlange, point: centerPoint, Thickness: 20, z: 14, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: [], bolt: TopFlangeBolt }
     result["rTop2"] = {
       points: [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: -40, y: 250 }, { x: -40, y: -250 }],
-      point: centerPoint, Thickness: -20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
     }
     result["rTop3"] = {
       points: [{ x: 40, y: -250 }, { x: 40, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }],
-      point: centerPoint, Thickness: -20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
     }
   
   
@@ -109,7 +109,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     }
     result["bottom4"] = {
       points: bottomFlange,
-      point: centerPoint, Thickness: -20, z: -14, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
+      point: centerPoint, Thickness: 20, z: -20 - 14, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
     }
     // result["bottom2"]={points:[{x:-200, y:-250},{x:-200, y:250},{x:-40, y:250},{x:-40, y:-250}],
     //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
