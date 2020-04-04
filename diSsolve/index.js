@@ -38,7 +38,7 @@ LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
 LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
 LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
 LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
-LiteGraph.registerNodeType("3DVIEW/deckView", BarrierView);
+LiteGraph.registerNodeType("3DVIEW/BarrierView", BarrierView);
 LiteGraph.registerNodeType("3DVIEW/SpliceBoltView", SpliceBoltView);
 
 
