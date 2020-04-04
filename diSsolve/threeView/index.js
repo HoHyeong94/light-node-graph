@@ -88,9 +88,12 @@ export function HorBracingView(){
   }
   
   BarrierView.prototype.onExecute = function() {
-    sceneAdder({ layer: 0, 
-        mesh: BarrierPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
-    },"Barrier"); 
+    const decPoint = this.getInputData(0)
+    for (let key in decPoint){
+      sceneAdder({ layer: 0, 
+          mesh: BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2))
+      },"Barrier"+key);
+    }
   }
 
   
