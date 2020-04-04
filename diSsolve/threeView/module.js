@@ -305,6 +305,15 @@ export function BarrierPointView(deckSection,initPoint,opacity){
             geometry.faces.push(new THREE.Face3(i*pNum+j,(i+1)*pNum+j,i*pNum+j+1));
             geometry.faces.push(new THREE.Face3(i*pNum+j+1,(i+1)*pNum+j,(i+1)*pNum+j+1));
         }
+        if (i ===0){
+            for (let j=1;j<pNum-1;j++){
+               geometry.faces.push(new THREE.Face3(i, i + j, i + j +1));
+            }
+        }else if (i === deckSection.length -2){
+            for (let j=1;j<pNum-1;j++){
+                geometry.faces.push(new THREE.Face3((i + 1)*pNum, (i + 1)*pNum + j + 1, (i + 1)*pNum + j));
+             }
+        }
     }
     geometry.computeFaceNormals();
     group.add( new THREE.Mesh(geometry,meshMaterial) );
