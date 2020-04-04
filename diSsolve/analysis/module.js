@@ -349,7 +349,20 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
     let allElement = []; // As New List(Of Element_3d)
     let elemNum = 1; // As Integer = 1
     // let sectionNameDict = {}
+    let material = { command: "MATERIAL", data: [] }
+    for (let i in materials) {
+        material.data.push({
+            NAME: materials[i][0],
+            IDES: "C", // 강재는 S, concrte C
+            M: materials[i][4] / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
+            W: materials[i][4] / 1000, // ton to kg
+            E: materials[i][1],
+            U: materials[i][3]
+        })
+    }
+
     let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData)
+    let selfWeight = {command : "LOAD", type :"Distributed Span", Name : "SteelBox", data : []}
     let sectionNum = 1;
     let tsectionNum = 1;
     let generalSectionList = [];
@@ -359,7 +372,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
         for (let j = 0; j < girderStation[i].length - 1; j++) {
             let inode = girderStation[i][j].key
             let jnode = girderStation[i][j + 1].key
-            let sectionName = "G" + i +"N" + j// 임시로 작성 추후 수정 바람.
+            let sectionName = "noname" // 임시로 작성 추후 수정 바람.
             let section1 = sectionPropDict[inode].forward[step]
             let section2 = sectionPropDict[jnode].backward[step]
             if (SectionCompare(tempSection, section1)){
@@ -408,6 +421,9 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
                 number: elemNum
             }
             allElement.push(elem)
+            let p1 = -1 * section1.A * materials.data[2].W   //materials : steel
+            let p2 = -1 * section2.A * materials.data[2].W   //materials : steel
+            selfWeight.data.push({elem : elemNum, RD : [0, 1], Uzp : [p1,p2] })
             elemNum++
         }
     }
@@ -468,18 +484,8 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
     //     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
     // }
 
-    let material = { command: "MATERIAL", data: [] }
-    for (let i in materials) {
-        material.data.push({
-            NAME: materials[i][0],
-            IDES: "C", // 강재는 S, concrte C
-            M: materials[i][4] / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
-            W: materials[i][4] / 1000, // ton to kg
-            E: materials[i][1],
-            U: materials[i][3]
-        })
-    }
+    
     let frame = { command: "FRAME", data: allElement };
     let section = { command: "FRAME SECTION", data: {generalSectionList, taperedSectionList} }
-    return { sectionPropDict, input: { frame, section, material } }
+    return { sectionPropDict, input: { frame, section, material, selfWeight } }
 }
