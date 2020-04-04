@@ -1,5 +1,5 @@
 import { sceneAdder } from "global";
-import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView} from "./module"
+import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView} from "./module"
 
 export function LineViewer(){
   this.addInput("points","points");
@@ -68,6 +68,18 @@ export function HorBracingView(){
         mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
     },"deck"); 
   }
+
+  export function SpliceBoltView(){
+    this.addInput("spliceDict","diaDict");  
+    this.addInput("Point","Point");
+  }
+  
+  SpliceBoltView.prototype.onExecute = function() {
+    sceneAdder({ layer: 0, 
+        mesh: boltView(this.getInputData(0),this.getInputData(1))
+    },"deck"); 
+  }
+
 
 
 export function InitPoint(){

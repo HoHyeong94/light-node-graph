@@ -227,3 +227,54 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
 
     return group
 }
+
+export function boltView(spliceDict,initPoint){
+    var group = new THREE.Group();
+    // var meshMaterial = new THREE.MeshNormalMaterial()
+    var meshMaterial = new THREE.MeshLambertMaterial( {
+        color: 0xffffff,
+        emissive: 0x000000,
+        opacity: 1,
+        side:THREE.DoubleSide,
+        transparent: false,
+        wireframe : false
+    } );
+    for (let key in spliceDict){
+    //    let point = nameToPointDict[diakey]
+
+       for (let partkey in spliceDict[key]){
+            let Thickness = spliceDict[key][partkey].Thickness
+            let zPosition = spliceDict[key][partkey].z
+            let rotationY = spliceDict[key][partkey].rotationY+Math.PI/2
+            let rotationX = spliceDict[key][partkey].rotationX
+            let point = spliceDict[key][partkey].point
+            if (spliceDict[key][partkey].bolt){
+                let bolt = spliceDict[key][partkey].bolt
+                for (let k in bolt){
+                    for (let i = 0;i<bolt[k].gNum;i++){
+                        for (let j=0;j<bolt[k].pNum;j++){
+                            let xtranslate = bolt[k].startPoint.x - i*bolt[k].G
+                            let ytranslate= bolt[k].startPoint.y - j*bolt[k].P
+                            group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return group
+}
+
+export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint, meshMaterial){
+    var radius = bolt.size/2
+    var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt.t*2+bolt.l,6,1)
+    var mesh = new THREE.Mesh(geometry, meshMaterial);
+    var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2  //+ 
+    mesh.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
+    mesh.rotateOnWorldAxis(new THREE.Vector3(0,0,1),rad);
+    mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
+    mesh.translateY(zPosition-bolt.l/2)
+    mesh.translateX(XYtranslate[1])
+    mesh.translateZ(XYtranslate[0])
+    return mesh
+}
