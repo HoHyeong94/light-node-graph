@@ -5,7 +5,7 @@ export function SplicePart() {
     this.addInput("spliceSectionList","spliceSectionList")
     this.addInput("gridPoint","gridPoint")
     this.addInput("sectionPointDict","sectionPointDict")
-    this.addOutput("sectionDB", "sectionDB");
+    this.addOutput("diaDict", "diaDict");
 }
 
 SplicePart.prototype.onExecute = function () {
