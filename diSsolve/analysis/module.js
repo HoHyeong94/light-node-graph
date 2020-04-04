@@ -421,8 +421,8 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
                 number: elemNum
             }
             allElement.push(elem)
-            let p1 = -1 * section1.A * materials.data[2].W   //materials : steel
-            let p2 = -1 * section2.A * materials.data[2].W   //materials : steel
+            let p1 = -1 * section1.A * material.data[2].W   //materials : steel
+            let p2 = -1 * section2.A * material.data[2].W   //materials : steel
             selfWeight.data.push({elem : elemNum, RD : [0, 1], Uzp : [p1,p2] })
             elemNum++
         }
