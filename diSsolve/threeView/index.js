@@ -1,5 +1,5 @@
 import { sceneAdder } from "global";
-import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView} from "./module"
+import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView, BarrierPointView} from "./module"
 
 export function LineViewer(){
   this.addInput("points","points");
@@ -79,6 +79,21 @@ export function HorBracingView(){
         mesh: boltView(this.getInputData(0),this.getInputData(1))
     },"bolt"); 
   }
+
+
+  export function BarrierView(){
+    this.addInput("deckPointDict","deckPointDict");  
+    this.addInput("Point","Point");
+    this.addInput("opacity","number")
+  }
+  
+  BarrierView.prototype.onExecute = function() {
+    sceneAdder({ layer: 0, 
+        mesh: BarrierPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
+    },"Barrier"); 
+  }
+
+  
 
 
 

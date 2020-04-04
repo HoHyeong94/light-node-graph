@@ -278,3 +278,35 @@ export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtransla
     mesh.translateZ(XYtranslate[0])
     return mesh
 }
+
+export function BarrierPointView(deckSection,initPoint,opacity){
+    let group = new THREE.Group();
+    var meshMaterial = new THREE.MeshLambertMaterial( {
+        color: 0x000000,
+        emissive: 0x777777,
+        opacity: opacity,
+        side:THREE.DoubleSide,
+        transparent: true,
+        wireframe : false
+      } );
+    // let meshMaterial = new THREE.MeshNormalMaterial()
+    //     meshMaterial.side = THREE.DoubleSide
+    
+    let pNum = deckSection[0].points.length
+    let geometry = new THREE.Geometry();
+    for (let key in deckSection){
+        deckSection[key].points.forEach(function(Point){
+                geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
+        })
+    }
+    
+    for (let i =0;i<deckSection.length -1 ;i++ ){
+        for (let j = 0;j<pNum-1;j++){
+            geometry.faces.push(new THREE.Face3(i*pNum+j,i*pNum+j+1,(i+1)*pNum+j));
+            geometry.faces.push(new THREE.Face3(i*pNum+j+1,(i+1)*pNum+j,(i+1)*pNum+j+1));
+        }
+    }
+    geometry.computeFaceNormals();
+    group.add( new THREE.Mesh(geometry,meshMaterial) );
+    return group
+}
