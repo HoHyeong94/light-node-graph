@@ -10,6 +10,7 @@ import { Xbeam } from "./xbeam/index"
 import { LineViewer, SteelPlateView, InitPoint, DiaPhragmView,HorBracingView, DeckView } from "./threeView/index"
 import { Support, SapJoint, SapFrame } from "./analysis/index"
 import { SectionDB } from "./DB/index"
+import { SplicePart } from "./splice/index"
 
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
@@ -27,6 +28,7 @@ LiteGraph.registerNodeType("nexivil/support",Support);
 LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
 LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
 LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
+LiteGraph.registerNodeType("HMECS/splice", SplicePart)
 
 LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
 LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
