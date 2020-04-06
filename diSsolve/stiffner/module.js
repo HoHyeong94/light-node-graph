@@ -123,7 +123,7 @@ export function HBracingDict(
       let point2 = pointDict[pk2];
   
       hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection,sectionDB);
-      if (hBracingLayout[i][platelayout[0]]) {
+      if (hBracingLayout[i][platelayout][0]) {
         right = hBracingLayout[i][leftToright] ? false : true;
         let webPoints1 = [
           sectionPointDict[pk1].forward.lWeb[0],
@@ -133,7 +133,7 @@ export function HBracingDict(
         ];
         hBracingPlateDict[pk1] = hBracingPlate(point1, right, webPoints1, hBSection);
       }
-      if (hBracingLayout[i][platelayout[1]]) {
+      if (hBracingLayout[i][platelayout][1]) {
         right = hBracingLayout[i][leftToright] ? true : false;
         let webPoints2 = [
           sectionPointDict[pk2].forward.lWeb[0],
