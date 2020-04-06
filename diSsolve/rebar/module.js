@@ -11,20 +11,20 @@ export function DeckRebarPoint(
     rebar2,
     rebar11
   ) {
-    const name = 0;
-    const type = 1;
-    const Var = 2;
-    const leftCover = 3;
-    const rightCover =4;
-    const isUpper = 5;
-    const cover = 6;
-    const spacing = 7;
-    const dia = 8;
-    const skew = 9;
-    const start = 10;
-    const end = 11;
-    const startOffset = 12;
-    const endOffset = 13;
+    let name = 0;
+    let type = 1;
+    let Var = 2;
+    let leftCover = 3;
+    let rightCover =4;
+    let isUpper = 5;
+    let cover = 6;
+    let spacing = 7;
+    let dia = 8;
+    let skew = 9;
+    let start = 10;
+    let end = 11;
+    let startOffset = 12;
+    let endOffset = 13;
     
     let r1 = [];
     let r2 = [];
@@ -69,50 +69,61 @@ export function DeckRebarPoint(
         }
     }
   
+    let isLeft = 3;
+    let isRight =4;
+    spacing = 5;
+    dia = 6;
+    skew = 7;
+    start = 8;
+    end = 9;
+    startOffset = 10;
+    endOffset = 11;
+
+
     for (let rNum in rebar11) {
       let left1 = {};
       let right1 = {};
-      let sp = pointDict[rebar11[rNum].start];
-      let ep = pointDict[rebar11[rNum].end];
-      let station = sp.masterStationNumber + rebar11[rNum].startOffset;
+      let sp = pointDict[rebar11[rNum][start]];
+      let ep = pointDict[rebar11[rNum][end]];
+      let station = sp.masterStationNumber + rebar11[rNum][startOffset];
       let zOffset = slabInfo.slabThickness + slabInfo.haunchHeight
       let iter = 0;
-      while (station <= ep.masterStationNumber + rebar11[rNum].endOffset) {
+      while (station <= ep.masterStationNumber + rebar11[rNum][endOffset]) {
         let mp1 = MasterPointGenerator(station, masterLine);
         // let mp2 = MasterPointGenerator(ep.masterStationNumber + rebar1[0].endOffset,masterLine);
         for (let i = 0; i < slabLayout.length - 1; i++) {
-          let ss = pointDict[slabLayout[i].position].masterStationNumber;
-          let es = pointDict[slabLayout[i + 1].position].masterStationNumber
+          let ss = pointDict[slabLayout[i][0]].masterStationNumber;
+          let es = pointDict[slabLayout[i + 1][0]].masterStationNumber
           if (mp1.masterStationNumber >= ss && mp1.masterStationNumber <= es) {
             let x = mp1.masterStationNumber - ss
             let l = es - ss
-            let leftOffset = slabLayout[i].leftOffset * (l - x) / l + slabLayout[i + 1].leftOffset * (x) / l
-            let rightOffset = slabLayout[i].rightOffset * (l - x) / l + slabLayout[i + 1].rightOffset * (x) / l
+            let leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l
+            let rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l
             let slabThickness = slabLayout[i].H * (l - x) / l + slabLayout[i + 1].H * (x) / l
-            let endT = slabLayout[i].T * (l - x) / l + slabLayout[i + 1].T * (x) / l
-            if (rebar11[rNum].isLeft) {
+            let endT = slabLayout[i][2] * (l - x) / l + slabLayout[i + 1][2] * (x) / l
+            if (rebar11[rNum][isLeft]) {
               let rebarPts = []
               let offset = 0;
-              for (let j = 2; j < rebar11[rNum].var.length; j++) {
-                offset += rebar11[rNum].var[j]
+              for (let j = 2; j < rebar11[rNum][Var].length; j++) {
+                offset += rebar11[rNum][Var][j]
                 rebarPts.push(OffsetPoint(mp1, masterLine, leftOffset + offset))
               }
-              r1.push([ZMove(rebarPts[0], zOffset - endT + rebar11[rNum].var[0]),
-              ZMove(rebarPts[1], zOffset - slabThickness - slabInfo.haunchHeight + rebar11[rNum].var[0]),
-              ZMove(rebarPts[2], zOffset - slabThickness - slabInfo.haunchHeight + rebar11[rNum].var[0]),
-              ZMove(rebarPts[3], zOffset - rebar11[rNum].var[1])])
+              r1.push([ZMove(rebarPts[0], zOffset - endT + rebar11[rNum][Var][0]),
+              ZMove(rebarPts[1], zOffset - slabThickness - slabInfo.haunchHeight + rebar11[rNum][Var][0]),
+              ZMove(rebarPts[2], zOffset - slabThickness - slabInfo.haunchHeight + rebar11[rNum][Var][0]),
+              ZMove(rebarPts[3], zOffset - rebar11[rNum][Var][1])])
             }
-            if (rebar11[rNum].isRight) {
+            if (rebar11[rNum][isRight]) {
               let rebarPts = []
               let offset = 0;
-              for (let j = 2; j < rebar11[rNum].var.length; j++) {
-                offset += rebar11[rNum].var[j]
+              for (let j = 2; j < rebar11[rNum][Var].length; j++) {
+                offset += rebar11[rNum][Var][j]
                 rebarPts.push(OffsetPoint(mp1, masterLine, rightOffset - offset))
               }
-              r1.push([ZMove(rebarPts[0], zOffset - endT + rebar11[rNum].var[0]),
-              ZMove(rebarPts[1], zOffset - slabThickness - slabInfo.haunchHeight + rebar11[rNum].var[0]),
-              ZMove(rebarPts[2], zOffset - slabThickness - slabInfo.haunchHeight + rebar11[rNum].var[0]),
-              ZMove(rebarPts[3], zOffset - rebar11[rNum].var[1])])
+              r1.push([ZMove(rebarPts[0], zOffset - endT + rebar11[rNum][Var][0]),
+              ZMove(rebarPts[1], zOffset - slabThickness - slabInfo.haunchHeight + rebar11[rNum][Var][0]),
+              ZMove(rebarPts[2], zOffset - slabThickness - slabInfo.haunchHeight + rebar11[rNum][Var][0]),
+              ZMove(rebarPts[3], zOffset - rebar11[rNum][Var][1])])
             }
           }
         }

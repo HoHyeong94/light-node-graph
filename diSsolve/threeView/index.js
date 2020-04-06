@@ -104,9 +104,8 @@ export function HorBracingView(){
   
   RebarView.prototype.onExecute = function() {
     const deckRebar= this.getInputData(0)
-    let group = new THREE.Group();
     for (let i in deckRebar.r1){
-      scenAdder({ layer : 0, mesh : LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff)}, "rebar" + i)
+      sceneAdder({ layer : 0, mesh : LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff)}, "rebar" + i)
     }
   }
   
