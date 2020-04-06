@@ -271,9 +271,11 @@ export function boltView(spliceDict,initPoint){
     }
     console.log("dummyList",dummyList)
     let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
+    mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
     for (let i in dummyList){
         mesh.setMatrixAt(i,dummyList[i].matrix)
     }
+    mesh.instanceMatrix.needsUpdate = true;
     group.add(mesh)
     return group
 }
