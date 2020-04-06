@@ -12,7 +12,7 @@ export function LineView(linepoints, initPoint, color) {
     }
     var colorCode = color ? color : 0xffff00  //  : 
     var line = new THREE.Line(
-        geometry, new THREE.LineBasicMaterial({ color: colorCode })
+        geometry, new THREE.LineBasicMaterial({ color: parseInt(colorCode,16) })
     );
     group.add(line);
     return group
