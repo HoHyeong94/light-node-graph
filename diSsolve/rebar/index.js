@@ -5,10 +5,10 @@ export function DeckRebar() {
     this.addInput("gridPoint","gridPoint")
     this.addInput("deckPointDict","deckPointDict")
     this.addInput("slabInfo","slabInfo")
-    this.addInput("slabLayout","slabLayout")
-    this.addInput("rebar1","rebar1")
-    this.addInput("rebar2","rebar2")
-    this.addInput("rebar11","rebar11")
+    this.addInput("slabLayout","arr")
+    this.addInput("rebar1","arr")
+    this.addInput("rebar2","arr")
+    this.addInput("rebar11","arr")
     this.addOutput("deckRebar", "deckRebar");
 }
 
