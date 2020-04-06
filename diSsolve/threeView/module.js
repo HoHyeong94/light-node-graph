@@ -242,10 +242,10 @@ export function boltView(spliceDict,initPoint){
         wireframe : false
     } );
 
-    let bolt0 = [{ startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 },]
-    var radius = bolt0.size/2
-    var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
-    let dummyList = [];
+    // let bolt0 = { startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 }
+    // var radius = bolt0.size/2
+    // var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
+    // let dummyList = [];
     for (let key in spliceDict){
     //    let point = nameToPointDict[diakey]
        for (let partkey in spliceDict[key]){
@@ -261,22 +261,22 @@ export function boltView(spliceDict,initPoint){
                         for (let j=0;j<bolt[k].pNum;j++){
                             let xtranslate = bolt[k].startPoint.x - i*bolt[k].G
                             let ytranslate= bolt[k].startPoint.y - j*bolt[k].P
-                            // group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial))
-                            dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
+                            group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial))
+                            // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                         }
                     }
                 }
             }
         }
     }
-    console.log("dummyList",dummyList)
-    let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
-    mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
-    for (let i in dummyList){
-        mesh.setMatrixAt(i,dummyList[i].matrix)
-    }
-    mesh.instanceMatrix.needsUpdate = true;
-    group.add(mesh)
+    // console.log("dummyList",dummyList)
+    // let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
+    // mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
+    // for (let i in dummyList){
+    //     mesh.setMatrixAt(i,dummyList[i].matrix)
+    // }
+    // mesh.instanceMatrix.needsUpdate = true;
+    // group.add(mesh)
     return group
 }
 
