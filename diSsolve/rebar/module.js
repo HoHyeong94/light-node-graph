@@ -69,8 +69,12 @@ export function DeckRebarPoint(
         }
     }
 
-    let tSlab = deckSection.slab1
-    let bSlab = deckSection.slab2
+    let tSlab = [];
+    let bSlab = [];
+    deckSection.forEach(function(elem){
+        tSlab.push(elem.slabUpperPoints);
+        bSlab.push(elem.slabLowerPoints);
+    })
 
     for (let rNum in rebar2) {
         let bPts = []
