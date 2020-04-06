@@ -78,10 +78,10 @@ export function DeckRebarPoint(
         let slabLine = rebar2[rNum][isUpper] ? tSlab : bSlab;
         let sp = pointDict[rebar2[rNum][start]].masterStationNumber;
         let ep = pointDict[rebar2[rNum][end]].masterStationNumber;
-        let cover = rebar2[rNum][isUpper] ? -rebar2[rNum][cover] : rebar2[rNum][cover];
+        let cov = rebar2[rNum][isUpper] ? -rebar2[rNum][cover] : rebar2[rNum][cover];
         slabLine.forEach(function (elem) {
             if (elem.name >= sp && elem.name <= ep) {
-                bPts.push(ZOffsetLine(elem.points, cover))
+                bPts.push(ZOffsetLine(elem.points, cov))
             }
         })
 
