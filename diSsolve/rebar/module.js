@@ -99,8 +99,8 @@ export function DeckRebarPoint(
             let l = es - ss
             let leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l
             let rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l
-            let slabThickness = slabLayout[i].H * (l - x) / l + slabLayout[i + 1].H * (x) / l
-            let endT = slabLayout[i][2] * (l - x) / l + slabLayout[i + 1][2] * (x) / l
+            let slabThickness = slabLayout[i][2] * (l - x) / l + slabLayout[i + 1][2] * (x) / l
+            let endT = slabLayout[i][1] * (l - x) / l + slabLayout[i + 1][1] * (x) / l
             if (rebar11[rNum][isLeft]) {
               let rebarPts = []
               let offset = 0;
