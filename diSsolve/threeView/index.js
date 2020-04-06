@@ -4,7 +4,7 @@ import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPo
 export function LineViewer(){
   this.addInput("points","points");
   this.addInput("initPoint","point");
-  this.addInput("color","number");
+  this.addInput("color","colorText");
 }
 LineViewer.prototype.onExecute = function() {
 }
