@@ -10,7 +10,7 @@ export function LineView(linepoints, initPoint, color) {
         geometry.vertices.push(
             new THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
     }
-    var colorCode = 0xffff00  // color ? color : 
+    var colorCode = color ? color : 0xffff00  //  : 
     var line = new THREE.Line(
         geometry, new THREE.LineBasicMaterial({ color: colorCode })
     );
