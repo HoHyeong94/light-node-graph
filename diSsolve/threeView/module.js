@@ -134,14 +134,16 @@ export function HBracingPlateView(hBraicngPlateDict, initPoint) {
     for (let pk in hBraicngPlateDict) {
         //    let point = pointDict[pk]
         for (let partkey in hBraicngPlateDict[pk]) {
-            let shapeNode = hBraicngPlateDict[pk][partkey].points
-            let Thickness = hBraicngPlateDict[pk][partkey].Thickness
-            let zPosition = hBraicngPlateDict[pk][partkey].z
-            let rotationY = hBraicngPlateDict[pk][partkey].rotationY
-            let rotationX = hBraicngPlateDict[pk][partkey].rotationX
-            let hole = hBraicngPlateDict[pk][partkey].hole
-            let point = hBraicngPlateDict[pk].point ? hBraicngPlateDict[pk].point : hBraicngPlateDict[pk][partkey].point
-            group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
+            if (partkey!=="point"){
+                let shapeNode = hBraicngPlateDict[pk][partkey].points
+                let Thickness = hBraicngPlateDict[pk][partkey].Thickness
+                let zPosition = hBraicngPlateDict[pk][partkey].z
+                let rotationY = hBraicngPlateDict[pk][partkey].rotationY
+                let rotationX = hBraicngPlateDict[pk][partkey].rotationX
+                let hole = hBraicngPlateDict[pk][partkey].hole
+                let point = hBraicngPlateDict[pk].point ? hBraicngPlateDict[pk].point : hBraicngPlateDict[pk][partkey].point
+                group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
+            }
         }
     }
     return group
