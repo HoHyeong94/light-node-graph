@@ -231,7 +231,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
 }
 
 export function boltView(spliceDict,initPoint){
-    var group = new THREE.Group();
+    // var group = new THREE.Group();
     // var meshMaterial = new THREE.MeshNormalMaterial()
     var meshMaterial = new THREE.MeshLambertMaterial( {
         color: 0xffffff,
@@ -241,9 +241,13 @@ export function boltView(spliceDict,initPoint){
         transparent: false,
         wireframe : false
     } );
+
+    let bolt0 = [{ startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 },]
+    var radius = bolt0.size/2
+    var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
+    let dummyList = [];
     for (let key in spliceDict){
     //    let point = nameToPointDict[diakey]
-
        for (let partkey in spliceDict[key]){
             let Thickness = spliceDict[key][partkey].Thickness
             let zPosition = spliceDict[key][partkey].z
@@ -257,14 +261,20 @@ export function boltView(spliceDict,initPoint){
                         for (let j=0;j<bolt[k].pNum;j++){
                             let xtranslate = bolt[k].startPoint.x - i*bolt[k].G
                             let ytranslate= bolt[k].startPoint.y - j*bolt[k].P
-                            group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial))
+                            // group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial))
+                            dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                         }
                     }
                 }
             }
         }
     }
-    return group
+    console.log("dummyList",dummyList)
+    let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
+    for (let i in dummyList){
+        mesh.setMatrixAt(i,dummyList[i].matrix)
+    }
+    return mesh
 }
 
 export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint, meshMaterial){
@@ -279,6 +289,19 @@ export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtransla
     mesh.translateX(XYtranslate[1])
     mesh.translateZ(XYtranslate[0])
     return mesh
+}
+
+export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint){
+    var dummy = new THREE.Object3D();
+    var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2  //+ 
+    dummy.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
+    dummy.rotateOnWorldAxis(new THREE.Vector3(0,0,1),rad);
+    dummy.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
+    dummy.translateY(zPosition-bolt.l/2)
+    dummy.translateX(XYtranslate[1])
+    dummy.translateZ(XYtranslate[0])
+    dummy.updateMatrix();
+    return dummy
 }
 
 export function BarrierPointView(deckSection,initPoint,opacity){
