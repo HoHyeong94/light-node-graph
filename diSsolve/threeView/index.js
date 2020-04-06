@@ -100,16 +100,14 @@ export function HorBracingView(){
   export function RebarView(){
     this.addInput("deckRebar","deckRebar");  
     this.addInput("Point","Point");
-    this.addInput("opacity","number")
   }
   
   RebarView.prototype.onExecute = function() {
     const deckRebar= this.getInputData(0)
     let group = new THREE.Group();
     for (let i in deckRebar.r1){
-      group.add(LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff))
+      scenAdder({ layer : 0, mesh : LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff)}, "rebar" + i)
     }
-    sceneAdder({ layer: 0, mesh: group }, "rebar1");
   }
   
 
