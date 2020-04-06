@@ -10,9 +10,9 @@ export function LineView(linepoints, initPoint, color) {
         geometry.vertices.push(
             new THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
     }
-    var colorCode = color ? color : 0xffff00
+    var colorCode = 0xffff00  // color ? color : 
     var line = new THREE.Line(
-        geometry, new THREE.LineBasicMaterial({ color: parseInt(colorCode,16) })
+        geometry, new THREE.LineBasicMaterial({ color: colorCode })
     );
     group.add(line);
     return group
