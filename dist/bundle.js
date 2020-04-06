@@ -3690,9 +3690,9 @@
           geometry.vertices.push(
               new global.THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
       }
-      var colorCode = color ? color : 0xffff00;
+      var colorCode = color ? color : 0xffff00;  //  : 
       var line = new global.THREE.Line(
-          geometry, new global.THREE.LineBasicMaterial({ color: colorCode })
+          geometry, new global.THREE.LineBasicMaterial({ color: parseInt(colorCode,16) })
       );
       group.add(line);
       return group
@@ -3909,7 +3909,7 @@
   }
 
   function boltView(spliceDict,initPoint){
-      // var group = new THREE.Group();
+      var group = new global.THREE.Group();
       // var meshMaterial = new THREE.MeshNormalMaterial()
       var meshMaterial = new global.THREE.MeshLambertMaterial( {
           color: 0xffffff,
@@ -3920,10 +3920,10 @@
           wireframe : false
       } );
 
-      let bolt0 = [{ startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 },];
-      var radius = bolt0.size/2;
-      var geometry = new global.THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1);
-      let dummyList = [];
+      // let bolt0 = { startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 }
+      // var radius = bolt0.size/2
+      // var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
+      // let dummyList = [];
       for (let key in spliceDict){
       //    let point = nameToPointDict[diakey]
          for (let partkey in spliceDict[key]){
@@ -3939,33 +3939,37 @@
                           for (let j=0;j<bolt[k].pNum;j++){
                               let xtranslate = bolt[k].startPoint.x - i*bolt[k].G;
                               let ytranslate= bolt[k].startPoint.y - j*bolt[k].P;
-                              // group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial))
-                              dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint));
+                              group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial));
+                              // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                           }
                       }
                   }
               }
           }
       }
-      console.log("dummyList",dummyList);
-      let mesh = new global.THREE.InstancedMesh(geometry, meshMaterial,dummyList.length);
-      for (let i in dummyList){
-          mesh.setMatrixAt(i,dummyList[i].matrix);
-      }
-      return mesh
+      // console.log("dummyList",dummyList)
+      // let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
+      // mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
+      // for (let i in dummyList){
+      //     mesh.setMatrixAt(i,dummyList[i].matrix)
+      // }
+      // mesh.instanceMatrix.needsUpdate = true;
+      // group.add(mesh)
+      return group
   }
 
-  function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint){
-      var dummy = new global.THREE.Object3D();
+  function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint, meshMaterial){
+      var radius = bolt.size/2;
+      var geometry = new global.THREE.CylinderBufferGeometry(radius,radius,bolt.t*2+bolt.l,6,1);
+      var mesh = new global.THREE.Mesh(geometry, meshMaterial);
       var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2;  //+ 
-      dummy.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
-      dummy.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
-      dummy.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
-      dummy.translateY(zPosition-bolt.l/2);
-      dummy.translateX(XYtranslate[1]);
-      dummy.translateZ(XYtranslate[0]);
-      dummy.updateMatrix();
-      return dummy
+      mesh.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
+      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
+      mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
+      mesh.translateY(zPosition-bolt.l/2);
+      mesh.translateX(XYtranslate[1]);
+      mesh.translateZ(XYtranslate[0]);
+      return mesh
   }
 
   function BarrierPointView(deckSection,initPoint,opacity){
@@ -4012,7 +4016,7 @@
   function LineViewer(){
     this.addInput("points","points");
     this.addInput("initPoint","point");
-    this.addInput("color","number");
+    this.addInput("color","string");
   }
   LineViewer.prototype.onExecute = function() {
   };

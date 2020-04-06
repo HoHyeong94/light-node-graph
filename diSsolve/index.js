@@ -12,7 +12,7 @@ import { Support, SapJoint, SapFrame } from "./analysis/index"
 import { SectionDB } from "./DB/index"
 import { SplicePart } from "./splice/index"
 import { BarrierPoint } from "./barrier/index"
-
+import { DeckRebar } from "./rebar/index"
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -31,6 +31,8 @@ LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
 LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
 LiteGraph.registerNodeType("HMECS/splice", SplicePart)
 LiteGraph.registerNodeType("HMECS/barrier", BarrierPoint)
+LiteGraph.registerNodeType("HMECS/DeckRebar", DeckRebar)
+
 
 LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
 LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
