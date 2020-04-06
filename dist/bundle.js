@@ -2513,7 +2513,7 @@
         let point2 = pointDict[pk2];
     
         hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection,sectionDB);
-        if (hBracingLayout[i][platelayout[0]]) {
+        if (hBracingLayout[i][platelayout][0]) {
           right = hBracingLayout[i][leftToright] ? false : true;
           let webPoints1 = [
             sectionPointDict[pk1].forward.lWeb[0],
@@ -2523,7 +2523,7 @@
           ];
           hBracingPlateDict[pk1] = hBracingPlate(point1, right, webPoints1, hBSection);
         }
-        if (hBracingLayout[i][platelayout[1]]) {
+        if (hBracingLayout[i][platelayout][1]) {
           right = hBracingLayout[i][leftToright] ? true : false;
           let webPoints2 = [
             sectionPointDict[pk2].forward.lWeb[0],
@@ -3812,14 +3812,16 @@
       for (let pk in hBraicngPlateDict) {
           //    let point = pointDict[pk]
           for (let partkey in hBraicngPlateDict[pk]) {
-              let shapeNode = hBraicngPlateDict[pk][partkey].points;
-              let Thickness = hBraicngPlateDict[pk][partkey].Thickness;
-              let zPosition = hBraicngPlateDict[pk][partkey].z;
-              let rotationY = hBraicngPlateDict[pk][partkey].rotationY;
-              let rotationX = hBraicngPlateDict[pk][partkey].rotationX;
-              let hole = hBraicngPlateDict[pk][partkey].hole;
-              let point = diaDict[diakey].point ? diaDict[diakey].point : diaDict[diakey][partkey].point;
-              group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
+              if (partkey!=="point"){
+                  let shapeNode = hBraicngPlateDict[pk][partkey].points;
+                  let Thickness = hBraicngPlateDict[pk][partkey].Thickness;
+                  let zPosition = hBraicngPlateDict[pk][partkey].z;
+                  let rotationY = hBraicngPlateDict[pk][partkey].rotationY;
+                  let rotationX = hBraicngPlateDict[pk][partkey].rotationX;
+                  let hole = hBraicngPlateDict[pk][partkey].hole;
+                  let point = hBraicngPlateDict[pk].point ? hBraicngPlateDict[pk].point : hBraicngPlateDict[pk][partkey].point;
+                  group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
+              }
           }
       }
       return group
@@ -3907,7 +3909,7 @@
   }
 
   function boltView(spliceDict,initPoint){
-      var group = new global.THREE.Group();
+      // var group = new THREE.Group();
       // var meshMaterial = new THREE.MeshNormalMaterial()
       var meshMaterial = new global.THREE.MeshLambertMaterial( {
           color: 0xffffff,
@@ -3917,9 +3919,13 @@
           transparent: false,
           wireframe : false
       } );
+
+      let bolt0 = [{ startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 },];
+      var radius = bolt0.size/2;
+      var geometry = new global.THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1);
+      let dummyList = [];
       for (let key in spliceDict){
       //    let point = nameToPointDict[diakey]
-
          for (let partkey in spliceDict[key]){
               let Thickness = spliceDict[key][partkey].Thickness;
               let zPosition = spliceDict[key][partkey].z;
@@ -3933,28 +3939,74 @@
                           for (let j=0;j<bolt[k].pNum;j++){
                               let xtranslate = bolt[k].startPoint.x - i*bolt[k].G;
                               let ytranslate= bolt[k].startPoint.y - j*bolt[k].P;
-                              group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial));
+                              // group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial))
+                              dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint));
                           }
                       }
                   }
               }
           }
       }
-      return group
+      console.log("dummyList",dummyList);
+      let mesh = new global.THREE.InstancedMesh(geometry, meshMaterial,dummyList.length);
+      for (let i in dummyList){
+          mesh.setMatrixAt(i,dummyList[i].matrix);
+      }
+      return mesh
   }
 
-  function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint, meshMaterial){
-      var radius = bolt.size/2;
-      var geometry = new global.THREE.CylinderBufferGeometry(radius,radius,bolt.t*2+bolt.l,6,1);
-      var mesh = new global.THREE.Mesh(geometry, meshMaterial);
+  function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint){
+      var dummy = new global.THREE.Object3D();
       var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2;  //+ 
-      mesh.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
-      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
-      mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
-      mesh.translateY(zPosition-bolt.l/2);
-      mesh.translateX(XYtranslate[1]);
-      mesh.translateZ(XYtranslate[0]);
-      return mesh
+      dummy.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
+      dummy.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
+      dummy.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
+      dummy.translateY(zPosition-bolt.l/2);
+      dummy.translateX(XYtranslate[1]);
+      dummy.translateZ(XYtranslate[0]);
+      dummy.updateMatrix();
+      return dummy
+  }
+
+  function BarrierPointView(deckSection,initPoint,opacity){
+      let group = new global.THREE.Group();
+      var meshMaterial = new global.THREE.MeshLambertMaterial( {
+          color: 0x000000,
+          emissive: 0x777777,
+          opacity: opacity,
+          // side:THREE.DoubleSide,
+          transparent: true,
+          wireframe : false
+        } );
+      // let meshMaterial = new THREE.MeshNormalMaterial()
+      //     meshMaterial.side = THREE.DoubleSide
+      
+      let pNum = deckSection[0].points.length;
+      let geometry = new global.THREE.Geometry();
+      for (let key in deckSection){
+          deckSection[key].points.forEach(function(Point){
+                  geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+          });
+      }
+      
+      for (let i =0;i<deckSection.length -1 ;i++ ){
+          for (let j = 0;j<pNum-1;j++){
+              geometry.faces.push(new global.THREE.Face3(i*pNum+j,(i+1)*pNum+j,i*pNum+j+1));
+              geometry.faces.push(new global.THREE.Face3(i*pNum+j+1,(i+1)*pNum+j,(i+1)*pNum+j+1));
+          }
+          if (i ===0){
+              for (let j=1;j<pNum-1;j++){
+                 geometry.faces.push(new global.THREE.Face3(i, i + j, i + j +1));
+              }
+          }else if (i === deckSection.length -2){
+              for (let j=1;j<pNum-1;j++){
+                  geometry.faces.push(new global.THREE.Face3((i + 1)*pNum, (i + 1)*pNum + j + 1, (i + 1)*pNum + j));
+               }
+          }
+      }
+      geometry.computeFaceNormals();
+      group.add( new global.THREE.Mesh(geometry,meshMaterial) );
+      return group
   }
 
   function LineViewer(){
@@ -4033,8 +4085,26 @@
     SpliceBoltView.prototype.onExecute = function() {
       global.sceneAdder({ layer: 0, 
           mesh: boltView(this.getInputData(0),this.getInputData(1))
-      },"deck"); 
+      },"bolt"); 
     };
+
+
+    function BarrierView(){
+      this.addInput("deckPointDict","deckPointDict");  
+      this.addInput("Point","Point");
+      this.addInput("opacity","number");
+    }
+    
+    BarrierView.prototype.onExecute = function() {
+      const decPoint = this.getInputData(0);
+      for (let key in decPoint){
+        global.sceneAdder({ layer: 0, 
+            mesh: BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2))
+        },"Barrier"+key);
+      }
+    };
+
+    
 
 
 
@@ -4698,6 +4768,88 @@
       this.setOutputData(0, spliceDict);
   };
 
+  function BarrierSectionPoint(
+      masterLine,
+      centerLineStations,
+      slabInfo,
+      slabLayout,
+      pointDict
+    ){
+      // slabLayout object to list 
+      const position = 0;
+      const T = 1;
+      // const leftOffset = 3;
+      // const rightOffset =4;
+
+      let leftBarrier = [];
+      let rightBarrier = [];
+      let slabThickness = slabInfo.slabThickness;
+      let haunch = slabInfo.haunchHeight;
+      let endT = 0;
+      let leftOffset = 0;
+      let rightOffset = 0;
+      for (let i = 1; i < centerLineStations.length - 1; i++) {
+        
+        let masterPoint = centerLineStations[i].point;
+        let masterStation = masterPoint.masterStationNumber;
+        //deckSectionInfo로 분리예정
+        for (let j = 0; j < slabLayout.length - 1; j++) {
+          let ss = pointDict[slabLayout[j][position]].masterStationNumber;
+          let es = pointDict[slabLayout[j + 1][position]].masterStationNumber;
+          if (masterStation >= ss && masterStation <= es) {
+            let x = masterStation - ss;
+            let l = es - ss;
+            leftOffset = slabLayout[j][3] * (l - x) / l + slabLayout[j + 1][3] * (x) / l;
+            rightOffset = slabLayout[j][4] * (l - x) / l + slabLayout[j + 1][4] * (x) / l;
+            // slabThickness = slabLayout[j].H * (l - x) / l + slabLayout[j + 1].H * (x) / l
+            endT = slabLayout[j][T] * (l - x) / l + slabLayout[j + 1][T] * (x) / l;
+          }
+        }
+        //deckSectionInfo로 분리예정
+        for (let k = 0; k<2;k++){
+          let offset = k===0? leftOffset:rightOffset;
+          let sign = k ===0? 1:-1;
+          let l1 = OffsetPoint(masterPoint, masterLine, offset + sign*10);
+          let l2 = OffsetPoint(masterPoint, masterLine, offset + sign*250);
+          let l3 = OffsetPoint(masterPoint, masterLine, offset + sign*320);
+          let l4 = OffsetPoint(masterPoint, masterLine, offset + sign*450);
+          let points = [ZMove(l4,slabThickness + haunch),
+                              ZMove(l4,slabThickness + haunch + 200),
+                              ZMove(l3,slabThickness + haunch + 380),
+                              ZMove(l2,slabThickness + haunch + 1350),
+                              ZMove(l1,slabThickness + haunch + 1350),
+                              ZMove(l1,slabThickness + haunch),];
+          if (k===0){
+            leftBarrier.push({name:masterStation, points:points.reverse()}); // 추후 순서를 뒤집어서 작성 필요
+          }else {
+            rightBarrier.push({name:masterStation, points:points.reverse()});
+          }
+        }
+      }
+      // leftBarrier.sort(function (a, b) { return a.name < b.name ? -1 : 1; })
+      // rightBarrier.sort(function (a, b) { return a.name < b.name ? -1 : 1; })
+      return {leftBarrier, rightBarrier }
+    }
+
+  function BarrierPoint(){
+      this.addInput("masterLine","line");
+      this.addInput("centerLineStation","centerLineStation");
+      this.addInput("slabInfo","slabInfo");
+      this.addInput("slabLayout","arr");
+      this.addInput("pointDict","pointDict");
+      this.addOutput("BarrierPointDict","DeckPointDict");
+    }
+
+    BarrierPoint.prototype.onExecute = function(){
+      this.setOutputData(0,BarrierSectionPoint(
+          this.getInputData(0),
+          this.getInputData(1),
+          this.getInputData(2),
+          this.getInputData(3),
+          this.getInputData(4)
+        ));
+    };
+
   // import { defaultValues } from "./defaultValues";
 
 
@@ -4717,6 +4869,7 @@
   global.LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
   global.LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
   global.LiteGraph.registerNodeType("HMECS/splice", SplicePart);
+  global.LiteGraph.registerNodeType("HMECS/barrier", BarrierPoint);
 
   global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
   global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
@@ -4724,6 +4877,7 @@
   global.LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
   global.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
   global.LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
+  global.LiteGraph.registerNodeType("3DVIEW/BarrierView", BarrierView);
   global.LiteGraph.registerNodeType("3DVIEW/SpliceBoltView", SpliceBoltView);
 
 

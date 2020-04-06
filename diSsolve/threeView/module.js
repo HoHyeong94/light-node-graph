@@ -231,7 +231,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
 }
 
 export function boltView(spliceDict,initPoint){
-    // var group = new THREE.Group();
+    var group = new THREE.Group();
     // var meshMaterial = new THREE.MeshNormalMaterial()
     var meshMaterial = new THREE.MeshLambertMaterial( {
         color: 0xffffff,
@@ -274,7 +274,8 @@ export function boltView(spliceDict,initPoint){
     for (let i in dummyList){
         mesh.setMatrixAt(i,dummyList[i].matrix)
     }
-    return mesh
+    group.add(mesh)
+    return group
 }
 
 export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint, meshMaterial){
