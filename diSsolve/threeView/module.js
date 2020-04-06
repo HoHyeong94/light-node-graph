@@ -140,7 +140,7 @@ export function HBracingPlateView(hBraicngPlateDict, initPoint) {
             let rotationY = hBraicngPlateDict[pk][partkey].rotationY
             let rotationX = hBraicngPlateDict[pk][partkey].rotationX
             let hole = hBraicngPlateDict[pk][partkey].hole
-            let point = hBraicngPlateDict[diakey].point ? diaDict[diakey].point : diaDict[diakey][partkey].point
+            let point = hBraicngPlateDict[pk].point ? hBraicngPlateDict[pk].point : hBraicngPlateDict[pk][partkey].point
             group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
         }
     }
