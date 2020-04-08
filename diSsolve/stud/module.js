@@ -88,6 +88,14 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
     //     maxNum : 5,
     //     maxDist : 435   //
     // }]
+
+    const studInfo = {
+        dia : 25,
+        height : 150,
+        headDia : 38,
+        headDepth : 10,
+    }
+
     let studList = [];
     for (let i in topPlateStudLayout){
         const ts = {start : topPlateStudLayout[i][0], 
@@ -130,8 +138,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
                         ToGlobalPoint(gridPoints[j],leftjnode),
                         ToGlobalPoint(gridPoints[j],rightinode),
                         ToGlobalPoint(gridPoints[j],rightjnode)]
-            studList.push({ points : points, gradientX : 0, gradientY : gridPoints[j].gradientY})
-            
+            studList.push({ points : points, gradientX : 0, gradientY : gridPoints[j].gradientY, stud : studInfo})
             // sectionPointDict[gridKeys[j]].backward.leftTopPlate[3]
         }
         

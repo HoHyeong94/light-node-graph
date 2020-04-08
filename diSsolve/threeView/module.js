@@ -307,6 +307,29 @@ export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, 
     return dummy
 }
 
+export function StudMeshView(studList, initPoint){
+    var meshMaterial = new THREE.MeshLambertMaterial( {
+        color: 0xffffff,
+        emissive: 0x000000,
+        opacity: 1,
+        side:THREE.DoubleSide,
+        transparent: false,
+        wireframe : false
+    } );
+    for (let i in studList){
+        var geometry = new THREE.CylinderBufferGeometry(studList[i].stud.dia/2,studList[i].stud.dia/2,studList[i].stud.height,8,1)
+        let rotationX = Math.atan(studList[i].gradientX)
+        let rotationY = Math.atan(studList[i].gradientY)
+        for (let j in studList[i].points){
+            var mesh = new THREE.Mesh(geometry, meshMaterial)
+            mesh.rotation.set(rotationX, rotationY,0)
+            mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
+            group.add(mesh)
+        }
+    }
+    return group
+}
+
 export function BarrierPointView(deckSection,initPoint,opacity){
     let group = new THREE.Group();
     var meshMaterial = new THREE.MeshLambertMaterial( {

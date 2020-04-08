@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView, BarrierPointView} from "./module"
+import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView, BarrierPointView, StudMeshView } from "./module"
 import { LineToThree } from "../line/module";
 
 export function LineViewer(){
@@ -81,6 +81,16 @@ export function HorBracingView(){
     },"bolt"); 
   }
 
+  export function StudView(){
+    this.addInput("studList","studList");  
+    this.addInput("Point","Point");
+  }
+  
+  StudView.prototype.onExecute = function() {
+    sceneAdder({ layer: 0, 
+        mesh: StudMeshView(this.getInputData(0),this.getInputData(1))
+    },"bolt"); 
+  }
 
   export function BarrierView(){
     this.addInput("deckPointDict","deckPointDict");  
