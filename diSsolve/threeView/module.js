@@ -319,15 +319,21 @@ export function StudMeshView(studList, initPoint){
     } );
     for (let i in studList){
         var geometry = new THREE.CylinderBufferGeometry(studList[i].stud.dia/2,studList[i].stud.dia/2,studList[i].stud.height,8,1)
+        var geometry2 = new THREE.CylinderBufferGeometry(studList[i].stud.headDia/2,studList[i].stud.headDia/2,studList[i].stud.headDepth,8,1)
         let rotationX = Math.atan(studList[i].gradientX)
         let rotationY = Math.atan(studList[i].gradientY)
         for (let j in studList[i].points){
             let point = studList[i].points[j]
             var mesh = new THREE.Mesh(geometry, meshMaterial)
+            var mesh2 = new THREE.Mesh(geometry2, meshMaterial)
             mesh.rotation.set(rotationX + Math.PI/2, rotationY,0)
             mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
             mesh.translateY(studList[i].stud.height/2)
+            mesh2.rotation.set(rotationX + Math.PI/2, rotationY,0)
+            mesh2.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
+            mesh2.translateY(studList[i].stud.height - studList[i].stud.headDepth/2)
             group.add(mesh)
+            group.add(mesh2)
         }
     }
     return group
