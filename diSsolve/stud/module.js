@@ -107,6 +107,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
                     inSideMargin : topPlateStudLayout[i][6],
                     minNum : topPlateStudLayout[i][7], 
                     maxNum : topPlateStudLayout[i][8],
+                    minDist : 100,  //라이트그래프 인풋변수 수정 필요
                     maxDist : topPlateStudLayout[i][9] 
          };
 
@@ -132,12 +133,16 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
         for (let j = 0; j < gridKeys.length -1 ;j++){
             let leftinode = sectionPointDict[gridKeys[j]].forward.leftTopPlate[3]
             let leftjnode = sectionPointDict[gridKeys[j]].forward.leftTopPlate[2]
-            let rightinode = sectionPointDict[gridKeys[j]].forward.leftTopPlate[3]
-            let rightjnode = sectionPointDict[gridKeys[j]].forward.leftTopPlate[2]
-            let points = [ToGlobalPoint(gridPoints[j],leftinode), 
-                        ToGlobalPoint(gridPoints[j],leftjnode),
-                        ToGlobalPoint(gridPoints[j],rightinode),
-                        ToGlobalPoint(gridPoints[j],rightjnode)]
+            let rightinode = sectionPointDict[gridKeys[j]].forward.rightTopPlate[3]
+            let rightjnode = sectionPointDict[gridKeys[j]].forward.rightTopPlate[2]
+            let spts = [];
+            for (let k = 0; k< ts.minNum; k++){
+                spts.push({x: leftinode.x + ts.outSideMargin + k*ts.minDist, y:leftinode.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY})
+            }
+
+            let globalSpts = [];
+            spts.forEach(function(elem){globalSpts.push(ToGlobalPoint(gridPoints[j],elem))})
+            let points = spts;
             studList.push({ points : points, gradientX : 0, gradientY : gridPoints[j].gradientY, stud : studInfo})
             // sectionPointDict[gridKeys[j]].backward.leftTopPlate[3]
         }
