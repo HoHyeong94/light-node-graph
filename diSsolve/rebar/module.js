@@ -72,8 +72,8 @@ export function DeckRebarPoint(
     let tSlab = [];
     let bSlab = [];
     deckSection.forEach(function(elem){
-        tSlab.push({name : name, points : elem.slabUpperPoints});
-        bSlab.push({name : name, points : elem.slabLowerPoints});
+        tSlab.push({name : elem.name, points : elem.slabUpperPoints});
+        bSlab.push({name : elem.name, points : elem.slabLowerPoints});
     })
 
     for (let rNum in rebar2) {
