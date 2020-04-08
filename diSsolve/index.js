@@ -13,6 +13,7 @@ import { SectionDB } from "./DB/index"
 import { SplicePart } from "./splice/index"
 import { BarrierPoint } from "./barrier/index"
 import { DeckRebar } from "./rebar/index"
+import { Stud } from "./stud/index"
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -32,6 +33,7 @@ LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
 LiteGraph.registerNodeType("HMECS/splice", SplicePart)
 LiteGraph.registerNodeType("HMECS/barrier", BarrierPoint)
 LiteGraph.registerNodeType("HMECS/DeckRebar", DeckRebar)
+LiteGraph.registerNodeType("HMECS/Stud", Stud)
 
 
 LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
