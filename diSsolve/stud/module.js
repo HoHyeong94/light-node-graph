@@ -129,20 +129,39 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
                 cr = false
             }
         }
-
+        let totalLength = 0;
+        let segLength = 0;
         for (let j = 0; j < gridKeys.length -1 ;j++){
             let leftinode = sectionPointDict[gridKeys[j]].forward.leftTopPlate[3]
             let leftjnode = sectionPointDict[gridKeys[j]].forward.leftTopPlate[2]
             let rightinode = sectionPointDict[gridKeys[j]].forward.rightTopPlate[3]
             let rightjnode = sectionPointDict[gridKeys[j]].forward.rightTopPlate[2]
-            let spts = [];
-            for (let k = 0; k< ts.minNum; k++){
-                spts.push({x: leftinode.x + ts.outSideMargin + k*ts.minDist, y:leftinode.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY})
-            }
+            let leftinode2 = sectionPointDict[gridKeys[j+1]].backward.leftTopPlate[3]
 
+            let spts = [];
+            let epts = [];
+            for (let k = 0; k< ts.minNum; k++){
+                spts.push({x: leftinode.x + ts.outSideMargin + k*ts.minDist, y:leftinode.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
+                epts.push({x: leftinode2.x + ts.outSideMargin + k*ts.minDist, y:leftinode2.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
+            }
             let globalSpts = [];
+            let globalEpts = [];
             spts.forEach(function(elem){globalSpts.push(ToGlobalPoint(gridPoints[j],elem))})
-            let points = spts;
+            epts.forEach(function(elem){globalEpts.push(ToGlobalPoint(gridPoints[j+1],elem))})
+            segLength = Math.sqrt((leftinode.x - leftinode2.x)**2+ (leftinode.y - leftinode2.y)**2)
+            totalLength += segLength
+            let remainder = (totalLength - ts.startOffset) % ts.spacing;
+            let sNum = segLength-remainder > 0? Math.floor((segLength-remainder)/spacing) + 1 : 0
+            
+            for (let l = 0; l<ts.minNum; l++){
+                for (let k =0; k < sNum; k++){
+                    let x = remainder + k* ts.spacing
+                    points.push({ x: x/segLength * globalSpts[l].x + (segLength - x)/segLength * globalEpts[l].x,
+                                y: x/segLength * globalSpts[l].y + (segLength - x)/segLength * globalEpts[l].y,
+                                z: x/segLength * globalSpts[l].z + (segLength - x)/segLength * globalEpts[l].z })
+                }
+            }
+                
             studList.push({ points : points, gradientX : 0, gradientY : gridPoints[j].gradientY, stud : studInfo})
             // sectionPointDict[gridKeys[j]].backward.leftTopPlate[3]
         }
