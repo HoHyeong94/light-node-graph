@@ -89,7 +89,7 @@ export function HorBracingView(){
   StudView.prototype.onExecute = function() {
     sceneAdder({ layer: 0, 
         mesh: StudMeshView(this.getInputData(0),this.getInputData(1))
-    },"bolt"); 
+    },"stud"); 
   }
 
   export function BarrierView(){
