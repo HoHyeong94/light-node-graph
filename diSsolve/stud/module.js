@@ -138,12 +138,15 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
             let rightinode = sectionPointDict[gridKeys[j]].forward.rightTopPlate[3]
             let rightjnode = sectionPointDict[gridKeys[j]].forward.rightTopPlate[2]
             let leftinode2 = sectionPointDict[gridKeys[j+1]].backward.leftTopPlate[3]
+            let rightinode2 = sectionPointDict[gridKeys[j+1]].backward.rightTopPlate[3]
 
             let spts = [];
             let epts = [];
             for (let k = 0; k< ts.minNum; k++){
                 spts.push({x: leftinode.x + ts.outSideMargin + k*ts.minDist, y:leftinode.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
+                spts.push({x: rightinode.x - ts.outSideMargin - k*ts.minDist, y:leftinode.y - (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
                 epts.push({x: leftinode2.x + ts.outSideMargin + k*ts.minDist, y:leftinode2.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
+                epts.push({x: rightinode2.x - ts.outSideMargin - k*ts.minDist, y:rightinode2.y - (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
             }
             let globalSpts = [];
             let globalEpts = [];
