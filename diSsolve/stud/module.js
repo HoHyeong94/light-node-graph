@@ -151,7 +151,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
             segLength = Math.sqrt((leftinode.x - leftinode2.x)**2+ (leftinode.y - leftinode2.y)**2)
             totalLength += segLength
             let remainder = (totalLength - ts.startOffset) % ts.spacing;
-            let sNum = segLength-remainder > 0? Math.floor((segLength-remainder)/spacing) + 1 : 0
+            let sNum = segLength-remainder > 0? Math.floor((segLength-remainder)/ts.spacing) + 1 : 0
             
             for (let l = 0; l<ts.minNum; l++){
                 for (let k =0; k < sNum; k++){
