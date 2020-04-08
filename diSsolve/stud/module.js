@@ -132,6 +132,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
         let totalLength = 0;
         let segLength = 0;
         for (let j = 0; j < gridKeys.length -1 ;j++){
+            let points = [];
             let leftinode = sectionPointDict[gridKeys[j]].forward.leftTopPlate[3]
             let leftjnode = sectionPointDict[gridKeys[j]].forward.leftTopPlate[2]
             let rightinode = sectionPointDict[gridKeys[j]].forward.rightTopPlate[3]
