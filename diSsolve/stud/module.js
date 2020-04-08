@@ -149,7 +149,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
             let globalEpts = [];
             spts.forEach(function(elem){globalSpts.push(ToGlobalPoint(gridPoints[j],elem))})
             epts.forEach(function(elem){globalEpts.push(ToGlobalPoint(gridPoints[j+1],elem))})
-            segLength = Math.sqrt((leftinode.x - leftinode2.x)**2+ (leftinode.y - leftinode2.y)**2)
+            segLength = Math.sqrt((globalSpts[0].x - globalEpts[0].x)**2+ (globalSpts[0].y - globalEpts[0].y)**2)
             totalLength += segLength
             let remainder = (totalLength - ts.startOffset) % ts.spacing;
             let sNum = segLength-remainder > 0? Math.floor((segLength-remainder)/ts.spacing) + 1 : 0
