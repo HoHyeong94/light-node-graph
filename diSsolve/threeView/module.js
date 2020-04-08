@@ -308,6 +308,7 @@ export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, 
 }
 
 export function StudMeshView(studList, initPoint){
+    let group = new THREE.Group();
     var meshMaterial = new THREE.MeshLambertMaterial( {
         color: 0xffffff,
         emissive: 0x000000,
@@ -321,9 +322,11 @@ export function StudMeshView(studList, initPoint){
         let rotationX = Math.atan(studList[i].gradientX)
         let rotationY = Math.atan(studList[i].gradientY)
         for (let j in studList[i].points){
+            let point = studList[i].points[j]
             var mesh = new THREE.Mesh(geometry, meshMaterial)
-            mesh.rotation.set(rotationX, rotationY,0)
+            mesh.rotation.set(rotationX + Math.PI/2, rotationY,0)
             mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
+            mesh.translateY(studList[i].stud.height/2)
             group.add(mesh)
         }
     }
