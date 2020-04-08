@@ -309,14 +309,15 @@ export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, 
 
 export function StudMeshView(studList, initPoint){
     let group = new THREE.Group();
-    var meshMaterial = new THREE.MeshLambertMaterial( {
-        color: 0xffffff,
-        emissive: 0x000000,
-        opacity: 1,
-        side:THREE.DoubleSide,
-        transparent: false,
-        wireframe : false
-    } );
+    var meshMaterial = new THREE.MeshNormalMaterial();
+    // var meshMaterial = new THREE.MeshLambertMaterial( {
+    //     color: 0xffffff,
+    //     emissive: 0x000000,
+    //     opacity: 1,
+    //     side:THREE.DoubleSide,
+    //     transparent: false,
+    //     wireframe : false
+    // } );
     for (let i in studList){
         var geometry = new THREE.CylinderBufferGeometry(studList[i].stud.dia/2,studList[i].stud.dia/2,studList[i].stud.height,8,1)
         var geometry2 = new THREE.CylinderBufferGeometry(studList[i].stud.headDia/2,studList[i].stud.headDia/2,studList[i].stud.headDepth,8,1)
