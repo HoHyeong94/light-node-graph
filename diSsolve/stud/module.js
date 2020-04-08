@@ -98,7 +98,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
 
     let studList = [];
     for (let i in topPlateStudLayout){
-        const ts = {start : topPlateStudLayout[i][0], 
+        let ts = {start : topPlateStudLayout[i][0], 
                     end : topPlateStudLayout[i][1],
                     startOffset : topPlateStudLayout[i][2],
                     endOffset : topPlateStudLayout[i][3],
@@ -144,9 +144,9 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
             let epts = [];
             for (let k = 0; k< ts.minNum; k++){
                 spts.push({x: leftinode.x + ts.outSideMargin + k*ts.minDist, y:leftinode.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
-                spts.push({x: rightinode.x - ts.outSideMargin - k*ts.minDist, y:leftinode.y - (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
-                epts.push({x: leftinode2.x + ts.outSideMargin + k*ts.minDist, y:leftinode2.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
-                epts.push({x: rightinode2.x - ts.outSideMargin - k*ts.minDist, y:rightinode2.y - (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
+                spts.push({x: rightinode.x - ts.outSideMargin - k*ts.minDist, y:rightnode.y - (ts.outSideMargin + k*ts.minDist) * gridPoints[j].gradientY});
+                epts.push({x: leftinode2.x + ts.outSideMargin + k*ts.minDist, y:leftinode2.y + (ts.outSideMargin + k*ts.minDist) * gridPoints[j+1].gradientY});
+                epts.push({x: rightinode2.x - ts.outSideMargin - k*ts.minDist, y:rightinode2.y - (ts.outSideMargin + k*ts.minDist) * gridPoints[j+1].gradientY});
             }
             let globalSpts = [];
             let globalEpts = [];
