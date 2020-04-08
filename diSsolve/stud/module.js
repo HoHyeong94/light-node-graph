@@ -102,9 +102,8 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout){
                     maxDist : topPlateStudLayout[i][9] 
          };
 
-        const girderIndex = ts.start.substr(1,1) * 1 -1
-        let sp = GridPoint[ts.start];
-        let ep = GridPoint[ts.end];
+        const sp = ts.start
+        let girderIndex = sp.substr(1,1) * 1 -1
         let gridKeys = []
         let gridPoints = []
         let cr = false
