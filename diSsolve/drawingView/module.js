@@ -272,7 +272,7 @@ function sectionMesh(point0, lineMaterial){
         points.push(new THREE.Vector3(point0[i].x, point0[i].y, 0))
     }
     let geometry = new THREE.Geometry().setFromPoints(points)
-    return new THREE.LineLoop(geometry,lineMaterial)
+    return new THREE.Line(geometry,lineMaterial)
 }
 
 export function sectionView(sectionName,sectionPoint, diaPoint){
