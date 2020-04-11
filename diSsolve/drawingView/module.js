@@ -289,7 +289,7 @@ for (var key in sectionPoint){
     // let points0 = sectionPoint[key]
     // sectionPoint[key].forEach(element => {points0.push([element.x*sc,element.y*sc])})
     group.add(sectionMesh(sectionPoint[key],lineMaterial))
-    sceneAdder({layer:1, mesh:group},sectionName + key);
+    // sceneAdder({layer:1, mesh:group},sectionName + key);
     // sections.models[key] = new makerjs.models.ConnectTheDots(true,points0) 
     }
 }
@@ -345,7 +345,7 @@ for (var key in sectionPoint){
 // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
 // var svg = makerjs.exporter.toSVG(wholeModel);
 // document.write(svg);
-  return 0 //group
+  return group
 }
 // 치수선 생성 프로그램 선, caption으로 구성해야할 듯함
 // 다수의 포인트(points)의 연속된 치수선을 생성하는 모듈
