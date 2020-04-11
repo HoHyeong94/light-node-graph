@@ -271,7 +271,7 @@ function sectionMesh(point0, lineMaterial){
     for (let i in point0){
         points.push(new THREE.Vector3(point0[i].x, point0[i].y, 0))
     }
-    let geometry = new THREE.geometry().setFromPoints(points)
+    let geometry = new THREE.Geometry().setFromPoints(points)
     return new THREE.LineLoop(geometry,lineMaterial)
 }
 
