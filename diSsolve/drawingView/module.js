@@ -345,7 +345,7 @@ for (var key in sectionPoint){
 // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
 // var svg = makerjs.exporter.toSVG(wholeModel);
 // document.write(svg);
-return group
+  return 0 //group
 }
 // 치수선 생성 프로그램 선, caption으로 구성해야할 듯함
 // 다수의 포인트(points)의 연속된 치수선을 생성하는 모듈
