@@ -283,15 +283,15 @@ let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
 let captions = {models:{ }};
 let weldings = {models:{ }};
 let titlePosition = 200
-let group = new THREE.Group()
+let group = []
 for (var key in sectionPoint){
     if (sectionPoint[key].constructor === Array){
-    group.add(sectionMesh(sectionPoint[key],lineMaterial))
+        group.push(new THREE.Group().add(sectionMesh(sectionPoint[key],lineMaterial)))
     }
 }
 for (var key in diaPoint){
     if (diaPoint[key].points){
-        group.add(sectionMesh(diaPoint[key].points,lineMaterial))
+        group.push(new THREE.Group().add(sectionMesh(diaPoint[key].points,lineMaterial)))
     }
     // let i = diaPoint[key].points.length -1
     // if (diaPoint[key].size) {
