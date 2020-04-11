@@ -278,7 +278,7 @@ function sectionMesh(point0, lineMaterial){
 export function sectionView(sectionName,sectionPoint, diaPoint){
 // var makerjs = require('makerjs');
 let sc = 0.200;
-let group = new THREE.group
+let group = new THREE.Group()
 let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
 // let sections = {models:{ }};
 let captions = {models:{ }};
