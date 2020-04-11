@@ -290,7 +290,7 @@ for (var key in sectionPoint){
     }
 }
 for (var key in diaPoint){
-    if (diaPoint[key].points.constructor === Array){
+    if (diaPoint[key].points){
         group.add(sectionMesh(diaPoint[key].points,lineMaterial))
     }
     // let i = diaPoint[key].points.length -1
