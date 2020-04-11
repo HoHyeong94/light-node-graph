@@ -15,7 +15,6 @@ import { SplicePart } from "./splice/index"
 import { BarrierPoint } from "./barrier/index"
 import { DeckRebar } from "./rebar/index"
 import { Stud } from "./stud/index"
-import { SectionViewer } from "./drawingView/module";
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
