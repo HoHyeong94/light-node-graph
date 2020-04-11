@@ -286,9 +286,9 @@ let weldings = {models:{ }};
 let titlePosition = 200
 for (var key in sectionPoint){
     if (sectionPoint[key].constructor === Array){
-    let points0 = []
-    sectionPoint[key].forEach(element => {points0.push([element.x*sc,element.y*sc])})
-    group.add(sectionMesh(points0,lineMaterial))
+    // let points0 = sectionPoint[key]
+    // sectionPoint[key].forEach(element => {points0.push([element.x*sc,element.y*sc])})
+    group.add(sectionMesh(sectionPoint[key],lineMaterial))
     // sections.models[key] = new makerjs.models.ConnectTheDots(true,points0) 
     }
 }
