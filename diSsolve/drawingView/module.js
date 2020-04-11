@@ -286,34 +286,30 @@ let titlePosition = 200
 for (var key in sectionPoint){
     let group = new THREE.Group()
     if (sectionPoint[key].constructor === Array){
-    // let points0 = sectionPoint[key]
-    // sectionPoint[key].forEach(element => {points0.push([element.x*sc,element.y*sc])})
     group.add(sectionMesh(sectionPoint[key],lineMaterial))
-    // sceneAdder({layer:1, mesh:group},sectionName + key);
-    // sections.models[key] = new makerjs.models.ConnectTheDots(true,points0) 
     }
 }
-// for (var key in diaPoint){
-//     let points0 = []
-//     diaPoint[key].points.forEach(element => {points0.push([element.x*sc,element.y*sc])})
-//     sections.models[key] = new makerjs.models.ConnectTheDots(true,points0)
-//     let i = diaPoint[key].points.length -1
-//     if (diaPoint[key].size) {
-//         captions.models[key]={
-//             models:{}, paths:{}, 
-//             caption:{
-//                 text:diaPoint[key].size.Label,
-//                 anchor: new makerjs.paths.Line([diaPoint[key].anchor[0][0]*sc,diaPoint[key].anchor[0][1]*sc],[diaPoint[key].anchor[1][0]*sc,diaPoint[key].anchor[1][1]*sc])
-//             },
-//             layer:'lime'
-//         }
-//     }
-//     if (diaPoint[key].welding) {
-//         for (let i in diaPoint[key].welding){
-//             weldings.models[key + i.tostring] = weldingMark(diaPoint[key].welding[i], 0.8,sc,200,true,true,false,false)
-//         }
-//     }
-// }
+for (var key in diaPoint){
+    if (diaPoint[key].points.constructor === Array){
+        group.add(sectionMesh(diaPoint[key].points,lineMaterial))
+    }
+    // let i = diaPoint[key].points.length -1
+    // if (diaPoint[key].size) {
+    //     captions.models[key]={
+    //         models:{}, paths:{}, 
+    //         caption:{
+    //             text:diaPoint[key].size.Label,
+    //             anchor: new makerjs.paths.Line([diaPoint[key].anchor[0][0]*sc,diaPoint[key].anchor[0][1]*sc],[diaPoint[key].anchor[1][0]*sc,diaPoint[key].anchor[1][1]*sc])
+    //         },
+    //         layer:'lime'
+    //     }
+    // }
+    // if (diaPoint[key].welding) {
+    //     for (let i in diaPoint[key].welding){
+    //         weldings.models[key + i.tostring] = weldingMark(diaPoint[key].welding[i], 0.8,sc,200,true,true,false,false)
+    //     }
+    // }
+}
 
 // let title = {models:{},
 //             paths:{
