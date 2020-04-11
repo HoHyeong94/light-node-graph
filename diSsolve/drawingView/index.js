@@ -25,7 +25,7 @@ SectionViewer.prototype.on3DExecute = function() {
     
     
     for (let j in group){
-        group[j].translateX(i*offset)
+        group[j].position.set(i*offset,0,0)
         sceneAdder({layer:1, mesh:group[j]},"section" + value + j);
     }
     // // svgAll.models[value].origin = [i * offset, 0];
