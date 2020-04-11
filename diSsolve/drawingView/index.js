@@ -23,8 +23,8 @@ SectionViewer.prototype.on3DExecute = function() {
     let diaPoint = diaDict[value];
     let group = sectionView(value, sectionPoint, diaPoint);
     // group.position(i*offset, 0, 0)
-    sceneAdder({layer:1, mesh:group},"section" + value);
-    // svgAll.models[value].origin = [i * offset, 0];
-    i += 1;
+    // sceneAdder({layer:1, mesh:group},"section" + value);
+    // // svgAll.models[value].origin = [i * offset, 0];
+    // i += 1;
   }
 };

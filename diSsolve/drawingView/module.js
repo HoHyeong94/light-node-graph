@@ -1,5 +1,5 @@
 // import makerjs from 'makerjs'
-import { THREE } from "global";
+import { THREE, sceneAdder } from "global";
 // import {PointLength, hBracingPlate} from './geometryFunc'
 // import {ToGlobalPoint, ToGlobalPoint2} from './threejsDisplay'
 
@@ -278,17 +278,18 @@ function sectionMesh(point0, lineMaterial){
 export function sectionView(sectionName,sectionPoint, diaPoint){
 // var makerjs = require('makerjs');
 let sc = 0.200;
-let group = new THREE.Group()
 let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
 // let sections = {models:{ }};
 let captions = {models:{ }};
 let weldings = {models:{ }};
 let titlePosition = 200
 for (var key in sectionPoint){
+    let group = new THREE.Group()
     if (sectionPoint[key].constructor === Array){
     // let points0 = sectionPoint[key]
     // sectionPoint[key].forEach(element => {points0.push([element.x*sc,element.y*sc])})
     group.add(sectionMesh(sectionPoint[key],lineMaterial))
+    sceneAdder({layer:1, mesh:group},sectionName + key);
     // sections.models[key] = new makerjs.models.ConnectTheDots(true,points0) 
     }
 }
