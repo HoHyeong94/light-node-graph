@@ -283,8 +283,8 @@ let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
 let captions = {models:{ }};
 let weldings = {models:{ }};
 let titlePosition = 200
+let group = new THREE.Group()
 for (var key in sectionPoint){
-    let group = new THREE.Group()
     if (sectionPoint[key].constructor === Array){
     group.add(sectionMesh(sectionPoint[key],lineMaterial))
     }
