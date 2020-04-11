@@ -23,8 +23,9 @@ SectionViewer.prototype.on3DExecute = function() {
     let diaPoint = diaDict[value];
     let group = sectionView(value, sectionPoint, diaPoint);
     
-    // group.translateX(i*offset)
+    
     for (let j in group){
+        group[j].translateX(i*offset)
         sceneAdder({layer:1, mesh:group[j]},"section" + value + j);
     }
     // // svgAll.models[value].origin = [i * offset, 0];
