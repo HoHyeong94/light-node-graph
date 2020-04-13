@@ -282,7 +282,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     // let sections = {models:{ }};
     // let captions = { models: {} };
     // let weldings = { models: {} };
-    let titlePosition = 500;
+    let titlePosition = 1000;
     let titleSize = 100;
     let labelSize = 50;
     // let group = []
@@ -306,7 +306,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     })
     
     
-    let circle = new THREE.EllipseCurve(0,titlePosition,200,200)
+    let circle = new THREE.EllipseCurve(0,titlePosition,titleSize*2.5,titleSize*2.5)
     let cp = circle.getPoints(16);
     let circlegeo = new THREE.Geometry().setFromPoints(cp)
     let titleCircle = new THREE.Line(circlegeo,lineMaterial)
@@ -336,6 +336,40 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
         // }
     }
 
+    // let title = {models:{},
+    //             paths:{
+    //                 circle:new makerjs.paths.Circle([0,titlePosition],titlePosition*0.1)
+    //             },
+    //             caption:{
+    //                 text:sectionName,
+    //                 anchor: new makerjs.paths.Line([-titlePosition,titlePosition],[titlePosition,titlePosition])
+    //             },
+    //             layer:'red'
+    //             }
+
+    // sections.layer = "aqua"
+    // // sections2.layer = "fuchsia"
+    // let wholeModel = {models:{}}
+    // wholeModel.models["sections"] = sections
+    // wholeModel.models["captions"] = captions
+    // wholeModel.models["weldings"] = weldings
+    // wholeModel.models["titles"] = title
+    let top1 = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1)
+    top1.meshes.forEach(function(mesh){group.add(mesh)})
+    top1.labels.forEach(function(elem){label.push(elem)})
+    // wholeModel.models["top2"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0)
+    // wholeModel.models["right1"] = Dimension([sectionPoint.rWeb[0],sectionPoint.rWeb[1]],1,sc,1,false,true,2)
+    // wholeModel.models["right2"] = Dimension([sectionPoint.rWeb[0],diaPoint.lowerTopShape.points[3],diaPoint.lowerTopShape.points[2],diaPoint.rightTopPlateShape.points[3],diaPoint.rightTopPlateShape.points[0],sectionPoint.rWeb[1]],5,sc,1,false,true,1)
+    // wholeModel.models["left1"] = Dimension([sectionPoint.lWeb[0],sectionPoint.lWeb[1]],1,sc,1,false,false,2)
+    // wholeModel.models["left2"] = Dimension([sectionPoint.lWeb[0],diaPoint.lowerTopShape.points[0],diaPoint.lowerTopShape.points[1],diaPoint.leftTopPlateShape.points[3],diaPoint.leftTopPlateShape.points[0],sectionPoint.lWeb[1]],5,sc,1,false,false,1)
+    // wholeModel.models["bottom1"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.lWeb[0],sectionPoint.rWeb[0],sectionPoint.bottomPlate[2]],0,sc,1,true,false,0)
+    // wholeModel.models["bottom2"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.bottomPlate[2]],0,sc,1,true,false,1)
+
+    // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
+    // var svg = makerjs.exporter.toSVG(wholeModel);
+    // document.write(svg);
+    
+    
     var loader = new THREE.FontLoader();
     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
         // console.log(font)
@@ -356,76 +390,64 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
         }
         // text.position.z = 0;
     });
-
-
-    // let title = {models:{},
-    //             paths:{
-    //                 circle:new makerjs.paths.Circle([0,titlePosition],titlePosition*0.1)
-    //             },
-    //             caption:{
-    //                 text:sectionName,
-    //                 anchor: new makerjs.paths.Line([-titlePosition,titlePosition],[titlePosition,titlePosition])
-    //             },
-    //             layer:'red'
-    //             }
-
-    // sections.layer = "aqua"
-    // // sections2.layer = "fuchsia"
-    // let wholeModel = {models:{}}
-    // wholeModel.models["sections"] = sections
-    // wholeModel.models["captions"] = captions
-    // wholeModel.models["weldings"] = weldings
-    // wholeModel.models["titles"] = title
-    // wholeModel.models["top1"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1)
-    // wholeModel.models["top2"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0)
-    // wholeModel.models["right1"] = Dimension([sectionPoint.rWeb[0],sectionPoint.rWeb[1]],1,sc,1,false,true,2)
-    // wholeModel.models["right2"] = Dimension([sectionPoint.rWeb[0],diaPoint.lowerTopShape.points[3],diaPoint.lowerTopShape.points[2],diaPoint.rightTopPlateShape.points[3],diaPoint.rightTopPlateShape.points[0],sectionPoint.rWeb[1]],5,sc,1,false,true,1)
-    // wholeModel.models["left1"] = Dimension([sectionPoint.lWeb[0],sectionPoint.lWeb[1]],1,sc,1,false,false,2)
-    // wholeModel.models["left2"] = Dimension([sectionPoint.lWeb[0],diaPoint.lowerTopShape.points[0],diaPoint.lowerTopShape.points[1],diaPoint.leftTopPlateShape.points[3],diaPoint.leftTopPlateShape.points[0],sectionPoint.lWeb[1]],5,sc,1,false,false,1)
-    // wholeModel.models["bottom1"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.lWeb[0],sectionPoint.rWeb[0],sectionPoint.bottomPlate[2]],0,sc,1,true,false,0)
-    // wholeModel.models["bottom2"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.bottomPlate[2]],0,sc,1,true,false,1)
-
-    // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
-    // var svg = makerjs.exporter.toSVG(wholeModel);
-    // document.write(svg);
+    
     return group
 }
+
+function LineMesh(point0, lineMaterial) {
+    let points = []
+    for (let i in point0) {
+        points.push(new THREE.Vector3(point0[i].x, point0[i].y, 0))
+    }
+    let geometry = new THREE.Geometry().setFromPoints(points)
+    return new THREE.Line(geometry, lineMaterial)
+}
+
 // 치수선 생성 프로그램 선, caption으로 구성해야할 듯함
 // 다수의 포인트(points)의 연속된 치수선을 생성하는 모듈
-
-// function Dimension(points, index, scale, valueScale, isHorizontal, isTopOrRight, offsetIndex){
-//     let sign = (isTopOrRight)? 1:-1
-//     let dim = {models:{}, paths:{}}
-//     let add = 200*scale*sign;
-//     let fontSize = 50*scale
-//     let extend = 20*scale*sign
-//     let offset = offsetIndex*200*scale*sign + 20*scale*sign
-//     dim.layer = "red"
-//     if (isHorizontal){
-//         for (var key in points){
-//             dim.paths[key] = new makerjs.paths.Line([points[key].x*scale, points[index].y*scale + offset],[points[key].x*scale, points[index].y*scale+add+offset+extend])
-//         }
-//         for (let i = 0; i<points.length -1;i++){
-//             dim.paths['d'+i] = new makerjs.paths.Line([points[i].x*scale, points[index].y*scale+add+offset],[points[i+1].x*scale, points[index].y*scale+add+offset])
-//             let value = valueScale*(Math.abs(points[i+1].x - points[i].x))
-//             dim.models['d'+i] = {};
-//             makerjs.model.addCaption(dim.models['d'+i], value.toFixed(0) ,[points[i].x*scale, points[index].y*scale+add+offset+fontSize],[points[i+1].x*scale, points[index].y*scale+add+offset+fontSize])
-//             dim.models['d'+i].layer = "lime"
-//         }
-//     }else{
-//         for (var key in points){
-//             dim.paths[key] = new makerjs.paths.Line([points[index].x*scale + offset, points[key].y*scale],[points[index].x*scale+add+offset+extend, points[key].y*scale])
-//         }
-//         for (let i = 0; i<points.length -1;i++){
-//             dim.paths['d'+i] = new makerjs.paths.Line([points[index].x*scale+add+offset, points[i].y*scale],[points[index].x*scale+add+offset, points[i+1].y*scale])
-//             let value = valueScale*(Math.abs(points[i+1].y - points[i].y))
-//             dim.models['d'+i] = {};
-//             makerjs.model.addCaption(dim.models['d'+i], value.toFixed(0) ,[points[index].x*scale+add+offset -fontSize, points[i].y*scale],[points[index].x*scale+add+offset-fontSize, points[i+1].y*scale])
-//             dim.models['d'+i].layer = "lime"
-//         }
-//     }
-//     return dim
-// }
+function Dimension(points, index, scale, valueScale, isHorizontal, isTopOrRight, offsetIndex){
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 })
+    let sign = (isTopOrRight)? 1:-1
+    // let dim = {models:{}, paths:{}}
+    let add = 200*scale*sign;
+    let fontSize = 50*scale
+    let extend = 20*scale*sign
+    let offset = offsetIndex*200*scale*sign + 20*scale*sign
+    // dim.layer = "red"
+    let meshes = [];
+    let labels = [];
+    if (isHorizontal){
+        for (var key in points){
+            meshes.push(LineMesh([{x : points[key].x, y:points[index].y + offset},{x:points[key].x, y:points[index].y+add+offset+extend}],lineMaterial))
+        }
+        for (let i = 0; i<points.length -1;i++){
+            meshes.push(LineMesh([{x:points[i].x, y:points[index].y+add+offset},{x:points[i+1].x, y:points[index].y+add+offset}],lineMaterial))
+            let value = valueScale*(Math.abs(points[i+1].x - points[i].x))
+            labels.push({text: value.toFixed(0),
+            anchor: [(points[i].x + points[i+1].x) / 2, points[i].y + add+offset+fontSize, 0],
+            rotation : 0,
+            fontSize : fontSize})
+        }
+    }else{
+        for (var key in points){
+            meshes.push(LineMesh([{x : points[index].x + offset, y:points[key].y},{x:points[index].x+add+offset+extend, y:points[key].y}],lineMaterial))
+        }
+        for (let i = 0; i<points.length -1;i++){
+            meshes.push(LineMesh([{x : points[index].x +add+offset, y:points[i].y},{x:points[index].x+add+offset, y:points[i+1].y}],lineMaterial))
+            // dim.paths['d'+i] = new makerjs.paths.Line([points[index].x*scale+add+offset, points[i].y*scale],[points[index].x*scale+add+offset, points[i+1].y*scale])
+            let value = valueScale*(Math.abs(points[i+1].y - points[i].y))
+            labels.push({text: value.toFixed(0),
+            anchor: [points[i].x +add+offset -fontSize, (points[i].y + points[i+1].y )/2, 0],
+            rotation : Math.PI/2,
+            fontSize : fontSize})
+            // let value = valueScale*(Math.abs(points[i+1].y - points[i].y))
+            // dim.models['d'+i] = {};
+            // makerjs.model.addCaption(dim.models['d'+i], value.toFixed(0) ,[points[index].x*scale+add+offset -fontSize, points[i].y*scale],[points[index].x*scale+add+offset-fontSize, points[i+1].y*scale])
+            // dim.models['d'+i].layer = "lime"
+        }
+    }
+    return {meshes,labels}
+}
 
 // // locate is 0 to 1 relative point of welding line
 // function weldingMark(weldingObject, locate, scale, distance, isUpper, isRight, isXReverse,isYReverse){
