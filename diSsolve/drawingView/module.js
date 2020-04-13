@@ -323,17 +323,18 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
         // console.log(font)
         // var font = {generateShapes:(messagem , num)=>{}}
-        
-        var shapes = font.generateShapes(sectionName, 100);
-        var geometry = new THREE.ShapeBufferGeometry(shapes);
-        var xMid
-        // geometry.computeBoundingBox();
-        xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-        geometry.translate(xMid, titlePosition, 0);
-        // make shape ( N.B. edge view not visible )
-        textMesh = new THREE.Mesh(geometry, textMaterial);
-        textMesh.layers.set(1)
-        group.add(textMesh);
+        for (let i in label){
+            var shapes = font.generateShapes(label[i].text, 100);
+            var geometry = new THREE.ShapeBufferGeometry(shapes);
+            var xMid
+            geometry.computeBoundingBox();
+            xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+            geometry.translate(xMid+label[i].anchor[0], label[i].anchor[1], label[i].anchor[2]);
+            // make shape ( N.B. edge view not visible )
+            textMesh = new THREE.Mesh(geometry, textMaterial);
+            textMesh.layers.set(1)
+            group.add(textMesh);
+        }
         // text.position.z = 0;
     });
 
