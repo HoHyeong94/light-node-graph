@@ -380,9 +380,10 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
             var xMid
             geometry.computeBoundingBox();
             xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-            geometry.translate(xMid+label[i].anchor[0], -label[i].fontSize/2 + label[i].anchor[1], 0);
+            geometry.translate(xMid, -label[i].fontSize/2, 0);
             if (label[i].rotation) {geometry.rotateZ(label[i].rotation)
             }
+            geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
             // make shape ( N.B. edge view not visible )
             textMesh = new THREE.Mesh(geometry, textMaterial);
             textMesh.layers.set(1)
