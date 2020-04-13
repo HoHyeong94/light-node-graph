@@ -335,9 +335,10 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
         // geometry.translate(xMid, 0, 0);
         // make shape ( N.B. edge view not visible )
         text = new THREE.Mesh(geometry, matLite);
+        text.layers.set(1)
         // text.position.z = 0;
-        console.log(text)
-        group.add("text",text);
+        console.log("text",text)
+        group.add(text);
     });
 
 
