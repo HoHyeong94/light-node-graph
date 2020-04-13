@@ -313,17 +313,12 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     }
 
     var loader = new THREE.FontLoader();
-    loader.load('../fonts/helvetiker_regular.typeface.json', function (font) {
-
+    
+    loader.load('https://github.com/mrdoob/three.js/blob/master/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+    //     console.log(font)
+    // var font = {generateShapes:(messagem , num)=>{}}
         var xMid, text;
-
         var color = 0x006699;
-
-        var matDark = new THREE.LineBasicMaterial({
-            color: color,
-            side: THREE.DoubleSide
-        });
-
         var matLite = new THREE.MeshBasicMaterial({
             color: color,
             transparent: true,
@@ -332,21 +327,15 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
         });
 
         var message = "   Three.js\nSimple text.";
-
         var shapes = font.generateShapes(message, 100);
-
         var geometry = new THREE.ShapeBufferGeometry(shapes);
 
         geometry.computeBoundingBox();
-
         xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-
         geometry.translate(xMid, 0, 0);
-
         // make shape ( N.B. edge view not visible )
-
         text = new THREE.Mesh(geometry, matLite);
-        text.position.z = - 150;
+        text.position.z = 0;
         group.add(text);
     });
 
