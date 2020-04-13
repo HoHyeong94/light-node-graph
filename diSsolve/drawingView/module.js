@@ -282,7 +282,9 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     // let sections = {models:{ }};
     // let captions = { models: {} };
     // let weldings = { models: {} };
-    let titlePosition = 200
+    let titlePosition = 500;
+    let titleSize = 100;
+    let labelSize = 50;
     // let group = []
     let group = new THREE.Group();
     let label = [];
@@ -299,11 +301,12 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
 
     label.push({
         text: sectionName,
-        anchor: [0, titlePosition, 0]
+        anchor: [0, titlePosition, 0],
+        fontSize : titleSize
     })
     
     
-    let circle = new THREE.EllipseCurve(0,titlePosition,100,100)
+    let circle = new THREE.EllipseCurve(0,titlePosition,200,200)
     let cp = circle.getPoints(16);
     let circlegeo = new THREE.Geometry().setFromPoints(cp)
     let titleCircle = new THREE.Line(circlegeo,lineMaterial)
@@ -321,7 +324,9 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
         if (diaPoint[key].size) {
             label.push({
                 text: diaPoint[key].size.Label,
-                anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0]
+                anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0],
+                rotaion : Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1])/(diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
+                fontSize : labelSize
             })
         }
         // if (diaPoint[key].welding) {
@@ -336,12 +341,13 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
         // console.log(font)
         // var font = {generateShapes:(messagem , num)=>{}}
         for (let i in label){
-            var shapes = font.generateShapes(label[i].text, 100);
+            var shapes = font.generateShapes(label[i].text, label[i].fontSize);
             var geometry = new THREE.ShapeBufferGeometry(shapes);
             var xMid
             geometry.computeBoundingBox();
             xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
             geometry.translate(xMid+label[i].anchor[0], label[i].anchor[1], label[i].anchor[2]);
+            if (label[i].rotaion) {geometry.rotateZ = label[i].rotaion}
             // make shape ( N.B. edge view not visible )
             textMesh = new THREE.Mesh(geometry, textMaterial);
             textMesh.layers.set(1)
