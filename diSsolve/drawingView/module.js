@@ -73,7 +73,7 @@ import { THREE, sceneAdder } from "global";
 //                                 pts2.push([x,y])
 //                                 // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
 //                             }
-                            
+
 //                         }
 //                         if (j==0){
 //                             ptsL1.push(...pts1)
@@ -108,10 +108,10 @@ import { THREE, sceneAdder } from "global";
 //                         result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
 //                             [...ptsC1.reverse(),...ptsC2]);
 //                         index +=1        
-                
+
 //                     }
 //                 }
-            
+
 //         }
 //     }
 //     return result
@@ -144,7 +144,7 @@ import { THREE, sceneAdder } from "global";
 //                             pts2.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
 //                             // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
 //                         }
-                        
+
 //                     }
 //                     if (j==0){
 //                         ptsL1.push(...pts1)
@@ -179,7 +179,7 @@ import { THREE, sceneAdder } from "global";
 //                     result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
 //                         [...ptsC1.reverse(),...ptsC2]);
 //                     index +=1        
-            
+
 //                 }
 //             }
 //         }
@@ -199,7 +199,7 @@ import { THREE, sceneAdder } from "global";
 //                     rect: makerjs.model.move(new makerjs.models.RoundRectangle(400*sc, 200*sc, 100*sc),[position[0]-200*sc,position[1]-100*sc])
 //                 },
 //                 paths:{
-                
+
 //                 },
 //                 caption:{
 //                     text:station,
@@ -216,7 +216,7 @@ import { THREE, sceneAdder } from "global";
 
 // r is rotation angle to radian
 // export function topDraw(steelBoxDict,hBracingDict, hBraicingPlateDict,diaDict, vstiffDict, nameToPointDict,initPoint){
-    
+
 //     let sc = 0.100;
 //     let wholeModel = {models:{}};
 //     let r = Math.PI - Math.atan((nameToPointDict["G1K6"].y - nameToPointDict["G1K1"].y)/ (nameToPointDict["G1K6"].x - nameToPointDict["G1K1"].x))
@@ -266,51 +266,90 @@ import { THREE, sceneAdder } from "global";
 //     return result[0]
 // }
 
-function sectionMesh(point0, lineMaterial){
+function sectionMesh(point0, lineMaterial) {
     let points = []
-    for (let i in point0){
+    for (let i in point0) {
         points.push(new THREE.Vector3(point0[i].x, point0[i].y, 0))
     }
     let geometry = new THREE.Geometry().setFromPoints(points)
-    return new THREE.LineLoop(geometry,lineMaterial)
+    return new THREE.LineLoop(geometry, lineMaterial)
 }
 
-export function sectionView(sectionName,sectionPoint, diaPoint){
-// var makerjs = require('makerjs');
-let sc = 0.200;
-let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
-// let sections = {models:{ }};
-let captions = {models:{ }};
-let weldings = {models:{ }};
-let titlePosition = 200
-// let group = []
-let group = new THREE.Group();
-for (var key in sectionPoint){
-    if (sectionPoint[key].constructor === Array){
-        group.add(sectionMesh(sectionPoint[key],lineMaterial))
+export function sectionView(sectionName, sectionPoint, diaPoint) {
+    // var makerjs = require('makerjs');
+    let sc = 0.200;
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+    // let sections = {models:{ }};
+    let captions = { models: {} };
+    let weldings = { models: {} };
+    let titlePosition = 200
+    // let group = []
+    let group = new THREE.Group();
+    for (var key in sectionPoint) {
+        if (sectionPoint[key].constructor === Array) {
+            group.add(sectionMesh(sectionPoint[key], lineMaterial))
+        }
     }
-}
-for (var key in diaPoint){
-    if (diaPoint[key].points){
-        group.add(sectionMesh(diaPoint[key].points,lineMaterial))
+    for (var key in diaPoint) {
+        if (diaPoint[key].points) {
+            group.add(sectionMesh(diaPoint[key].points, lineMaterial))
+        }
+        // let i = diaPoint[key].points.length -1
+        // if (diaPoint[key].size) {
+        //     captions.models[key]={
+        //         models:{}, paths:{}, 
+        //         caption:{
+        //             text:diaPoint[key].size.Label,
+        //             anchor: new makerjs.paths.Line([diaPoint[key].anchor[0][0]*sc,diaPoint[key].anchor[0][1]*sc],[diaPoint[key].anchor[1][0]*sc,diaPoint[key].anchor[1][1]*sc])
+        //         },
+        //         layer:'lime'
+        //     }
+        // }
+        // if (diaPoint[key].welding) {
+        //     for (let i in diaPoint[key].welding){
+        //         weldings.models[key + i.tostring] = weldingMark(diaPoint[key].welding[i], 0.8,sc,200,true,true,false,false)
+        //     }
+        // }
     }
-    // let i = diaPoint[key].points.length -1
-    // if (diaPoint[key].size) {
-    //     captions.models[key]={
-    //         models:{}, paths:{}, 
-    //         caption:{
-    //             text:diaPoint[key].size.Label,
-    //             anchor: new makerjs.paths.Line([diaPoint[key].anchor[0][0]*sc,diaPoint[key].anchor[0][1]*sc],[diaPoint[key].anchor[1][0]*sc,diaPoint[key].anchor[1][1]*sc])
-    //         },
-    //         layer:'lime'
-    //     }
-    // }
-    // if (diaPoint[key].welding) {
-    //     for (let i in diaPoint[key].welding){
-    //         weldings.models[key + i.tostring] = weldingMark(diaPoint[key].welding[i], 0.8,sc,200,true,true,false,false)
-    //     }
-    // }
-}
+
+    var loader = new THREE.FontLoader();
+    loader.load('../fonts/helvetiker_regular.typeface.json', function (font) {
+
+        var xMid, text;
+
+        var color = 0x006699;
+
+        var matDark = new THREE.LineBasicMaterial({
+            color: color,
+            side: THREE.DoubleSide
+        });
+
+        var matLite = new THREE.MeshBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.4,
+            side: THREE.DoubleSide
+        });
+
+        var message = "   Three.js\nSimple text.";
+
+        var shapes = font.generateShapes(message, 100);
+
+        var geometry = new THREE.ShapeBufferGeometry(shapes);
+
+        geometry.computeBoundingBox();
+
+        xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+
+        geometry.translate(xMid, 0, 0);
+
+        // make shape ( N.B. edge view not visible )
+
+        text = new THREE.Mesh(geometry, matLite);
+        text.position.z = - 150;
+        group.add(text);
+    });
+
 
 // let title = {models:{},
 //             paths:{
