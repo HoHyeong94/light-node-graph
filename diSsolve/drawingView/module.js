@@ -313,33 +313,33 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     }
 
     var loader = new THREE.FontLoader();
-    
-    loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+    var font = loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
         // console.log(font)
     // var font = {generateShapes:(messagem , num)=>{}}
-        var xMid, text;
-        var color = 0x006699;
-        var matLite = new THREE.MeshBasicMaterial({
-            color: color,
-            transparent: false,
-            opacity: 1,
-            side: THREE.DoubleSide
-        });
-
-        var message = "   Three.js\nSimple text.";
-        var shapes = font.generateShapes(message, 100);
-        var geometry = new THREE.ShapeBufferGeometry(shapes);
-
-        // geometry.computeBoundingBox();
-        // xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-        // geometry.translate(xMid, 0, 0);
-        // make shape ( N.B. edge view not visible )
-        text = new THREE.Mesh(geometry, matLite);
-        text.layers.set(1)
-        // text.position.z = 0;
-        console.log("text",text)
-        group.add(text);
     });
+
+    var xMid, text;
+    var color = 0x006699;
+    var matLite = new THREE.MeshBasicMaterial({
+        color: color,
+        transparent: false,
+        opacity: 1,
+        side: THREE.DoubleSide
+    });
+
+    var message = "   Three.js\nSimple text.";
+    var shapes = font.generateShapes(message, 100);
+    var geometry = new THREE.ShapeBufferGeometry(shapes);
+
+    // geometry.computeBoundingBox();
+    // xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+    // geometry.translate(xMid, 0, 0);
+    // make shape ( N.B. edge view not visible )
+    text = new THREE.Mesh(geometry, matLite);
+    text.layers.set(1)
+    // text.position.z = 0;
+    console.log("text",text)
+    group.add(text);
 
 
 // let title = {models:{},
