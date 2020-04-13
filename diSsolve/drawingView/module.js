@@ -488,11 +488,13 @@ function weldingMark(weldingObject, locate, scale, distance, isUpper, isRight, i
     meshes.push(LineMesh([{x:point.x + xsign*xsign2*30, y: point.y + ysign*ysign2*50},point0],lineMaterial))
     meshes.push(LineMesh([{x:point.x + xsign*xsign2*50, y: point.y + ysign*ysign2*30},point0],lineMaterial))
 
-    // if (weldingObject.type==="FF"){
-    //     welding.paths['FF1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] + (50)*sc],[point2[0] + (100)*sc,point2[1] - (50)*sc])
-    //     welding.paths['FF2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] + (50)*sc],[point2[0] + (150)*sc,point2[1]])
-    //     welding.paths['FF3'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] - (50)*sc],[point2[0] + (150)*sc,point2[1]])
-    // }
+    if (weldingObject.type==="FF"){
+        meshes.push(LineMesh([{x : point2.x + (100),y: point2.y + (50)},{x:point2.x + (100),y:point2.y - (50)}],lineMaterial))
+        meshes.push(LineMesh([{x : point2.x + (100),y: point2.y + (50)},{x:point2.x + (150),y:point2.y}],lineMaterial))
+        meshes.push(LineMesh([{x : point2.x + (100),y: point2.y - (50)},{x:point2.x + (150),y:point2.y}],lineMaterial))
+        // welding.paths['FF2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] + (50)*sc],[point2[0] + (150)*sc,point2[1]])
+        // welding.paths['FF3'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] - (50)*sc],[point2[0] + (150)*sc,point2[1]])
+    }
     // else if (weldingObject.type==="F"){
     //     welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
     //     welding.paths['F2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] - (50)*sc],[point2[0] + (150)*sc,point2[1]])
