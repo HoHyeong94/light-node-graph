@@ -316,6 +316,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     var font = loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
         // console.log(font)
     // var font = {generateShapes:(messagem , num)=>{}}
+        return font
     });
 
     var xMid, text;
