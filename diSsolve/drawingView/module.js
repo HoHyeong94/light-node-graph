@@ -354,9 +354,9 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     // wholeModel.models["captions"] = captions
     // wholeModel.models["weldings"] = weldings
     // wholeModel.models["titles"] = title
-    let top1 = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1)
-    top1.meshes.forEach(function(mesh){group.add(mesh)})
-    top1.labels.forEach(function(elem){label.push(elem)})
+    let dims = [];
+    dims.push(Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1))
+    dims.push(Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0))
     // wholeModel.models["top2"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0)
     // wholeModel.models["right1"] = Dimension([sectionPoint.rWeb[0],sectionPoint.rWeb[1]],1,sc,1,false,true,2)
     // wholeModel.models["right2"] = Dimension([sectionPoint.rWeb[0],diaPoint.lowerTopShape.points[3],diaPoint.lowerTopShape.points[2],diaPoint.rightTopPlateShape.points[3],diaPoint.rightTopPlateShape.points[0],sectionPoint.rWeb[1]],5,sc,1,false,true,1)
@@ -369,7 +369,11 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     // var svg = makerjs.exporter.toSVG(wholeModel);
     // document.write(svg);
     
-    
+    for (let i in dims){
+        dims[i].meshes.forEach(function(mesh){group.add(mesh)})
+        dims[i].labels.forEach(function(elem){label.push(elem)})
+    }
+
     var loader = new THREE.FontLoader();
     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
         // console.log(font)
