@@ -325,7 +325,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
             label.push({
                 text: diaPoint[key].size.Label,
                 anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0],
-                rotation : -Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1])/(diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
+                rotation : Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1])/(diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
                 fontSize : labelSize
             })
         }
@@ -346,7 +346,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
             var xMid
             geometry.computeBoundingBox();
             xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-            geometry.translate(xMid+label[i].anchor[0], label[i].anchor[1], label[i].anchor[2]);
+            geometry.translate(xMid+label[i].anchor[0], -label[i].fontSize/2 + label[i].anchor[1], 0);
             if (label[i].rotation) {geometry.rotateZ(label[i].rotation)
             }
             // make shape ( N.B. edge view not visible )
