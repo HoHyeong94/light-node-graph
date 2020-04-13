@@ -355,15 +355,14 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     // wholeModel.models["weldings"] = weldings
     // wholeModel.models["titles"] = title
     let dims = [];
-    dims.push(Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1))
-    dims.push(Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0))
-    // wholeModel.models["top2"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0)
-    // wholeModel.models["right1"] = Dimension([sectionPoint.rWeb[0],sectionPoint.rWeb[1]],1,sc,1,false,true,2)
-    // wholeModel.models["right2"] = Dimension([sectionPoint.rWeb[0],diaPoint.lowerTopShape.points[3],diaPoint.lowerTopShape.points[2],diaPoint.rightTopPlateShape.points[3],diaPoint.rightTopPlateShape.points[0],sectionPoint.rWeb[1]],5,sc,1,false,true,1)
-    // wholeModel.models["left1"] = Dimension([sectionPoint.lWeb[0],sectionPoint.lWeb[1]],1,sc,1,false,false,2)
-    // wholeModel.models["left2"] = Dimension([sectionPoint.lWeb[0],diaPoint.lowerTopShape.points[0],diaPoint.lowerTopShape.points[1],diaPoint.leftTopPlateShape.points[3],diaPoint.leftTopPlateShape.points[0],sectionPoint.lWeb[1]],5,sc,1,false,false,1)
-    // wholeModel.models["bottom1"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.lWeb[0],sectionPoint.rWeb[0],sectionPoint.bottomPlate[2]],0,sc,1,true,false,0)
-    // wholeModel.models["bottom2"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.bottomPlate[2]],0,sc,1,true,false,1)
+    dims.push(Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1))   //top1
+    dims.push(Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0)) //top2
+    dims.push(Dimension([sectionPoint.rWeb[0],sectionPoint.rWeb[1]],1,sc,1,false,true,2)) //right1
+    dims.push(Dimension([sectionPoint.rWeb[0],diaPoint.lowerTopShape.points[3],diaPoint.lowerTopShape.points[2],diaPoint.rightTopPlateShape.points[3],diaPoint.rightTopPlateShape.points[0],sectionPoint.rWeb[1]],5,sc,1,false,true,1)) //right2
+    dims.push(Dimension([sectionPoint.lWeb[0],sectionPoint.lWeb[1]],1,sc,1,false,false,2)) //left1
+    dims.push(Dimension([sectionPoint.lWeb[0],diaPoint.lowerTopShape.points[0],diaPoint.lowerTopShape.points[1],diaPoint.leftTopPlateShape.points[3],diaPoint.leftTopPlateShape.points[0],sectionPoint.lWeb[1]],5,sc,1,false,false,1)) // left2
+    dims.push(Dimension([sectionPoint.bottomPlate[3],sectionPoint.lWeb[0],sectionPoint.rWeb[0],sectionPoint.bottomPlate[2]],0,sc,1,true,false,0)) //bottom1
+    dims.push(Dimension([sectionPoint.bottomPlate[3],sectionPoint.bottomPlate[2]],0,sc,1,true,false,1)) //botoom2
 
     // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
     // var svg = makerjs.exporter.toSVG(wholeModel);
@@ -429,7 +428,7 @@ function Dimension(points, index, scale, valueScale, isHorizontal, isTopOrRight,
             meshes.push(LineMesh([{x:points[i].x, y:points[index].y+add+offset},{x:points[i+1].x, y:points[index].y+add+offset}],lineMaterial))
             let value = valueScale*(Math.abs(points[i+1].x - points[i].x))
             labels.push({text: value.toFixed(0),
-            anchor: [(points[i].x + points[i+1].x) / 2, points[i].y + add+offset+fontSize, 0],
+            anchor: [(points[i].x + points[i+1].x) / 2, points[index].y + add+offset+fontSize, 0],
             rotation : 0,
             fontSize : fontSize})
         }
@@ -442,7 +441,7 @@ function Dimension(points, index, scale, valueScale, isHorizontal, isTopOrRight,
             // dim.paths['d'+i] = new makerjs.paths.Line([points[index].x*scale+add+offset, points[i].y*scale],[points[index].x*scale+add+offset, points[i+1].y*scale])
             let value = valueScale*(Math.abs(points[i+1].y - points[i].y))
             labels.push({text: value.toFixed(0),
-            anchor: [points[i].x +add+offset -fontSize, (points[i].y + points[i+1].y )/2, 0],
+            anchor: [points[index].x +add+offset -fontSize, (points[i].y + points[i+1].y )/2, 0],
             rotation : Math.PI/2,
             fontSize : fontSize})
             // let value = valueScale*(Math.abs(points[i+1].y - points[i].y))
