@@ -291,7 +291,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
 
     let textMesh;
     let textMaterial = new THREE.MeshBasicMaterial({ color : 0xffffff });
-    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });
 
     label.push({
         text: sectionName,
