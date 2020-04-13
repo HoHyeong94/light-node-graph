@@ -450,8 +450,9 @@ function Dimension(points, index, scale, valueScale, isHorizontal, isTopOrRight,
 
 // locate is 0 to 1 relative point of welding line
 function weldingMark(weldingObject, locate, scale, distance, isUpper, isRight, isXReverse,isYReverse){
-    let welding = {models:{}, paths:{},caption:{},layer:'red'}
-    const sc = scale
+    // let welding = {models:{}, paths:{},caption:{},layer:'red'}
+    // const sc = scale
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 })
     let linelength = []
     
     let fontSize = 50*scale
