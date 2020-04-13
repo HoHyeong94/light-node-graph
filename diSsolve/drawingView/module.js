@@ -1,5 +1,6 @@
 // import makerjs from 'makerjs'
 import { THREE, sceneAdder } from "global";
+
 // import {PointLength, hBracingPlate} from './geometryFunc'
 // import {ToGlobalPoint, ToGlobalPoint2} from './threejsDisplay'
 
@@ -277,102 +278,97 @@ function sectionMesh(point0, lineMaterial) {
 
 export function sectionView(sectionName, sectionPoint, diaPoint) {
     // var makerjs = require('makerjs');
-    let sc = 0.200;
-    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+    let sc = 1;
     // let sections = {models:{ }};
-    let captions = { models: {} };
-    let weldings = { models: {} };
+    // let captions = { models: {} };
+    // let weldings = { models: {} };
     let titlePosition = 200
     // let group = []
     let group = new THREE.Group();
+
+    var textMesh;
+    var color = 0x006699;
+    var textMaterial = new THREE.MeshBasicMaterial({
+        color: color,
+        transparent: false,
+        opacity: 1,
+        side: THREE.DoubleSide
+    });
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+
     for (var key in sectionPoint) {
         if (sectionPoint[key].constructor === Array) {
             group.add(sectionMesh(sectionPoint[key], lineMaterial))
         }
     }
+    let label = [];
     for (var key in diaPoint) {
         if (diaPoint[key].points) {
             group.add(sectionMesh(diaPoint[key].points, lineMaterial))
         }
-        // let i = diaPoint[key].points.length -1
-        // if (diaPoint[key].size) {
-        //     captions.models[key]={
-        //         models:{}, paths:{}, 
-        //         caption:{
-        //             text:diaPoint[key].size.Label,
-        //             anchor: new makerjs.paths.Line([diaPoint[key].anchor[0][0]*sc,diaPoint[key].anchor[0][1]*sc],[diaPoint[key].anchor[1][0]*sc,diaPoint[key].anchor[1][1]*sc])
-        //         },
-        //         layer:'lime'
-        //     }
-        // }
+        if (diaPoint[key].size) {
+            label.push({
+                text: diaPoint[key].size.Label,
+                anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0]
+            })
+        }
         // if (diaPoint[key].welding) {
         //     for (let i in diaPoint[key].welding){
         //         weldings.models[key + i.tostring] = weldingMark(diaPoint[key].welding[i], 0.8,sc,200,true,true,false,false)
         //     }
         // }
     }
-    var nfont = new THREE.Font();
+
     var loader = new THREE.FontLoader();
     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
         // console.log(font)
-    // var font = {generateShapes:(messagem , num)=>{}}
-        var xMid, text;
-        var color = 0x006699;
-        var matLite = new THREE.MeshBasicMaterial({
-            color: color,
-            transparent: false,
-            opacity: 1,
-            side: THREE.DoubleSide
-        });
-        nfont = font;
-        var message = "   Three.js\nSimple text.";
-        var shapes = font.generateShapes(message, 100);
+        // var font = {generateShapes:(messagem , num)=>{}}
+        
+        var shapes = font.generateShapes(sectionName, 100);
         var geometry = new THREE.ShapeBufferGeometry(shapes);
-
+        var xMid
         // geometry.computeBoundingBox();
-        // xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-        // geometry.translate(xMid, 0, 0);
+        xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+        geometry.translate(xMid, titlePosition, 0);
         // make shape ( N.B. edge view not visible )
-        text = new THREE.Mesh(geometry, matLite);
-        text.layers.set(1)
+        textMesh = new THREE.Mesh(geometry, textMaterial);
+        textMesh.layers.set(1)
+        group.add(textMesh);
         // text.position.z = 0;
-        group.add(text);
     });
 
-    console.log("nfont",nfont)
 
+    // let title = {models:{},
+    //             paths:{
+    //                 circle:new makerjs.paths.Circle([0,titlePosition],titlePosition*0.1)
+    //             },
+    //             caption:{
+    //                 text:sectionName,
+    //                 anchor: new makerjs.paths.Line([-titlePosition,titlePosition],[titlePosition,titlePosition])
+    //             },
+    //             layer:'red'
+    //             }
 
-// let title = {models:{},
-//             paths:{
-//                 circle:new makerjs.paths.Circle([0,titlePosition],titlePosition*0.1)
-//             },
-//             caption:{
-//                 text:sectionName,
-//                 anchor: new makerjs.paths.Line([-titlePosition,titlePosition],[titlePosition,titlePosition])
-//             },
-//             layer:'red'
-//             }
+    // sections.layer = "aqua"
+    // // sections2.layer = "fuchsia"
+    // let wholeModel = {models:{}}
+    // wholeModel.models["sections"] = sections
+    // wholeModel.models["captions"] = captions
+    // wholeModel.models["weldings"] = weldings
+    // wholeModel.models["titles"] = title
+    // wholeModel.models["top1"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1)
+    // wholeModel.models["top2"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0)
+    // wholeModel.models["right1"] = Dimension([sectionPoint.rWeb[0],sectionPoint.rWeb[1]],1,sc,1,false,true,2)
+    // wholeModel.models["right2"] = Dimension([sectionPoint.rWeb[0],diaPoint.lowerTopShape.points[3],diaPoint.lowerTopShape.points[2],diaPoint.rightTopPlateShape.points[3],diaPoint.rightTopPlateShape.points[0],sectionPoint.rWeb[1]],5,sc,1,false,true,1)
+    // wholeModel.models["left1"] = Dimension([sectionPoint.lWeb[0],sectionPoint.lWeb[1]],1,sc,1,false,false,2)
+    // wholeModel.models["left2"] = Dimension([sectionPoint.lWeb[0],diaPoint.lowerTopShape.points[0],diaPoint.lowerTopShape.points[1],diaPoint.leftTopPlateShape.points[3],diaPoint.leftTopPlateShape.points[0],sectionPoint.lWeb[1]],5,sc,1,false,false,1)
+    // wholeModel.models["bottom1"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.lWeb[0],sectionPoint.rWeb[0],sectionPoint.bottomPlate[2]],0,sc,1,true,false,0)
+    // wholeModel.models["bottom2"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.bottomPlate[2]],0,sc,1,true,false,1)
 
-// sections.layer = "aqua"
-// // sections2.layer = "fuchsia"
-// let wholeModel = {models:{}}
-// wholeModel.models["sections"] = sections
-// wholeModel.models["captions"] = captions
-// wholeModel.models["weldings"] = weldings
-// wholeModel.models["titles"] = title
-// wholeModel.models["top1"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1)
-// wholeModel.models["top2"] = Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0)
-// wholeModel.models["right1"] = Dimension([sectionPoint.rWeb[0],sectionPoint.rWeb[1]],1,sc,1,false,true,2)
-// wholeModel.models["right2"] = Dimension([sectionPoint.rWeb[0],diaPoint.lowerTopShape.points[3],diaPoint.lowerTopShape.points[2],diaPoint.rightTopPlateShape.points[3],diaPoint.rightTopPlateShape.points[0],sectionPoint.rWeb[1]],5,sc,1,false,true,1)
-// wholeModel.models["left1"] = Dimension([sectionPoint.lWeb[0],sectionPoint.lWeb[1]],1,sc,1,false,false,2)
-// wholeModel.models["left2"] = Dimension([sectionPoint.lWeb[0],diaPoint.lowerTopShape.points[0],diaPoint.lowerTopShape.points[1],diaPoint.leftTopPlateShape.points[3],diaPoint.leftTopPlateShape.points[0],sectionPoint.lWeb[1]],5,sc,1,false,false,1)
-// wholeModel.models["bottom1"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.lWeb[0],sectionPoint.rWeb[0],sectionPoint.bottomPlate[2]],0,sc,1,true,false,0)
-// wholeModel.models["bottom2"] = Dimension([sectionPoint.bottomPlate[3],sectionPoint.bottomPlate[2]],0,sc,1,true,false,1)
-
-// layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
-// var svg = makerjs.exporter.toSVG(wholeModel);
-// document.write(svg);
-  return group
+    // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
+    // var svg = makerjs.exporter.toSVG(wholeModel);
+    // document.write(svg);
+    return group
 }
 // 치수선 생성 프로그램 선, caption으로 구성해야할 듯함
 // 다수의 포인트(points)의 연속된 치수선을 생성하는 모듈
