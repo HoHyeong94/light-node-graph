@@ -1,5 +1,6 @@
 // import makerjs from 'makerjs'
 import { THREE, sceneAdder } from "global";
+import { PointLength } from "../geometryModule"
 
 // import {PointLength, hBracingPlate} from './geometryFunc'
 // import {ToGlobalPoint, ToGlobalPoint2} from './threejsDisplay'
@@ -288,10 +289,11 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     // let group = []
     let group = new THREE.Group();
     let label = [];
+    let weldings = [];
 
     let textMesh;
-    let textMaterial = new THREE.MeshBasicMaterial({ color : 0xffffff });
-    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });
+    let textMaterial = new THREE.MeshBasicMaterial({ color : 0xffffff });   // white 0xffffff
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
 
     label.push({
         text: sectionName,
@@ -323,11 +325,11 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
                 fontSize : labelSize
             })
         }
-        // if (diaPoint[key].welding) {
-        //     for (let i in diaPoint[key].welding){
-        //         weldings.models[key + i.tostring] = weldingMark(diaPoint[key].welding[i], 0.8,sc,200,true,true,false,false)
-        //     }
-        // }
+        if (diaPoint[key].welding) {
+            for (let i in diaPoint[key].welding){
+                weldings.push(weldingMark(diaPoint[key].welding[i], 0.8,sc,200,true,true,false,false))
+            }
+        }
     }
 
     // let title = {models:{},
@@ -365,6 +367,10 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     for (let i in dims){
         dims[i].meshes.forEach(function(mesh){group.add(mesh)})
         dims[i].labels.forEach(function(elem){label.push(elem)})
+    }
+    for (let i in weldings){
+        weldings[i].meshes.forEach(function(mesh){group.add(mesh)})
+        weldings[i].labels.forEach(function(elem){label.push(elem)})
     }
 
     var loader = new THREE.FontLoader();
@@ -432,78 +438,80 @@ function Dimension(points, index, scale, valueScale, isHorizontal, isTopOrRight,
         }
         for (let i = 0; i<points.length -1;i++){
             meshes.push(LineMesh([{x : points[index].x +add+offset, y:points[i].y},{x:points[index].x+add+offset, y:points[i+1].y}],lineMaterial))
-            // dim.paths['d'+i] = new makerjs.paths.Line([points[index].x*scale+add+offset, points[i].y*scale],[points[index].x*scale+add+offset, points[i+1].y*scale])
             let value = valueScale*(Math.abs(points[i+1].y - points[i].y))
             labels.push({text: value.toFixed(0),
             anchor: [points[index].x +add+offset -fontSize, (points[i].y + points[i+1].y )/2, 0],
             rotation : Math.PI/2,
             fontSize : fontSize})
-            // let value = valueScale*(Math.abs(points[i+1].y - points[i].y))
-            // dim.models['d'+i] = {};
-            // makerjs.model.addCaption(dim.models['d'+i], value.toFixed(0) ,[points[index].x*scale+add+offset -fontSize, points[i].y*scale],[points[index].x*scale+add+offset-fontSize, points[i+1].y*scale])
-            // dim.models['d'+i].layer = "lime"
         }
     }
     return {meshes,labels}
 }
 
-// // locate is 0 to 1 relative point of welding line
-// function weldingMark(weldingObject, locate, scale, distance, isUpper, isRight, isXReverse,isYReverse){
-//     let welding = {models:{}, paths:{},caption:{},layer:'red'}
-//     const sc = scale
-//     let linelength = []
-//     let dummy
-//     let totallength = 0
-//     let point={}
+// locate is 0 to 1 relative point of welding line
+function weldingMark(weldingObject, locate, scale, distance, isUpper, isRight, isXReverse,isYReverse){
+    let welding = {models:{}, paths:{},caption:{},layer:'red'}
+    const sc = scale
+    let linelength = []
+    
+    let fontSize = 50*scale
+    let dummy
+    let totallength = 0
+    let point={}
+    let meshes = [];
+    let labels = [];
 
-//     for (let i = 0;i<weldingObject.Line.length - 1;i++){
-//         dummy = PointLength(weldingObject.Line[i],weldingObject.Line[i+1])
-//         totallength += dummy
-//         linelength.push(totallength)
-//     }
-//     for (let i =0; i<linelength.length;i++){
-//         if (linelength[i]/totallength >= locate){
-//             point['x'] = ((1 - locate) * weldingObject.Line[i].x + locate * weldingObject.Line[i+1].x)
-//             point['y'] = ((1 - locate) * weldingObject.Line[i].y + locate * weldingObject.Line[i+1].y)
-//             break;
-//         }
-//     }
-//     let xsign = isRight? 1:-1;
-//     let ysign = isUpper? 1:-1;
-//     let xsign2 = isXReverse? - 1: 1;
-//     let ysign2 = isYReverse? -1 : 1;
-//     let point0 = [point.x*sc,point.y*sc]
-//     let point1 = [point0[0]+(xsign*xsign2*distance *0.25)*sc,point0[1]+(ysign*ysign2*distance*0.25)*sc]
-//     let point2 = [point1[0]+ (xsign*distance*0.75)*sc,point1[1]+(ysign*distance*0.75)*sc]
-//     let point3 = [point2[0]+ (250)*sc,point2[1]]
-//     welding.paths = {
-//             l1:new makerjs.paths.Line(point0,point1),
-//             l2:new makerjs.paths.Line(point1,point2),
-//             l3:new makerjs.paths.Line(point2,point3),
-//             arrow1:new makerjs.paths.Line([(point.x + xsign*xsign2*30) * sc,(point.y + ysign*ysign2*50) * sc],point0),
-//             arrow2:new makerjs.paths.Line([(point.x + xsign*xsign2*50) * sc,(point.y + ysign*ysign2*30) * sc],point0),
-//     }
-//     if (weldingObject.type==="FF"){
-//         welding.paths['FF1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] + (50)*sc],[point2[0] + (100)*sc,point2[1] - (50)*sc])
-//         welding.paths['FF2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] + (50)*sc],[point2[0] + (150)*sc,point2[1]])
-//         welding.paths['FF3'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] - (50)*sc],[point2[0] + (150)*sc,point2[1]])
-//     }
-//     else if (weldingObject.type==="F"){
-//         welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
-//         welding.paths['F2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] - (50)*sc],[point2[0] + (150)*sc,point2[1]])
-//     }
-//     else if (weldingObject.type==="K"){
-//         welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
-//         welding.paths['F2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1]],[point2[0] + (150)*sc,point2[1] - (50)*sc])
-//     }
-//     else if (weldingObject.type==="V"){
-//         welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (125)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
-//         welding.paths['F2'] = new makerjs.paths.Line([point2[0] + (125)*sc,point2[1]],[point2[0] + (150)*sc,point2[1] - (50)*sc])
-//     }
+    for (let i = 0;i<weldingObject.Line.length - 1;i++){
+        dummy = PointLength(weldingObject.Line[i],weldingObject.Line[i+1])
+        totallength += dummy
+        linelength.push(totallength)
+    }
+    for (let i =0; i<linelength.length;i++){
+        if (linelength[i]/totallength >= locate){
+            point['x'] = ((1 - locate) * weldingObject.Line[i].x + locate * weldingObject.Line[i+1].x)
+            point['y'] = ((1 - locate) * weldingObject.Line[i].y + locate * weldingObject.Line[i+1].y)
+            break;
+        }
+    }
+    let xsign = isRight? 1:-1;
+    let ysign = isUpper? 1:-1;
+    let xsign2 = isXReverse? - 1: 1;
+    let ysign2 = isYReverse? -1 : 1;
+    let point0 = {x: point.x, y:point.y }
+    let point1 = {x:point0.x+(xsign*xsign2*distance *0.25),y: point0.y +(ysign*ysign2*distance*0.25)}
+    let point2 = {x: point1.x+ (xsign*distance*0.75), y:point1.y+(ysign*distance*0.75)}
+    let point3 = {x: point2.x+ (250),y:point2.y}
+    meshes.push(LineMesh([point0,point1],lineMaterial))
+    meshes.push(LineMesh([point1,point2],lineMaterial))
+    meshes.push(LineMesh([point2,point3],lineMaterial))
+    meshes.push(LineMesh([{x:point.x + xsign*xsign2*30, y: point.y + ysign*ysign2*50},point0],lineMaterial))
+    meshes.push(LineMesh([{x:point.x + xsign*xsign2*50, y: point.y + ysign*ysign2*30},point0],lineMaterial))
 
-//     welding.caption = {
-//         text:weldingObject.value1.toFixed(0),
-//         anchor: new makerjs.paths.Line([point2[0],point2[1] - 50*sc],[point2[0] + 100*sc,point2[1] - 50*sc])
-//     }
-//     return welding
-// }
+    // if (weldingObject.type==="FF"){
+    //     welding.paths['FF1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] + (50)*sc],[point2[0] + (100)*sc,point2[1] - (50)*sc])
+    //     welding.paths['FF2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] + (50)*sc],[point2[0] + (150)*sc,point2[1]])
+    //     welding.paths['FF3'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] - (50)*sc],[point2[0] + (150)*sc,point2[1]])
+    // }
+    // else if (weldingObject.type==="F"){
+    //     welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
+    //     welding.paths['F2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] - (50)*sc],[point2[0] + (150)*sc,point2[1]])
+    // }
+    // else if (weldingObject.type==="K"){
+    //     welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
+    //     welding.paths['F2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1]],[point2[0] + (150)*sc,point2[1] - (50)*sc])
+    // }
+    // else if (weldingObject.type==="V"){
+    //     welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (125)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
+    //     welding.paths['F2'] = new makerjs.paths.Line([point2[0] + (125)*sc,point2[1]],[point2[0] + (150)*sc,point2[1] - (50)*sc])
+    // }
+
+    // welding.caption = {
+    //     text:weldingObject.value1.toFixed(0),
+    //     anchor: new makerjs.paths.Line([point2[0],point2[1] - 50*sc],[point2[0] + 100*sc,point2[1] - 50*sc])
+    // }
+    labels.push({text: weldingObject.value1.toFixed(0),
+        anchor: [point2.x + 50, point2.y - 50, 0],
+        rotation : 0,
+        fontSize : fontSize})
+    return { meshes, labels }
+}
