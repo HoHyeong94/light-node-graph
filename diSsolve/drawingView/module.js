@@ -285,6 +285,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     let titlePosition = 200
     // let group = []
     let group = new THREE.Group();
+    let label = [];
 
     var textMesh;
     var color = 0x006699;
@@ -296,12 +297,23 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     });
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 })
 
+    label.push({
+        text: sectionName,
+        anchor: [0, titlePosition, 0]
+    })
+    
+    
+    let circle = new THREE.EllipseCurve(0,titlePosition,100,100)
+    let cp = circle.getPoints(16);
+    let circlegeo = new THREE.Geometry().setFromPoints(cp)
+    let titleCircle = new THREE.Line(circlegeo,lineMaterial)
+    group.add(titleCircle)
+
     for (var key in sectionPoint) {
         if (sectionPoint[key].constructor === Array) {
             group.add(sectionMesh(sectionPoint[key], lineMaterial))
         }
     }
-    let label = [];
     for (var key in diaPoint) {
         if (diaPoint[key].points) {
             group.add(sectionMesh(diaPoint[key].points, lineMaterial))
