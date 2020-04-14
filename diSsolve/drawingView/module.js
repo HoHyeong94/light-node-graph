@@ -25,7 +25,7 @@ function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc,
                         let y = (globalPts[i].y - initPoint.y)*sc
                         pts.push({x: Math.cos(r)*x - Math.sin(r)*y,y:Math.cos(r)*y + Math.sin(r)*x})
                     }
-                    meshes.push(pts, lineMaterial)
+                    meshes.push(sectionMesh(pts, lineMaterial));
                     // result.models[pk + partkey] = new makerjs.models.ConnectTheDots(true,pts);
                 }
                 else {
@@ -43,7 +43,7 @@ function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc,
                         let y = (globalPts[i].y - initPoint.y)*sc
                         pts.push({x:Math.cos(r)*x - Math.sin(r)*y,y:Math.cos(r)*y + Math.sin(r)*x})
                     }
-                    meshes.push(pts, lineMaterial)
+                    meshes.push(sectionMeshes(pts, lineMaterial));
                     // result.models[pk + partkey] = new makerjs.models.ConnectTheDots(true,pts);
                 }
             }
