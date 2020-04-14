@@ -207,8 +207,8 @@ function roundedRect(x, y, width, height, radius, lineMaterial) {
     shape.lineTo(x + radius, y);
     shape.quadraticCurveTo(x, y, x, y + radius);
     let points = shape.getPoints();
-    console.log("pts",points)
-    let geometry = new THREE.Geometry().setFromPoints(points)
+    let geometry = new THREE.BufferGeometry().setFromPoints(points)
+    console.log("geo",geometry)
     return new THREE.Mesh(geometry,lineMaterial)
   }
 
