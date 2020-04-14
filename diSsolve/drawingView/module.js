@@ -239,7 +239,7 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset){
         //         }
         // // gridtitle.models.origin = position
         // gridPoint.models[station]=gridtitle
-        // }
+        }
     }
     return {meshes, labels}
 }
@@ -269,7 +269,7 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     bracing.forEach(function(mesh){group.add(mesh)});
     let gridMark = GridMarkView(gridPoint, sc, initPoint, r, 1400)
     gridMark.meshes.forEach(function(mesh){group.add(mesh)});
-    
+
     // wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
     // wholeModel.models["bottomPlate"].origin = [0,-1000]
     // wholeModel.models["leftWeB"] = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0,1,sc, initPoint,r,"aqua")
