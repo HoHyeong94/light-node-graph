@@ -238,7 +238,8 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     let webPlate = GeneralPlanView(steelBoxDict, ["LeftWeB","RightWeB"], 4, 1,2,sc, initPoint,r,green)
     webPlate.forEach(function(mesh){group.add(mesh)});
     let diaphragm = ShapePlanView(diaDict, gridPoint, ["topPlate","upperTopShape","leftTopPlateShape"], 0, 1, sc, initPoint,r, green);
-    diaphragm.forEach(function(mesh){group.add(mesh)});
+    diaphragm.forEach(function(mesh){group.add(mesh);
+    console.log("dia",mesh)});
     // wholeModel.models["bracingPlate"] = ShapePlanView(hBraicingPlateDict, gridPoint, ["plate"], 0, 1, sc, initPoint,r,"lime");
     // wholeModel.models["vStiffener"] = ShapePlanView(vstiffDict, gridPoint, ["upperframe1","upperframe2"], 0, 3, sc, initPoint,r,"lime");
     // wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
