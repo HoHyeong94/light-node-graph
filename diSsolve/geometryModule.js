@@ -23,6 +23,30 @@ export function ToGlobalPoint(Point, node2D){
     return newPoint
 }
 
+export function ToGlobalPoint2(Point, node2D){
+  let newPoint = {
+      x:0, y:0, z:0
+  }
+  const cos = - Point.normalCos;
+  const sin = - Point.normalSin;
+  // let skewCot = 0;
+  // if (Point.skew !=90){
+  //     skewCot = - 1 / Math.tan(Point.skew * Math.PI/180) 
+  // };
+  let X = node2D.x
+  let Y = node2D.y
+  let Z = 0
+
+  newPoint.x = Point.x + X * cos - Y*sin 
+  newPoint.y = Point.y + X * sin + Y*cos
+  newPoint.z = Point.z + Z
+  newPoint.s = Point.masterStationNumber
+  
+  return newPoint
+}
+
+
+
 export function WebPoint(point1, point2, tan1, H){
   let x
   let y

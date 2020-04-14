@@ -3,50 +3,54 @@ import { THREE, sceneAdder } from "global";
 import { PointLength } from "../geometryModule"
 
 // import {PointLength, hBracingPlate} from './geometryFunc'
-// import {ToGlobalPoint, ToGlobalPoint2} from './threejsDisplay'
+import {ToGlobalPoint, ToGlobalPoint2} from '../geometryModule'
 
-// function ShapePlanView(partDict, nameToPointDict, partkeyNameList, index1, index2, sc, initPoint,r, color){
-//     // console.log(partDict)
-//     let result = {models:{},layer:color };
-//     for (let pk in partDict){
-//         let point = nameToPointDict[pk]
-//         for (let partkey of partkeyNameList){
-//             if (partDict[pk].hasOwnProperty(partkey)){
-//                 if (partDict[pk][partkey].rotationX !== Math.PI/2){
-//                     let globalPts = [];
-//                     let pts = [];
-//                     for (let i in partDict[pk][partkey].points){
-//                         globalPts.push(ToGlobalPoint2(point,partDict[pk][partkey].points[i]))
-//                     }
-//                     for (let i in globalPts){
-//                         let x = (globalPts[i].x - initPoint.x)*sc
-//                         let y = (globalPts[i].y - initPoint.y)*sc
-//                         pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-//                     }
-//                     result.models[pk + partkey] = new makerjs.models.ConnectTheDots(true,pts);
-//                 }
-//                 else {
-//                     let globalPts = [];
-//                     let pts = [];
-//                     let points = [{x:partDict[pk][partkey].points[index1].x, y: partDict[pk][partkey].z},
-//                                 {x:partDict[pk][partkey].points[index2].x, y: partDict[pk][partkey].z},
-//                                 {x:partDict[pk][partkey].points[index2].x, y: partDict[pk][partkey].Thickness+partDict[pk][partkey].z},
-//                                 {x:partDict[pk][partkey].points[index1].x, y: partDict[pk][partkey].Thickness+partDict[pk][partkey].z}]
-//                     for (let i in points){
-//                         globalPts.push(ToGlobalPoint2(point,points[i]))
-//                     }
-//                     for (let i in globalPts){
-//                         let x = (globalPts[i].x - initPoint.x)*sc
-//                         let y = (globalPts[i].y - initPoint.y)*sc
-//                         pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-//                     }
-//                     result.models[pk + partkey] = new makerjs.models.ConnectTheDots(true,pts);
-//                 }
-//             }
-//         }
-//     }
-//     return result
-// }
+function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc, initPoint,r, lineMaterial){
+    // console.log(partDict)
+    // let result = {models:{},layer:color };
+    let meshes = [];
+
+    for (let pk in partDict){
+        let point = pointDict[pk]
+        for (let partkey of partkeyNameList){
+            if (partDict[pk].hasOwnProperty(partkey)){
+                if (partDict[pk][partkey].rotationX !== Math.PI/2){
+                    let globalPts = [];
+                    let pts = [];
+                    for (let i in partDict[pk][partkey].points){
+                        globalPts.push(ToGlobalPoint2(point,partDict[pk][partkey].points[i]))
+                    }
+                    for (let i in globalPts){
+                        let x = (globalPts[i].x - initPoint.x)*sc
+                        let y = (globalPts[i].y - initPoint.y)*sc
+                        pts.push({x: Math.cos(r)*x - Math.sin(r)*y,y:Math.cos(r)*y + Math.sin(r)*x})
+                    }
+                    meshes.push(pts, lineMaterial)
+                    // result.models[pk + partkey] = new makerjs.models.ConnectTheDots(true,pts);
+                }
+                else {
+                    let globalPts = [];
+                    let pts = [];
+                    let points = [{x:partDict[pk][partkey].points[index1].x, y: partDict[pk][partkey].z},
+                                {x:partDict[pk][partkey].points[index2].x, y: partDict[pk][partkey].z},
+                                {x:partDict[pk][partkey].points[index2].x, y: partDict[pk][partkey].Thickness+partDict[pk][partkey].z},
+                                {x:partDict[pk][partkey].points[index1].x, y: partDict[pk][partkey].Thickness+partDict[pk][partkey].z}]
+                    for (let i in points){
+                        globalPts.push(ToGlobalPoint2(point,points[i]))
+                    }
+                    for (let i in globalPts){
+                        let x = (globalPts[i].x - initPoint.x)*sc
+                        let y = (globalPts[i].y - initPoint.y)*sc
+                        pts.push({x:Math.cos(r)*x - Math.sin(r)*y,y:Math.cos(r)*y + Math.sin(r)*x})
+                    }
+                    meshes.push(pts, lineMaterial)
+                    // result.models[pk + partkey] = new makerjs.models.ConnectTheDots(true,pts);
+                }
+            }
+        }
+    }
+    return meshes
+}
 
 // function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1,index2,sc, initPoint,r,color){
 //     let result = {models:{},layer:color };
@@ -233,9 +237,8 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     topPlate.forEach(function(mesh){group.add(mesh)});
     let webPlate = GeneralPlanView(steelBoxDict, ["LeftWeB","RightWeB"], 4, 1,2,sc, initPoint,r,green)
     webPlate.forEach(function(mesh){group.add(mesh)});
-    
-    // wholeModel.models["diaphragm"] = ShapePlanView(diaDict, gridPoint, 
-    //                                 ["topPlate","upperTopShape","leftTopPlateShape"], 0, 1, sc, initPoint,r,"lime");
+    let diaphragm = ShapePlanView(diaDict, gridPoint, ["topPlate","upperTopShape","leftTopPlateShape"], 0, 1, sc, initPoint,r, green);
+    diaphragm.forEach(function(mesh){group.add(mesh)});
     // wholeModel.models["bracingPlate"] = ShapePlanView(hBraicingPlateDict, gridPoint, ["plate"], 0, 1, sc, initPoint,r,"lime");
     // wholeModel.models["vStiffener"] = ShapePlanView(vstiffDict, gridPoint, ["upperframe1","upperframe2"], 0, 3, sc, initPoint,r,"lime");
     // wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
