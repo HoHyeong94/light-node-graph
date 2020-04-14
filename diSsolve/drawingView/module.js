@@ -195,32 +195,54 @@ function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1,inde
     return meshes
 }
 
-// function GridMarkView(nameToPointDict, sc, initPoint, r, Yoffset){
-//     let gridPoint = {models:{}};
-//     for (let station in nameToPointDict){
-//         if(station.substr(2,1)!=="K"){ //station.substr(0,2)==="G1" && 
-//         let x = (nameToPointDict[station].x - initPoint.x)*sc
-//         let y = (nameToPointDict[station].y - initPoint.y)*sc
-//         let position = [Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x + Yoffset*sc]
-//         let gridtitle = {
-//                 models:{
-//                     rect: makerjs.model.move(new makerjs.models.RoundRectangle(400*sc, 200*sc, 100*sc),[position[0]-200*sc,position[1]-100*sc])
-//                 },
-//                 paths:{
+function roundedRect(x, y, width, height, radius, lineMaterial) {
+    let shape = new THREE.Shape()
+    shape.moveTo(x, y + radius);
+    shape.lineTo(x, y + height - radius);
+    shape.quadraticCurveTo(x, y + height, x + radius, y + height);
+    shape.lineTo(x + width - radius, y + height);
+    shape.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
+    shape.lineTo(x + width, y + radius);
+    shape.quadraticCurveTo(x + width, y, x + width - radius, y);
+    shape.lineTo(x + radius, y);
+    shape.quadraticCurveTo(x, y, x, y + radius);
+    let geometry = new THREE.Geometry().setFromPoints(shape.getPoints())
+    return new THREE.Mesh(geometry,lineMaterial)
+  }
 
-//                 },
-//                 caption:{
-//                     text:station,
-//                     anchor: new makerjs.paths.Line([position[0]-1,position[1]],[position[0]+1,position[1]])
-//                 },
-//                 layer:'red'
-//                 }
-//         // gridtitle.models.origin = position
-//         gridPoint.models[station]=gridtitle
-//         }
-//     }
-//     return gridPoint 
-// }
+
+function GridMarkView(pointDict, sc, initPoint, r, Yoffset){
+    let aqua = new THREE.MeshBasicMaterial({ color : 0x00ffff });   // white 0xffffff
+    let textMaterial = new THREE.MeshBasicMaterial({ color : 0xffffff });   // white 0xffffff
+
+    let gridPoint = {models:{}};
+    let meshes = [];
+    let labels = [];
+    for (let station in pointDict){
+        if(station.substr(2,1)!=="K"){ //station.substr(0,2)==="G1" && 
+        let x = (pointDict[station].x - initPoint.x)*sc
+        let y = (pointDict[station].y - initPoint.y)*sc
+        let position = [Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x + Yoffset*sc]
+        meshes.push(roudnedRect(position[0]-200*sc, position[1]-100*sc,400,200,100,aqua))
+        // let gridtitle = {
+        //         models:{
+        //             rect: makerjs.model.move(new makerjs.models.RoundRectangle(400*sc, 200*sc, 100*sc),[position[0]-200*sc,position[1]-100*sc])
+        //         },
+        //         paths:{
+
+        //         },
+        //         caption:{
+        //             text:station,
+        //             anchor: new makerjs.paths.Line([position[0]-1,position[1]],[position[0]+1,position[1]])
+        //         },
+        //         layer:'red'
+        //         }
+        // // gridtitle.models.origin = position
+        // gridPoint.models[station]=gridtitle
+        // }
+    }
+    return {meshes, labels}
+}
 
 // r is rotation angle to radian
 export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,initPoint){
@@ -245,12 +267,14 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     vStiffner.forEach(function(mesh){group.add(mesh)});
     let bracing  = GeneralPlanView(hBracingDict, [""], 4, 0,1,sc, initPoint,r,green);
     bracing.forEach(function(mesh){group.add(mesh)});
-
+    let gridMark = GridMarkView(gridPoint, sc, initPoint, r, 1400)
+    gridMark.meshes.forEach(function(mesh){group.add(mesh)});
+    
     // wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
     // wholeModel.models["bottomPlate"].origin = [0,-1000]
     // wholeModel.models["leftWeB"] = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0,1,sc, initPoint,r,"aqua")
     // wholeModel.models["leftWeB"].origin = [0,-1500]
-    // wholeModel.models["gridMark"] = GridMarkView(gridPoint, sc, initPoint, r, 1400)
+    // wholeModel.models["gridMark"] = 
 
     // for (let i in hBracingDict){
     //     for (let j = 0; j<hBracingDict[i].frame1.length;j++){
