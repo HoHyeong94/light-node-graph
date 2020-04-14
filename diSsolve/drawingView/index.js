@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import { sectionView } from "./module"
+import { sectionView, topDraw } from "./module"
 // import { LineToThree } from "../line/module";
 
 export function SectionViewer(){
