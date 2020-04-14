@@ -120,7 +120,7 @@ import { PointLength } from "../geometryModule"
 // }
 
 function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1,index2,sc, initPoint,r,lineMaterial){
-    let result = {models:{},layer:color };
+    // let result = {models:{},layer:color };
     let index = 1;
     let meshes = [];
     for (let part in steelBoxDict){
@@ -267,7 +267,7 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     //     }
     // }
 
-    return wholeModel
+    return group
 }
 
 // function PlatePlanView(point1, point2, plist1, plist2, initPoint,sc){
