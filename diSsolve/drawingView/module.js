@@ -238,12 +238,15 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     let webPlate = GeneralPlanView(steelBoxDict, ["LeftWeB","RightWeB"], 4, 1,2,sc, initPoint,r,green)
     webPlate.forEach(function(mesh){group.add(mesh)});
     let diaphragm = ShapePlanView(diaDict, gridPoint, ["topPlate","upperTopShape","leftTopPlateShape"], 0, 1, sc, initPoint,r, green);
-    diaphragm.forEach(function(mesh){group.add(mesh);
-    console.log("dia",mesh)});
-    // wholeModel.models["bracingPlate"] = ShapePlanView(hBraicingPlateDict, gridPoint, ["plate"], 0, 1, sc, initPoint,r,"lime");
-    // wholeModel.models["vStiffener"] = ShapePlanView(vstiffDict, gridPoint, ["upperframe1","upperframe2"], 0, 3, sc, initPoint,r,"lime");
+    diaphragm.forEach(function(mesh){group.add(mesh)});
+    let bracingPlate = ShapePlanView(hBraicingPlateDict, gridPoint, ["plate"], 0, 1, sc, initPoint,r, green);
+    bracingPlate.forEach(function(mesh){group.add(mesh)});
+    let vStiffner = ShapePlanView(vstiffDict, gridPoint, ["upperframe1","upperframe2"], 0, 3, sc, initPoint,r,green);
+    vStiffner.forEach(function(mesh){group.add(mesh)});
+    let bracing  = GeneralPlanView(hBracingDict, [""], 4, 0,1,sc, initPoint,r,green);
+    bracing.forEach(function(mesh){group.add(mesh)});
+
     // wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
-    // wholeModel.models["bracing"] = GeneralPlanView(hBracingDict, [""], 4, 0,1,sc, initPoint,r,"lime")
     // wholeModel.models["bottomPlate"].origin = [0,-1000]
     // wholeModel.models["leftWeB"] = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0,1,sc, initPoint,r,"aqua")
     // wholeModel.models["leftWeB"].origin = [0,-1500]
