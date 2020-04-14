@@ -227,7 +227,7 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     let group = new THREE.Group();
 
     const hBracingDict = hBracing.hBracingDict
-    const hBraicingPlateDict = hBracing.hBraicingPlateDict
+    const hBracingPlateDict = hBracing.hBracingPlateDict
     
     let sc = 0.100;
     let r = Math.PI - Math.atan((gridPoint["G1K6"].y - gridPoint["G1K1"].y)/ (gridPoint["G1K6"].x - gridPoint["G1K1"].x))
@@ -239,7 +239,7 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     webPlate.forEach(function(mesh){group.add(mesh)});
     let diaphragm = ShapePlanView(diaDict, gridPoint, ["topPlate","upperTopShape","leftTopPlateShape"], 0, 1, sc, initPoint,r, green);
     diaphragm.forEach(function(mesh){group.add(mesh)});
-    let bracingPlate = ShapePlanView(hBraicingPlateDict, gridPoint, ["plate"], 0, 1, sc, initPoint,r, green);
+    let bracingPlate = ShapePlanView(hBracingPlateDict, gridPoint, ["plate"], 0, 1, sc, initPoint,r, green);
     bracingPlate.forEach(function(mesh){group.add(mesh)});
     let vStiffner = ShapePlanView(vstiffDict, gridPoint, ["upperframe1","upperframe2"], 0, 3, sc, initPoint,r,green);
     vStiffner.forEach(function(mesh){group.add(mesh)});
