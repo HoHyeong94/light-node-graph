@@ -216,7 +216,7 @@ function roundedRect(x, y, width, height, radius, lineMaterial) {
 function GridMarkView(pointDict, sc, initPoint, r, Yoffset){
 
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    let fontSize = 100*sc;
+    let fontSize = 80*sc;
     let meshes = [];
     let labels = [];
     for (let station in pointDict){
