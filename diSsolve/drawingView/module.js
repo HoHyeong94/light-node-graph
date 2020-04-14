@@ -214,15 +214,13 @@ function roundedRect(x, y, width, height, radius, lineMaterial) {
 
 
 function GridMarkView(pointDict, sc, initPoint, r, Yoffset){
-    let aqua = new THREE.MeshBasicMaterial({ color : 0x00ffff });   // white 0xffffff
-    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });
-    let textMaterial = new THREE.MeshBasicMaterial({ color : 0xffffff });   // white 0xffffff
+
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let fontSize = 50*sc;
-    let gridPoint = {models:{}};
     let meshes = [];
     let labels = [];
     for (let station in pointDict){
-        if(station.substr(2,1)!=="K"){ //station.substr(0,2)==="G1" && 
+        if(station.substr(2,1)!=="K" && !station.includes("CR")){ //station.substr(0,2)==="G1" && 
         let x = (pointDict[station].x - initPoint.x)*sc
         let y = (pointDict[station].y - initPoint.y)*sc
         let position = [Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x + Yoffset*sc]
@@ -232,21 +230,6 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset){
             anchor: [position[0], position[1], 0],
             rotation : 0,
             fontSize : fontSize})
-        // let gridtitle = {
-        //         models:{
-        //             rect: makerjs.model.move(new makerjs.models.RoundRectangle(400*sc, 200*sc, 100*sc),[position[0]-200*sc,position[1]-100*sc])
-        //         },
-        //         paths:{
-
-        //         },
-        //         caption:{
-        //             text:station,
-        //             anchor: new makerjs.paths.Line([position[0]-1,position[1]],[position[0]+1,position[1]])
-        //         },
-        //         layer:'red'
-        //         }
-        // // gridtitle.models.origin = position
-        // gridPoint.models[station]=gridtitle
         }
     }
     return {meshes, labels}
@@ -284,27 +267,7 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
     // wholeModel.models["leftWeB"] = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0,1,sc, initPoint,r,"aqua")
     // wholeModel.models["leftWeB"].origin = [0,-1500]
     // wholeModel.models["gridMark"] = 
-
-    // for (let i in hBracingDict){
-    //     for (let j = 0; j<hBracingDict[i].frame1.length;j++){
-    //     let pts = []
-    //      let x = (hBracingDict[i].pointlist[j][0].x - initPoint.x)*sc
-    //      let y = (hBracingDict[i].pointlist[j][0].y - initPoint.y)*sc
-    //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-    //      x = (hBracingDict[i].pointlist[j][1].x - initPoint.x)*sc
-    //      y = (hBracingDict[i].pointlist[j][1].y - initPoint.y)*sc
-    //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-    //      x = (hBracingDict[i].pointlist[j][2].x - initPoint.x)*sc
-    //      y = (hBracingDict[i].pointlist[j][2].y - initPoint.y)*sc
-    //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-    //      x = (hBracingDict[i].pointlist[j][3].x - initPoint.x)*sc
-    //      y = (hBracingDict[i].pointlist[j][3].y - initPoint.y)*sc
-    //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-    //      hbracing.models["hbracing"+ i +"_"+ j] = new makerjs.models.ConnectTheDots(true,pts);
-    //     }
-    // }
-
-
+    
     let textMesh;
     let textMaterial = new THREE.MeshBasicMaterial({ color : 0xffffff });   // white 0xffffff
 
@@ -332,17 +295,6 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
 
     return group
 }
-
-// function PlatePlanView(point1, point2, plist1, plist2, initPoint,sc){
-//     let plist = [];
-//     let result = [];
-//     plist.push(ToGlobalPoint(point1, plist1))
-//     plist.push(ToGlobalPoint(point2, plist2))
-//     for (let i in plist){
-//         result.push([(plist[i].x - initPoint.x)*sc,(plist[i].y - initPoint.y)*sc])
-//     }
-//     return result[0]
-// }
 
 function LineMesh(point0, lineMaterial) {
     let points = []
