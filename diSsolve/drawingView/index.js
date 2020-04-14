@@ -41,7 +41,7 @@ export function TopViewer(){
   this.addInput("diaDict","diaDict");
   this.addInput("vstiffDict","diaDict");
   this.addInput("gridPoint","gridPoint");
-  this.addInput("initPoint","initPoint");
+  this.addInput("initPoint","point");
 }
 
 TopViewer.prototype.onExecute = function() {
