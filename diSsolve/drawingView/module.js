@@ -209,12 +209,13 @@ function roundedRect(x, y, width, height, radius, lineMaterial) {
     let points = shape.getPoints();
     let geometry = new THREE.BufferGeometry().setFromPoints(points)
     console.log("geo",geometry)
-    return new THREE.Mesh(geometry,lineMaterial)
+    return new THREE.Line(geometry,lineMaterial)
   }
 
 
 function GridMarkView(pointDict, sc, initPoint, r, Yoffset){
     let aqua = new THREE.MeshBasicMaterial({ color : 0x00ffff });   // white 0xffffff
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });
     let textMaterial = new THREE.MeshBasicMaterial({ color : 0xffffff });   // white 0xffffff
 
     let gridPoint = {models:{}};
@@ -225,7 +226,7 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset){
         let x = (pointDict[station].x - initPoint.x)*sc
         let y = (pointDict[station].y - initPoint.y)*sc
         let position = [Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x + Yoffset*sc]
-        meshes.push(roundedRect(position[0]-200*sc, position[1]-100*sc,400,200,100,aqua))
+        meshes.push(roundedRect(position[0]-200*sc, position[1]-100*sc,400,200,100,lineMaterial))
         // let gridtitle = {
         //         models:{
         //             rect: makerjs.model.move(new makerjs.models.RoundRectangle(400*sc, 200*sc, 100*sc),[position[0]-200*sc,position[1]-100*sc])
