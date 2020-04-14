@@ -121,7 +121,7 @@ import { PointLength } from "../geometryModule"
 
 function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1,index2,sc, initPoint,r,lineMaterial){
     // let result = {models:{},layer:color };
-    let index = 1;
+    // let index = 1;
     let meshes = [];
     for (let part in steelBoxDict){
         for (let name of keyNamelist){
@@ -171,23 +171,19 @@ function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1,inde
                     // index +=1    
                 }
 
-                // else if(ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0){
-                //     if (ptsC1[0][0]===ptsL1[ptsL1.length-1][0] && ptsC1[0][1]===ptsL1[ptsL1.length-1][1]){
-                //         result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
-                //             [...ptsL1,...ptsC1,...ptsC2.reverse(),...ptsR1.reverse(),...ptsR2,...ptsL2.reverse()]);
-                //         index +=1        
-                //     }else{
-                //         result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
-                //             [...ptsL1.reverse(),...ptsC1.reverse(),...ptsC2,...ptsR1,...ptsR2.reverse(),...ptsL2]);
-                //         index +=1        
-                //     }
-                // }
-                // else if(ptsL1.length === 0 && ptsL1.length === 0){
-                //     result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
-                //         [...ptsC1.reverse(),...ptsC2]);
-                //     index +=1        
-
-                // }
+                else if(ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0){
+                    if (ptsC1[0].x===ptsL1[ptsL1.length-1].x && ptsC1[0].y===ptsL1[ptsL1.length-1].y){
+                        meshes.push(sectionMesh(
+                            [...ptsL1,...ptsC1,...ptsC2.reverse(),...ptsR1.reverse(),...ptsR2,...ptsL2.reverse()],lineMaterial));
+                    }else{
+                        meshes.push(sectionMesh(
+                            [...ptsL1.reverse(),...ptsC1.reverse(),...ptsC2,...ptsR1,...ptsR2.reverse(),...ptsL2],lineMaterial));
+                    }
+                }
+                else if(ptsL1.length === 0 && ptsL1.length === 0){
+                    meshes.push(sectionMesh(
+                        [...ptsC1.reverse(),...ptsC2],lineMaterial));
+                }
             
             }
         }
