@@ -119,75 +119,81 @@ import { PointLength } from "../geometryModule"
 //     return result
 // }
 
-// function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1,index2,sc, initPoint,r,color){
-//     let result = {models:{},layer:color };
-//     let index = 1;
-//     for (let part in steelBoxDict){
-//         for (let name of keyNamelist){
-//             if(part.includes(name)){
-//                 let ptsL1 = [];
-//                 let ptsR1 = [];
-//                 let ptsC1 = [];
-//                 let ptsL2 = [];
-//                 let ptsR2 = [];
-//                 let ptsC2 = [];
-//                 for (let j in steelBoxDict[part]["points"]){
-//                     let pts1 = [];
-//                     let pts2 = [];
-//                     for (let i in steelBoxDict[part]["points"][j]){
-//                         if ( i%sectionPointNum === index1){
-//                             let x = (steelBoxDict[part]["points"][j][i].x - initPoint.x)*sc
-//                             let y = (steelBoxDict[part]["points"][j][i].y - initPoint.y)*sc
-//                             pts1.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-//                             // if (i==0){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
-//                         }else if( i%sectionPointNum === index2){
-//                             let x = (steelBoxDict[part]["points"][j][i].x - initPoint.x)*sc
-//                             let y = (steelBoxDict[part]["points"][j][i].y - initPoint.y)*sc
-//                             pts2.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-//                             // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
-//                         }
+function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1,index2,sc, initPoint,r,lineMaterial){
+    let result = {models:{},layer:color };
+    let index = 1;
+    let meshes = [];
+    for (let part in steelBoxDict){
+        for (let name of keyNamelist){
+            if(part.includes(name)){
+                let ptsL1 = [];
+                let ptsR1 = [];
+                let ptsC1 = [];
+                let ptsL2 = [];
+                let ptsR2 = [];
+                let ptsC2 = [];
+                for (let j in steelBoxDict[part]["points"]){
+                    let pts1 = [];
+                    let pts2 = [];
+                    for (let i in steelBoxDict[part]["points"][j]){
+                        if ( i%sectionPointNum === index1){
+                            let x = (steelBoxDict[part]["points"][j][i].x - initPoint.x)*sc
+                            let y = (steelBoxDict[part]["points"][j][i].y - initPoint.y)*sc
+                            pts1.push({x:Math.cos(r)*x - Math.sin(r)*y,y:Math.cos(r)*y + Math.sin(r)*x})
+                            // if (i==0){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+                        }else if( i%sectionPointNum === index2){
+                            let x = (steelBoxDict[part]["points"][j][i].x - initPoint.x)*sc
+                            let y = (steelBoxDict[part]["points"][j][i].y - initPoint.y)*sc
+                            pts2.push({x:Math.cos(r)*x - Math.sin(r)*y,y:Math.cos(r)*y + Math.sin(r)*x})
+                            // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+                        }
 
-//                     }
-//                     if (j==0){
-//                         ptsL1.push(...pts1)
-//                         ptsL2.push(...pts2)
-//                     }
-//                     if (j==1){
-//                         ptsR1.push(...pts1)
-//                         ptsR2.push(...pts2)
-//                     }
-//                     if (j==2){
-//                         ptsC1.push(...pts1)
-//                         ptsC2.push(...pts2)
-//                     }
-//                 }
-//                 if (ptsC1.length === 0){
-//                     result.models[name + index.toString()] = new makerjs.models.ConnectTheDots(true,[...ptsL1,...ptsL2.reverse()]);
-//                     index +=1
-//                     result.models[name + index.toString()] = new makerjs.models.ConnectTheDots(true,[...ptsR1,...ptsR2.reverse()]);
-//                     index +=1    
-//                 }else if(ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0){
-//                     if (ptsC1[0][0]===ptsL1[ptsL1.length-1][0] && ptsC1[0][1]===ptsL1[ptsL1.length-1][1]){
-//                         result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
-//                             [...ptsL1,...ptsC1,...ptsC2.reverse(),...ptsR1.reverse(),...ptsR2,...ptsL2.reverse()]);
-//                         index +=1        
-//                     }else{
-//                         result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
-//                             [...ptsL1.reverse(),...ptsC1.reverse(),...ptsC2,...ptsR1,...ptsR2.reverse(),...ptsL2]);
-//                         index +=1        
-//                     }
-//                 }
-//                 else if(ptsL1.length === 0 && ptsL1.length === 0){
-//                     result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
-//                         [...ptsC1.reverse(),...ptsC2]);
-//                     index +=1        
+                    }
+                    if (j==0){
+                        ptsL1.push(...pts1)
+                        ptsL2.push(...pts2)
+                    }
+                    if (j==1){
+                        ptsR1.push(...pts1)
+                        ptsR2.push(...pts2)
+                    }
+                    if (j==2){
+                        ptsC1.push(...pts1)
+                        ptsC2.push(...pts2)
+                    }
+                }
+                if (ptsC1.length === 0){
+                    meshes.push(sectionMesh([...ptsL1,...ptsL2.reverse()], lineMaterial))
+                    meshes.push(sectionMesh([...ptsR1,...ptsR2.reverse()], lineMaterial))
+                    // result.models[name + index.toString()] = new makerjs.models.ConnectTheDots(true,[...ptsL1,...ptsL2.reverse()]);
+                    // index +=1
+                    // result.models[name + index.toString()] = new makerjs.models.ConnectTheDots(true,[...ptsR1,...ptsR2.reverse()]);
+                    // index +=1    
+                }
 
-//                 }
-//             }
-//         }
-//     }
-//     return result
-// }
+                // else if(ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0){
+                //     if (ptsC1[0][0]===ptsL1[ptsL1.length-1][0] && ptsC1[0][1]===ptsL1[ptsL1.length-1][1]){
+                //         result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
+                //             [...ptsL1,...ptsC1,...ptsC2.reverse(),...ptsR1.reverse(),...ptsR2,...ptsL2.reverse()]);
+                //         index +=1        
+                //     }else{
+                //         result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
+                //             [...ptsL1.reverse(),...ptsC1.reverse(),...ptsC2,...ptsR1,...ptsR2.reverse(),...ptsL2]);
+                //         index +=1        
+                //     }
+                // }
+                // else if(ptsL1.length === 0 && ptsL1.length === 0){
+                //     result.models[name+index.toString()] = new makerjs.models.ConnectTheDots(true,
+                //         [...ptsC1.reverse(),...ptsC2]);
+                //     index +=1        
+
+                // }
+            
+            }
+        }
+    }
+    return meshes
+}
 
 // function GridMarkView(nameToPointDict, sc, initPoint, r, Yoffset){
 //     let gridPoint = {models:{}};
@@ -217,45 +223,52 @@ import { PointLength } from "../geometryModule"
 // }
 
 // r is rotation angle to radian
-// export function topDraw(steelBoxDict,hBracingDict, hBraicingPlateDict,diaDict, vstiffDict, nameToPointDict,initPoint){
+export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,initPoint){
+    let group = new THREE.Group();
 
-//     let sc = 0.100;
-//     let wholeModel = {models:{}};
-//     let r = Math.PI - Math.atan((nameToPointDict["G1K6"].y - nameToPointDict["G1K1"].y)/ (nameToPointDict["G1K6"].x - nameToPointDict["G1K1"].x))
-//     wholeModel.models["TopPlate"] = GeneralPlanView(steelBoxDict, ["TopPlate"], 4, 0,1,sc, initPoint,r,"aqua")
-//     wholeModel.models["WeB"] = GeneralPlanView(steelBoxDict, ["LeftWeB","RightWeB"], 4, 1,2,sc, initPoint,r,"lime")
-//     wholeModel.models["diaphragm"] = ShapePlanView(diaDict, nameToPointDict, 
-//                                     ["topPlate","upperTopShape","leftTopPlateShape"], 0, 1, sc, initPoint,r,"lime");
-//     wholeModel.models["bracingPlate"] = ShapePlanView(hBraicingPlateDict, nameToPointDict, ["plate"], 0, 1, sc, initPoint,r,"lime");
-//     wholeModel.models["vStiffener"] = ShapePlanView(vstiffDict, nameToPointDict, ["upperframe1","upperframe2"], 0, 3, sc, initPoint,r,"lime");
-//     wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
-//     wholeModel.models["bracing"] = GeneralPlanView(hBracingDict, [""], 4, 0,1,sc, initPoint,r,"lime")
-//     wholeModel.models["bottomPlate"].origin = [0,-1000]
-//     wholeModel.models["leftWeB"] = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0,1,sc, initPoint,r,"aqua")
-//     wholeModel.models["leftWeB"].origin = [0,-1500]
-//     wholeModel.models["gridMark"] = GridMarkView(nameToPointDict, sc, initPoint, r, 1400)
+    const hBracingDict = hBracing.hBracingDict
+    const hBraicingPlateDict = hBracing.hBraicingPlateDict
+    let sc = 0.100;
+    let wholeModel = {models:{}};
+    let r = Math.PI - Math.atan((gridPoint["G1K6"].y - gridPoint["G1K1"].y)/ (gridPoint["G1K6"].x - gridPoint["G1K1"].x))
+    let aqua = new THREE.MeshBasicMaterial({ color : 0x00ffff });   // white 0xffffff
+    let green = new THREE.MeshBasicMaterial({ color : 0x00ff00 });   // white 0xffffff
+    let topPlate = GeneralPlanView(steelBoxDict, ["TopPlate"], 4, 0,1,sc, initPoint,r,aqua)
+    topPlate.forEach(function(mesh){group.add(mesh)});
+    // group.add(GeneralPlanView(steelBoxDict, ["LeftWeB","RightWeB"], 4, 1,2,sc, initPoint,r,green));
+    
+    // wholeModel.models["diaphragm"] = ShapePlanView(diaDict, gridPoint, 
+    //                                 ["topPlate","upperTopShape","leftTopPlateShape"], 0, 1, sc, initPoint,r,"lime");
+    // wholeModel.models["bracingPlate"] = ShapePlanView(hBraicingPlateDict, gridPoint, ["plate"], 0, 1, sc, initPoint,r,"lime");
+    // wholeModel.models["vStiffener"] = ShapePlanView(vstiffDict, gridPoint, ["upperframe1","upperframe2"], 0, 3, sc, initPoint,r,"lime");
+    // wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
+    // wholeModel.models["bracing"] = GeneralPlanView(hBracingDict, [""], 4, 0,1,sc, initPoint,r,"lime")
+    // wholeModel.models["bottomPlate"].origin = [0,-1000]
+    // wholeModel.models["leftWeB"] = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0,1,sc, initPoint,r,"aqua")
+    // wholeModel.models["leftWeB"].origin = [0,-1500]
+    // wholeModel.models["gridMark"] = GridMarkView(gridPoint, sc, initPoint, r, 1400)
 
-//     // for (let i in hBracingDict){
-//     //     for (let j = 0; j<hBracingDict[i].frame1.length;j++){
-//     //     let pts = []
-//     //      let x = (hBracingDict[i].pointlist[j][0].x - initPoint.x)*sc
-//     //      let y = (hBracingDict[i].pointlist[j][0].y - initPoint.y)*sc
-//     //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-//     //      x = (hBracingDict[i].pointlist[j][1].x - initPoint.x)*sc
-//     //      y = (hBracingDict[i].pointlist[j][1].y - initPoint.y)*sc
-//     //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-//     //      x = (hBracingDict[i].pointlist[j][2].x - initPoint.x)*sc
-//     //      y = (hBracingDict[i].pointlist[j][2].y - initPoint.y)*sc
-//     //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-//     //      x = (hBracingDict[i].pointlist[j][3].x - initPoint.x)*sc
-//     //      y = (hBracingDict[i].pointlist[j][3].y - initPoint.y)*sc
-//     //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
-//     //      hbracing.models["hbracing"+ i +"_"+ j] = new makerjs.models.ConnectTheDots(true,pts);
-//     //     }
-//     // }
+    // for (let i in hBracingDict){
+    //     for (let j = 0; j<hBracingDict[i].frame1.length;j++){
+    //     let pts = []
+    //      let x = (hBracingDict[i].pointlist[j][0].x - initPoint.x)*sc
+    //      let y = (hBracingDict[i].pointlist[j][0].y - initPoint.y)*sc
+    //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
+    //      x = (hBracingDict[i].pointlist[j][1].x - initPoint.x)*sc
+    //      y = (hBracingDict[i].pointlist[j][1].y - initPoint.y)*sc
+    //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
+    //      x = (hBracingDict[i].pointlist[j][2].x - initPoint.x)*sc
+    //      y = (hBracingDict[i].pointlist[j][2].y - initPoint.y)*sc
+    //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
+    //      x = (hBracingDict[i].pointlist[j][3].x - initPoint.x)*sc
+    //      y = (hBracingDict[i].pointlist[j][3].y - initPoint.y)*sc
+    //      pts.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])
+    //      hbracing.models["hbracing"+ i +"_"+ j] = new makerjs.models.ConnectTheDots(true,pts);
+    //     }
+    // }
 
-//     return wholeModel
-// }
+    return wholeModel
+}
 
 // function PlatePlanView(point1, point2, plist1, plist2, initPoint,sc){
 //     let plist = [];
@@ -267,6 +280,15 @@ import { PointLength } from "../geometryModule"
 //     }
 //     return result[0]
 // }
+
+function LineMesh(point0, lineMaterial) {
+    let points = []
+    for (let i in point0) {
+        points.push(new THREE.Vector3(point0[i].x, point0[i].y, 0))
+    }
+    let geometry = new THREE.Geometry().setFromPoints(points)
+    return new THREE.Line(geometry, lineMaterial)
+}
 
 function sectionMesh(point0, lineMaterial) {
     let points = []
@@ -295,12 +317,11 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     let textMaterial = new THREE.MeshBasicMaterial({ color : 0xffffff });   // white 0xffffff
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
 
-    label.push({
+    label.push({    //sectiontitle
         text: sectionName,
         anchor: [0, titlePosition, 0],
         fontSize : titleSize
     })
-    
     
     let circle = new THREE.EllipseCurve(0,titlePosition,titleSize*2.5,titleSize*2.5)
     let cp = circle.getPoints(16);
@@ -332,24 +353,6 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
         }
     }
 
-    // let title = {models:{},
-    //             paths:{
-    //                 circle:new makerjs.paths.Circle([0,titlePosition],titlePosition*0.1)
-    //             },
-    //             caption:{
-    //                 text:sectionName,
-    //                 anchor: new makerjs.paths.Line([-titlePosition,titlePosition],[titlePosition,titlePosition])
-    //             },
-    //             layer:'red'
-    //             }
-
-    // sections.layer = "aqua"
-    // // sections2.layer = "fuchsia"
-    // let wholeModel = {models:{}}
-    // wholeModel.models["sections"] = sections
-    // wholeModel.models["captions"] = captions
-    // wholeModel.models["weldings"] = weldings
-    // wholeModel.models["titles"] = title
     let dims = [];
     dims.push(Dimension([sectionPoint.leftTopPlate[3],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,1))   //top1
     dims.push(Dimension([sectionPoint.leftTopPlate[3],sectionPoint.leftTopPlate[2],sectionPoint.rightTopPlate[2],sectionPoint.rightTopPlate[3]],0,sc,1,true,true,0)) //top2
@@ -361,8 +364,6 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     dims.push(Dimension([sectionPoint.bottomPlate[3],sectionPoint.bottomPlate[2]],0,sc,1,true,false,1)) //botoom2
 
     // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
-    // var svg = makerjs.exporter.toSVG(wholeModel);
-    // document.write(svg);
     
     for (let i in dims){
         dims[i].meshes.forEach(function(mesh){group.add(mesh)})
@@ -398,14 +399,6 @@ export function sectionView(sectionName, sectionPoint, diaPoint) {
     return group
 }
 
-function LineMesh(point0, lineMaterial) {
-    let points = []
-    for (let i in point0) {
-        points.push(new THREE.Vector3(point0[i].x, point0[i].y, 0))
-    }
-    let geometry = new THREE.Geometry().setFromPoints(points)
-    return new THREE.Line(geometry, lineMaterial)
-}
 
 // 치수선 생성 프로그램 선, caption으로 구성해야할 듯함
 // 다수의 포인트(points)의 연속된 치수선을 생성하는 모듈
@@ -492,8 +485,6 @@ function weldingMark(weldingObject, locate, scale, distance, isUpper, isRight, i
         meshes.push(LineMesh([{x : point2.x + (100),y: point2.y + (50)},{x:point2.x + (100),y:point2.y - (50)}],lineMaterial))
         meshes.push(LineMesh([{x : point2.x + (100),y: point2.y + (50)},{x:point2.x + (150),y:point2.y}],lineMaterial))
         meshes.push(LineMesh([{x : point2.x + (100),y: point2.y - (50)},{x:point2.x + (150),y:point2.y}],lineMaterial))
-        // welding.paths['FF2'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] + (50)*sc],[point2[0] + (150)*sc,point2[1]])
-        // welding.paths['FF3'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1] - (50)*sc],[point2[0] + (150)*sc,point2[1]])
     }
     // else if (weldingObject.type==="F"){
     //     welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (100)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
@@ -506,11 +497,6 @@ function weldingMark(weldingObject, locate, scale, distance, isUpper, isRight, i
     // else if (weldingObject.type==="V"){
     //     welding.paths['F1'] = new makerjs.paths.Line([point2[0] + (125)*sc,point2[1]],[point2[0]+(100)*sc,point2[1] - (50)*sc])
     //     welding.paths['F2'] = new makerjs.paths.Line([point2[0] + (125)*sc,point2[1]],[point2[0] + (150)*sc,point2[1] - (50)*sc])
-    // }
-
-    // welding.caption = {
-    //     text:weldingObject.value1.toFixed(0),
-    //     anchor: new makerjs.paths.Line([point2[0],point2[1] - 50*sc],[point2[0] + 100*sc,point2[1] - 50*sc])
     // }
     labels.push({text: weldingObject.value1.toFixed(0),
         anchor: [point2.x + 50, point2.y - 50, 0],
