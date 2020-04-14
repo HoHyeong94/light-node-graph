@@ -224,14 +224,15 @@ export function topDraw(steelBoxDict,hBracing, diaDict, vstiffDict, gridPoint,in
 
     const hBracingDict = hBracing.hBracingDict
     const hBraicingPlateDict = hBracing.hBraicingPlateDict
+    
     let sc = 0.100;
-    let wholeModel = {models:{}};
     let r = Math.PI - Math.atan((gridPoint["G1K6"].y - gridPoint["G1K1"].y)/ (gridPoint["G1K6"].x - gridPoint["G1K1"].x))
     let aqua = new THREE.MeshBasicMaterial({ color : 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color : 0x00ff00 });   // white 0xffffff
     let topPlate = GeneralPlanView(steelBoxDict, ["TopPlate"], 4, 0,1,sc, initPoint,r,aqua)
     topPlate.forEach(function(mesh){group.add(mesh)});
-    // group.add(GeneralPlanView(steelBoxDict, ["LeftWeB","RightWeB"], 4, 1,2,sc, initPoint,r,green));
+    let webPlate = GeneralPlanView(steelBoxDict, ["LeftWeB","RightWeB"], 4, 1,2,sc, initPoint,r,green)
+    webPlate.forEach(function(mesh){group.add(mesh)});
     
     // wholeModel.models["diaphragm"] = ShapePlanView(diaDict, gridPoint, 
     //                                 ["topPlate","upperTopShape","leftTopPlateShape"], 0, 1, sc, initPoint,r,"lime");
