@@ -226,7 +226,7 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset){
         let x = (pointDict[station].x - initPoint.x)*sc
         let y = (pointDict[station].y - initPoint.y)*sc
         let position = [Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x + Yoffset*sc]
-        meshes.push(roundedRect(position[0]-200*sc, position[1]-100*sc,400,200,100,lineMaterial))
+        meshes.push(roundedRect(position[0]-200*sc, position[1]-100*sc,400*sc,200*sc,100*sc,lineMaterial))
         // let gridtitle = {
         //         models:{
         //             rect: makerjs.model.move(new makerjs.models.RoundRectangle(400*sc, 200*sc, 100*sc),[position[0]-200*sc,position[1]-100*sc])
