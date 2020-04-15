@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import { sectionView, topDraw } from "./module"
+import { sectionView, topDraw, sideDraw } from "./module"
 // import { LineToThree } from "../line/module";
 
 export function SectionViewer(){
@@ -53,4 +53,25 @@ TopViewer.prototype.on3DExecute = function() {
   // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
   group.position.set(0,-offset,0)
   sceneAdder({layer:1, mesh:group},"topView");
+};
+
+
+export function SideViewer(){
+  this.addInput("steelBoxDict","steelBoxDict");
+  this.addInput("hBracingDict","hBracingDict");
+  this.addInput("diaDict","diaDict");
+  this.addInput("vstiffDict","diaDict");
+  this.addInput("gridPoint","gridPoint");
+  this.addInput("initPoint","point");
+}
+
+SideViewer.prototype.onExecute = function() {
+}
+
+SideViewer.prototype.on3DExecute = function() {
+  let offset = 15000;
+  let group = sideDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5))
+  // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
+  group.position.set(0,-offset,0)
+  sceneAdder({layer:1, mesh:group},"SideView");
 };
