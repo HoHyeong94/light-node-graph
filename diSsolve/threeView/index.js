@@ -17,7 +17,7 @@ LineViewer.prototype.on3DExecute = function() {
   console.log(this.getInputData(1)?true:false)
   console.log(initPoint,color)
   let mesh = LineView(points,initPoint,color)
-  sceneAdder({layer:1, mesh:mesh},"line");
+  sceneAdder({layer:2, mesh:mesh},"line");
 };
 
 export function SteelPlateView(){
