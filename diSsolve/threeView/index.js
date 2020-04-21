@@ -33,15 +33,17 @@ SteelPlateView.prototype.onExecute = function() {
 export function DiaPhragmView(){
   this.addInput("diaDict","diaDict");
   this.addInput("Point","Point");
+  this.addInput("keyName","string")
 }
 
 DiaPhragmView.prototype.onExecute = function() {
   const diaDict = this.getInputData(0);
   const initPoint = this.getInputData(1);
+  const keyName = this.getInputData(2);
   const group = DiaView(diaDict,initPoint);
-  let n = Math.random().toFixed(5)
-  console.log("random", n)
-  sceneAdder({ layer: 0, mesh: group},"dia-"+ n ); 
+  // let n = Math.random().toFixed(5)
+  // console.log("random", n)
+  sceneAdder({ layer: 0, mesh: group},keyName ); 
 }
 
 export function HorBracingView(){
