@@ -5,6 +5,16 @@ import { PointLength } from "../geometryModule"
 // import {PointLength, hBracingPlate} from './geometryFunc'
 import {ToGlobalPoint, ToGlobalPoint2} from '../geometryModule'
 
+export function LineDrawView(masterLine, slaveLines){
+    let group = new THREE.Group();
+    let meshes = [];
+    let labels = [];
+
+    return group
+}
+
+
+
 function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc, initPoint,r, lineMaterial){
     // console.log(partDict)
     // let result = {models:{},layer:color };
@@ -560,3 +570,4 @@ function weldingMark(weldingObject, locate, scale, distance, isUpper, isRight, i
         fontSize : fontSize})
     return { meshes, labels }
 }
+
