@@ -81,7 +81,10 @@ export function LineDraw(){
   this.addInput("slaveLine","line");
 }
 
-LineDraw.prototype.on3DDexcute = function() {
+LineDraw.prototype.onExecute = function() {
+}
+
+LineDraw.prototype.on3DExecute = function() {
   let group = LineDrawView(this.getInputData(0),this.getInputData(1))
   sceneAdder({layer:3, mesh:group},"LineView")
 }

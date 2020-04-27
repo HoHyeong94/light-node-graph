@@ -12,7 +12,7 @@ export function LineDrawView(masterLine, slaveLines) {
     let labels = [];
     let points = [];
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    let initPoint = {x:masterLine.HorizonDataList[0][0],y:masterLine.HorizonDataList[0][0]}
+    let initPoint = {x:masterLine.HorizonDataList[0][0],y:masterLine.HorizonDataList[0][1]}
     for (let i in masterLine.HorizonDataList){
         points.push({x: (masterLine.HorizonDataList[i][0] - initPoint.x)*scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y)*scale})
     }
