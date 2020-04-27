@@ -41,6 +41,7 @@ export const MasterLineData = (horizon, VerticalDataList, superElevation, beginS
   lineResult.parabolaData = parabolaData;
   lineResult.VerticalDataList = VerticalDataList;
   lineResult.SuperElevation = superElevation
+  lineResult.HorizonDataList = horizon
   lineResult.points = [];
   const spacing = 10000
   for (let i = Math.ceil(lineResult.beginStationNumber / spacing) * spacing; i < lineResult.endStationNumber; i += spacing) {
