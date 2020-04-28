@@ -15,6 +15,7 @@ export function LineSideView(masterLine) {
     let blueLine = new THREE.LineBasicMaterial({ color: 0x0000ff });
     let greenLine = new THREE.LineBasicMaterial({ color: 0x00ff00 });
     let whiteLine = new THREE.LineBasicMaterial({ color: 0xffffff });
+    let grayLine = new THREE.LineBasicMaterial({ color: 0x888888 });
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
 
     let vl = masterLine.VerticalDataList
@@ -132,7 +133,16 @@ export function LineSideView(masterLine) {
             fontSize: fontSize / 4
         });
     }
-
+    for (let i = 0; i<11;i++){
+        group.add(LineMesh([{x:superElCenter[0].x,y:offset + (5-i)*fontSize}, {x:superElCenter[0].x,y:offset + (5-i)*fontSize}],grayLine))
+        label.push({
+            text: (10-i*2).toFixed(0) + "%",
+            anchor: [superElCenter[0].x - fontSize, offset + (5-i)*fontSize, 0],
+            rotation: 0,
+            align: "center",
+            fontSize: fontSize / 4
+        });
+    }
     group.add(LineMesh(superElCenter, redLine))
     group.add(LineMesh(leftGrad, blueLine))
     group.add(LineMesh(rightGrad, greenLine))
