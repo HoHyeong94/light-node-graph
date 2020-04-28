@@ -30,20 +30,28 @@ export function LineSideView(masterLine){
         let station = vl[i][0]
         label.push({
             text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
-            anchor: [x - fontSize / 4, - 4 * fontSize, 0],
+            anchor: [x - fontSize / 4, - 5 * fontSize, 0],
             rotation: Math.PI/2,
-            align: "center",
+            align: "left",
             fontSize: fontSize / 4
         });
-        let el = vl[i][i]/1000
+        let el = vl[i][1]/1000
         label.push({
             text: "EL. " + el.toFixed(4),
-            anchor: [x + fontSize / 4, - 4 * fontSize, 0],
+            anchor: [x + fontSize / 4, - 5 * fontSize, 0],
             rotation: Math.PI/2,
             align: "left",
             fontSize: fontSize / 4
         });
 
+    }
+
+    for (let i in masterLine.parabolaData){
+        let x1 = (masterLine.parabolaData[i][0] - initPoint.x) * xscale
+        let x2 = (masterLine.parabolaData[i][1] - initPoint.x) * xscale
+        let y1 = (masterLine.parabolaData[i][2] - initPoint.y) * yscale
+        let y2 = (masterLine.parabolaData[i][3] - initPoint.y) * yscale
+        group.add(LineMesh([{x:x1,y:y1},{x:x1, y:- 5 * fontSize},{x:x2, y:- 5 * fontSize},{x:x2,y:y2}], blueLine))
     }
 
 
