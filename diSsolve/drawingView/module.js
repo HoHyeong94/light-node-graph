@@ -23,13 +23,18 @@ export function LineDrawView(masterLine, slaveLines) {
     }
     for (let i in masterLine.points){
         linePoints.push({x:(masterLine.points[i].x - initPoint.x)*scale, y:(masterLine.points[i].y - initPoint.y)*scale })
-        let bar = [{x:(masterLine.points[i].x - initPoint.x)*scale + masterLine.points[i].normalCos * fontSize, y:(masterLine.points[i].y - initPoint.y)*scale  + masterLine.points[i].normalSin * fontSize},
-                    {x:(masterLine.points[i].x - initPoint.x)*scale - masterLine.points[i].normalCos * fontSize, y:(masterLine.points[i].y - initPoint.y)*scale  - masterLine.points[i].normalSin * fontSize}];
-        group.add(LineMesh(bar,lineMaterial))
+
         let rot = Math.atan2(masterLine.points[i].normalSin,masterLine.points[i].normalCos)
+        if (rot > Math.PI/2){ rot = rot - Math.PI}
+        let cos = Math.cos(rot)
+        let sin = Math.sin(rot)
+        let bar = [{x:(masterLine.points[i].x - initPoint.x)*scale + cos * fontSize/2, y:(masterLine.points[i].y - initPoint.y)*scale  + cos * fontSize/2},
+                    {x:(masterLine.points[i].x - initPoint.x)*scale - sin * fontSize/2, y:(masterLine.points[i].y - initPoint.y)*scale  - sin * fontSize/2}];
+        group.add(LineMesh(bar,lineMaterial))
+        
         label.push({
             text: (masterLine.points[i].masterStationNumber/1000).toFixed(4),
-            anchor: [bar[0].x, bar[1].y, 0],
+            anchor: [bar[0].x + cos*fontSize, bar[0].y+sin*fontSize, 0],
             rotation: rot,
             fontSize: fontSize/2
         })
