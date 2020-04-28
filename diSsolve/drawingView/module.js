@@ -68,7 +68,7 @@ function LabelInsert (label, textMaterial){
             }
             geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
             // make shape ( N.B. edge view not visible )
-            textMesh = new THREE.Mesh(geometry, textMaterial);
+            let textMesh = new THREE.Mesh(geometry, textMaterial);
             textMesh.layers.set(1)
             group.add(textMesh);
         }
