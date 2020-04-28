@@ -18,8 +18,13 @@ export function LineSideView(masterLine){
 
     let vl = masterLine.VerticalDataList
     let points = [];
+    let linePoints = [];
     let label = [];
     let initPoint = { x: vl[0][0], y: vl[0][1] }
+
+    for (let i in masterLine.points) {
+         linePoints.push({ x: (masterLine.points[i].x - initPoint.x) * xscale, y: (masterLine.points[i].z - initPoint.y) * yscale })
+        }
     for (let i in vl){
         let x = (vl[i][0] - initPoint.x) * xscale;
         let y = (vl[i][1] - initPoint.y) * yscale
@@ -107,7 +112,8 @@ export function LineSideView(masterLine){
     }
 
 
-    group.add(LineMesh(points, whiteLine))
+    group.add(LineMesh(linePoints, whiteLine))
+    group.add(LineMesh(points, blueLine))
     group.add(LabelInsert(label, textMaterial, layerNum))  //layer number is 3
 
     return group
