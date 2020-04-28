@@ -47,12 +47,12 @@ export function LineDrawView(masterLine, slaveLines) {
         if (rot >= Math.PI / 2) { rot = rot - Math.PI }
         let cos = Math.cos(rot)
         let sin = Math.sin(rot)
-        let bar = [{ x: (pt.x - initPoint.x) * scale + cos * fontSize * 10, y: (pt.y - initPoint.y) * scale + sin * fontSize * 10 },
+        let bar = [{ x: (pt.x - initPoint.x) * scale + cos * fontSize * 8, y: (pt.y - initPoint.y) * scale + sin * fontSize * 8 },
         { x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale }];
         group.add(LineMesh(bar, lineMaterial2))
         label.push({
             text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000)/1000).toFixed(4),
-            anchor: [bar[0].x + cos * fontSize * 5, bar[0].y + sin * fontSize * 5, 0],
+            anchor: [bar[1].x + cos * fontSize * 5 + sin * fontSize, bar[1].y + sin * fontSize * 5 - cos * fontSize, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
