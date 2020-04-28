@@ -11,7 +11,7 @@ export function LineDrawView(masterLine, slaveLines) {
     let meshes = [];
     let points = [];
     let linePoints = [];
-    let labels = [];
+    let label = [];
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let lineMaterial2 = new THREE.LineBasicMaterial({ color: 0x0000ff });
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
@@ -33,7 +33,7 @@ export function LineDrawView(masterLine, slaveLines) {
         
         let ipName = i===0? "BP" : i===(points.length-1)? "EP": "IP" + i
 
-        labels.push({
+        label.push({
             text: ipName,
             anchor: [points[i].x + 100, points[i].y, 0],
             rotation: 0,
