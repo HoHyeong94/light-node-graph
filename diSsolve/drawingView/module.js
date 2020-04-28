@@ -6,8 +6,8 @@ import { PointGenerator } from "../line/module"
 import { ToGlobalPoint, ToGlobalPoint2 } from '../geometryModule'
 
 export function LineSideView(masterLine){
-    let xscale = 0.005;
-    let yscale = 0.1;
+    let xscale = 0.001;
+    let yscale = 0.02;
     let fontSize = 80;
     let layerNum = 4;
     let group = new THREE.Group();
@@ -25,12 +25,12 @@ export function LineSideView(masterLine){
         let y = (vl[i][1] - initPoint.y) * yscale
         points.push({x,y});
         let bar = [{x,y},
-        {x,y: -10 * fontSize}];
+        {x,y: -5 * fontSize}];
         group.add(LineMesh(bar, redLine))
         let station = vl[i][0]
         label.push({
             text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
-            anchor: [x - fontSize / 4, - 9 * fontSize, 0],
+            anchor: [x - fontSize / 4, - 4 * fontSize, 0],
             rotation: Math.PI/2,
             align: "center",
             fontSize: fontSize / 4
@@ -38,7 +38,7 @@ export function LineSideView(masterLine){
         let el = vl[i][i]/1000
         label.push({
             text: "EL. " + el.toFixed(4),
-            anchor: [x + fontSize / 4, - 9 * fontSize, 0],
+            anchor: [x + fontSize / 4, - 4 * fontSize, 0],
             rotation: Math.PI/2,
             align: "left",
             fontSize: fontSize / 4
