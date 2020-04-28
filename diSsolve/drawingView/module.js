@@ -43,36 +43,36 @@ export function LineDrawView(masterLine, slaveLines) {
     }
     group.add(LineMesh(linePoints, lineMaterial2))
     group.add(LineMesh(points, lineMaterial))
-    // group.add(LabelInsert(labels, textMaterial))
+    group.add(LabelInsert(label, textMaterial,3))
 
-    var loader = new THREE.FontLoader();
-    loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-        // console.log(font)
-        // var font = {generateShapes:(messagem , num)=>{}}
-        for (let i in label) {
-            var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-            var geometry = new THREE.ShapeBufferGeometry(shapes);
-            var xMid
-            geometry.computeBoundingBox();
-            xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-            geometry.translate(xMid, -label[i].fontSize / 2, 0);
-            if (label[i].rotation) {
-                geometry.rotateZ(label[i].rotation)
-            }
-            geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
-            // make shape ( N.B. edge view not visible )
-            let textMesh = new THREE.Mesh(geometry, textMaterial);
-            textMesh.layers.set(3)
-            group.add(textMesh);
-        }
-    });
+    // var loader = new THREE.FontLoader();
+    // loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+    //     // console.log(font)
+    //     // var font = {generateShapes:(messagem , num)=>{}}
+    //     for (let i in label) {
+    //         var shapes = font.generateShapes(label[i].text, label[i].fontSize);
+    //         var geometry = new THREE.ShapeBufferGeometry(shapes);
+    //         var xMid
+    //         geometry.computeBoundingBox();
+    //         xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+    //         geometry.translate(xMid, -label[i].fontSize / 2, 0);
+    //         if (label[i].rotation) {
+    //             geometry.rotateZ(label[i].rotation)
+    //         }
+    //         geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
+    //         // make shape ( N.B. edge view not visible )
+    //         let textMesh = new THREE.Mesh(geometry, textMaterial);
+    //         textMesh.layers.set(3)
+    //         group.add(textMesh);
+    //     }
+    // });
 
     return group
 }
 
 
 
-function LabelInsert (label, textMaterial){
+function LabelInsert (label, textMaterial, layer){
     let group = new THREE.Group()
     var loader = new THREE.FontLoader();
     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
@@ -91,7 +91,7 @@ function LabelInsert (label, textMaterial){
             geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
             // make shape ( N.B. edge view not visible )
             let textMesh = new THREE.Mesh(geometry, textMaterial);
-            textMesh.layers.set(1)
+            textMesh.layers.set(layer)
             group.add(textMesh);
         }
     });
