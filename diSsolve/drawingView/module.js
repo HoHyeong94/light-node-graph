@@ -45,13 +45,32 @@ export function LineSideView(masterLine){
         });
 
     }
-
     for (let i in masterLine.parabolaData){
         let x1 = (masterLine.parabolaData[i][0] - initPoint.x) * xscale
         let x2 = (masterLine.parabolaData[i][1] - initPoint.x) * xscale
         let y1 = (masterLine.parabolaData[i][2] - initPoint.y) * yscale
         let y2 = (masterLine.parabolaData[i][3] - initPoint.y) * yscale
         group.add(LineMesh([{x:x1,y:y1},{x:x1, y:- 5 * fontSize},{x:x2, y:- 5 * fontSize},{x:x2,y:y2}], blueLine))
+        label.push({
+            text: "L=" + (masterLine.parabolaData[i][4]/1000).toFixed(4),
+            anchor: [(x1 + x2)/2, - 5.25 * fontSize, 0],
+            rotation: 0,
+            align: "center",
+            fontSize: fontSize / 4
+        });
+    }
+
+    for (let i in masterLine.tangent){
+        let x = ((vl[i][0] + vl[i+1][0])/2 - initPoint.x) * xscale;
+        let y = ((vl[i][1] + vl[i+1][1])/2 - initPoint.y) * yscale
+        let rot = Math.atan(masterLine.tangent[i]);
+        label.push({
+            text: "S=" + (masterLine.tangent[i]/100).toFixed(4) + "%",
+            anchor: [x, y + 0.25 * fontSize, 0],
+            rotation: rot,
+            align: "center",
+            fontSize: fontSize / 4
+        });
     }
 
 
