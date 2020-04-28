@@ -23,7 +23,7 @@ export function LineSideView(masterLine){
     let initPoint = { x: vl[0][0], y: vl[0][1] }
 
     for (let i in masterLine.points) {
-         linePoints.push({ x: (masterLine.points[i].x - initPoint.x) * xscale, y: (masterLine.points[i].z - initPoint.y) * yscale })
+         linePoints.push({ x: (masterLine.points[i].masterStationNumber - initPoint.x) * xscale, y: (masterLine.points[i].z - initPoint.y) * yscale })
         }
     for (let i in vl){
         let x = (vl[i][0] - initPoint.x) * xscale;
