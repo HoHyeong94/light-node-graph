@@ -134,7 +134,7 @@ export function LineSideView(masterLine) {
         });
     }
     for (let i = 0; i<11;i++){
-        group.add(LineMesh([{x:superElCenter[0].x,y:offset + (5-i)*fontSize}, {x:superElCenter[0].x,y:offset + (5-i)*fontSize}],grayLine))
+        group.add(LineMesh([{x:superElCenter[0].x,y:offset + (5-i)*fontSize}, {x:superElCenter[0].x,y:offset + (5-i)*fontSize}],whiteLine))
         label.push({
             text: (10-i*2).toFixed(0) + "%",
             anchor: [superElCenter[0].x - fontSize, offset + (5-i)*fontSize, 0],
