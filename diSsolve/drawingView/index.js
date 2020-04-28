@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import { sectionView, topDraw, sideDraw, LineDrawView } from "./module"
+import { sectionView, topDraw, sideDraw, LineDrawView, LineSideView } from "./module"
 // import { LineToThree } from "../line/module";
 
 export function SectionViewer(){
@@ -87,4 +87,16 @@ LineDraw.prototype.onExecute = function() {
 LineDraw.prototype.on3DExecute = function() {
   let group = LineDrawView(this.getInputData(0),this.getInputData(1))
   sceneAdder({layer:3, mesh:group},"LineView")
+}
+
+export function LineSideDraw(){
+  this.addInput("masterLine","line");
+}
+
+LineSideDraw.prototype.onExecute = function() {
+}
+
+LineSideDraw.prototype.on3DExecute = function() {
+  let group = LineSideView(this.getInputData(0))
+  sceneAdder({layer:4, mesh:group},"LineSideView")
 }
