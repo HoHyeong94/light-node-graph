@@ -60,7 +60,7 @@ export function LineSideView(masterLine){
         });
     }
 
-    for (let i in masterLine.tangent){
+    for (let i=0; i<masterLine.tangent.length;i++){
         let x = ((vl[i][0] + vl[i+1][0])/2 - initPoint.x) * xscale;
         let y = ((vl[i][1] + vl[i+1][1])/2 - initPoint.y) * yscale
         let rot = Math.atan(masterLine.tangent[i]);
