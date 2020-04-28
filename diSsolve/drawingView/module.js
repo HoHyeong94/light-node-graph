@@ -12,8 +12,12 @@ export function LineDrawView(masterLine, slaveLines) {
     let labels = [];
     let points = [];
     let linePoints = [];
+    let labels = [];
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let lineMaterial2 = new THREE.LineBasicMaterial({ color: 0x0000ff });
+    let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+    let fontSize = 80
+
     let initPoint = {x:masterLine.HorizonDataList[0][0],y:masterLine.HorizonDataList[0][1]}
     for (let i in masterLine.HorizonDataList){
         points.push({x: (masterLine.HorizonDataList[i][0] - initPoint.x)*scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y)*scale})
@@ -27,11 +31,50 @@ export function LineDrawView(masterLine, slaveLines) {
         let circlegeo = new THREE.Geometry().setFromPoints(cp)
         let IPCircle = new THREE.Line(circlegeo, lineMaterial)
         group.add(IPCircle)
+        
+        let ipName = i===0? "BP" : i===(points.length-1)? "EP": "IP" + i
+
+        labels.push({
+            text: ipName,
+            anchor: [points[i].x + 100, points[i].y, 0],
+            rotation: 0,
+            fontSize: fontSize
+        })
+
     }
     group.add(LineMesh(linePoints, lineMaterial2))
     group.add(LineMesh(points, lineMaterial))
+    group.add(LabelInsert(labels, textMaterial))
 
     return group
+}
+
+
+
+function LabelInsert (label, textMaterial){
+    let group = new THREE.Group()
+    var loader = new THREE.FontLoader();
+    loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+        // console.log(font)
+        // var font = {generateShapes:(messagem , num)=>{}}
+        for (let i in label) {
+            var shapes = font.generateShapes(label[i].text, label[i].fontSize);
+            var geometry = new THREE.ShapeBufferGeometry(shapes);
+            var xMid
+            geometry.computeBoundingBox();
+            xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+            geometry.translate(xMid, -label[i].fontSize / 2, 0);
+            if (label[i].rotation) {
+                geometry.rotateZ(label[i].rotation)
+            }
+            geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
+            // make shape ( N.B. edge view not visible )
+            textMesh = new THREE.Mesh(geometry, textMaterial);
+            textMesh.layers.set(1)
+            group.add(textMesh);
+        }
+    });
+    return group// text.position.z = 0;
 }
 
 
