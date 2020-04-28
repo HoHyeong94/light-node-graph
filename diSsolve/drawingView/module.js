@@ -28,8 +28,8 @@ export function LineDrawView(masterLine, slaveLines) {
         if (rot > Math.PI/2){ rot = rot - Math.PI}
         let cos = Math.cos(rot)
         let sin = Math.sin(rot)
-        let bar = [{x:(masterLine.points[i].x - initPoint.x)*scale + cos * fontSize/2, y:(masterLine.points[i].y - initPoint.y)*scale  + cos * fontSize/2},
-                    {x:(masterLine.points[i].x - initPoint.x)*scale - sin * fontSize/2, y:(masterLine.points[i].y - initPoint.y)*scale  - sin * fontSize/2}];
+        let bar = [{x:(masterLine.points[i].x - initPoint.x)*scale + cos * fontSize/2, y:(masterLine.points[i].y - initPoint.y)*scale  + sin * fontSize/2},
+                    {x:(masterLine.points[i].x - initPoint.x)*scale - cos * fontSize/2, y:(masterLine.points[i].y - initPoint.y)*scale  - sin * fontSize/2}];
         group.add(LineMesh(bar,lineMaterial))
         
         label.push({
