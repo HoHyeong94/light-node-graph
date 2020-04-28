@@ -63,9 +63,9 @@ export function LineSideView(masterLine){
     for (let i=0; i<masterLine.tangent.length;i++){
         let x = ((vl[i][0] + vl[i+1][0])/2 - initPoint.x) * xscale;
         let y = ((vl[i][1] + vl[i+1][1])/2 - initPoint.y) * yscale
-        let rot = Math.atan(masterLine.tangent[i]);
+        let rot = Math.atan(masterLine.tangent[i])*yscale/xscale;
         label.push({
-            text: "S=" + (masterLine.tangent[i]/100).toFixed(4) + "%",
+            text: "S=" + (masterLine.tangent[i]*100).toFixed(2) + "%",
             anchor: [x, y + 0.25 * fontSize, 0],
             rotation: rot,
             align: "center",
