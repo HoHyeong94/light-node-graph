@@ -6,7 +6,7 @@ import { PointGenerator } from "../line/module"
 import { ToGlobalPoint, ToGlobalPoint2 } from '../geometryModule'
 
 export function LineSideView(masterLine){
-    let xscale = 0.001;
+    let xscale = 0.003;
     let yscale = 0.02;
     let fontSize = 80;
     let layerNum = 4;
@@ -58,6 +58,39 @@ export function LineSideView(masterLine){
             align: "center",
             fontSize: fontSize / 4
         });
+        let station = masterLine.parabolaData[i][0];
+        label.push({
+            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            anchor: [x1 - fontSize / 4, - 5 * fontSize, 0],
+            rotation: Math.PI/2,
+            align: "left",
+            fontSize: fontSize / 4
+        });
+        let el = masterLine.parabolaData[i][2]/1000
+        label.push({
+            text: "EL. " + el.toFixed(4),
+            anchor: [x1 + fontSize / 4, - 5 * fontSize, 0],
+            rotation: Math.PI/2,
+            align: "left",
+            fontSize: fontSize / 4
+        });
+        station = masterLine.parabolaData[i][1];
+        label.push({
+            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            anchor: [x2 - fontSize / 4, - 5 * fontSize, 0],
+            rotation: Math.PI/2,
+            align: "left",
+            fontSize: fontSize / 4
+        });
+        el = masterLine.parabolaData[i][3]/1000
+        label.push({
+            text: "EL. " + el.toFixed(4),
+            anchor: [x2 + fontSize / 4, - 5 * fontSize, 0],
+            rotation: Math.PI/2,
+            align: "left",
+            fontSize: fontSize / 4
+        });
+
     }
 
     for (let i=0; i<masterLine.tangent.length;i++){
