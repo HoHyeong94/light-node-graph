@@ -9,19 +9,20 @@ export function LineDrawView(masterLine, slaveLines) {
     let scale = 0.01;
     let group = new THREE.Group();
     let meshes = [];
-    let points = [];
+    let IPpoints = [];
     let linePoints = [];
     let segPoints = [];
     let label = [];
-    let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    let lineMaterial2 = new THREE.LineBasicMaterial({ color: 0x0000ff });
+    let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    let blueLine = new THREE.LineBasicMaterial({ color: 0x0000ff });
+    let whiteLine = new THREE.LineBasicMaterial({ color: 0xffffff });
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
     let fontSize = 80
     let segName = {0:"ETC",1:"BTC",2:"BC",3:"EC"}
 
     let initPoint = { x: masterLine.HorizonDataList[0][0], y: masterLine.HorizonDataList[0][1] }
     for (let i in masterLine.HorizonDataList) {
-        points.push({ x: (masterLine.HorizonDataList[i][0] - initPoint.x) * scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y) * scale })
+        IPpoints.push({ x: (masterLine.HorizonDataList[i][0] - initPoint.x) * scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y) * scale })
     }
     for (let i in masterLine.points) {
         linePoints.push({ x: (masterLine.points[i].x - initPoint.x) * scale, y: (masterLine.points[i].y - initPoint.y) * scale })
@@ -29,9 +30,9 @@ export function LineDrawView(masterLine, slaveLines) {
         if (rot >= Math.PI / 2) { rot = rot - Math.PI }
         let cos = Math.cos(rot)
         let sin = Math.sin(rot)
-        let bar = [{ x: (masterLine.points[i].x - initPoint.x) * scale + cos * fontSize / 2, y: (masterLine.points[i].y - initPoint.y) * scale + sin * fontSize / 2 },
-        { x: (masterLine.points[i].x - initPoint.x) * scale - cos * fontSize / 2, y: (masterLine.points[i].y - initPoint.y) * scale - sin * fontSize / 2 }];
-        group.add(LineMesh(bar, lineMaterial))
+        let bar = [{ x: (masterLine.points[i].x - initPoint.x) * scale + cos * fontSize / 4, y: (masterLine.points[i].y - initPoint.y) * scale + sin * fontSize / 4 },
+        { x: (masterLine.points[i].x - initPoint.x) * scale - cos * fontSize / 4, y: (masterLine.points[i].y - initPoint.y) * scale - sin * fontSize / 4 }];
+        group.add(LineMesh(bar, whiteLine))
         label.push({
             text: (masterLine.points[i].masterStationNumber / 1000).toFixed(4),
             anchor: [bar[0].x + cos * fontSize / 2, bar[0].y + sin * fontSize / 2, 0],
@@ -48,19 +49,19 @@ export function LineDrawView(masterLine, slaveLines) {
         if (rot >= Math.PI / 2) { rot = rot - Math.PI }
         let cos = Math.cos(rot)
         let sin = Math.sin(rot)
-        let bar = [{ x: (pt.x - initPoint.x) * scale + cos * fontSize * 8, y: (pt.y - initPoint.y) * scale + sin * fontSize * 8 },
+        let bar = [{ x: (pt.x - initPoint.x) * scale + cos * fontSize * 6, y: (pt.y - initPoint.y) * scale + sin * fontSize * 6 },
         { x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale }];
-        group.add(LineMesh(bar, lineMaterial2))
+        group.add(LineMesh(bar, redLine))
         label.push({
             text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000)/1000).toFixed(4),
-            anchor: [bar[1].x + cos * fontSize * 5 + sin * fontSize/4, bar[1].y + sin * fontSize * 5 - cos * fontSize/4, 0],
+            anchor: [bar[1].x + cos * fontSize * 4 + sin * fontSize/4, bar[1].y + sin * fontSize * 4 - cos * fontSize/4, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
         });
         label.push({
             text: segName[i%4],
-            anchor: [bar[1].x + cos * fontSize * 5 - sin * fontSize/4, bar[1].y + sin * fontSize * 5 + cos * fontSize/4, 0],
+            anchor: [bar[1].x + cos * fontSize * 4 - sin * fontSize/4, bar[1].y + sin * fontSize * 4 + cos * fontSize/4, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
@@ -69,23 +70,23 @@ export function LineDrawView(masterLine, slaveLines) {
     }
 
 
-    for (let i = 0; i < points.length; i++) {
-        let circle = new THREE.EllipseCurve(points[i].x, points[i].y, 20, 20)
+    for (let i = 0; i < IPpoints.length; i++) {
+        let circle = new THREE.EllipseCurve(IPpoints[i].x, IPpoints[i].y, 20, 20)
         let cp = circle.getPoints(16);
         let circlegeo = new THREE.Geometry().setFromPoints(cp)
-        let IPCircle = new THREE.Line(circlegeo, lineMaterial)
+        let IPCircle = new THREE.Line(circlegeo, redLine)
         group.add(IPCircle)
-        let ipName = i === 0 ? "BP" : i === (points.length - 1) ? "EP" : "IP" + i
+        let ipName = i === 0 ? "BP" : i === (IPpoints.length - 1) ? "EP" : "IP" + i
         label.push({
             text: ipName,
-            anchor: [points[i].x, points[i].y + 100, 0],
+            anchor: [IPpoints[i].x, IPpoints[i].y + 100, 0],
             rotation: 0,
             fontSize: fontSize
         })
 
     }
-    group.add(LineMesh(linePoints, lineMaterial2))
-    group.add(LineMesh(points, lineMaterial))
+    group.add(LineMesh(linePoints, whiteLine))
+    group.add(LineMesh(IPpoints, blueLine))
     group.add(LabelInsert(label, textMaterial, 3))
 
     return group
