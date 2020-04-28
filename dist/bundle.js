@@ -4251,7 +4251,7 @@
       let group = new global.THREE.Group();
       let points = [];
       let linePoints = [];
-      let labels = [];
+      let label = [];
       let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
       let lineMaterial2 = new global.THREE.LineBasicMaterial({ color: 0x0000ff });
       let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
@@ -4263,19 +4263,27 @@
       }
       for (let i in masterLine.points){
           linePoints.push({x:(masterLine.points[i].x - initPoint.x)*scale, y:(masterLine.points[i].y - initPoint.y)*scale });
+          let bar = [{x:(masterLine.points[i].x - initPoint.x)*scale + masterLine.points[i].normalCos * fontSize, y:(masterLine.points[i].y - initPoint.y)*scale  + masterLine.points[i].normalSin * fontSize},
+                      {x:(masterLine.points[i].x - initPoint.x)*scale - masterLine.points[i].normalCos * fontSize, y:(masterLine.points[i].y - initPoint.y)*scale  - masterLine.points[i].normalSin * fontSize}];
+          group.add(LineMesh(bar,lineMaterial));
+          let rot = Math.atan2(masterLine.points[i].normalSin,masterLine.points[i].normalCos);
+          label.push({
+              text: (masterLine.points[i].masterStationNumber/1000).toFixed(4),
+              anchor: [bar[0].x, bar[1].y, 0],
+              rotation: rot,
+              fontSize: fontSize/2
+          });
       }
-      for (let i in points) {
+      for (let i = 0 ; i< points.length; i++) {
           let circle = new global.THREE.EllipseCurve(points[i].x, points[i].y, 20, 20);
           let cp = circle.getPoints(16);
           let circlegeo = new global.THREE.Geometry().setFromPoints(cp);
           let IPCircle = new global.THREE.Line(circlegeo, lineMaterial);
           group.add(IPCircle);
-          
           let ipName = i===0? "BP" : i===(points.length-1)? "EP": "IP" + i;
-
-          labels.push({
+          label.push({
               text: ipName,
-              anchor: [points[i].x + 100, points[i].y, 0],
+              anchor: [points[i].x, points[i].y+100, 0],
               rotation: 0,
               fontSize: fontSize
           });
@@ -4283,14 +4291,14 @@
       }
       group.add(LineMesh(linePoints, lineMaterial2));
       group.add(LineMesh(points, lineMaterial));
-      group.add(LabelInsert(labels, textMaterial));
+      group.add(LabelInsert(label, textMaterial,3));
 
       return group
   }
 
 
 
-  function LabelInsert (label, textMaterial){
+  function LabelInsert (label, textMaterial, layer){
       let group = new global.THREE.Group();
       var loader = new global.THREE.FontLoader();
       loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
@@ -4308,8 +4316,8 @@
               }
               geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
               // make shape ( N.B. edge view not visible )
-              textMesh = new global.THREE.Mesh(geometry, textMaterial);
-              textMesh.layers.set(1);
+              let textMesh = new global.THREE.Mesh(geometry, textMaterial);
+              textMesh.layers.set(layer);
               group.add(textMesh);
           }
       });

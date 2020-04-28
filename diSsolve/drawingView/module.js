@@ -23,6 +23,16 @@ export function LineDrawView(masterLine, slaveLines) {
     }
     for (let i in masterLine.points){
         linePoints.push({x:(masterLine.points[i].x - initPoint.x)*scale, y:(masterLine.points[i].y - initPoint.y)*scale })
+        let bar = [{x:(masterLine.points[i].x - initPoint.x)*scale + masterLine.points[i].normalCos * fontSize, y:(masterLine.points[i].y - initPoint.y)*scale  + masterLine.points[i].normalSin * fontSize},
+                    {x:(masterLine.points[i].x - initPoint.x)*scale - masterLine.points[i].normalCos * fontSize, y:(masterLine.points[i].y - initPoint.y)*scale  - masterLine.points[i].normalSin * fontSize}];
+        group.add(LineMesh(bar,lineMaterial))
+        let rot = Math.atan2(masterLine.points[i].normalSin,masterLine.points[i].normalCos)
+        label.push({
+            text: (masterLine.points[i].masterStationNumber/1000).toFixed(4),
+            anchor: [bar[0].x, bar[1].y, 0],
+            rotation: rot,
+            fontSize: fontSize/2
+        })
     }
     for (let i = 0 ; i< points.length; i++) {
         let circle = new THREE.EllipseCurve(points[i].x, points[i].y, 20, 20)
@@ -30,12 +40,10 @@ export function LineDrawView(masterLine, slaveLines) {
         let circlegeo = new THREE.Geometry().setFromPoints(cp)
         let IPCircle = new THREE.Line(circlegeo, lineMaterial)
         group.add(IPCircle)
-        
         let ipName = i===0? "BP" : i===(points.length-1)? "EP": "IP" + i
-
         label.push({
             text: ipName,
-            anchor: [points[i].x + 100, points[i].y, 0],
+            anchor: [points[i].x, points[i].y+100, 0],
             rotation: 0,
             fontSize: fontSize
         })
@@ -44,28 +52,6 @@ export function LineDrawView(masterLine, slaveLines) {
     group.add(LineMesh(linePoints, lineMaterial2))
     group.add(LineMesh(points, lineMaterial))
     group.add(LabelInsert(label, textMaterial,3))
-
-    // var loader = new THREE.FontLoader();
-    // loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-    //     // console.log(font)
-    //     // var font = {generateShapes:(messagem , num)=>{}}
-    //     for (let i in label) {
-    //         var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-    //         var geometry = new THREE.ShapeBufferGeometry(shapes);
-    //         var xMid
-    //         geometry.computeBoundingBox();
-    //         xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-    //         geometry.translate(xMid, -label[i].fontSize / 2, 0);
-    //         if (label[i].rotation) {
-    //             geometry.rotateZ(label[i].rotation)
-    //         }
-    //         geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
-    //         // make shape ( N.B. edge view not visible )
-    //         let textMesh = new THREE.Mesh(geometry, textMaterial);
-    //         textMesh.layers.set(3)
-    //         group.add(textMesh);
-    //     }
-    // });
 
     return group
 }
