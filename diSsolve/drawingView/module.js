@@ -6,7 +6,7 @@ import { PointGenerator } from "../line/module"
 import { ToGlobalPoint, ToGlobalPoint2 } from '../geometryModule'
 
 export function LineSideView(masterLine){
-    let xscale = 0.001;
+    let xscale = 0.005;
     let yscale = 0.1;
     let fontSize = 80;
     let layerNum = 4;
@@ -18,6 +18,7 @@ export function LineSideView(masterLine){
 
     let vl = masterLine.VerticalDataList
     let points = [];
+    let label = [];
     let initPoint = { x: vl[0][0], y: vl[0][1] }
     for (let i in vl){
         let x = (vl[i][0] - initPoint.x) * xscale;
@@ -26,9 +27,29 @@ export function LineSideView(masterLine){
         let bar = [{x,y},
         {x,y: -10 * fontSize}];
         group.add(LineMesh(bar, redLine))
+        let station = vl[i][0]
+        label.push({
+            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            anchor: [x - fontSize / 4, - 9 * fontSize, 0],
+            rotation: Math.PI/2,
+            align: "center",
+            fontSize: fontSize / 4
+        });
+        let el = vl[i][i]/1000
+        label.push({
+            text: "EL. " + el.toFixed(4),
+            anchor: [x + fontSize / 4, - 9 * fontSize, 0],
+            rotation: Math.PI/2,
+            align: "left",
+            fontSize: fontSize / 4
+        });
+
     }
 
+
     group.add(LineMesh(points, whiteLine))
+    group.add(LabelInsert(label, textMaterial, layerNum))  //layer number is 3
+
     return group
 }
 
