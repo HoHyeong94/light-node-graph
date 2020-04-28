@@ -62,7 +62,7 @@ export function LineDrawView(masterLine, slaveLines) {
             geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
             // make shape ( N.B. edge view not visible )
             let textMesh = new THREE.Mesh(geometry, textMaterial);
-            textMesh.layers.set(1)
+            textMesh.layers.set(3)
             group.add(textMesh);
         }
     });
