@@ -34,7 +34,7 @@ export function LineSideView(masterLine){
         group.add(LineMesh(bar, redLine))
         let station = vl[i][0]
         label.push({
-            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
             anchor: [x - fontSize / 4, - 5 * fontSize, 0],
             rotation: Math.PI/2,
             align: "left",
@@ -65,7 +65,7 @@ export function LineSideView(masterLine){
         });
         let station = masterLine.parabolaData[i][0];
         label.push({
-            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
             anchor: [x1 - fontSize / 4, - 5 * fontSize, 0],
             rotation: Math.PI/2,
             align: "left",
@@ -81,7 +81,7 @@ export function LineSideView(masterLine){
         });
         station = masterLine.parabolaData[i][1];
         label.push({
-            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
             anchor: [x2 - fontSize / 4, - 5 * fontSize, 0],
             rotation: Math.PI/2,
             align: "left",
@@ -170,7 +170,7 @@ export function LineDrawView(masterLine, slaveLines) {
         { x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale }];
         group.add(LineMesh(bar, redLine))
         label.push({
-            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
             anchor: [bar[1].x + cos * fontSize * 4 + sin * fontSize / 4, bar[1].y + sin * fontSize * 4 - cos * fontSize / 4, 0],
             rotation: rot,
             align: "center",
