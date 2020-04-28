@@ -36,6 +36,7 @@ export function LineDrawView(masterLine, slaveLines) {
             text: (masterLine.points[i].masterStationNumber/1000).toFixed(4),
             anchor: [bar[0].x + cos*fontSize, bar[0].y+sin*fontSize, 0],
             rotation: rot,
+            align : "left",
             fontSize: fontSize/2
         })
     }
@@ -72,10 +73,16 @@ function LabelInsert (label, textMaterial, layer){
         for (let i in label) {
             var shapes = font.generateShapes(label[i].text, label[i].fontSize);
             var geometry = new THREE.ShapeBufferGeometry(shapes);
-            var xMid
-            geometry.computeBoundingBox();
-            xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-            geometry.translate(xMid, -label[i].fontSize / 2, 0);
+            if (lebel[i].align==="left"){
+                geometry.translate(0, -label[i].fontSize / 2, 0);
+            }
+            else{
+                var xMid
+                geometry.computeBoundingBox();
+                xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+                geometry.translate(xMid, -label[i].fontSize / 2, 0);
+            }
+
             if (label[i].rotation) {
                 geometry.rotateZ(label[i].rotation)
             }
