@@ -24,7 +24,7 @@ export function LineDrawView(masterLine, slaveLines) {
     for (let i in masterLine.points){
         linePoints.push({x:(masterLine.points[i].x - initPoint.x)*scale, y:(masterLine.points[i].y - initPoint.y)*scale })
     }
-    for (let i in points) {
+    for (let i = 0 ; i< points.length; i++) {
         let circle = new THREE.EllipseCurve(points[i].x, points[i].y, 20, 20)
         let cp = circle.getPoints(16);
         let circlegeo = new THREE.Geometry().setFromPoints(cp)
