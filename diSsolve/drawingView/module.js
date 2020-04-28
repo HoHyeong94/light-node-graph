@@ -73,7 +73,7 @@ function LabelInsert (label, textMaterial, layer){
         for (let i in label) {
             var shapes = font.generateShapes(label[i].text, label[i].fontSize);
             var geometry = new THREE.ShapeBufferGeometry(shapes);
-            if (lebel[i].align==="left"){
+            if (label[i].align==="left"){
                 geometry.translate(0, -label[i].fontSize / 2, 0);
             }
             else{
