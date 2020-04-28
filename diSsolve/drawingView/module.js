@@ -13,7 +13,7 @@ export function LineSideView(masterLine){
     let blueLine = new THREE.LineBasicMaterial({ color: 0x0000ff });
     let whiteLine = new THREE.LineBasicMaterial({ color: 0xffffff });
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
-    
+
     let vl = masterLine.VerticalDataList
     let points = [];
     let initPoint = { x: vl[0][0], y: vl[0][1] }
@@ -21,7 +21,7 @@ export function LineSideView(masterLine){
         points.push({x: (vl[i][0] - initPoint.x) * scale,y:(vl[i][1] - initPoint.y) * scale});
     }
 
-    group.add(LineMesh(linePoints, whiteLine))
+    group.add(LineMesh(points, whiteLine))
     return group
 }
 

@@ -4246,59 +4246,116 @@
 
   // import makerjs from 'makerjs'
 
+  function LineSideView(masterLine){
+      let scale = 0.01;
+      let group = new global.THREE.Group();
+      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let blueLine = new global.THREE.LineBasicMaterial({ color: 0x0000ff });
+      let whiteLine = new global.THREE.LineBasicMaterial({ color: 0xffffff });
+      let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+      
+      let vl = masterLine.VerticalDataList;
+      let points = [];
+      let initPoint = { x: vl[0][0], y: vl[0][1] };
+      for (let i in vl){
+          points.push({x: (vl[i][0] - initPoint.x) * scale,y:(vl[i][1] - initPoint.y) * scale});
+      }
+
+      group.add(LineMesh(linePoints, whiteLine));
+      return group
+  }
+
   function LineDrawView(masterLine, slaveLines) {
       let scale = 0.01;
       let group = new global.THREE.Group();
-      let points = [];
+      let IPpoints = [];
       let linePoints = [];
       let label = [];
-      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
-      let lineMaterial2 = new global.THREE.LineBasicMaterial({ color: 0x0000ff });
+      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let blueLine = new global.THREE.LineBasicMaterial({ color: 0x0000ff });
+      let whiteLine = new global.THREE.LineBasicMaterial({ color: 0xffffff });
       let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
       let fontSize = 80;
+      let segName = { 0: "ETC", 1: "BTC", 2: "BC", 3: "EC" };
 
-      let initPoint = {x:masterLine.HorizonDataList[0][0],y:masterLine.HorizonDataList[0][1]};
-      for (let i in masterLine.HorizonDataList){
-          points.push({x: (masterLine.HorizonDataList[i][0] - initPoint.x)*scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y)*scale});
+      let initPoint = { x: masterLine.HorizonDataList[0][0], y: masterLine.HorizonDataList[0][1] };
+      for (let i in masterLine.HorizonDataList) {
+          IPpoints.push({ x: (masterLine.HorizonDataList[i][0] - initPoint.x) * scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y) * scale });
       }
-      for (let i in masterLine.points){
-          linePoints.push({x:(masterLine.points[i].x - initPoint.x)*scale, y:(masterLine.points[i].y - initPoint.y)*scale });
-          let bar = [{x:(masterLine.points[i].x - initPoint.x)*scale + masterLine.points[i].normalCos * fontSize, y:(masterLine.points[i].y - initPoint.y)*scale  + masterLine.points[i].normalSin * fontSize},
-                      {x:(masterLine.points[i].x - initPoint.x)*scale - masterLine.points[i].normalCos * fontSize, y:(masterLine.points[i].y - initPoint.y)*scale  - masterLine.points[i].normalSin * fontSize}];
-          group.add(LineMesh(bar,lineMaterial));
-          let rot = Math.atan2(masterLine.points[i].normalSin,masterLine.points[i].normalCos);
+      for (let i in masterLine.points) {
+          let station = masterLine.points[i].masterStationNumber / 1000;
+          if ((station % 20).toFixed(0) === "0") {
+              linePoints.push({ x: (masterLine.points[i].x - initPoint.x) * scale, y: (masterLine.points[i].y - initPoint.y) * scale });
+              let rot = Math.atan2(masterLine.points[i].normalSin, masterLine.points[i].normalCos);
+              if (rot >= Math.PI / 2) { rot = rot - Math.PI; }
+              let cos = Math.cos(rot);
+              let sin = Math.sin(rot);
+              let bar = [{ x: (masterLine.points[i].x - initPoint.x) * scale + cos * fontSize / 4, y: (masterLine.points[i].y - initPoint.y) * scale + sin * fontSize / 4 },
+              { x: (masterLine.points[i].x - initPoint.x) * scale - cos * fontSize / 4, y: (masterLine.points[i].y - initPoint.y) * scale - sin * fontSize / 4 }];
+              group.add(LineMesh(bar, whiteLine));
+              label.push({
+                  text: (masterLine.points[i].masterStationNumber / 1000).toFixed(4),
+                  anchor: [bar[0].x + cos * fontSize / 4, bar[0].y + sin * fontSize / 4, 0],
+                  rotation: rot,
+                  align: "left",
+                  fontSize: fontSize / 4
+              });
+          }
+      }
+
+      for (let i = 1; i < masterLine.segments.start.length; i++) {
+          let station = masterLine.segments.start[i];
+          let pt = PointGenerator(station, masterLine, 90);
+          let rot = Math.atan2(pt.normalSin, pt.normalCos);
+          if (rot >= Math.PI / 2) { rot = rot - Math.PI; }
+          let cos = Math.cos(rot);
+          let sin = Math.sin(rot);
+          let bar = [{ x: (pt.x - initPoint.x) * scale + cos * fontSize * 6, y: (pt.y - initPoint.y) * scale + sin * fontSize * 6 },
+          { x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale }];
+          group.add(LineMesh(bar, redLine));
           label.push({
-              text: (masterLine.points[i].masterStationNumber/1000).toFixed(4),
-              anchor: [bar[0].x, bar[1].y, 0],
+              text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+              anchor: [bar[1].x + cos * fontSize * 4 + sin * fontSize / 4, bar[1].y + sin * fontSize * 4 - cos * fontSize / 4, 0],
               rotation: rot,
-              fontSize: fontSize/2
+              align: "center",
+              fontSize: fontSize / 4
           });
+          label.push({
+              text: segName[i % 4],
+              anchor: [bar[1].x + cos * fontSize * 4 - sin * fontSize / 4, bar[1].y + sin * fontSize * 4 + cos * fontSize / 4, 0],
+              rotation: rot,
+              align: "center",
+              fontSize: fontSize / 4
+          });
+
       }
-      for (let i = 0 ; i< points.length; i++) {
-          let circle = new global.THREE.EllipseCurve(points[i].x, points[i].y, 20, 20);
+
+
+      for (let i = 0; i < IPpoints.length; i++) {
+          let circle = new global.THREE.EllipseCurve(IPpoints[i].x, IPpoints[i].y, 20, 20);
           let cp = circle.getPoints(16);
           let circlegeo = new global.THREE.Geometry().setFromPoints(cp);
-          let IPCircle = new global.THREE.Line(circlegeo, lineMaterial);
+          let IPCircle = new global.THREE.Line(circlegeo, redLine);
           group.add(IPCircle);
-          let ipName = i===0? "BP" : i===(points.length-1)? "EP": "IP" + i;
+          let ipName = i === 0 ? "BP" : i === (IPpoints.length - 1) ? "EP" : "IP" + i;
           label.push({
               text: ipName,
-              anchor: [points[i].x, points[i].y+100, 0],
+              anchor: [IPpoints[i].x, IPpoints[i].y + 100, 0],
               rotation: 0,
               fontSize: fontSize
           });
 
       }
-      group.add(LineMesh(linePoints, lineMaterial2));
-      group.add(LineMesh(points, lineMaterial));
-      group.add(LabelInsert(label, textMaterial,3));
+      group.add(LineMesh(linePoints, whiteLine));
+      group.add(LineMesh(IPpoints, blueLine));
+      group.add(LabelInsert(label, textMaterial, 3));  //layer number is 3
 
       return group
   }
 
 
 
-  function LabelInsert (label, textMaterial, layer){
+  function LabelInsert(label, textMaterial, layer) {
       let group = new global.THREE.Group();
       var loader = new global.THREE.FontLoader();
       loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
@@ -4307,10 +4364,16 @@
           for (let i in label) {
               var shapes = font.generateShapes(label[i].text, label[i].fontSize);
               var geometry = new global.THREE.ShapeBufferGeometry(shapes);
-              var xMid;
-              geometry.computeBoundingBox();
-              xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-              geometry.translate(xMid, -label[i].fontSize / 2, 0);
+              if (label[i].align === "left") {
+                  geometry.translate(0, -label[i].fontSize / 2, 0);
+              }
+              else {
+                  var xMid;
+                  geometry.computeBoundingBox();
+                  xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+                  geometry.translate(xMid, -label[i].fontSize / 2, 0);
+              }
+
               if (label[i].rotation) {
                   geometry.rotateZ(label[i].rotation);
               }
@@ -4980,6 +5043,18 @@
   LineDraw.prototype.on3DExecute = function() {
     let group = LineDrawView(this.getInputData(0),this.getInputData(1));
     global.sceneAdder({layer:3, mesh:group},"LineView");
+  };
+
+  function LineSideDraw(){
+    this.addInput("masterLine","line");
+  }
+
+  LineSideDraw.prototype.onExecute = function() {
+  };
+
+  LineSideDraw.prototype.on3DExecute = function() {
+    let group = LineSideView(this.getInputData(0));
+    global.sceneAdder({layer:4, mesh:group},"LineSideView");
   };
 
   function partProperty(width, thickness, Dy, Dz, cos) {
@@ -6148,6 +6223,7 @@
   global.LiteGraph.registerNodeType("Drawing/TopView", TopViewer );
   global.LiteGraph.registerNodeType("Drawing/SideView", SideViewer );
   global.LiteGraph.registerNodeType("Drawing/LineDraw", LineDraw );
+  global.LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
 
 
   // const {
