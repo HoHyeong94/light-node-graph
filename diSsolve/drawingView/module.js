@@ -6,7 +6,9 @@ import { PointGenerator } from "../line/module"
 import { ToGlobalPoint, ToGlobalPoint2 } from '../geometryModule'
 
 export function LineSideView(masterLine){
-    let scale = 0.01;
+    let xscale = 0.001;
+    let yscale = 0.1;
+    let fontSize = 80;
     let layerNum = 4;
     let group = new THREE.Group();
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
@@ -18,7 +20,12 @@ export function LineSideView(masterLine){
     let points = [];
     let initPoint = { x: vl[0][0], y: vl[0][1] }
     for (let i in vl){
-        points.push({x: (vl[i][0] - initPoint.x) * scale,y:(vl[i][1] - initPoint.y) * scale});
+        let x = (vl[i][0] - initPoint.x) * xscale;
+        let y = (vl[i][1] - initPoint.y) * yscale
+        points.push({x,y});
+        let bar = [{x,y},
+        {x,y: -10 * fontSize}];
+        group.add(LineMesh(bar, redLine))
     }
 
     group.add(LineMesh(points, whiteLine))
