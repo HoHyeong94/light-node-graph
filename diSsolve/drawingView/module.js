@@ -114,16 +114,23 @@ export function LineSideView(masterLine) {
         });
     }
 
-    let offset = -10 * fontSize;
+    let offset = -15 * fontSize;
     let superElCenter = [];
     for (let i in masterLine.SuperElevation) {
         let x = (masterLine.SuperElevation[i][0] - initPoint.x) * xscale
         let y = offset;
-        group.add(LineMesh([{ x, y: y + 5 * fontSize }, { x, y: y - 5 * fontSize }], whiteLine))
+        group.add(LineMesh([{ x, y: y + 5 * fontSize }, { x, y: y - 8 * fontSize }], whiteLine))
         superElCenter.push({x,y})
         leftGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][1] })
         rightGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][2] })
-
+        let station = masterLine.SuperElevation[i][0];
+        label.push({
+            text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            anchor: [x - fontSize / 4, y - 8 * fontSize, 0],
+            rotation: Math.PI / 2,
+            align: "left",
+            fontSize: fontSize / 4
+        });
     }
 
     group.add(LineMesh(superElCenter, redLine))
