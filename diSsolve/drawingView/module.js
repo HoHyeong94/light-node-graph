@@ -11,12 +11,16 @@ export function LineDrawView(masterLine, slaveLines) {
     let meshes = [];
     let labels = [];
     let points = [];
+    let linePoints = [];
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    let lineMaterial2 = new THREE.LineBasicMaterial({ color: 0x0000ff });
     let initPoint = {x:masterLine.HorizonDataList[0][0],y:masterLine.HorizonDataList[0][1]}
     for (let i in masterLine.HorizonDataList){
         points.push({x: (masterLine.HorizonDataList[i][0] - initPoint.x)*scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y)*scale})
     }
-
+    for (let i in masterLine.points){
+        linePoints.push({x:(masterLine.points[i].x - initPoint.x)*scale, y:(masterLine.points[i].y - initPoint.y)*scale })
+    }
     for (let i in points) {
         let circle = new THREE.EllipseCurve(points[i].x, points[i].y, 20, 20)
         let cp = circle.getPoints(16);
@@ -24,7 +28,7 @@ export function LineDrawView(masterLine, slaveLines) {
         let IPCircle = new THREE.Line(circlegeo, lineMaterial)
         group.add(IPCircle)
     }
-
+    group.add(lineMesh(linePoints, lineMaterial2))
     group.add(LineMesh(points, lineMaterial))
 
     return group
