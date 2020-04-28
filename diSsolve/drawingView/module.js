@@ -18,28 +18,31 @@ export function LineDrawView(masterLine, slaveLines) {
     let whiteLine = new THREE.LineBasicMaterial({ color: 0xffffff });
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
     let fontSize = 80
-    let segName = {0:"ETC",1:"BTC",2:"BC",3:"EC"}
+    let segName = { 0: "ETC", 1: "BTC", 2: "BC", 3: "EC" }
 
     let initPoint = { x: masterLine.HorizonDataList[0][0], y: masterLine.HorizonDataList[0][1] }
     for (let i in masterLine.HorizonDataList) {
         IPpoints.push({ x: (masterLine.HorizonDataList[i][0] - initPoint.x) * scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y) * scale })
     }
     for (let i in masterLine.points) {
-        linePoints.push({ x: (masterLine.points[i].x - initPoint.x) * scale, y: (masterLine.points[i].y - initPoint.y) * scale })
-        let rot = Math.atan2(masterLine.points[i].normalSin, masterLine.points[i].normalCos)
-        if (rot >= Math.PI / 2) { rot = rot - Math.PI }
-        let cos = Math.cos(rot)
-        let sin = Math.sin(rot)
-        let bar = [{ x: (masterLine.points[i].x - initPoint.x) * scale + cos * fontSize / 4, y: (masterLine.points[i].y - initPoint.y) * scale + sin * fontSize / 4 },
-        { x: (masterLine.points[i].x - initPoint.x) * scale - cos * fontSize / 4, y: (masterLine.points[i].y - initPoint.y) * scale - sin * fontSize / 4 }];
-        group.add(LineMesh(bar, whiteLine))
-        label.push({
-            text: (masterLine.points[i].masterStationNumber / 1000).toFixed(4),
-            anchor: [bar[0].x + cos * fontSize / 2, bar[0].y + sin * fontSize / 2, 0],
-            rotation: rot,
-            align: "left",
-            fontSize: fontSize / 4
-        })
+        let station = masterLine.points[i].masterStationNumber / 1000
+        if ((station % 20).toFixed(0) === "0") {
+            linePoints.push({ x: (masterLine.points[i].x - initPoint.x) * scale, y: (masterLine.points[i].y - initPoint.y) * scale })
+            let rot = Math.atan2(masterLine.points[i].normalSin, masterLine.points[i].normalCos)
+            if (rot >= Math.PI / 2) { rot = rot - Math.PI }
+            let cos = Math.cos(rot)
+            let sin = Math.sin(rot)
+            let bar = [{ x: (masterLine.points[i].x - initPoint.x) * scale + cos * fontSize / 4, y: (masterLine.points[i].y - initPoint.y) * scale + sin * fontSize / 4 },
+            { x: (masterLine.points[i].x - initPoint.x) * scale - cos * fontSize / 4, y: (masterLine.points[i].y - initPoint.y) * scale - sin * fontSize / 4 }];
+            group.add(LineMesh(bar, whiteLine))
+            label.push({
+                text: (masterLine.points[i].masterStationNumber / 1000).toFixed(4),
+                anchor: [bar[0].x + cos * fontSize / 4, bar[0].y + sin * fontSize / 4, 0],
+                rotation: rot,
+                align: "left",
+                fontSize: fontSize / 4
+            })
+        }
     }
 
     for (let i = 1; i < masterLine.segments.start.length; i++) {
@@ -53,15 +56,15 @@ export function LineDrawView(masterLine, slaveLines) {
         { x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale }];
         group.add(LineMesh(bar, redLine))
         label.push({
-            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000)/1000).toFixed(4),
-            anchor: [bar[1].x + cos * fontSize * 4 + sin * fontSize/4, bar[1].y + sin * fontSize * 4 - cos * fontSize/4, 0],
+            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            anchor: [bar[1].x + cos * fontSize * 4 + sin * fontSize / 4, bar[1].y + sin * fontSize * 4 - cos * fontSize / 4, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
         });
         label.push({
-            text: segName[i%4],
-            anchor: [bar[1].x + cos * fontSize * 4 - sin * fontSize/4, bar[1].y + sin * fontSize * 4 + cos * fontSize/4, 0],
+            text: segName[i % 4],
+            anchor: [bar[1].x + cos * fontSize * 4 - sin * fontSize / 4, bar[1].y + sin * fontSize * 4 + cos * fontSize / 4, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
