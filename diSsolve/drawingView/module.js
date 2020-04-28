@@ -116,13 +116,13 @@ export function LineSideView(masterLine) {
 
     let offset = -10 * fontSize;
     let superElCenter = [];
-    for (let i in masterLine.superElevation) {
-        let x = (masterLine.superElevation[i][0] - initPoint.x) * xscale
+    for (let i in masterLine.SuperElevation) {
+        let x = (masterLine.SuperElevation[i][0] - initPoint.x) * xscale
         let y = offset;
         group.add(LineMesh([{ x, y: y + 5 * fontSize }, { x, y: y - 5 * fontSize }], whiteLine))
         superElCenter.push({x,y})
-        leftGrad.push({ x, y: y + fontSize / 2 * masterLine.superElevation[i][1] })
-        rightGrad.push({ x, y: y + fontSize / 2 * masterLine.superElevation[i][2] })
+        leftGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][1] })
+        rightGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][2] })
 
     }
 
