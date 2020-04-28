@@ -144,9 +144,9 @@ export function LineSideView(masterLine) {
         });
     }
     group.add(LineMesh(superElCenter, redLine))
-    group.add(LineMesh(leftGrad, blueLine))
-    group.add(LineMesh(rightGrad, greenLine))
-    group.add(LineMesh(linePoints, whiteLine))
+    group.add(LineMesh(leftGrad, blueLine,1))
+    group.add(LineMesh(rightGrad, greenLine,1))
+    group.add(LineMesh(linePoints, whiteLine,1))
     group.add(LineMesh(points, blueLine))
     group.add(LabelInsert(label, textMaterial, layerNum))  //layer number is 3
 
@@ -615,10 +615,11 @@ export function sideDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint,
 
 
 
-function LineMesh(point0, lineMaterial) {
+function LineMesh(point0, lineMaterial,z) {
     let points = []
+    let z1 = z? z:0;
     for (let i in point0) {
-        points.push(new THREE.Vector3(point0[i].x, point0[i].y, 0))
+        points.push(new THREE.Vector3(point0[i].x, point0[i].y, z1))
     }
     let geometry = new THREE.Geometry().setFromPoints(points)
     return new THREE.Line(geometry, lineMaterial)
