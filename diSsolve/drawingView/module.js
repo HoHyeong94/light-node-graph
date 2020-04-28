@@ -1,7 +1,7 @@
 // import makerjs from 'makerjs'
 import { THREE, sceneAdder } from "global";
 import { PointLength } from "../geometryModule"
-
+import { PointGenerator } from "../line/module"
 // import {PointLength, hBracingPlate} from './geometryFunc'
 import { ToGlobalPoint, ToGlobalPoint2 } from '../geometryModule'
 
@@ -11,45 +11,65 @@ export function LineDrawView(masterLine, slaveLines) {
     let meshes = [];
     let points = [];
     let linePoints = [];
+    let segPoints = [];
     let label = [];
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let lineMaterial2 = new THREE.LineBasicMaterial({ color: 0x0000ff });
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
     let fontSize = 80
 
-    let initPoint = {x:masterLine.HorizonDataList[0][0],y:masterLine.HorizonDataList[0][1]}
-    for (let i in masterLine.HorizonDataList){
-        points.push({x: (masterLine.HorizonDataList[i][0] - initPoint.x)*scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y)*scale})
+    let initPoint = { x: masterLine.HorizonDataList[0][0], y: masterLine.HorizonDataList[0][1] }
+    for (let i in masterLine.HorizonDataList) {
+        points.push({ x: (masterLine.HorizonDataList[i][0] - initPoint.x) * scale, y: (masterLine.HorizonDataList[i][1] - initPoint.y) * scale })
     }
-    for (let i in masterLine.points){
-        linePoints.push({x:(masterLine.points[i].x - initPoint.x)*scale, y:(masterLine.points[i].y - initPoint.y)*scale })
-
-        let rot = Math.atan2(masterLine.points[i].normalSin,masterLine.points[i].normalCos)
-        if (rot > Math.PI/2){ rot = rot - Math.PI}
+    for (let i in masterLine.points) {
+        linePoints.push({ x: (masterLine.points[i].x - initPoint.x) * scale, y: (masterLine.points[i].y - initPoint.y) * scale })
+        let rot = Math.atan2(masterLine.points[i].normalSin, masterLine.points[i].normalCos)
+        if (rot >= Math.PI / 2) { rot = rot - Math.PI }
         let cos = Math.cos(rot)
         let sin = Math.sin(rot)
-        let bar = [{x:(masterLine.points[i].x - initPoint.x)*scale + cos * fontSize/2, y:(masterLine.points[i].y - initPoint.y)*scale  + sin * fontSize/2},
-                    {x:(masterLine.points[i].x - initPoint.x)*scale - cos * fontSize/2, y:(masterLine.points[i].y - initPoint.y)*scale  - sin * fontSize/2}];
-        group.add(LineMesh(bar,lineMaterial))
-        
+        let bar = [{ x: (masterLine.points[i].x - initPoint.x) * scale + cos * fontSize / 2, y: (masterLine.points[i].y - initPoint.y) * scale + sin * fontSize / 2 },
+        { x: (masterLine.points[i].x - initPoint.x) * scale - cos * fontSize / 2, y: (masterLine.points[i].y - initPoint.y) * scale - sin * fontSize / 2 }];
+        group.add(LineMesh(bar, lineMaterial))
         label.push({
-            text: (masterLine.points[i].masterStationNumber/1000).toFixed(4),
-            anchor: [bar[0].x + cos*fontSize, bar[0].y+sin*fontSize, 0],
+            text: (masterLine.points[i].masterStationNumber / 1000).toFixed(4),
+            anchor: [bar[0].x + cos * fontSize / 2, bar[0].y + sin * fontSize / 2, 0],
             rotation: rot,
-            align : "left",
-            fontSize: fontSize/2
+            align: "left",
+            fontSize: fontSize / 4
         })
     }
-    for (let i = 0 ; i< points.length; i++) {
+
+    for (let i = 1; i < masterLine.segments.start.length; i++) {
+        let station = masterLine.segments.start[i];
+        let pt = PointGenerator(station, masterLine, 90);
+        let rot = Math.atan2(pt.normalSin, pt.normalCos)
+        if (rot >= Math.PI / 2) { rot = rot - Math.PI }
+        let cos = Math.cos(rot)
+        let sin = Math.sin(rot)
+        let bar = [{ x: (pt.x - initPoint.x) * scale + cos * fontSize * 10, y: (pt.y - initPoint.y) * scale + sin * fontSize * 10 },
+        { x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale }];
+        group.add(LineMesh(bar, lineMaterial2))
+        label.push({
+            text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000)/1000).toFixed(4),
+            anchor: [bar[0].x + cos * fontSize * 5, bar[0].y + sin * fontSize * 5, 0],
+            rotation: rot,
+            align: "center",
+            fontSize: fontSize / 4
+        })
+    }
+
+
+    for (let i = 0; i < points.length; i++) {
         let circle = new THREE.EllipseCurve(points[i].x, points[i].y, 20, 20)
         let cp = circle.getPoints(16);
         let circlegeo = new THREE.Geometry().setFromPoints(cp)
         let IPCircle = new THREE.Line(circlegeo, lineMaterial)
         group.add(IPCircle)
-        let ipName = i===0? "BP" : i===(points.length-1)? "EP": "IP" + i
+        let ipName = i === 0 ? "BP" : i === (points.length - 1) ? "EP" : "IP" + i
         label.push({
             text: ipName,
-            anchor: [points[i].x, points[i].y+100, 0],
+            anchor: [points[i].x, points[i].y + 100, 0],
             rotation: 0,
             fontSize: fontSize
         })
@@ -57,14 +77,14 @@ export function LineDrawView(masterLine, slaveLines) {
     }
     group.add(LineMesh(linePoints, lineMaterial2))
     group.add(LineMesh(points, lineMaterial))
-    group.add(LabelInsert(label, textMaterial,3))
+    group.add(LabelInsert(label, textMaterial, 3))
 
     return group
 }
 
 
 
-function LabelInsert (label, textMaterial, layer){
+function LabelInsert(label, textMaterial, layer) {
     let group = new THREE.Group()
     var loader = new THREE.FontLoader();
     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
@@ -73,10 +93,10 @@ function LabelInsert (label, textMaterial, layer){
         for (let i in label) {
             var shapes = font.generateShapes(label[i].text, label[i].fontSize);
             var geometry = new THREE.ShapeBufferGeometry(shapes);
-            if (label[i].align==="left"){
+            if (label[i].align === "left") {
                 geometry.translate(0, -label[i].fontSize / 2, 0);
             }
-            else{
+            else {
                 var xMid
                 geometry.computeBoundingBox();
                 xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
