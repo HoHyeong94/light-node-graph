@@ -9,7 +9,6 @@ export function LineDrawView(masterLine, slaveLines) {
     let scale = 0.01;
     let group = new THREE.Group();
     let meshes = [];
-    let labels = [];
     let points = [];
     let linePoints = [];
     let labels = [];
