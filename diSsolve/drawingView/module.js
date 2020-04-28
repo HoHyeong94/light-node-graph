@@ -17,6 +17,7 @@ export function LineDrawView(masterLine, slaveLines) {
     let lineMaterial2 = new THREE.LineBasicMaterial({ color: 0x0000ff });
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
     let fontSize = 80
+    let segName = {0:"ETC",1:"BTC",2:"BC",3:"EC"}
 
     let initPoint = { x: masterLine.HorizonDataList[0][0], y: masterLine.HorizonDataList[0][1] }
     for (let i in masterLine.HorizonDataList) {
@@ -52,11 +53,19 @@ export function LineDrawView(masterLine, slaveLines) {
         group.add(LineMesh(bar, lineMaterial2))
         label.push({
             text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000)/1000).toFixed(4),
-            anchor: [bar[1].x + cos * fontSize * 5 + sin * fontSize, bar[1].y + sin * fontSize * 5 - cos * fontSize, 0],
+            anchor: [bar[1].x + cos * fontSize * 5 + sin * fontSize/4, bar[1].y + sin * fontSize * 5 - cos * fontSize/4, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
-        })
+        });
+        label.push({
+            text: segName[i%4],
+            anchor: [bar[1].x + cos * fontSize * 5 - sin * fontSize/4, bar[1].y + sin * fontSize * 5 + cos * fontSize/4, 0],
+            rotation: rot,
+            align: "center",
+            fontSize: fontSize / 4
+        });
+
     }
 
 
