@@ -28,7 +28,7 @@ export function LineDrawView(masterLine, slaveLines) {
         let IPCircle = new THREE.Line(circlegeo, lineMaterial)
         group.add(IPCircle)
     }
-    group.add(lineMesh(linePoints, lineMaterial2))
+    group.add(LineMesh(linePoints, lineMaterial2))
     group.add(LineMesh(points, lineMaterial))
 
     return group
