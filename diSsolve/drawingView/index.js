@@ -91,6 +91,7 @@ LineDraw.prototype.on3DExecute = function() {
 
 export function LineSideDraw(){
   this.addInput("masterLine","line");
+  console.log("testAgain")
 }
 
 LineSideDraw.prototype.onExecute = function() {
@@ -100,3 +101,4 @@ LineSideDraw.prototype.on3DExecute = function() {
   let group = LineSideView(this.getInputData(0))
   sceneAdder({layer:4, mesh:group},"LineSideView")
 }
+
