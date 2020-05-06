@@ -5,6 +5,31 @@ import { PointGenerator } from "../line/module"
 // import {PointLength, hBracingPlate} from './geometryFunc'
 import { ToGlobalPoint, ToGlobalPoint2 } from '../geometryModule'
 
+export function GirderLayoutView(girderLayout) {
+    let scale = 0.01; // scale 은 추후 외부에서 받아오는 변수로 지정할 계획임
+    let group = new THREE.Group();
+    let skewLength = 5000;
+    let whiteLine = new THREE.LineBasicMaterial({ color: 0xffffff });
+    let initPoint = { x: girderLayout.masterLine.HorizonDataList[0][0], y: girderLayout.masterLine.HorizonDataList[0][1] }
+    for (let key in girderLayout.gridKeyPoint) {
+        let pt = girderLayout.gridKeyPoint[key]
+        let angle = (90 - girderLayout.gridKeyPoint[key].skew) * Math.PI / 180
+        let pt1 = {
+            x: pt.x + (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength,
+            y: pt.y + (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength
+        }
+        let pt2 = {
+            x: pt.x - (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength,
+            y: pt.y - (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength
+        }
+        let bar = [{ x: (pt1.x - initPoint.x) * scale, y: (pt1.y - initPoint.y) * scale},
+                   { x: (pt2.x - initPoint.x) * scale, y: (pt2.y - initPoint.y) * scale}];
+        group.add(LineMesh(bar, whiteLine))
+
+    }
+    return group
+}
+
 export function LineSideView(masterLine) {
     let xscale = 0.003;
     let yscale = 0.02;
@@ -121,7 +146,7 @@ export function LineSideView(masterLine) {
         let x = (masterLine.SuperElevation[i][0] - initPoint.x) * xscale
         let y = offset;
         group.add(LineMesh([{ x, y: y + 5 * fontSize }, { x, y: y - 8 * fontSize }], redLine))
-        superElCenter.push({x,y})
+        superElCenter.push({ x, y })
         leftGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][1] })
         rightGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][2] })
         let station = masterLine.SuperElevation[i][0];
@@ -133,20 +158,20 @@ export function LineSideView(masterLine) {
             fontSize: fontSize / 4
         });
     }
-    for (let i = 0; i<11;i++){
-        group.add(LineMesh([{x:superElCenter[0].x,y:offset + (5-i)*fontSize}, {x:superElCenter[superElCenter.length -1].x,y:offset + (5-i)*fontSize}],grayLine))
+    for (let i = 0; i < 11; i++) {
+        group.add(LineMesh([{ x: superElCenter[0].x, y: offset + (5 - i) * fontSize }, { x: superElCenter[superElCenter.length - 1].x, y: offset + (5 - i) * fontSize }], grayLine))
         label.push({
-            text: (10-i*2).toFixed(0) + "%",
-            anchor: [superElCenter[0].x - fontSize, offset + (5-i)*fontSize, 0],
+            text: (10 - i * 2).toFixed(0) + "%",
+            anchor: [superElCenter[0].x - fontSize, offset + (5 - i) * fontSize, 0],
             rotation: 0,
             align: "center",
             fontSize: fontSize / 4
         });
     }
     group.add(LineMesh(superElCenter, redLine))
-    group.add(LineMesh(leftGrad, blueLine,1))
-    group.add(LineMesh(rightGrad, greenLine,1))
-    group.add(LineMesh(linePoints, whiteLine,1))
+    group.add(LineMesh(leftGrad, blueLine, 1))
+    group.add(LineMesh(rightGrad, greenLine, 1))
+    group.add(LineMesh(linePoints, whiteLine, 1))
     group.add(LineMesh(points, blueLine))
     group.add(LabelInsert(label, textMaterial, layerNum))  //layer number is 3
 
@@ -615,9 +640,9 @@ export function sideDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint,
 
 
 
-function LineMesh(point0, lineMaterial,z) {
+function LineMesh(point0, lineMaterial, z) {
     let points = []
-    let z1 = z? z:0;
+    let z1 = z ? z : 0;
     for (let i in point0) {
         points.push(new THREE.Vector3(point0[i].x, point0[i].y, z1))
     }
