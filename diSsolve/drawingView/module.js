@@ -31,8 +31,13 @@ export function GirderLayoutView(girderLayout) {
         rightLine.push(bar[1])
         group.add(LineMesh(bar, aquaLine))
     }
-    for (let i in girderLayout.griderLine){
-        group.add(LineMesh(girderLayout.griderLine[i],redLine))
+    for (let i in girderLayout.giderLine){
+        let girderLine = [];
+        for (let j in girderLayout.giderLine[i]){
+            girderLine.push({x:(girderLayout.giderLine[i][j].x - initPoint.x) * scale,
+                y:(girderLayout.giderLine[i][j].y - initPoint.y) * scale})
+        }
+        group.add(LineMesh(giderLine,redLine))
     }
 
     group.add(LineMesh(leftLine, aquaLine))
