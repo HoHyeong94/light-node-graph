@@ -16,11 +16,10 @@ export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
     let supportStation = girderLayoutInput.baseValue;
     let bridgeLength = 0;
     let i = 0
-    let skew = 0;
     girderLayoutInput.supportData.forEach(function (elem) {
         bridgeLength += elem[spanLength] ? elem[spanLength] : 0;
         let gridName = "CRS" + i
-        result.gridKeyPoint[gridName] = MasterPointGenerator(supportStation + bridgeLength, masterLine, skew)
+        result.gridKeyPoint[gridName] = MasterPointGenerator(supportStation + bridgeLength, masterLine, elem[angle])
         if (i === 0) {
             result.startPoint = result.gridKeyPoint[gridName];
         } else if (i === girderLayoutInput.supportData.length - 1) {
