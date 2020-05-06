@@ -5,7 +5,7 @@ export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
     const spanLength = 1;
     const baseLine = 0;
     const alignOffset = 1;
-    const margin = 20000
+    const margin = 12000 // 해당변수로 충분한 거더 간격이 포함되어야 함.
 
     let result = {
         masterLine: masterLine,

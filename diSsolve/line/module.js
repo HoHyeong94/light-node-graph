@@ -377,9 +377,10 @@ export const OffsetLine = (offset, line, startPoint, endPoint) => {
   let points = [];
   let st = 0;
   let ed = 0;
+  let resultPoint = {};
    for (let i = 0; i < line.points.length; i++) {
     //  let zOffset = offset > 0? line.points[i].rightGradient * offset : line.points[i].leftGradient * offset
-    let resultPoint = {
+    resultPoint = {
       // stationNumber: line.points[i].masterStationNumber,
       x: line.points[i].x + line.points[i].normalCos * offset,
       y: line.points[i].y + line.points[i].normalSin * offset,
