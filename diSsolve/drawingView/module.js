@@ -44,7 +44,7 @@ export function GirderLayoutView(girderLayout) {
                 y:(girderLayout.girderLine[i][j].y - initPoint.y) * scale})
         }
 
-        group.add(LineMesh(girderLine,redLine))
+        group.add(LineMesh(girderLine,redLine,-1))
     }
 
     group.add(LineMesh(leftLine, aquaLine))

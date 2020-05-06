@@ -5,7 +5,7 @@ export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
     const spanLength = 1;
     const baseLine = 0;
     const alignOffset = 1;
-    const margin = 40000
+    const margin = 20000
 
     let result = {
         masterLine: masterLine,
