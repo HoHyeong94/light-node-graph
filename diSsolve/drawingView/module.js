@@ -17,12 +17,12 @@ export function GirderLayoutView(girderLayout) {
         let pt = girderLayout.gridKeyPoint[key]
         let angle = (girderLayout.gridKeyPoint[key].skew - 90) * Math.PI / 180
         let pt1 = {
-            x: pt.x + (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength,
-            y: pt.y + (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength
+            x: pt.x + (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength/Math.cos(angle),
+            y: pt.y + (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength/Math.cos(angle)
         }
         let pt2 = {
-            x: pt.x - (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength,
-            y: pt.y - (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength
+            x: pt.x - (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength/Math.cos(angle),
+            y: pt.y - (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength/Math.cos(angle)
         }
         let bar = [{ x: (pt1.x - initPoint.x) * scale, y: (pt1.y - initPoint.y) * scale},
                    { x: (pt2.x - initPoint.x) * scale, y: (pt2.y - initPoint.y) * scale}];
