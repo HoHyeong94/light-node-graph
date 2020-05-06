@@ -9,11 +9,13 @@ export function GirderLayoutView(girderLayout) {
     let scale = 0.01; // scale 은 추후 외부에서 받아오는 변수로 지정할 계획임
     let group = new THREE.Group();
     let skewLength = 5000;
-    let whiteLine = new THREE.LineBasicMaterial({ color: 0xffffff });
+    let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff });
+    let leftLine = [];
+    let rightLine = [];
     let initPoint = { x: girderLayout.masterLine.HorizonDataList[0][0], y: girderLayout.masterLine.HorizonDataList[0][1] }
     for (let key in girderLayout.gridKeyPoint) {
         let pt = girderLayout.gridKeyPoint[key]
-        let angle = (90 - girderLayout.gridKeyPoint[key].skew) * Math.PI / 180
+        let angle = (girderLayout.gridKeyPoint[key].skew - 90) * Math.PI / 180
         let pt1 = {
             x: pt.x + (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength,
             y: pt.y + (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength
@@ -22,11 +24,14 @@ export function GirderLayoutView(girderLayout) {
             x: pt.x - (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength,
             y: pt.y - (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength
         }
+        leftLine.push(pt1);
+        rightLine.push(pt2)
         let bar = [{ x: (pt1.x - initPoint.x) * scale, y: (pt1.y - initPoint.y) * scale},
                    { x: (pt2.x - initPoint.x) * scale, y: (pt2.y - initPoint.y) * scale}];
-        group.add(LineMesh(bar, whiteLine))
-
+        group.add(LineMesh(bar, aquaLine))
     }
+    group.add(LineMesh(leftLine, aquaLine))
+    group.add(LineMesh(rightLine, aquaLine))
     return group
 }
 
