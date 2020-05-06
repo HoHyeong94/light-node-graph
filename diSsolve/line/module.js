@@ -372,24 +372,31 @@ function Clothoid(radius, a) {
   }
 }
 
-export const OffsetLine = (offset, line) => {
+export const OffsetLine = (offset, line, startPoint, endPoint) => {
  
   let points = [];
+  let st = 0;
+  let ed = 0;
    for (let i = 0; i < line.points.length; i++) {
     //  let zOffset = offset > 0? line.points[i].rightGradient * offset : line.points[i].leftGradient * offset
     let resultPoint = {
       // stationNumber: line.points[i].masterStationNumber,
       x: line.points[i].x + line.points[i].normalCos * offset,
       y: line.points[i].y + line.points[i].normalSin * offset,
-      z: 0, //line.points[i].z +  zOffset,
+      // z: 0, //line.points[i].z +  zOffset,
       normalCos: line.points[i].normalCos,
       normalSin: line.points[i].normalSin,
-      masterStationNumber: line.points[i].masterStationNumber,
-      skew: line.points[i].skew,
-      offset: offset,
-      virtual: false
+      // masterStationNumber: line.points[i].masterStationNumber,
+      // skew: line.points[i].skew,
+      // offset: offset,
+      // virtual: false
     };
+    st = startPoint.normalSin * (resultPoint.x - startPoint.x) - startPoint.normalCos * (resultPoint.y - startPoint.y);
+    ed = endPoint.normalSin * (resultPoint.x - endPoint.x) - endPoint.normalCos * (resultPoint.y - endPoint.y);
+    
+    if (st*ed <=0){
      points.push(resultPoint)
+    }
   }
   return points
 }

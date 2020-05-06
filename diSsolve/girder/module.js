@@ -5,6 +5,7 @@ export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
     const spanLength = 1;
     const baseLine = 0;
     const alignOffset = 1;
+    const margin = 40000
 
     let result = {
         masterLine: masterLine,
@@ -29,11 +30,14 @@ export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
     })
     // 시종점 교대사각 자동계산 //
     result.gridKeyPoint["CRS"+1].skew = OffsetSkewCalculator(result.startPoint, result.startPoint.skew, girderLayoutInput.supportData[1][1], masterLine)
-    result.gridKeyPoint["CRS"+girderLayoutInput.supportData.length - 2].skew = OffsetSkewCalculator(result.endPoint, result.endPoint.skew, -1*girderLayoutInput.supportData[girderLayoutInput.supportData.length - 1][1], masterLine)
+    result.gridKeyPoint["CRS"+ (girderLayoutInput.supportData.length - 2)].skew = OffsetSkewCalculator(result.endPoint, result.endPoint.skew, -1*girderLayoutInput.supportData[girderLayoutInput.supportData.length - 1][1], masterLine)
     // 시종점 교대사각 자동계산 끝 //
+    let stp = MasterPointGenerator(result.startPoint.masterStationNumber-margin,masterLine,result.startPoint.skew)
+    let edp = MasterPointGenerator(result.endPoint.masterStationNumber+margin,masterLine,result.startPoint.skew)
+
     for (let j = 0; j < girderLayoutInput.getGirderList.length; j++) {
         let girderBaseLine = girderLayoutInput.getGirderList[j][baseLine] === "MasterLine" ? masterLine : slaveLine[girderLayoutInput.getGirderList[j][baseLine]];
-        result.girderLine.push(OffsetLine(girderLayoutInput.getGirderList[j][alignOffset], girderBaseLine))
+        result.girderLine.push(OffsetLine(girderLayoutInput.getGirderList[j][alignOffset], girderBaseLine, stp, edp))
         // 추후에 거더라인이 포인트만 가져간다고 하면, 포인트에대한 내용만 보내줄것!
     }
 
