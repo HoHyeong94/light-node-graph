@@ -1105,12 +1105,12 @@
    
     let points = [];
      for (let i = 0; i < line.points.length; i++) {
-       let zOffset = offset > 0? line.points[i].rightGradient * offset : line.points[i].leftGradient * offset;
+      //  let zOffset = offset > 0? line.points[i].rightGradient * offset : line.points[i].leftGradient * offset
       let resultPoint = {
         // stationNumber: line.points[i].masterStationNumber,
         x: line.points[i].x + line.points[i].normalCos * offset,
         y: line.points[i].y + line.points[i].normalSin * offset,
-        z: line.points[i].z +  zOffset,
+        z: 0, //line.points[i].z +  zOffset,
         normalCos: line.points[i].normalCos,
         normalSin: line.points[i].normalSin,
         masterStationNumber: line.points[i].masterStationNumber,
@@ -1336,7 +1336,6 @@
   // };
 
   function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput) {
-      const angle = 0;
       const spanLength = 1;
       const baseLine = 0;
       const alignOffset = 1;
@@ -1351,10 +1350,11 @@
       let supportStation = girderLayoutInput.baseValue;
       let bridgeLength = 0;
       let i = 0;
+      let skew = 0;
       girderLayoutInput.supportData.forEach(function (elem) {
           bridgeLength += elem[spanLength] ? elem[spanLength] : 0;
           let gridName = "CRS" + i;
-          result.gridKeyPoint[gridName] = MasterPointGenerator(supportStation + bridgeLength, masterLine, elem[angle]);
+          result.gridKeyPoint[gridName] = MasterPointGenerator(supportStation + bridgeLength, masterLine, skew);
           if (i === 0) {
               result.startPoint = result.gridKeyPoint[gridName];
           } else if (i === girderLayoutInput.supportData.length - 1) {
@@ -1362,6 +1362,10 @@
           }
           i++;
       });
+
+      result.gridKeyPoint["CRS"+1].skew = OffsetSkewCalculator(result.startPoint, result.startPoint.skew, girderLayoutInput.supportData[1][1], masterLine);
+      result.gridKeyPoint["CRS"+girderLayoutInput.supportData.length - 2].skew = OffsetSkewCalculator(result.endPoint, result.endPoint.skew, -1*girderLayoutInput.supportData[girderLayoutInput.supportData.length - 1][1], masterLine);
+
       for (let j = 0; j < girderLayoutInput.getGirderList.length; j++) {
           let girderBaseLine = girderLayoutInput.getGirderList[j][baseLine] === "MasterLine" ? masterLine : slaveLine[girderLayoutInput.getGirderList[j][baseLine]];
           result.girderLine.push(OffsetLine(girderLayoutInput.getGirderList[j][alignOffset], girderBaseLine));
@@ -1390,7 +1394,7 @@
               case 7: offset = -(SEShape.end.A); break;
           }
           let masterPoint = k < 4 ? girderLayout.startPoint : girderLayout.endPoint;
-          let skew = k < 4 ? OffsetSkewCalculator(masterPoint, girderLayout.startPoint.skew, offset, masterLine) : OffsetSkewCalculator(masterPoint, girderLayout.startPoint.skew, offset, masterLine);
+          let skew = k < 4 ? OffsetSkewCalculator(masterPoint, girderLayout.startPoint.skew, offset, masterLine) : OffsetSkewCalculator(masterPoint, girderLayout.endPoint.skew, offset, masterLine);
           let centerPoint = MasterPointGenerator(masterPoint.masterStationNumber + offset, masterLine, skew);
           for (let i = 0; i < girderNumber; i++) {
               pointName = "G" + (i + 1) + "K" + k;
@@ -4247,6 +4251,36 @@
 
   // import makerjs from 'makerjs'
 
+  function GirderLayoutView(girderLayout) {
+      let scale = 0.01; // scale 은 추후 외부에서 받아오는 변수로 지정할 계획임
+      let group = new global.THREE.Group();
+      let skewLength = 5000;
+      let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
+      let leftLine = [];
+      let rightLine = [];
+      let initPoint = { x: girderLayout.masterLine.HorizonDataList[0][0], y: girderLayout.masterLine.HorizonDataList[0][1] };
+      for (let key in girderLayout.gridKeyPoint) {
+          let pt = girderLayout.gridKeyPoint[key];
+          let angle = (girderLayout.gridKeyPoint[key].skew - 90) * Math.PI / 180;
+          let pt1 = {
+              x: pt.x + (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength/Math.cos(angle),
+              y: pt.y + (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength/Math.cos(angle)
+          };
+          let pt2 = {
+              x: pt.x - (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength/Math.cos(angle),
+              y: pt.y - (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength/Math.cos(angle)
+          };
+          let bar = [{ x: (pt1.x - initPoint.x) * scale, y: (pt1.y - initPoint.y) * scale},
+                     { x: (pt2.x - initPoint.x) * scale, y: (pt2.y - initPoint.y) * scale}];
+          leftLine.push(bar[0]);
+          rightLine.push(bar[1]);
+          group.add(LineMesh(bar, aquaLine));
+      }
+      group.add(LineMesh(leftLine, aquaLine));
+      group.add(LineMesh(rightLine, aquaLine));
+      return group
+  }
+
   function LineSideView(masterLine) {
       let xscale = 0.003;
       let yscale = 0.02;
@@ -4363,7 +4397,7 @@
           let x = (masterLine.SuperElevation[i][0] - initPoint.x) * xscale;
           let y = offset;
           group.add(LineMesh([{ x, y: y + 5 * fontSize }, { x, y: y - 8 * fontSize }], redLine));
-          superElCenter.push({x,y});
+          superElCenter.push({ x, y });
           leftGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][1] });
           rightGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][2] });
           let station = masterLine.SuperElevation[i][0];
@@ -4375,20 +4409,20 @@
               fontSize: fontSize / 4
           });
       }
-      for (let i = 0; i<11;i++){
-          group.add(LineMesh([{x:superElCenter[0].x,y:offset + (5-i)*fontSize}, {x:superElCenter[superElCenter.length -1].x,y:offset + (5-i)*fontSize}],grayLine));
+      for (let i = 0; i < 11; i++) {
+          group.add(LineMesh([{ x: superElCenter[0].x, y: offset + (5 - i) * fontSize }, { x: superElCenter[superElCenter.length - 1].x, y: offset + (5 - i) * fontSize }], grayLine));
           label.push({
-              text: (10-i*2).toFixed(0) + "%",
-              anchor: [superElCenter[0].x - fontSize, offset + (5-i)*fontSize, 0],
+              text: (10 - i * 2).toFixed(0) + "%",
+              anchor: [superElCenter[0].x - fontSize, offset + (5 - i) * fontSize, 0],
               rotation: 0,
               align: "center",
               fontSize: fontSize / 4
           });
       }
       group.add(LineMesh(superElCenter, redLine));
-      group.add(LineMesh(leftGrad, blueLine,1));
-      group.add(LineMesh(rightGrad, greenLine,1));
-      group.add(LineMesh(linePoints, whiteLine,1));
+      group.add(LineMesh(leftGrad, blueLine, 1));
+      group.add(LineMesh(rightGrad, greenLine, 1));
+      group.add(LineMesh(linePoints, whiteLine, 1));
       group.add(LineMesh(points, blueLine));
       group.add(LabelInsert(label, textMaterial, layerNum));  //layer number is 3
 
@@ -4855,9 +4889,9 @@
 
 
 
-  function LineMesh(point0, lineMaterial,z) {
+  function LineMesh(point0, lineMaterial, z) {
       let points = [];
-      let z1 = z? z:0;
+      let z1 = z ? z : 0;
       for (let i in point0) {
           points.push(new global.THREE.Vector3(point0[i].x, point0[i].y, z1));
       }
@@ -5186,6 +5220,18 @@
   LineSideDraw.prototype.on3DExecute = function() {
     let group = LineSideView(this.getInputData(0));
     global.sceneAdder({layer:4, mesh:group},"LineSideView");
+  };
+
+  function GirderLayoutDraw(){
+    this.addInput("girderLayout","girderLayout");
+  }
+
+  GirderLayoutDraw.prototype.onExecute = function() {
+  };
+
+  GirderLayoutDraw.prototype.on3DExecute = function() {
+    let group = GirderLayoutView(this.getInputData(0));
+    global.sceneAdder({layer:3, mesh:group},"GirderLayout");
   };
 
   function partProperty(width, thickness, Dy, Dz, cos) {
@@ -6355,6 +6401,7 @@
   global.LiteGraph.registerNodeType("Drawing/SideView", SideViewer );
   global.LiteGraph.registerNodeType("Drawing/LineDraw", LineDraw );
   global.LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
+  global.LiteGraph.registerNodeType("Drawing/GirderLayoutDraw", GirderLayoutDraw );
 
 
   // const {

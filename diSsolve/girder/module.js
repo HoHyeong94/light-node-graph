@@ -16,10 +16,11 @@ export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
     let supportStation = girderLayoutInput.baseValue;
     let bridgeLength = 0;
     let i = 0
+    let skew = 0;
     girderLayoutInput.supportData.forEach(function (elem) {
         bridgeLength += elem[spanLength] ? elem[spanLength] : 0;
         let gridName = "CRS" + i
-        result.gridKeyPoint[gridName] = MasterPointGenerator(supportStation + bridgeLength, masterLine, elem[angle])
+        result.gridKeyPoint[gridName] = MasterPointGenerator(supportStation + bridgeLength, masterLine, skew)
         if (i === 0) {
             result.startPoint = result.gridKeyPoint[gridName];
         } else if (i === girderLayoutInput.supportData.length - 1) {
@@ -27,6 +28,10 @@ export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
         }
         i++;
     })
+    // 시종점 교대사각 자동계산 //
+    result.gridKeyPoint["CRS"+1].skew = OffsetSkewCalculator(result.startPoint, result.startPoint.skew, girderLayoutInput.supportData[1][1], masterLine)
+    result.gridKeyPoint["CRS"+girderLayoutInput.supportData.length - 2].skew = OffsetSkewCalculator(result.endPoint, result.endPoint.skew, -1*girderLayoutInput.supportData[girderLayoutInput.supportData.length - 1][1], masterLine)
+    // 시종점 교대사각 자동계산 끝 //
     for (let j = 0; j < girderLayoutInput.getGirderList.length; j++) {
         let girderBaseLine = girderLayoutInput.getGirderList[j][baseLine] === "MasterLine" ? masterLine : slaveLine[girderLayoutInput.getGirderList[j][baseLine]];
         result.girderLine.push(OffsetLine(girderLayoutInput.getGirderList[j][alignOffset], girderBaseLine))
@@ -55,7 +60,7 @@ export function GridPointGenerator3(girderLayout, SEShape, gridInput) {
             case 7: offset = -(SEShape.end.A); break;
         }
         let masterPoint = k < 4 ? girderLayout.startPoint : girderLayout.endPoint;
-        let skew = k < 4 ? OffsetSkewCalculator(masterPoint, girderLayout.startPoint.skew, offset, masterLine) : OffsetSkewCalculator(masterPoint, girderLayout.startPoint.skew, offset, masterLine);
+        let skew = k < 4 ? OffsetSkewCalculator(masterPoint, girderLayout.startPoint.skew, offset, masterLine) : OffsetSkewCalculator(masterPoint, girderLayout.endPoint.skew, offset, masterLine);
         let centerPoint = MasterPointGenerator(masterPoint.masterStationNumber + offset, masterLine, skew);
         for (let i = 0; i < girderNumber; i++) {
             pointName = "G" + (i + 1) + "K" + k;
