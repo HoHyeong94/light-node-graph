@@ -372,7 +372,7 @@ function Clothoid(radius, a) {
   }
 }
 
-export const OffsetLine = (offset, line, startPoint, endPoint) => {
+export function OffsetLine(offset, line, startPoint, endPoint){
  
   let points = [];
   let st = 0;
