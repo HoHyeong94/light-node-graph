@@ -377,10 +377,10 @@ export function OffsetLine(offset, line, startPoint, endPoint){
   let points = [];
   let st = 0;
   let ed = 0;
-  let resultPoint = {};
+  let offsetPoint = {};
    for (let i = 0; i < line.points.length; i++) {
     //  let zOffset = offset > 0? line.points[i].rightGradient * offset : line.points[i].leftGradient * offset
-    resultPoint = {
+    offsetPoint = {
       // stationNumber: line.points[i].masterStationNumber,
       x: line.points[i].x + line.points[i].normalCos * offset,
       y: line.points[i].y + line.points[i].normalSin * offset,
@@ -392,11 +392,11 @@ export function OffsetLine(offset, line, startPoint, endPoint){
       // offset: offset,
       // virtual: false
     };
-    st = startPoint.normalSin * (resultPoint.x - startPoint.x) - startPoint.normalCos * (resultPoint.y - startPoint.y);
-    ed = endPoint.normalSin * (resultPoint.x - endPoint.x) - endPoint.normalCos * (resultPoint.y - endPoint.y);
+    st = startPoint.normalSin * (offsetPoint.x - startPoint.x) - startPoint.normalCos * (offsetPoint.y - startPoint.y);
+    ed = endPoint.normalSin * (offsetPoint.x - endPoint.x) - endPoint.normalCos * (offsetPoint.y - endPoint.y);
     
     if (st*ed <=0){
-     points.push(resultPoint)
+     points.push(offsetPoint)
     }
   }
   return points
