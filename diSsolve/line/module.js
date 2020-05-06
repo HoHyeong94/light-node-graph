@@ -376,14 +376,15 @@ export const OffsetLine = (offset, line) => {
  
   let points = [];
    for (let i = 0; i < line.points.length; i++) {
+    //  let zOffset = offset > 0? line.points[i].rightGradient * offset : line.points[i].leftGradient * offset
     let resultPoint = {
-      stationNumber: line.points[i].stationNumber,
+      // stationNumber: line.points[i].masterStationNumber,
       x: line.points[i].x + line.points[i].normalCos * offset,
       y: line.points[i].y + line.points[i].normalSin * offset,
-      z: 0,
+      z: 0, //line.points[i].z +  zOffset,
       normalCos: line.points[i].normalCos,
       normalSin: line.points[i].normalSin,
-      masterStationNumber: line.points[i].stationNumber,
+      masterStationNumber: line.points[i].masterStationNumber,
       skew: line.points[i].skew,
       offset: offset,
       virtual: false

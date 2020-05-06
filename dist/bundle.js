@@ -1105,14 +1105,15 @@
    
     let points = [];
      for (let i = 0; i < line.points.length; i++) {
+       let zOffset = offset > 0? line.points[i].rightGradient * offset : line.points[i].leftGradient * offset;
       let resultPoint = {
-        stationNumber: line.points[i].stationNumber,
+        // stationNumber: line.points[i].masterStationNumber,
         x: line.points[i].x + line.points[i].normalCos * offset,
         y: line.points[i].y + line.points[i].normalSin * offset,
-        z: 0,
+        z: line.points[i].z +  zOffset,
         normalCos: line.points[i].normalCos,
         normalSin: line.points[i].normalSin,
-        masterStationNumber: line.points[i].stationNumber,
+        masterStationNumber: line.points[i].masterStationNumber,
         skew: line.points[i].skew,
         offset: offset,
         virtual: false
@@ -4246,22 +4247,151 @@
 
   // import makerjs from 'makerjs'
 
-  function LineSideView(masterLine){
-      let scale = 0.01;
+  function LineSideView(masterLine) {
+      let xscale = 0.003;
+      let yscale = 0.02;
+      let fontSize = 80;
+      let layerNum = 4;
       let group = new global.THREE.Group();
       let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
       let blueLine = new global.THREE.LineBasicMaterial({ color: 0x0000ff });
+      let greenLine = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });
       let whiteLine = new global.THREE.LineBasicMaterial({ color: 0xffffff });
+      let grayLine = new global.THREE.LineBasicMaterial({ color: 0x888888 });
       let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
-      
+
       let vl = masterLine.VerticalDataList;
       let points = [];
+      let linePoints = [];
+      let label = [];
       let initPoint = { x: vl[0][0], y: vl[0][1] };
-      for (let i in vl){
-          points.push({x: (vl[i][0] - initPoint.x) * scale,y:(vl[i][1] - initPoint.y) * scale});
+      let leftGrad = [];
+      let rightGrad = [];
+
+      for (let i in masterLine.points) {
+          linePoints.push({ x: (masterLine.points[i].masterStationNumber - initPoint.x) * xscale, y: (masterLine.points[i].z - initPoint.y) * yscale });
+      }
+      for (let i in vl) {
+          let x = (vl[i][0] - initPoint.x) * xscale;
+          let y = (vl[i][1] - initPoint.y) * yscale;
+          points.push({ x, y });
+          let bar = [{ x, y },
+          { x, y: -5 * fontSize }];
+          group.add(LineMesh(bar, redLine));
+          let station = vl[i][0];
+          label.push({
+              text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+              anchor: [x - fontSize / 4, - 5 * fontSize, 0],
+              rotation: Math.PI / 2,
+              align: "left",
+              fontSize: fontSize / 4
+          });
+          let el = vl[i][1] / 1000;
+          label.push({
+              text: "EL. " + el.toFixed(4),
+              anchor: [x + fontSize / 4, - 5 * fontSize, 0],
+              rotation: Math.PI / 2,
+              align: "left",
+              fontSize: fontSize / 4
+          });
+
+      }
+      for (let i in masterLine.parabolaData) {
+          let x1 = (masterLine.parabolaData[i][0] - initPoint.x) * xscale;
+          let x2 = (masterLine.parabolaData[i][1] - initPoint.x) * xscale;
+          let y1 = (masterLine.parabolaData[i][2] - initPoint.y) * yscale;
+          let y2 = (masterLine.parabolaData[i][3] - initPoint.y) * yscale;
+          group.add(LineMesh([{ x: x1, y: y1 }, { x: x1, y: - 5 * fontSize }, { x: x2, y: - 5 * fontSize }, { x: x2, y: y2 }], blueLine));
+          label.push({
+              text: "L=" + (masterLine.parabolaData[i][4] / 1000).toFixed(4),
+              anchor: [(x1 + x2) / 2, - 5.25 * fontSize, 0],
+              rotation: 0,
+              align: "center",
+              fontSize: fontSize / 4
+          });
+          let station = masterLine.parabolaData[i][0];
+          label.push({
+              text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+              anchor: [x1 - fontSize / 4, - 5 * fontSize, 0],
+              rotation: Math.PI / 2,
+              align: "left",
+              fontSize: fontSize / 4
+          });
+          let el = masterLine.parabolaData[i][2] / 1000;
+          label.push({
+              text: "EL. " + el.toFixed(4),
+              anchor: [x1 + fontSize / 4, - 5 * fontSize, 0],
+              rotation: Math.PI / 2,
+              align: "left",
+              fontSize: fontSize / 4
+          });
+          station = masterLine.parabolaData[i][1];
+          label.push({
+              text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+              anchor: [x2 - fontSize / 4, - 5 * fontSize, 0],
+              rotation: Math.PI / 2,
+              align: "left",
+              fontSize: fontSize / 4
+          });
+          el = masterLine.parabolaData[i][3] / 1000;
+          label.push({
+              text: "EL. " + el.toFixed(4),
+              anchor: [x2 + fontSize / 4, - 5 * fontSize, 0],
+              rotation: Math.PI / 2,
+              align: "left",
+              fontSize: fontSize / 4
+          });
+
       }
 
-      group.add(LineMesh(linePoints, whiteLine));
+      for (let i = 0; i < masterLine.tangent.length; i++) {
+          let x = ((vl[i][0] + vl[i + 1][0]) / 2 - initPoint.x) * xscale;
+          let y = ((vl[i][1] + vl[i + 1][1]) / 2 - initPoint.y) * yscale;
+          let rot = Math.atan(masterLine.tangent[i]) * yscale / xscale;
+          label.push({
+              text: "S=" + (masterLine.tangent[i] * 100).toFixed(2) + "%",
+              anchor: [x, y + 0.25 * fontSize, 0],
+              rotation: rot,
+              align: "center",
+              fontSize: fontSize / 4
+          });
+      }
+
+      let offset = -15 * fontSize;
+      let superElCenter = [];
+      for (let i in masterLine.SuperElevation) {
+          let x = (masterLine.SuperElevation[i][0] - initPoint.x) * xscale;
+          let y = offset;
+          group.add(LineMesh([{ x, y: y + 5 * fontSize }, { x, y: y - 8 * fontSize }], redLine));
+          superElCenter.push({x,y});
+          leftGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][1] });
+          rightGrad.push({ x, y: y + fontSize / 2 * masterLine.SuperElevation[i][2] });
+          let station = masterLine.SuperElevation[i][0];
+          label.push({
+              text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+              anchor: [x - fontSize / 4, y - 8 * fontSize, 0],
+              rotation: Math.PI / 2,
+              align: "left",
+              fontSize: fontSize / 4
+          });
+      }
+      for (let i = 0; i<11;i++){
+          group.add(LineMesh([{x:superElCenter[0].x,y:offset + (5-i)*fontSize}, {x:superElCenter[superElCenter.length -1].x,y:offset + (5-i)*fontSize}],grayLine));
+          label.push({
+              text: (10-i*2).toFixed(0) + "%",
+              anchor: [superElCenter[0].x - fontSize, offset + (5-i)*fontSize, 0],
+              rotation: 0,
+              align: "center",
+              fontSize: fontSize / 4
+          });
+      }
+      group.add(LineMesh(superElCenter, redLine));
+      group.add(LineMesh(leftGrad, blueLine,1));
+      group.add(LineMesh(rightGrad, greenLine,1));
+      group.add(LineMesh(linePoints, whiteLine,1));
+      group.add(LineMesh(points, blueLine));
+      group.add(LabelInsert(label, textMaterial, layerNum));  //layer number is 3
+
       return group
   }
 
@@ -4314,7 +4444,7 @@
           { x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale }];
           group.add(LineMesh(bar, redLine));
           label.push({
-              text: "STA. " + (station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+              text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
               anchor: [bar[1].x + cos * fontSize * 4 + sin * fontSize / 4, bar[1].y + sin * fontSize * 4 - cos * fontSize / 4, 0],
               rotation: rot,
               align: "center",
@@ -4725,10 +4855,11 @@
 
 
 
-  function LineMesh(point0, lineMaterial) {
+  function LineMesh(point0, lineMaterial,z) {
       let points = [];
+      let z1 = z? z:0;
       for (let i in point0) {
-          points.push(new global.THREE.Vector3(point0[i].x, point0[i].y, 0));
+          points.push(new global.THREE.Vector3(point0[i].x, point0[i].y, z1));
       }
       let geometry = new global.THREE.Geometry().setFromPoints(points);
       return new global.THREE.Line(geometry, lineMaterial)
