@@ -10,7 +10,13 @@ export function GirderLayoutView(girderLayout) {
     let group = new THREE.Group();
     let skewLength = 5000;
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff });
-    let redLine = new THREE.LineDashedMaterial({ color: 0xff0000,scale :10});
+    let redLine = new THREE.LineDashedMaterial( {
+        color: 0xff0000,
+        linewidth: 1,
+        scale: 1,
+        dashSize: 3,
+        gapSize: 1,
+    } );
     let leftLine = [];
     let rightLine = [];
     let initPoint = { x: girderLayout.masterLine.HorizonDataList[0][0], y: girderLayout.masterLine.HorizonDataList[0][1] }
