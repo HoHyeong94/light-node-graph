@@ -24,10 +24,10 @@ export function GirderLayoutView(girderLayout) {
             x: pt.x - (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength,
             y: pt.y - (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength
         }
-        leftLine.push(pt1);
-        rightLine.push(pt2)
         let bar = [{ x: (pt1.x - initPoint.x) * scale, y: (pt1.y - initPoint.y) * scale},
                    { x: (pt2.x - initPoint.x) * scale, y: (pt2.y - initPoint.y) * scale}];
+        leftLine.push(bar[0]);
+        rightLine.push(bar[1])
         group.add(LineMesh(bar, aquaLine))
     }
     group.add(LineMesh(leftLine, aquaLine))
