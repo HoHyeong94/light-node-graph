@@ -12,10 +12,8 @@ export function GirderLayoutView(girderLayout) {
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff });
     let redLine = new THREE.LineDashedMaterial( {
         color: 0xff0000,
-        linewidth: 1,
-        scale: 1,
-        dashSize: 3,
-        gapSize: 1,
+        dashSize: 30,
+        gapSize: 10,
     } );
     let leftLine = [];
     let rightLine = [];
