@@ -51,6 +51,14 @@ export function GirderLayoutView(girderLayout) {
             fontSize: fontSize / 4
         });
 
+        label.push({
+            text: "x:" + (pt.x / 1000).toFixed(4) + ", y:" + (pt.y / 1000).toFixed(4),
+            anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 1.75,(pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 1.75, 0],
+            rotation: rot,
+            align: "center",
+            fontSize: fontSize / 4
+        });
+
         leftLine.push(bar[0]);
         rightLine.push(bar[1])
         group.add(LineMesh(dimLine, redLine))
