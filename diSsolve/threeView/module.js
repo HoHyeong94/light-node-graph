@@ -2,16 +2,27 @@ import { THREE } from "global";
 
 export function AnalysisModel(node,frame){
     let group = new THREE.Group();
-    let material = new THREE.PointsMaterial( { color: 0xff0000, size :100 } );
+    let material = new THREE.PointsMaterial( { color: 0xff0000, size :300 } );
     let geometry = new THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
     let initPoint = node.node.data[0].coord
-    let greenLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
+    let greenLine = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+    let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
     for (let i in node.node.data){
         geometry.vertices.push(new THREE.Vector3(
             node.node.data[i].coord[0] - initPoint[0],
             node.node.data[i].coord[1] - initPoint[1], 
             node.node.data[i].coord[2] - initPoint[2] ))
     }
+    for (let i in node.rigid.data){
+        let mNum = node.rigid.data[i].master - 1
+        for (let j in node.rigid.data[i].slave){
+            let sNum = node.rigid.data[i].slave[j] - 1
+            let geo = new THREE.Geometry();
+            geo.vertices.push(geometry.vertices[mNum],geometry.vertices[sNum])
+            group.add(new THREE.Line(geo,aquaLine ));
+        }
+    }
+
     for (let i in frame.frame.data){
         let geo = new THREE.Geometry();
         let iNum = frame.frame.data[i].iNode -1
