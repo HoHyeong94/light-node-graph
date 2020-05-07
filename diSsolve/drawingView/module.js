@@ -19,7 +19,7 @@ export function GirderLayoutView(girderLayout) {
     let fontSize = 80;
     let initPoint = { x: girderLayout.masterLine.HorizonDataList[0][0], y: girderLayout.masterLine.HorizonDataList[0][1] }
     let layerNum = 3;
-
+    let sign = 1;
     for (let key in girderLayout.gridKeyPoint) {
         let pt = girderLayout.gridKeyPoint[key]
         let angle = (girderLayout.gridKeyPoint[key].skew - 90) * Math.PI / 180
@@ -36,15 +36,16 @@ export function GirderLayoutView(girderLayout) {
 
         let rot = Math.atan2(pt.normalSin, pt.normalCos)
         if (rot >= Math.PI / 2) { rot = rot - Math.PI }
-        let cos = Math.cos(rot)
+        sign = sign === 1? -1 : 1;
+        let cos = Math.cos(rot) * sign
         let sin = Math.sin(rot)
         let dimLine = [{ x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale },
-        { x: (pt.x - initPoint.x) * scale + cos * fontSize * 6 - sin * fontSize * 6, y: (pt.y - initPoint.y) * scale + sin * fontSize * 6 + cos * fontSize * 6 },
-        { x: (pt.x - initPoint.x) * scale + cos * fontSize * 12 - sin * fontSize * 6, y: (pt.y - initPoint.y) * scale + sin * fontSize * 12 + cos * fontSize * 6 }        ];
+        { x: (pt.x - initPoint.x) * scale + cos * fontSize * 2 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sin * fontSize * 2 + cos * fontSize * 2 },
+        { x: (pt.x - initPoint.x) * scale + cos * fontSize * 8 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sin * fontSize * 8 + cos * fontSize * 2 }        ];
         let station = pt.masterStationNumber;
         label.push({
             text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
-            anchor: [(pt.x - initPoint.x) * scale + cos * fontSize * 9 - sin * fontSize * 6.5,(pt.y - initPoint.y) * scale + sin * fontSize * 9 + cos * fontSize * 6.5, 0],
+            anchor: [(pt.x - initPoint.x) * scale + cos * fontSize * 5 - sin * fontSize * 2.25,(pt.y - initPoint.y) * scale + sin * fontSize * 5 + cos * fontSize * 2.25, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
