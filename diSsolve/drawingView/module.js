@@ -74,11 +74,35 @@ export function GirderLayoutView(girderLayout) {
         }
         group.add(LineMesh(girderLine, redDotLine, -1))
     }
-
     group.add(LineMesh(leftLine, aquaLine))
     group.add(LineMesh(rightLine, aquaLine))
     group.add(LabelInsert(label, textMaterial, layerNum))  //layer number is 3
-    return group
+
+    let group2 = new THREE.Group();
+    let vl = girderLayout.masterLine.VerticalDataList
+    initPoint = { x: vl[0][0], y: vl[0][1] }
+    let xscale = 0.003;//종단선형뷰하고 동일한 스케일을 유지하도록
+    let yscale = 0.02;
+    let topLine = [];
+    let botLine = [];
+    for (let key in girderLayout.gridKeyPoint) {
+        let pt = girderLayout.gridKeyPoint[key]
+        let pt1 = {
+            x: (pt.masterStationNumber - initPoint.x) * xscale,
+            y: (pt.z - initPoint.y) * yscale + fontSize/4
+        }
+        let pt2 = {
+            x: (pt.masterStationNumber - initPoint.x) * xscale,
+            y: (pt.z - initPoint.y) * yscale - fontSize/4
+        }
+        group2.add(LineMesh([pt1,pt2], aquaLine))
+        topLine.push(pt1);
+        botLine.push(pt2);
+    }
+    group2.add(LineMesh(topLine, aquaLine))
+    group2.add(LineMesh(botLine, aquaLine))
+
+    return {plan:group, side:group2}
 }
 
 export function LineSideView(masterLine) {

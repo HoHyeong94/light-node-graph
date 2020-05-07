@@ -110,7 +110,8 @@ GirderLayoutDraw.prototype.onExecute = function() {
 
 GirderLayoutDraw.prototype.on3DExecute = function() {
   let group = GirderLayoutView(this.getInputData(0))
-  sceneAdder({layer:3, mesh:group},"GirderLayout")
+  sceneAdder({layer:3, mesh:group.plan},"GirderLayout")
+  sceneAdder({layer:4, mesh:group.side},"GirderLayoutSide")
 }
 
 
