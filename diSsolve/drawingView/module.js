@@ -38,7 +38,7 @@ export function GirderLayoutView(girderLayout) {
         if (rot >= Math.PI / 2) { rot = rot - Math.PI }
         sign = sign === 1? -1 : 1;
         let cos = Math.cos(rot) * sign
-        let sin = Math.sin(rot)
+        let sin = Math.sin(rot) * sign
         let dimLine = [{ x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale },
         { x: (pt.x - initPoint.x) * scale + cos * fontSize * 2 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sin * fontSize * 2 + cos * fontSize * 2 },
         { x: (pt.x - initPoint.x) * scale + cos * fontSize * 8 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sin * fontSize * 8 + cos * fontSize * 2 }        ];
