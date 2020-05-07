@@ -10,41 +10,65 @@ export function GirderLayoutView(girderLayout) {
     let group = new THREE.Group();
     let skewLength = 5000;
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff });
-    let redDotLine = new THREE.LineDashedMaterial({color: 0xff0000, dashSize: 30, gapSize: 10,});
+    let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
+    let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
     let leftLine = [];
     let rightLine = [];
-    let dimLine = [];
+    let label = [];
+    let fontSize = 80;
     let initPoint = { x: girderLayout.masterLine.HorizonDataList[0][0], y: girderLayout.masterLine.HorizonDataList[0][1] }
+    let layerNum = 3;
+
     for (let key in girderLayout.gridKeyPoint) {
         let pt = girderLayout.gridKeyPoint[key]
-
         let angle = (girderLayout.gridKeyPoint[key].skew - 90) * Math.PI / 180
         let pt1 = {
-            x: pt.x + (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength/Math.cos(angle),
-            y: pt.y + (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength/Math.cos(angle)
+            x: pt.x + (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength / Math.cos(angle),
+            y: pt.y + (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength / Math.cos(angle)
         }
         let pt2 = {
-            x: pt.x - (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength/Math.cos(angle),
-            y: pt.y - (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength/Math.cos(angle)
+            x: pt.x - (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength / Math.cos(angle),
+            y: pt.y - (pt.normalCos * Math.sin(angle) + pt.normalSin * Math.cos(angle)) * skewLength / Math.cos(angle)
         }
-        let bar = [{ x: (pt1.x - initPoint.x) * scale, y: (pt1.y - initPoint.y) * scale},
-                   { x: (pt2.x - initPoint.x) * scale, y: (pt2.y - initPoint.y) * scale}];
+        let bar = [{ x: (pt1.x - initPoint.x) * scale, y: (pt1.y - initPoint.y) * scale },
+        { x: (pt2.x - initPoint.x) * scale, y: (pt2.y - initPoint.y) * scale }];
+
+        let rot = Math.atan2(pt.normalSin, pt.normalCos)
+        if (rot >= Math.PI / 2) { rot = rot - Math.PI }
+        let cos = Math.cos(rot)
+        let sin = Math.sin(rot)
+        let dimLine = [{ x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale },
+        { x: (pt.x - initPoint.x) * scale + cos * fontSize * 6 - sin * fontSize * 6, y: (pt.y - initPoint.y) * scale + sin * fontSize * 6 + cos * fontSize * 6 },
+        { x: (pt.x - initPoint.x) * scale + cos * fontSize * 12 - sin * fontSize * 6, y: (pt.y - initPoint.y) * scale + sin * fontSize * 12 + cos * fontSize * 6 }        ];
+        let station = pt.masterStationNumber;
+        label.push({
+            text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
+            anchor: [(pt.x - initPoint.x) * scale + cos * fontSize * 9 - sin * fontSize * 6.5,(pt.y - initPoint.y) * scale + sin * fontSize * 9 + cos * fontSize * 6.5, 0],
+            rotation: rot,
+            align: "center",
+            fontSize: fontSize / 4
+        });
+
         leftLine.push(bar[0]);
         rightLine.push(bar[1])
+        group.add(LineMesh(dimLine, redLine))
         group.add(LineMesh(bar, aquaLine))
     }
-    for (let i in girderLayout.girderLine){
+    for (let i in girderLayout.girderLine) {
         let girderLine = [];
-        for (let j in girderLayout.girderLine[i]){
-            girderLine.push({x:(girderLayout.girderLine[i][j].x - initPoint.x) * scale,
-                y:(girderLayout.girderLine[i][j].y - initPoint.y) * scale})
+        for (let j in girderLayout.girderLine[i]) {
+            girderLine.push({
+                x: (girderLayout.girderLine[i][j].x - initPoint.x) * scale,
+                y: (girderLayout.girderLine[i][j].y - initPoint.y) * scale
+            })
         }
-
-        group.add(LineMesh(girderLine,redDotLine,-1))
+        group.add(LineMesh(girderLine, redDotLine, -1))
     }
 
     group.add(LineMesh(leftLine, aquaLine))
     group.add(LineMesh(rightLine, aquaLine))
+    group.add(LabelInsert(label, textMaterial, layerNum))  //layer number is 3
     return group
 }
 
@@ -195,7 +219,7 @@ export function LineSideView(masterLine) {
 
     return group
 }
-
+// 평면선형 그리기 //
 export function LineDrawView(masterLine, slaveLines) {
     let scale = 0.01;
     let group = new THREE.Group();
@@ -667,7 +691,7 @@ function LineMesh(point0, lineMaterial, z) {
     let geometry = new THREE.Geometry().setFromPoints(points)
     let result = new THREE.Line(geometry, lineMaterial)
     result.computeLineDistances();
-    return result 
+    return result
 }
 
 function sectionMesh(point0, lineMaterial) {
