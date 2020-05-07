@@ -396,6 +396,7 @@ export function OffsetLine(offset, line, startPoint, endPoint){
     ed = endPoint.normalSin * (offsetPoint.x - endPoint.x) - endPoint.normalCos * (offsetPoint.y - endPoint.y);
     
     if (st*ed <=0){
+      
      points.push(offsetPoint)
     }
   }

@@ -10,16 +10,14 @@ export function GirderLayoutView(girderLayout) {
     let group = new THREE.Group();
     let skewLength = 5000;
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff });
-    let redLine = new THREE.LineDashedMaterial( {
-        color: 0xff0000,
-        dashSize: 30,
-        gapSize: 10,
-    } );
+    let redDotLine = new THREE.LineDashedMaterial({color: 0xff0000, dashSize: 30, gapSize: 10,});
     let leftLine = [];
     let rightLine = [];
+    let dimLine = [];
     let initPoint = { x: girderLayout.masterLine.HorizonDataList[0][0], y: girderLayout.masterLine.HorizonDataList[0][1] }
     for (let key in girderLayout.gridKeyPoint) {
         let pt = girderLayout.gridKeyPoint[key]
+
         let angle = (girderLayout.gridKeyPoint[key].skew - 90) * Math.PI / 180
         let pt1 = {
             x: pt.x + (pt.normalCos * Math.cos(angle) - pt.normalSin * Math.sin(angle)) * skewLength/Math.cos(angle),
@@ -42,7 +40,7 @@ export function GirderLayoutView(girderLayout) {
                 y:(girderLayout.girderLine[i][j].y - initPoint.y) * scale})
         }
 
-        group.add(LineMesh(girderLine,redLine,-1))
+        group.add(LineMesh(girderLine,redDotLine,-1))
     }
 
     group.add(LineMesh(leftLine, aquaLine))
@@ -667,7 +665,9 @@ function LineMesh(point0, lineMaterial, z) {
         points.push(new THREE.Vector3(point0[i].x, point0[i].y, z1))
     }
     let geometry = new THREE.Geometry().setFromPoints(points)
-    return new THREE.Line(geometry, lineMaterial)
+    let result = new THREE.Line(geometry, lineMaterial)
+    result.computeLineDistances();
+    return result 
 }
 
 function sectionMesh(point0, lineMaterial) {

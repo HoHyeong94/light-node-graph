@@ -1,4 +1,4 @@
-import {MasterPointGenerator, OffsetLine, PointLineMatch2, PointGenerator, OffsetPoint} from "../line/module"
+import {MasterPointGenerator, OffsetLine, PointLineMatch2, PointGenerator} from "../line/module"
 
 export function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput) {
     const angle = 0;
