@@ -1,14 +1,16 @@
 import { THREE } from "global";
 
 export function AnalysisModel(node,frame){
-    var group = new THREE.Group();
-    var material = new THREE.PointsMaterial( { color: 0xff0000 } );
-    var geometry = new THREE.BufferGeometry();
-    geometry.vertices.push(
-        new THREE.Vector3( -10,  10, 0 ),
-        new THREE.Vector3( -10, -10, 0 ),
-        new THREE.Vector3(  10, -10, 0 )
-    );
+    let group = new THREE.Group();
+    let material = new THREE.PointsMaterial( { color: 0xff0000, size :100 } );
+    let geometry = new THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
+    let initPoint = node.node.data[0].coord
+    for (let i in node.node.data){
+        geometry.vertices.push(new THREE.Vector3(
+            node.node.data[i].coord[0] - initPoint[0],
+            node.node.data[i].coord[1] - initPoint[1], 
+            node.node.data[i].coord[2] - initPoint[2] ))
+    }
     group.add(new THREE.Points(geometry, material))
     return group
 }
