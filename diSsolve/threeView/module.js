@@ -5,13 +5,21 @@ export function AnalysisModel(node,frame){
     let material = new THREE.PointsMaterial( { color: 0xff0000, size :100 } );
     let geometry = new THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
     let initPoint = node.node.data[0].coord
+    let greenLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
     for (let i in node.node.data){
         geometry.vertices.push(new THREE.Vector3(
             node.node.data[i].coord[0] - initPoint[0],
             node.node.data[i].coord[1] - initPoint[1], 
             node.node.data[i].coord[2] - initPoint[2] ))
     }
-    group.add(new THREE.Points(geometry, material))
+    for (let i in frame.frame.data){
+        let geo = new THREE.Geometry();
+        let iNum = frame.frame.data[i].iNode -1
+        let jNum = frame.frame.data[i].jNode -1
+        geo.vertices.push(geometry.vertices[iNum],geometry.vertices[jNum])
+        group.add(new THREE.Line(geo,greenLine ));
+    }
+    group.add(new THREE.Points(geometry, material));
     return group
 }
 
