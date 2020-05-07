@@ -297,6 +297,8 @@ export function SapJointGenerator(girderStation, supportNode, xbeamData) {//gird
         nodeNumDict[supportNode[i].key] = nodeNum
         local.data.push({ nodeNum: nodeNum, ANG: supportNode[i].angle })
         boundary.data.push({ nodeNum: nodeNum, DOF: supportNode[i].type })
+        rigid.data.push({ master: nodeNumDict[supportNode[i].basePointName], 
+            slave: [nodeNumDict[supportNode[i].key]] }) //해당 결과가 sap에서 에러가 없는지 확인필요함.
         nodeNum++
     }
     //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
@@ -356,8 +358,8 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
             IDES: "C", // 강재는 S, concrte C
             M: materials[i][4] / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
             W: materials[i][4] / 1000, // ton to kg
-            E: materials[i][1],
-            U: materials[i][3]
+            E: materials[i][1] * 1,
+            U: materials[i][3] * 1
         })
     }
 
@@ -381,6 +383,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
                 }
                 else{
                     sectionName = "t" + tsectionNum
+                    tsectionNum++
                     generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx})
                     taperedSectionList.push({
                         Name: sectionName,
@@ -396,8 +399,10 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
                 if (SectionCompare(section1,section2)){
                     sectionName = sectionNum
                     generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+                    sectionNum ++
                 }else{
                     sectionName = "t" + tsectionNum
+                    tsectionNum++
                     generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
                     sectionNum++
                     generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx})
@@ -472,7 +477,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
     
     DBSectionList.forEach(function(elem){
         let section1 = sectionDB[elem]
-        generalSectionList.push({NAME : elem, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+        generalSectionList.push({NAME : elem, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], J:section1.Ixx})
     })
     
     // deck, stringer  추후 작성
