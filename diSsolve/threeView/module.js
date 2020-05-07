@@ -1,5 +1,18 @@
 import { THREE } from "global";
 
+export function AnalysisModel(node,frame){
+    var group = new THREE.Group();
+    var material = new THREE.PointsMaterial( { color: 0xff0000 } );
+    var geometry = new THREE.BufferGeometry();
+    geometry.vertices.push(
+        new THREE.Vector3( -10,  10, 0 ),
+        new THREE.Vector3( -10, -10, 0 ),
+        new THREE.Vector3(  10, -10, 0 )
+    );
+    group.add(new THREE.Points(geometry, material))
+    return group
+}
+
 export function LineView(linepoints, initPoint, color) {
     var group = new THREE.Group();
     var geometry = new THREE.Geometry();
