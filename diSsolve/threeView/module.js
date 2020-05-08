@@ -7,6 +7,7 @@ export function AnalysisModel(node,frame){
     let initPoint = node.node.data[0].coord
     let greenLine = new THREE.LineBasicMaterial({ color: 0x00ff00 })
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
+    let elemDict = {};
     for (let i in node.node.data){
         geometry.vertices.push(new THREE.Vector3(
             node.node.data[i].coord[0] - initPoint[0],
@@ -27,10 +28,26 @@ export function AnalysisModel(node,frame){
         let geo = new THREE.Geometry();
         let iNum = frame.frame.data[i].iNode -1
         let jNum = frame.frame.data[i].jNode -1
+        elemDict[frame.frame.data[i].number] = [iNum, jNum]
         geo.vertices.push(geometry.vertices[iNum],geometry.vertices[jNum])
         group.add(new THREE.Line(geo,greenLine ));
     }
     group.add(new THREE.Points(geometry, material));
+
+
+    for (let i in frame.selfWeight.data){
+        let geo = new THREE.Geometry();
+        ivec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][0]]
+        jvec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][1]]
+        izload =  -1 * frame.selfWeight.data[i].Uzp[0] /100
+        jzload =  -1 * frame.selfWeight.data[i].Uzp[1] /100
+        geo.vertices.push(ivec, 
+            new THREE.Vector3( ivec.x,  ivec.y, ivec.z + izload ), 
+            new THREE.Vector3( jvec.x,  jvec.y, jvec.z + jzload ), 
+             jvec)
+        group.add(new THREE.Line(geo,aquaLine));
+    }
+
     return group
 }
 
