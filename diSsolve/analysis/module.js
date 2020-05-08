@@ -520,7 +520,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
         generalSectionList.push({ NAME: elem, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx })
     })
 
-    generalSectionList.push({ NAME: "rigid", Mat: materials[2][0], A: 1000000000, I: 10000000000, J: 10000000000 })
+    generalSectionList.push({ NAME: "rigid", Mat: materials[2][0], A: 1000000000, I: [10000000000,10000000000], J: 10000000000 })
 
     for (let i in supportNode) {
         let elem = {
