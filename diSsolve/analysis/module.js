@@ -38,6 +38,37 @@ const materials = {
     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
+
+    // [
+    //     [
+    //         "slabConc",
+    //         28825.3,
+    //         12318.5,
+    //         0.17,
+    //         25
+    //     ],
+    //     [
+    //         "lowerConc",
+    //         31209.5,
+    //         13337.4,
+    //         0.17,
+    //         25
+    //     ],
+    //     [
+    //         "steelBox",
+    //         210000,
+    //         81000,
+    //         0.3,
+    //         78.5
+    //     ],
+    //     [
+    //         "rebar",
+    //         200000,
+    //         80000,
+    //         0.3,
+    //         78.5
+    //     ]
+    // ]
 }
 const xbeamInput = {
     tfw : 0,
@@ -213,8 +244,8 @@ export function SupportGenerator(supportFixed, supportData, gridPoint) {
     const dof = {
         고정단: [true, true, true, false, false, false],
         양방향단: [false, false, true, false, false, false],
-        횡방향가동: [false, true, true, false, false, false],
-        종방향가동: [true, false, true, false, false, false],
+        횡방향가동: [true, false, true, false, false, false],
+        종방향가동: [false, true, true, false, false, false],
     }
     let fixedCoord = { x: 0, y: 0, z: 0 }
     // 고정단기준이 체크되지 않거나, 고정단이 없을 경우에는 접선방향으로 받침을 계산함
@@ -297,8 +328,8 @@ export function SapJointGenerator(girderStation, supportNode, xbeamData) {//gird
         nodeNumDict[supportNode[i].key] = nodeNum
         local.data.push({ nodeNum: nodeNum, ANG: supportNode[i].angle })
         boundary.data.push({ nodeNum: nodeNum, DOF: supportNode[i].type })
-        rigid.data.push({ master: nodeNumDict[supportNode[i].basePointName], 
-            slave: [nodeNumDict[supportNode[i].key]] }) //해당 결과가 sap에서 에러가 없는지 확인필요함.
+        // rigid.data.push({ master: nodeNumDict[supportNode[i].basePointName], 
+        //     slave: [nodeNumDict[supportNode[i].key]] }) //해당 결과가 sap에서 에러가 없는지 확인필요함.
         nodeNum++
     }
     //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
@@ -346,7 +377,7 @@ function SectionCompare(section1, section2){
     && section1.Izz === section2.Izz? true:false
     return result
 }
-export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
+export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, supportNode, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
     let step = 0;
     let allElement = []; // As New List(Of Element_3d)
     let elemNum = 1; // As Integer = 1
@@ -384,7 +415,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
                 else{
                     sectionName = "t" + tsectionNum
                     tsectionNum++
-                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx})
+                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], J:section2.Ixx})
                     taperedSectionList.push({
                         Name: sectionName,
                         type: "Nonpr",
@@ -398,14 +429,14 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
             else{
                 if (SectionCompare(section1,section2)){
                     sectionName = sectionNum
-                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], J:section1.Ixx})
                     sectionNum ++
                 }else{
                     sectionName = "t" + tsectionNum
                     tsectionNum++
-                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], J:section1.Ixx})
                     sectionNum++
-                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx})
+                    generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], J:section2.Ixx})
                     taperedSectionList.push({
                         Name: sectionName,
                         type: "Nonpr",
@@ -459,7 +490,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
         } else {
             let sectionName = xbeamData[i].key // 임시로 작성 추후 수정 바람.
             let section1 = sectionPropDict[xbeamData[i].key][step]
-            generalSectionList.push({NAME : sectionName, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx})
+            generalSectionList.push({NAME : sectionName, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], J:section1.Ixx})
             // sectionNameDict[sectionName] = [sectionPropDict[sectionName]]  //가로보는 변단면 반영하지 않음.
             let elem = {
                 iNode: nodeNumDict[xbeamData[i].inode],
@@ -480,6 +511,20 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, no
         generalSectionList.push({NAME : elem, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], J:section1.Ixx})
     })
     
+    generalSectionList.push({NAME : "rigid", Mat : materials[2][0], A: 1000000, I:100000000, J:100000000})
+    
+    for (let i in supportNode) {
+        let elem = {
+            iNode: nodeNumDict[supportNode[i].basePointName],
+            jNode: nodeNumDict[supportNode[i].key],
+            sectionName: "rigid", // node_group.Key & added_index,
+            endOffset: false,
+            number: elemNum,
+        }
+        allElement.push(elem)
+        elemNum++
+    }
+
     // deck, stringer  추후 작성
     // sectionDB운용방안 마련
     //    const materials = {
