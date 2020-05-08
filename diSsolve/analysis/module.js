@@ -112,6 +112,7 @@ export function Isection(xi, materials, slab) {
     stage1.Cz = ADz / stage1.A
     stage1.Iyy = 0;
     stage1.Izz = 0;
+    stage1.Ixx = 0;  // 추후 비틀림 강성에 대한 값을 계산하여야 함
     for (let i in isteel) {
         stage1.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage1.Cy) ** 2
         stage1.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage1.Cz) ** 2
@@ -128,6 +129,7 @@ export function Isection(xi, materials, slab) {
     stage3.Cz = ADz / stage3.A
     stage3.Iyy = 0;
     stage3.Izz = 0;
+    stage3.Ixx = 0; // 추후 비틀림 강성에 대한 값을 계산하여야 함
     for (let i in isteel) {
         stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2
         stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2
