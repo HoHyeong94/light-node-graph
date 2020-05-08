@@ -37,10 +37,10 @@ export function AnalysisModel(node,frame){
 
     for (let i in frame.selfWeight.data){
         let geo = new THREE.Geometry();
-        ivec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][0]]
-        jvec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][1]]
-        izload =  -1 * frame.selfWeight.data[i].Uzp[0] /100
-        jzload =  -1 * frame.selfWeight.data[i].Uzp[1] /100
+        let ivec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][0]]
+        let jvec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][1]]
+        let izload =  -1 * frame.selfWeight.data[i].Uzp[0] /100
+        let jzload =  -1 * frame.selfWeight.data[i].Uzp[1] /100
         geo.vertices.push(ivec, 
             new THREE.Vector3( ivec.x,  ivec.y, ivec.z + izload ), 
             new THREE.Vector3( jvec.x,  jvec.y, jvec.z + jzload ), 
