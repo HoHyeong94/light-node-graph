@@ -320,7 +320,9 @@ export function SapJointGenerator(girderStation, supportNode, xbeamData) {//gird
         for (let j in girderStation[i]) {
 
             nodeNumDict[girderStation[i][j].key] = nodeNum
-            if (dummycoord === [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z]) {
+            if (dummycoord[0] !== girderStation[i][j].point.x || 
+                dummycoord[1] !== girderStation[i][j].point.y || 
+                dummycoord[2] !== girderStation[i][j].point.z) {
                 node.data.push({ nodeNum: nodeNum, coord: [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z] })
                 nodeNum++
                 dummycoord = [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z];
