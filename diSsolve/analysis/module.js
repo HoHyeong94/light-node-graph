@@ -322,8 +322,8 @@ export function SapJointGenerator(girderStation, supportNode, xbeamData) {//gird
         for (let j in girderStation[i]) {
 
             nodeNumDict[girderStation[i][j].key] = nodeNum
-            if (dummycoord[0] !== girderStation[i][j].point.x || 
-                dummycoord[1] !== girderStation[i][j].point.y || 
+            if (dummycoord[0] !== girderStation[i][j].point.x ||
+                dummycoord[1] !== girderStation[i][j].point.y ||
                 dummycoord[2] !== girderStation[i][j].point.z) {
                 node.data.push({ nodeNum: nodeNum, coord: [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z] })
                 nodeNum++
@@ -414,62 +414,64 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
         for (let j = 0; j < girderStation[i].length - 1; j++) {
             let inode = girderStation[i][j].key
             let jnode = girderStation[i][j + 1].key
-            let sectionName = "noname" // 임시로 작성 추후 수정 바람.
-            let section1 = sectionPropDict[inode].forward[step]
-            let section2 = sectionPropDict[jnode].backward[step]
-            if (SectionCompare(tempSection, section1)) {
-                if (SectionCompare(section1, section2)) {
-                    sectionName = tempSection.name
+            if (nodeNumDict[inode] !== nodeNumDict[jnode]) {
+                let sectionName = "noname" // 임시로 작성 추후 수정 바람.
+                let section1 = sectionPropDict[inode].forward[step]
+                let section2 = sectionPropDict[jnode].backward[step]
+                if (SectionCompare(tempSection, section1)) {
+                    if (SectionCompare(section1, section2)) {
+                        sectionName = tempSection.name
+                    }
+                    else {
+                        sectionName = "t" + tsectionNum
+                        tsectionNum++
+                        generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section2.A, I: [section2.Iyy, section2.Izz], J: section2.Ixx })
+                        taperedSectionList.push({
+                            Name: sectionName,
+                            type: "Nonpr",
+                            Sec: [tempSection.name, sectionNum],  //isection, jsection
+                            Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+                            Vl: 1
+                        })
+                        sectionNum++
+                    }
                 }
                 else {
-                    sectionName = "t" + tsectionNum
-                    tsectionNum++
-                    generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section2.A, I: [section2.Iyy, section2.Izz], J: section2.Ixx })
-                    taperedSectionList.push({
-                        Name: sectionName,
-                        type: "Nonpr",
-                        Sec: [tempSection.name, sectionNum],  //isection, jsection
-                        Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
-                        Vl: 1
-                    })
-                    sectionNum++
-                }
-            }
-            else {
-                if (SectionCompare(section1, section2)) {
-                    sectionName = sectionNum
-                    generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx })
-                    sectionNum++
-                } else {
-                    sectionName = "t" + tsectionNum
-                    tsectionNum++
-                    generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx })
-                    sectionNum++
-                    generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section2.A, I: [section2.Iyy, section2.Izz], J: section2.Ixx })
-                    taperedSectionList.push({
-                        Name: sectionName,
-                        type: "Nonpr",
-                        Sec: [sectionNum - 1, sectionNum],  //isection, jsection
-                        Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
-                        Vl: 1
-                    })
-                    sectionNum++
-                }
+                    if (SectionCompare(section1, section2)) {
+                        sectionName = sectionNum
+                        generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx })
+                        sectionNum++
+                    } else {
+                        sectionName = "t" + tsectionNum
+                        tsectionNum++
+                        generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx })
+                        sectionNum++
+                        generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section2.A, I: [section2.Iyy, section2.Izz], J: section2.Ixx })
+                        taperedSectionList.push({
+                            Name: sectionName,
+                            type: "Nonpr",
+                            Sec: [sectionNum - 1, sectionNum],  //isection, jsection
+                            Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+                            Vl: 1
+                        })
+                        sectionNum++
+                    }
 
+                }
+                // sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
+                let elem = {
+                    iNode: nodeNumDict[inode],
+                    jNode: nodeNumDict[jnode],
+                    sectionName: sectionName, // node_group.Key & added_index,
+                    endOffset: false,
+                    number: elemNum
+                }
+                allElement.push(elem)
+                let p1 = -1 * section1.A * material.data[2].W   //materials : steel
+                let p2 = -1 * section2.A * material.data[2].W   //materials : steel
+                selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
+                elemNum++
             }
-            // sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
-            let elem = {
-                iNode: nodeNumDict[inode],
-                jNode: nodeNumDict[jnode],
-                sectionName: sectionName, // node_group.Key & added_index,
-                endOffset: false,
-                number: elemNum
-            }
-            allElement.push(elem)
-            let p1 = -1 * section1.A * material.data[2].W   //materials : steel
-            let p2 = -1 * section2.A * material.data[2].W   //materials : steel
-            selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
-            elemNum++
         }
     }
     let DBSectionList = [];
@@ -520,7 +522,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
         generalSectionList.push({ NAME: elem, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx })
     })
 
-    generalSectionList.push({ NAME: "rigid", Mat: materials[2][0], A: 1000000000, I: [10000000000,10000000000], J: 10000000000 })
+    generalSectionList.push({ NAME: "rigid", Mat: materials[2][0], A: 1000000000, I: [10000000000, 10000000000], J: 10000000000 })
 
     for (let i in supportNode) {
         let elem = {
