@@ -579,7 +579,7 @@ function roundedRect(x, y, rot, width, height, radius, lineMaterial ) {
     geometry.rotateZ(rot)
     geometry.translate(x, y, 0)
     console.log("geo", geometry)
-    return new THREE.Line(geometry, lineMafterial)
+    return new THREE.Line(geometry, lineMaterial)
 }
 
 
