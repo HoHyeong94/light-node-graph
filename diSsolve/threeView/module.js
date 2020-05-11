@@ -1,4 +1,4 @@
-import { THREE } from "global";
+import { THREE, SpriteText } from "global";
 
 export function AnalysisModel(node,frame){
     let group = new THREE.Group();
@@ -91,6 +91,9 @@ export function AnalysisModel(node,frame){
             group.add(new THREE.Mesh(circle, circleMaterial));
         }
 
+        let text = new SpriteText("test1")
+        text.translate(vec.x, vec.y, vec.z)
+        group.add(text)
         geo.rotateZ(localData.ANG * Math.PI/180)
         geo.translate(vec.x, vec.y, vec.z)
         group.add(new THREE.LineSegments(geo,yellowLine));
