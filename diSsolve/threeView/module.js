@@ -17,11 +17,12 @@ export function AnalysisModel(node, frame) {
             node.node.data[i].coord[1] - initPoint[1],
             node.node.data[i].coord[2] - initPoint[2])
         geometry.vertices.push(pt)
-        let text = new SpriteText(node.node.data[i].nodeNum, 200);
+        let text = new SpriteText(node.node.data[i].nodeNum, 150);
         text.position.set(pt.x, pt.y, pt.z)
         text.layers.set(layer);
         group.add(text)
     }
+
     for (let i in node.rigid.data) {
         let mNum = node.rigid.data[i].master - 1
         for (let j in node.rigid.data[i].slave) {
@@ -39,7 +40,17 @@ export function AnalysisModel(node, frame) {
         elemDict[frame.frame.data[i].number] = [iNum, jNum]
         geo.vertices.push(geometry.vertices[iNum], geometry.vertices[jNum])
         group.add(new THREE.Line(geo, greenLine));
+
+        let text = new SpriteText(frame.frame.data[i].number, 150, 0xff0000);
+        text.position.set(
+            (geometry.vertices[iNum].x + geometry.vertices[jNum].x)/2, 
+            (geometry.vertices[iNum].y + geometry.vertices[jNum].y)/2, 
+            (geometry.vertices[iNum].z + geometry.vertices[jNum].z)/2)
+        text.layers.set(layer);
+        group.add(text)
     }
+
+
     group.add(new THREE.Points(geometry, material));
 
 
