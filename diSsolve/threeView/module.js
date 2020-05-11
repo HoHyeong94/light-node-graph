@@ -63,7 +63,6 @@ export function AnalysisModel(node,frame){
                 )
         }
         if (node.boundary.data[i].DOF[1]===false){
-            let geo = new THREE.Geometry();
             geo.vertices.push( 
                 new THREE.Vector3( 0,  -1000, 0 ), 
                 new THREE.Vector3( 0,  1000, 0 ), 
