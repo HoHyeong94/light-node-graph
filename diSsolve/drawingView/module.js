@@ -589,12 +589,12 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
     let labels = [];
     for (let station in pointDict) {
         if (station.substr(2, 1) !== "K" && !station.includes("CR")) { //station.substr(0,2)==="G1" && 
-            let x = (pointDict[station].x - pointDict[station].normalCos * Yoffset - pointDict[station].normalSin * Yoffset - initPoint.x) * sc
-            let y = (pointDict[station].y - pointDict[station].normalCos * Yoffset + pointDict[station].normalSin * Yoffset - initPoint.y) * sc
+            let x = (pointDict[station].x + pointDict[station].normalCos * Yoffset + pointDict[station].normalSin * Yoffset - initPoint.x) * sc
+            let y = (pointDict[station].y + pointDict[station].normalCos * Yoffset - pointDict[station].normalSin * Yoffset - initPoint.y) * sc
             let position = [Math.cos(r) * x - Math.sin(r) * y, Math.cos(r) * y + Math.sin(r) * x]
             let mesh = roundedRect(position[0] - 200 * sc, position[1] - 100 * sc, 400 * sc, 200 * sc, 100 * sc, lineMaterial)
             let rot = Math.atan2(pointDict[station].normalCos, - pointDict[station].normalSin) + r
-            mesh.rotateZ = rot
+            mesh.rotateZ(rot)
             meshes.push(mesh)
 
             labels.push({
