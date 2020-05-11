@@ -42,7 +42,7 @@ export function AnalysisModel(node, frame) {
         geo.vertices.push(geometry.vertices[iNum], geometry.vertices[jNum])
         group.add(new THREE.Line(geo, greenLine));
 
-        let text = new SpriteText(frame.frame.data[i].number, 150, 0xff0000);
+        let text = new SpriteText(frame.frame.data[i].number, 150, "red");
         text.position.set(
             (geometry.vertices[iNum].x + geometry.vertices[jNum].x)/2, 
             (geometry.vertices[iNum].y + geometry.vertices[jNum].y)/2, 
