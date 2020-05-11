@@ -595,10 +595,12 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
 
     for (let station in pointDict) {
         if (station.substr(2, 1) !== "K" && !station.includes("CR")) { //station.substr(0,2)==="G1" && 
-            let x = (pointDict[station].x - pointDict[station].normalCos * Yoffset - initPoint.x) * sc
-            let y = (pointDict[station].y - pointDict[station].normalSin * Yoffset - initPoint.y) * sc
+            let cos = pointDict[station].normalCos
+            let sin = pointDict[station].normalSin
+            let x = (pointDict[station].x - cos * Yoffset - initPoint.x) * sc
+            let y = (pointDict[station].y - sin * Yoffset - initPoint.y) * sc
             let position = [Math.cos(r) * x - Math.sin(r) * y, Math.cos(r) * y + Math.sin(r) * x]
-            rot = Math.atan2(pointDict[station].normalCos, - pointDict[station].normalSin) + r
+            rot = Math.atan2(cos, - sin) + r
             let mesh = roundedRect(position[0], position[1], rot, 400 * sc, 200 * sc, 100 * sc, lineMaterial)
             meshes.push(mesh)
             labels.push({
@@ -608,8 +610,9 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
                 fontSize: fontSize
             })
             geo.vertices.push(
-                new THREE.Vector3(x,y,0),
-                new THREE.Vector3(x + 2 * pointDict[station].normalCos * Yoffset * sc,y  + 2 * pointDict[station].normalSin * Yoffset * sc,0))
+                new THREE.Vector3(x + cos * 100 * sc ,y + sin * 100 * sc,0),
+                new THREE.Vector3(x + cos * (2 * Yoffset - 100) * sc,
+                                  y  + sin * (2 * Yoffset - 100) * sc,0))
         }
     }
     let segLine = new THREE.LineSegments(geo,redDotLine)
