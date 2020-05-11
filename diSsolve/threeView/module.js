@@ -9,6 +9,7 @@ export function AnalysisModel(node,frame){
     let greenLine = new THREE.LineBasicMaterial({ color: 0x00ff00 })
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
     let yellowLine = new THREE.LineBasicMaterial({ color: 0xffff00 })
+    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
     let elemDict = {};
     for (let i in node.node.data){
         geometry.vertices.push(new THREE.Vector3(
@@ -55,7 +56,6 @@ export function AnalysisModel(node,frame){
         let nodeNum = node.boundary.data[i].nodeNum-1
         let vec = geometry.vertices[nodeNum]
         let localData = node.local.data.find(function(elem){return elem.nodeNum === node.boundary.data[i].nodeNum})
-        console.log("local", localData, nodeNum)
         let geo = new THREE.Geometry();
         if (node.boundary.data[i].DOF[0]===false){
             geo.vertices.push( 
@@ -75,8 +75,22 @@ export function AnalysisModel(node,frame){
             geo.vertices.push( 
                 new THREE.Vector3( 0,  -1000, 0 ), 
                 new THREE.Vector3( 0,  1000, 0 ), 
+                new THREE.Vector3( 0,  -1000, 0 ), 
+                new THREE.Vector3( arrow,-1000 + arrow, 0 ), 
+                new THREE.Vector3( 0,  -1000, 0 ), 
+                new THREE.Vector3( -arrow,-1000 + arrow, 0 ), 
+                new THREE.Vector3( 0,  1000, 0 ), 
+                new THREE.Vector3( arrow, 1000 - arrow, 0 ), 
+                new THREE.Vector3( 0,  1000, 0 ), 
+                new THREE.Vector3( -arrow, 1000 - arrow, 0 ), 
                 )
         }
+        if (node.boundary.data[i].DOF[0]&& node.boundary.data[i].DOF[1]){
+            let circle = new THREE.CircleGeometry(arrow, 16);
+            circle.translate(vec.x, vec.y, vec.z)
+            group.add(new THREE.Mesh(circle, circleMaterial));
+        }
+
         geo.rotateZ(localData.ANG * Math.PI/180)
         geo.translate(vec.x, vec.y, vec.z)
         group.add(new THREE.LineSegments(geo,yellowLine));
