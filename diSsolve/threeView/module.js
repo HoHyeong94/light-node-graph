@@ -2,6 +2,7 @@ import { THREE } from "global";
 
 export function AnalysisModel(node,frame){
     let group = new THREE.Group();
+    let layer = 2; //frame Layer
     let material = new THREE.PointsMaterial( { color: 0xff0000, size :300 } );
     let geometry = new THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
     let initPoint = node.node.data[0].coord
@@ -50,6 +51,7 @@ export function AnalysisModel(node,frame){
     }
 
     for (let i in node.boundary.data){
+        let arrow = new THREE.Group();
         let nodeNum = node.boundary.data[i].nodeNum-1
         let vec = geometry.vertices[nodeNum]
         if (node.boundary.data[i].DOF[0]===false){
@@ -58,12 +60,20 @@ export function AnalysisModel(node,frame){
                 new THREE.Vector3( -1000,  0, 0 ), 
                 new THREE.Vector3( 1000,  0, 0 ), 
                 )
-                geo.translate(vec)
-            group.add(new THREE.Line(geo,yellowLine));
+            arrow.add(new THREE.Line(geo,yellowLine));
+            arrow.layers.set(layer)
+            arrow.translate(vec.x, vec.y, vec.z)
         }
         if (node.boundary.data[i].DOF[1]===false){
-
+            let geo = new THREE.Geometry();
+            geo.vertices.push( 
+                new THREE.Vector3( 0,  -1000, 0 ), 
+                new THREE.Vector3( 0,  1000, 0 ), 
+                )
+                geo.translate(vec.x, vec.y, vec.z)
+            group.add(new THREE.Line(geo,yellowLine));
         }
+        group.add(arrow)
     }
 
     return group
