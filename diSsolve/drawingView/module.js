@@ -609,12 +609,12 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
             })
             geo.vertices.push(
                 new THREE.Vector3(x,y,0),
-                new THREE.Vector3(x + 2 * pointDict[station].normalCos * Yoffset,y + 2 * pointDict[station].normalSin * Yoffset,0))
+                new THREE.Vector3(x + 2 * pointDict[station].normalCos * Yoffset * sc,y  + 2 * pointDict[station].normalSin * Yoffset * sc,0))
         }
     }
     let segLine = new THREE.LineSegments(geo,redDotLine)
     segLine.computeLineDistances();
-    segLine.rotateZ(rot)
+    segLine.rotateZ(r)
     meshes.push(segLine)
     return { meshes, labels }
 }
