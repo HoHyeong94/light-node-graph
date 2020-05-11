@@ -1,103 +1,103 @@
 import { THREE, SpriteText } from "global";
 
-export function AnalysisModel(node,frame){
+export function AnalysisModel(node, frame) {
     let group = new THREE.Group();
     let layer = 2; //frame Layer
-    let material = new THREE.PointsMaterial( { color: 0xff0000, size :300 } );
+    let material = new THREE.PointsMaterial({ color: 0xff0000, size: 300 });
     let geometry = new THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
     let initPoint = node.node.data[0].coord
     let greenLine = new THREE.LineBasicMaterial({ color: 0x00ff00 })
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
     let yellowLine = new THREE.LineBasicMaterial({ color: 0xffff00 })
-    let circleMaterial = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+    let circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
     let elemDict = {};
-    for (let i in node.node.data){
-        geometry.vertices.push(new THREE.Vector3(
+    for (let i in node.node.data) {
+        let pt = new THREE.Vector3(
             node.node.data[i].coord[0] - initPoint[0],
-            node.node.data[i].coord[1] - initPoint[1], 
-            node.node.data[i].coord[2] - initPoint[2] ))
+            node.node.data[i].coord[1] - initPoint[1],
+            node.node.data[i].coord[2] - initPoint[2])
+        geometry.vertices.push(pt)
+        let text = new SpriteText(node.node.data[i].nodeNum, 200);
+        text.position.set(pt.x, pt.y, pt.z)
+        text.layers.set(layer);
+        group.add(text)
     }
-    for (let i in node.rigid.data){
+    for (let i in node.rigid.data) {
         let mNum = node.rigid.data[i].master - 1
-        for (let j in node.rigid.data[i].slave){
+        for (let j in node.rigid.data[i].slave) {
             let sNum = node.rigid.data[i].slave[j] - 1
             let geo = new THREE.Geometry();
-            geo.vertices.push(geometry.vertices[mNum],geometry.vertices[sNum])
-            group.add(new THREE.Line(geo,aquaLine ));
+            geo.vertices.push(geometry.vertices[mNum], geometry.vertices[sNum])
+            group.add(new THREE.Line(geo, aquaLine));
         }
     }
 
-    for (let i in frame.frame.data){
+    for (let i in frame.frame.data) {
         let geo = new THREE.Geometry();
-        let iNum = frame.frame.data[i].iNode -1
-        let jNum = frame.frame.data[i].jNode -1
+        let iNum = frame.frame.data[i].iNode - 1
+        let jNum = frame.frame.data[i].jNode - 1
         elemDict[frame.frame.data[i].number] = [iNum, jNum]
-        geo.vertices.push(geometry.vertices[iNum],geometry.vertices[jNum])
-        group.add(new THREE.Line(geo,greenLine ));
+        geo.vertices.push(geometry.vertices[iNum], geometry.vertices[jNum])
+        group.add(new THREE.Line(geo, greenLine));
     }
     group.add(new THREE.Points(geometry, material));
 
 
-    for (let i in frame.selfWeight.data){
+    for (let i in frame.selfWeight.data) {
         let geo = new THREE.Geometry();
         let ivec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][0]]
         let jvec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][1]]
-        let izload =  -1 * frame.selfWeight.data[i].Uzp[0] /10
-        let jzload =  -1 * frame.selfWeight.data[i].Uzp[1] /10
-        geo.vertices.push(ivec, 
-            new THREE.Vector3( ivec.x,  ivec.y, ivec.z + izload ), 
-            new THREE.Vector3( jvec.x,  jvec.y, jvec.z + jzload ), 
-             jvec)
-        group.add(new THREE.Line(geo,aquaLine));
+        let izload = -1 * frame.selfWeight.data[i].Uzp[0] / 10
+        let jzload = -1 * frame.selfWeight.data[i].Uzp[1] / 10
+        geo.vertices.push(ivec,
+            new THREE.Vector3(ivec.x, ivec.y, ivec.z + izload),
+            new THREE.Vector3(jvec.x, jvec.y, jvec.z + jzload),
+            jvec)
+        group.add(new THREE.Line(geo, aquaLine));
     }
     let arrow = 200;
-    for (let i in node.boundary.data){
+    for (let i in node.boundary.data) {
         // let arrow = new THREE.Group();
-        let nodeNum = node.boundary.data[i].nodeNum-1
+        let nodeNum = node.boundary.data[i].nodeNum - 1
         let vec = geometry.vertices[nodeNum]
-        let localData = node.local.data.find(function(elem){return elem.nodeNum === node.boundary.data[i].nodeNum})
+        let localData = node.local.data.find(function (elem) { return elem.nodeNum === node.boundary.data[i].nodeNum })
         let geo = new THREE.Geometry();
-        if (node.boundary.data[i].DOF[0]===false){
-            geo.vertices.push( 
-                new THREE.Vector3( -1000,  0, 0 ), 
-                new THREE.Vector3( 1000,  0, 0 ), 
-                new THREE.Vector3( -1000,  0, 0 ), 
-                new THREE.Vector3( -1000 + arrow, arrow, 0 ), 
-                new THREE.Vector3( -1000,  0, 0 ), 
-                new THREE.Vector3( -1000 + arrow, -arrow, 0 ), 
-                new THREE.Vector3( 1000,  0, 0 ), 
-                new THREE.Vector3( 1000 - arrow, arrow, 0 ), 
-                new THREE.Vector3( 1000,  0, 0 ), 
-                new THREE.Vector3( 1000 - arrow, -arrow, 0 ), 
-                )
+        if (node.boundary.data[i].DOF[0] === false) {
+            geo.vertices.push(
+                new THREE.Vector3(-1000, 0, 0),
+                new THREE.Vector3(1000, 0, 0),
+                new THREE.Vector3(-1000, 0, 0),
+                new THREE.Vector3(-1000 + arrow, arrow, 0),
+                new THREE.Vector3(-1000, 0, 0),
+                new THREE.Vector3(-1000 + arrow, -arrow, 0),
+                new THREE.Vector3(1000, 0, 0),
+                new THREE.Vector3(1000 - arrow, arrow, 0),
+                new THREE.Vector3(1000, 0, 0),
+                new THREE.Vector3(1000 - arrow, -arrow, 0),
+            )
         }
-        if (node.boundary.data[i].DOF[1]===false){
-            geo.vertices.push( 
-                new THREE.Vector3( 0,  -1000, 0 ), 
-                new THREE.Vector3( 0,  1000, 0 ), 
-                new THREE.Vector3( 0,  -1000, 0 ), 
-                new THREE.Vector3( arrow,-1000 + arrow, 0 ), 
-                new THREE.Vector3( 0,  -1000, 0 ), 
-                new THREE.Vector3( -arrow,-1000 + arrow, 0 ), 
-                new THREE.Vector3( 0,  1000, 0 ), 
-                new THREE.Vector3( arrow, 1000 - arrow, 0 ), 
-                new THREE.Vector3( 0,  1000, 0 ), 
-                new THREE.Vector3( -arrow, 1000 - arrow, 0 ), 
-                )
+        if (node.boundary.data[i].DOF[1] === false) {
+            geo.vertices.push(
+                new THREE.Vector3(0, -1000, 0),
+                new THREE.Vector3(0, 1000, 0),
+                new THREE.Vector3(0, -1000, 0),
+                new THREE.Vector3(arrow, -1000 + arrow, 0),
+                new THREE.Vector3(0, -1000, 0),
+                new THREE.Vector3(-arrow, -1000 + arrow, 0),
+                new THREE.Vector3(0, 1000, 0),
+                new THREE.Vector3(arrow, 1000 - arrow, 0),
+                new THREE.Vector3(0, 1000, 0),
+                new THREE.Vector3(-arrow, 1000 - arrow, 0),
+            )
         }
-        if (node.boundary.data[i].DOF[0]&& node.boundary.data[i].DOF[1]){
+        if (node.boundary.data[i].DOF[0] && node.boundary.data[i].DOF[1]) {
             let circle = new THREE.CircleGeometry(arrow, 16);
             circle.translate(vec.x, vec.y, vec.z)
             group.add(new THREE.Mesh(circle, circleMaterial));
         }
-
-        let text = new SpriteText("test1",200);
-        text.translate(vec.x, vec.y, vec.z)
-        text.layers.set(layer);
-        group.add(text)
-        geo.rotateZ(localData.ANG * Math.PI/180)
+        geo.rotateZ(localData.ANG * Math.PI / 180)
         geo.translate(vec.x, vec.y, vec.z)
-        group.add(new THREE.LineSegments(geo,yellowLine));
+        group.add(new THREE.LineSegments(geo, yellowLine));
 
         // group.add(arrow)
     }
@@ -117,7 +117,7 @@ export function LineView(linepoints, initPoint, color) {
     }
     var colorCode = color ? color : 0xffff00  //  : 
     var line = new THREE.Line(
-        geometry, new THREE.LineBasicMaterial({ color: parseInt(colorCode,16) })
+        geometry, new THREE.LineBasicMaterial({ color: parseInt(colorCode, 16) })
     );
     group.add(line);
     return group
@@ -239,7 +239,7 @@ export function HBracingPlateView(hBraicngPlateDict, initPoint) {
     for (let pk in hBraicngPlateDict) {
         //    let point = pointDict[pk]
         for (let partkey in hBraicngPlateDict[pk]) {
-            if (partkey!=="point"){
+            if (partkey !== "point") {
                 let shapeNode = hBraicngPlateDict[pk][partkey].points
                 let Thickness = hBraicngPlateDict[pk][partkey].Thickness
                 let zPosition = hBraicngPlateDict[pk][partkey].z
@@ -311,21 +311,21 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
     }
     for (let i = 0; i < deckPointDict.length - 1; i++) {
         for (let j = 0; j < pNum; j++) {
-            let k = j === pNum-1? 0: j+1;
+            let k = j === pNum - 1 ? 0 : j + 1;
             geometry.faces.push(new THREE.Face3(i * pNum + j, i * pNum + k, (i + 1) * pNum + j));
             geometry.faces.push(new THREE.Face3(i * pNum + k, (i + 1) * pNum + k, (i + 1) * pNum + j));
         }
-        if (i===0){
+        if (i === 0) {
             geometry.faces.push(new THREE.Face3(i * pNum, (i + 1) * pNum - 1, i * pNum + 1));
             geometry.faces.push(new THREE.Face3(i * pNum + 1, i * pNum + 3, i * pNum + 2));
-            for (let j = 1; j < pNum -3;j++){
-                geometry.faces.push(new THREE.Face3((i+1) * pNum - j, (i + 1) * pNum - j -1, i * pNum + 1));
+            for (let j = 1; j < pNum - 3; j++) {
+                geometry.faces.push(new THREE.Face3((i + 1) * pNum - j, (i + 1) * pNum - j - 1, i * pNum + 1));
             }
-        } else if (i === deckPointDict.length -2){
-            geometry.faces.push(new THREE.Face3((i+1) * pNum, (i+1) * pNum + 1, (i + 2) * pNum - 1, ));
-            geometry.faces.push(new THREE.Face3((i+1) * pNum + 1, (i+1) * pNum + 2 , (i+1) * pNum + 3 ));
-            for (let j = 1; j < pNum -3;j++){
-                geometry.faces.push(new THREE.Face3((i+2) * pNum - j, (i+1) * pNum + 1, (i + 2) * pNum - j -1 ));
+        } else if (i === deckPointDict.length - 2) {
+            geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + 1, (i + 2) * pNum - 1));
+            geometry.faces.push(new THREE.Face3((i + 1) * pNum + 1, (i + 1) * pNum + 2, (i + 1) * pNum + 3));
+            for (let j = 1; j < pNum - 3; j++) {
+                geometry.faces.push(new THREE.Face3((i + 2) * pNum - j, (i + 1) * pNum + 1, (i + 2) * pNum - j - 1));
             }
         }
     }
@@ -335,38 +335,38 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
     return group
 }
 
-export function boltView(spliceDict,initPoint){
+export function boltView(spliceDict, initPoint) {
     var group = new THREE.Group();
     // var meshMaterial = new THREE.MeshNormalMaterial()
-    var meshMaterial = new THREE.MeshLambertMaterial( {
+    var meshMaterial = new THREE.MeshLambertMaterial({
         color: 0xffffff,
         emissive: 0x000000,
         opacity: 1,
-        side:THREE.DoubleSide,
+        side: THREE.DoubleSide,
         transparent: false,
-        wireframe : false
-    } );
+        wireframe: false
+    });
 
     // let bolt0 = { startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 }
     // var radius = bolt0.size/2
     // var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
     // let dummyList = [];
-    for (let key in spliceDict){
-    //    let point = nameToPointDict[diakey]
-       for (let partkey in spliceDict[key]){
+    for (let key in spliceDict) {
+        //    let point = nameToPointDict[diakey]
+        for (let partkey in spliceDict[key]) {
             let Thickness = spliceDict[key][partkey].Thickness
             let zPosition = spliceDict[key][partkey].z
-            let rotationY = spliceDict[key][partkey].rotationY+Math.PI/2
+            let rotationY = spliceDict[key][partkey].rotationY + Math.PI / 2
             let rotationX = spliceDict[key][partkey].rotationX
             let point = spliceDict[key][partkey].point
-            if (spliceDict[key][partkey].bolt){
+            if (spliceDict[key][partkey].bolt) {
                 let bolt = spliceDict[key][partkey].bolt
-                for (let k in bolt){
-                    for (let i = 0;i<bolt[k].gNum;i++){
-                        for (let j=0;j<bolt[k].pNum;j++){
-                            let xtranslate = bolt[k].startPoint.x - i*bolt[k].G
-                            let ytranslate= bolt[k].startPoint.y - j*bolt[k].P
-                            group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial))
+                for (let k in bolt) {
+                    for (let i = 0; i < bolt[k].gNum; i++) {
+                        for (let j = 0; j < bolt[k].pNum; j++) {
+                            let xtranslate = bolt[k].startPoint.x - i * bolt[k].G
+                            let ytranslate = bolt[k].startPoint.y - j * bolt[k].P
+                            group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
                             // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                         }
                     }
@@ -385,34 +385,34 @@ export function boltView(spliceDict,initPoint){
     return group
 }
 
-export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint, meshMaterial){
-    var radius = bolt.size/2
-    var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt.t*2+bolt.l,6,1)
+export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint, meshMaterial) {
+    var radius = bolt.size / 2
+    var geometry = new THREE.CylinderBufferGeometry(radius, radius, bolt.t * 2 + bolt.l, 6, 1)
     var mesh = new THREE.Mesh(geometry, meshMaterial);
-    var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2  //+ 
-    mesh.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
-    mesh.rotateOnWorldAxis(new THREE.Vector3(0,0,1),rad);
-    mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
-    mesh.translateY(zPosition-bolt.l/2)
+    var rad = Math.atan(- point.normalCos / point.normalSin) + Math.PI / 2  //+ 
+    mesh.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
+    mesh.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
+    mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
+    mesh.translateY(zPosition - bolt.l / 2)
     mesh.translateX(XYtranslate[1])
     mesh.translateZ(XYtranslate[0])
     return mesh
 }
 
-export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint){
+export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint) {
     var dummy = new THREE.Object3D();
-    var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2  //+ 
-    dummy.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
-    dummy.rotateOnWorldAxis(new THREE.Vector3(0,0,1),rad);
-    dummy.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
-    dummy.translateY(zPosition-bolt.l/2)
+    var rad = Math.atan(- point.normalCos / point.normalSin) + Math.PI / 2  //+ 
+    dummy.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
+    dummy.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
+    dummy.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
+    dummy.translateY(zPosition - bolt.l / 2)
     dummy.translateX(XYtranslate[1])
     dummy.translateZ(XYtranslate[0])
     dummy.updateMatrix();
     return dummy
 }
 
-export function StudMeshView(studList, initPoint){
+export function StudMeshView(studList, initPoint) {
     let group = new THREE.Group();
     var meshMaterial = new THREE.MeshNormalMaterial();
     // var meshMaterial = new THREE.MeshLambertMaterial( {
@@ -423,21 +423,21 @@ export function StudMeshView(studList, initPoint){
     //     transparent: false,
     //     wireframe : false
     // } );
-    for (let i in studList){
-        var geometry = new THREE.CylinderBufferGeometry(studList[i].stud.dia/2,studList[i].stud.dia/2,studList[i].stud.height,8,1)
-        var geometry2 = new THREE.CylinderBufferGeometry(studList[i].stud.headDia/2,studList[i].stud.headDia/2,studList[i].stud.headDepth,8,1)
+    for (let i in studList) {
+        var geometry = new THREE.CylinderBufferGeometry(studList[i].stud.dia / 2, studList[i].stud.dia / 2, studList[i].stud.height, 8, 1)
+        var geometry2 = new THREE.CylinderBufferGeometry(studList[i].stud.headDia / 2, studList[i].stud.headDia / 2, studList[i].stud.headDepth, 8, 1)
         let rotationX = Math.atan(studList[i].gradientX)
         let rotationY = Math.atan(studList[i].gradientY)
-        for (let j in studList[i].points){
+        for (let j in studList[i].points) {
             let point = studList[i].points[j]
             var mesh = new THREE.Mesh(geometry, meshMaterial)
             var mesh2 = new THREE.Mesh(geometry2, meshMaterial)
-            mesh.rotation.set(rotationX + Math.PI/2, rotationY,0)
-            mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
-            mesh.translateY(studList[i].stud.height/2)
-            mesh2.rotation.set(rotationX + Math.PI/2, rotationY,0)
-            mesh2.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z)
-            mesh2.translateY(studList[i].stud.height - studList[i].stud.headDepth/2)
+            mesh.rotation.set(rotationX + Math.PI / 2, rotationY, 0)
+            mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
+            mesh.translateY(studList[i].stud.height / 2)
+            mesh2.rotation.set(rotationX + Math.PI / 2, rotationY, 0)
+            mesh2.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
+            mesh2.translateY(studList[i].stud.height - studList[i].stud.headDepth / 2)
             group.add(mesh)
             group.add(mesh2)
         }
@@ -445,43 +445,43 @@ export function StudMeshView(studList, initPoint){
     return group
 }
 
-export function BarrierPointView(deckSection,initPoint,opacity){
+export function BarrierPointView(deckSection, initPoint, opacity) {
     let group = new THREE.Group();
-    var meshMaterial = new THREE.MeshLambertMaterial( {
+    var meshMaterial = new THREE.MeshLambertMaterial({
         color: 0x000000,
         emissive: 0x777777,
         opacity: opacity,
         // side:THREE.DoubleSide,
         transparent: true,
-        wireframe : false
-      } );
+        wireframe: false
+    });
     // let meshMaterial = new THREE.MeshNormalMaterial()
     //     meshMaterial.side = THREE.DoubleSide
-    
+
     let pNum = deckSection[0].points.length
     let geometry = new THREE.Geometry();
-    for (let key in deckSection){
-        deckSection[key].points.forEach(function(Point){
-                geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
+    for (let key in deckSection) {
+        deckSection[key].points.forEach(function (Point) {
+            geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
         })
     }
-    
-    for (let i =0;i<deckSection.length -1 ;i++ ){
-        for (let j = 0;j<pNum-1;j++){
-            geometry.faces.push(new THREE.Face3(i*pNum+j,(i+1)*pNum+j,i*pNum+j+1));
-            geometry.faces.push(new THREE.Face3(i*pNum+j+1,(i+1)*pNum+j,(i+1)*pNum+j+1));
+
+    for (let i = 0; i < deckSection.length - 1; i++) {
+        for (let j = 0; j < pNum - 1; j++) {
+            geometry.faces.push(new THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + j + 1));
+            geometry.faces.push(new THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
         }
-        if (i ===0){
-            for (let j=1;j<pNum-1;j++){
-               geometry.faces.push(new THREE.Face3(i, i + j, i + j +1));
+        if (i === 0) {
+            for (let j = 1; j < pNum - 1; j++) {
+                geometry.faces.push(new THREE.Face3(i, i + j, i + j + 1));
             }
-        }else if (i === deckSection.length -2){
-            for (let j=1;j<pNum-1;j++){
-                geometry.faces.push(new THREE.Face3((i + 1)*pNum, (i + 1)*pNum + j + 1, (i + 1)*pNum + j));
-             }
+        } else if (i === deckSection.length - 2) {
+            for (let j = 1; j < pNum - 1; j++) {
+                geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+            }
         }
     }
     geometry.computeFaceNormals();
-    group.add( new THREE.Mesh(geometry,meshMaterial) );
+    group.add(new THREE.Mesh(geometry, meshMaterial));
     return group
 }
