@@ -565,15 +565,15 @@ function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, ind
 
 function roundedRect(x, y, rot, width, height, radius, lineMaterial ) {
     let shape = new THREE.Shape()
-    shape.moveTo(0, 0 + radius);
-    shape.lineTo(0, 0 + height - radius);
-    shape.quadraticCurveTo(0, 0 + height, 0 + radius, 0 + height);
-    shape.lineTo(0 + width - radius, 0 + height);
-    shape.quadraticCurveTo(0 + width, 0 + height, 0 + width, 0 + height - radius);
-    shape.lineTo(0 + width, 0 + radius);
-    shape.quadraticCurveTo(0 + width, 0, 0 + width - radius, 0);
-    shape.lineTo(0 + radius, 0);
-    shape.quadraticCurveTo(0, 0, 0, 0 + radius);
+    shape.moveTo( -width/2, -height/2 + radius);
+    shape.lineTo( -width/2, height/2 - radius);
+    shape.quadraticCurveTo(-width/2, height/2, -width/2 + radius, height/2);
+    shape.lineTo( width/2 - radius, height/2);
+    shape.quadraticCurveTo(width/2, height/2, width/2, height/2 - radius);
+    shape.lineTo( width/2, -height/2 + radius);
+    shape.quadraticCurveTo( width/2, -height/2, width/2 - radius, -height/2);
+    shape.lineTo( -width/2 + radius, -height/2);
+    shape.quadraticCurveTo(-width/2, -height/2, -width/2, -height/2 + radius);
     let points = shape.getPoints();
     let geometry = new THREE.BufferGeometry().setFromPoints(points)
     geometry.rotateZ(rot)
@@ -595,7 +595,7 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
             let y = (pointDict[station].y - pointDict[station].normalSin * Yoffset - initPoint.y) * sc
             let position = [Math.cos(r) * x - Math.sin(r) * y, Math.cos(r) * y + Math.sin(r) * x]
             let rot = Math.atan2(pointDict[station].normalCos, - pointDict[station].normalSin) + r
-            let mesh = roundedRect(position[0] - 200 * sc, position[1] - 100 * sc, rot, 400 * sc, 200 * sc, 100 * sc, lineMaterial)
+            let mesh = roundedRect(position[0], position[1], rot, 400 * sc, 200 * sc, 100 * sc, lineMaterial)
             meshes.push(mesh)
             labels.push({
                 text: station,
