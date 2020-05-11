@@ -20,6 +20,7 @@ export function AnalysisModel(node, frame) {
         let text = new SpriteText(node.node.data[i].nodeNum, 150);
         text.position.set(pt.x, pt.y, pt.z)
         text.layers.set(layer);
+        text.backgroundColor = "red"
         group.add(text)
     }
 
@@ -51,7 +52,7 @@ export function AnalysisModel(node, frame) {
     }
 
 
-    group.add(new THREE.Points(geometry, material));
+    // group.add(new THREE.Points(geometry, material));
 
 
     for (let i in frame.selfWeight.data) {
