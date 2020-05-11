@@ -3760,16 +3760,52 @@
 
   function AnalysisModel(node,frame){
       let group = new global.THREE.Group();
-      let material = new global.THREE.PointsMaterial( { color: 0xff0000, size :100 } );
+      let material = new global.THREE.PointsMaterial( { color: 0xff0000, size :300 } );
       let geometry = new global.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
       let initPoint = node.node.data[0].coord;
+      let greenLine = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });
+      let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
+      let elemDict = {};
       for (let i in node.node.data){
           geometry.vertices.push(new global.THREE.Vector3(
               node.node.data[i].coord[0] - initPoint[0],
               node.node.data[i].coord[1] - initPoint[1], 
               node.node.data[i].coord[2] - initPoint[2] ));
       }
+      for (let i in node.rigid.data){
+          let mNum = node.rigid.data[i].master - 1;
+          for (let j in node.rigid.data[i].slave){
+              let sNum = node.rigid.data[i].slave[j] - 1;
+              let geo = new global.THREE.Geometry();
+              geo.vertices.push(geometry.vertices[mNum],geometry.vertices[sNum]);
+              group.add(new global.THREE.Line(geo,aquaLine ));
+          }
+      }
+
+      for (let i in frame.frame.data){
+          let geo = new global.THREE.Geometry();
+          let iNum = frame.frame.data[i].iNode -1;
+          let jNum = frame.frame.data[i].jNode -1;
+          elemDict[frame.frame.data[i].number] = [iNum, jNum];
+          geo.vertices.push(geometry.vertices[iNum],geometry.vertices[jNum]);
+          group.add(new global.THREE.Line(geo,greenLine ));
+      }
       group.add(new global.THREE.Points(geometry, material));
+
+
+      for (let i in frame.selfWeight.data){
+          let geo = new global.THREE.Geometry();
+          let ivec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][0]];
+          let jvec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][1]];
+          let izload =  -1 * frame.selfWeight.data[i].Uzp[0] /100;
+          let jzload =  -1 * frame.selfWeight.data[i].Uzp[1] /100;
+          geo.vertices.push(ivec, 
+              new global.THREE.Vector3( ivec.x,  ivec.y, ivec.z + izload ), 
+              new global.THREE.Vector3( jvec.x,  jvec.y, jvec.z + jzload ), 
+               jvec);
+          group.add(new global.THREE.Line(geo,aquaLine));
+      }
+
       return group
   }
 
@@ -5355,7 +5391,7 @@
   }
 
   //I형 가로보의 시공단계별 단면계수 생성
-  function Isection(xi, materials, slab){
+  function Isection(xi, materials, slab) {
 
       let stage1 = {};
       let stage2 = {};
@@ -5368,8 +5404,8 @@
       let bft = xi[3];
       let wh = xi[4];
       let wt = xi[5];
-      isteel.push(partProperty(tfw, tft, wh/2 + tft / 2, 0, 0));
-      isteel.push(partProperty(bfw, bft, -wh/2 - bft / 2, 0, 0));
+      isteel.push(partProperty(tfw, tft, wh / 2 + tft / 2, 0, 0));
+      isteel.push(partProperty(bfw, bft, -wh / 2 - bft / 2, 0, 0));
       isteel.push(partProperty(wh, wt, 0, 0, 1));
 
       //합성전 강재 단면
@@ -5386,6 +5422,7 @@
       stage1.Cz = ADz / stage1.A;
       stage1.Iyy = 0;
       stage1.Izz = 0;
+      stage1.Ixx = 0;  // 추후 비틀림 강성에 대한 값을 계산하여야 함
       for (let i in isteel) {
           stage1.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage1.Cy) ** 2;
           stage1.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage1.Cz) ** 2;
@@ -5393,19 +5430,20 @@
       // 단일 합성후 가로보단면 변화 없음
       stage2 = stage1;
       //이중합성후 합성단면의 단면계수 계산
-          let deckConc = partProperty(slab.W / n1, slab.T, wh / 2 + slab.T / 2 + slab.Th, 0, 0);
-          isteel.push(deckConc);
-          ADy += deckConc.area * deckConc.Dy;
-          ADz += deckConc.area * deckConc.Dz;
-          stage3.A = stage2.A + deckConc.area;
-          stage3.Cy = ADy / stage3.A;
-          stage3.Cz = ADz / stage3.A;
-          stage3.Iyy = 0;
-          stage3.Izz = 0;
-          for (let i in isteel) {
-              stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2;
-              stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2;
-          }
+      let deckConc = partProperty(slab.W / n1, slab.T, wh / 2 + slab.T / 2 + slab.Th, 0, 0);
+      isteel.push(deckConc);
+      ADy += deckConc.area * deckConc.Dy;
+      ADz += deckConc.area * deckConc.Dz;
+      stage3.A = stage2.A + deckConc.area;
+      stage3.Cy = ADy / stage3.A;
+      stage3.Cz = ADz / stage3.A;
+      stage3.Iyy = 0;
+      stage3.Izz = 0;
+      stage3.Ixx = 0; // 추후 비틀림 강성에 대한 값을 계산하여야 함
+      for (let i in isteel) {
+          stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2;
+          stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2;
+      }
 
       return [stage1, stage2, stage3]
   }
@@ -5413,7 +5451,7 @@
   function DCBsection(sa, materials) {
       let n1 = materials[2][1] / materials[0][1];  //상부바닥판 탄성계수비
       let n2 = materials[2][1] / materials[1][1];  //하부콘크리트 탄성계수비
-      let lcos = sa.H / Math.sqrt(sa.H**2 + ((sa.B2-sa.B1)/2)**2);
+      let lcos = sa.H / Math.sqrt(sa.H ** 2 + ((sa.B2 - sa.B1) / 2) ** 2);
       let rcos = lcos;
       let sb = [];
 
@@ -5518,8 +5556,8 @@
       const dof = {
           고정단: [true, true, true, false, false, false],
           양방향단: [false, false, true, false, false, false],
-          횡방향가동: [false, true, true, false, false, false],
-          종방향가동: [true, false, true, false, false, false],
+          횡방향가동: [true, false, true, false, false, false],
+          종방향가동: [false, true, true, false, false, false],
       };
       let fixedCoord = { x: 0, y: 0, z: 0 };
       // 고정단기준이 체크되지 않거나, 고정단이 없을 경우에는 접선방향으로 받침을 계산함
@@ -5588,12 +5626,19 @@
       let boundary = { command: "RESTRAINT", data: [] };
       let rigid = { command: "CONSTRAINT", data: [] };
       let nodeNumDict = {};
+      let dummycoord = [-1, -1, -1];
 
       for (let i in girderStation) {
           for (let j in girderStation[i]) {
-              node.data.push({ nodeNum: nodeNum, coord: [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z] });
+
               nodeNumDict[girderStation[i][j].key] = nodeNum;
-              nodeNum++;
+              if (dummycoord[0] !== girderStation[i][j].point.x ||
+                  dummycoord[1] !== girderStation[i][j].point.y ||
+                  dummycoord[2] !== girderStation[i][j].point.z) {
+                  node.data.push({ nodeNum: nodeNum, coord: [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z] });
+                  nodeNum++;
+                  dummycoord = [girderStation[i][j].point.x, girderStation[i][j].point.y, girderStation[i][j].point.z];
+              }
           }
       }
       // let supportNode = SupportGenerator(supportFixed, supportData, gridPoint) // <-- 추후 함수 밖으로 보내야함
@@ -5602,6 +5647,8 @@
           nodeNumDict[supportNode[i].key] = nodeNum;
           local.data.push({ nodeNum: nodeNum, ANG: supportNode[i].angle });
           boundary.data.push({ nodeNum: nodeNum, DOF: supportNode[i].type });
+          // rigid.data.push({ master: nodeNumDict[supportNode[i].basePointName], 
+          //     slave: [nodeNumDict[supportNode[i].key]] }) //해당 결과가 sap에서 에러가 없는지 확인필요함.
           nodeNum++;
       }
       //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
@@ -5612,8 +5659,8 @@
                   nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum;
                   nodeNum++;
               }
-              rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P2"]] });
-              rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P3"]] });
+              rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P3"]] });
+              rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P2"]] });
           }
       }
       // xbeam stringer에 대한 절점 추가 입력 필요
@@ -5624,32 +5671,32 @@
   // stringer/외측빔에 대한 단면정보 생성은 추후 결정
   function AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData) {
       let sectionPropDict = {};
-      for (let i in girderStation){
-          for (let j in girderStation[i]){
+      for (let i in girderStation) {
+          for (let j in girderStation[i]) {
               let key = girderStation[i][j].key;
               let sa = sectionPointDict[key].forward.input;
               let sa2 = sectionPointDict[key].backward.input;
-              sectionPropDict[key] = {forward : {}, backward : {}};
-              sectionPropDict[key].forward= DCBsection(sa,materials);
-              sectionPropDict[key].backward= DCBsection(sa2,materials);
+              sectionPropDict[key] = { forward: {}, backward: {} };
+              sectionPropDict[key].forward = DCBsection(sa, materials);
+              sectionPropDict[key].backward = DCBsection(sa2, materials);
           }
       }
-      for (let i in xbeamData){
-          if (xbeamData[i].isKframe === false){
-              let slab = {W : 2000, T:270, Th :0}; //추후 자동으로 계산되어야 함 20.04.01 by dr.lim
+      for (let i in xbeamData) {
+          if (xbeamData[i].isKframe === false) {
+              let slab = { W: 2000, T: 270, Th: 0 }; //추후 자동으로 계산되어야 함 20.04.01 by dr.lim
               let key = xbeamData[i].key;
               sectionPropDict[key] = Isection(xbeamData[i].section, materials, slab);
           }
       }
       return sectionPropDict;
   }
-  function SectionCompare(section1, section2){
+  function SectionCompare(section1, section2) {
       let result = true;
-      result = section1.A === section2.A && section1.Ixx && section2.Ixx && section1.Iyy === section2.Iyy 
-      && section1.Izz === section2.Izz? true:false;
+      result = section1.A === section2.A && section1.Ixx && section2.Ixx && section1.Iyy === section2.Iyy
+          && section1.Izz === section2.Izz ? true : false;
       return result
   }
-  function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
+  function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, supportNode, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
       let step = 0;
       let allElement = []; // As New List(Of Element_3d)
       let elemNum = 1; // As Integer = 1
@@ -5661,75 +5708,81 @@
               IDES: "C", // 강재는 S, concrte C
               M: materials[i][4] / 9.81 / 1000,  // ton to kN <-- 추후 수정필요
               W: materials[i][4] / 1000, // ton to kg
-              E: materials[i][1],
-              U: materials[i][3]
+              E: materials[i][1] * 1,
+              U: materials[i][3] * 1
           });
       }
 
       let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData);
-      let selfWeight = {command : "LOAD", type :"Distributed Span", Name : "SteelBox", data : []};
+      let selfWeight = { command: "LOAD", type: "Distributed Span", Name: "SteelBox", data: [] };
       let sectionNum = 1;
       let tsectionNum = 1;
       let generalSectionList = [];
       let taperedSectionList = [];
       for (let i in girderStation) {
-          let tempSection = {name : "temp", A:0, Ixx:0, Iyy:0, Izz:0};
+          let tempSection = { name: "temp", A: 0, Ixx: 0, Iyy: 0, Izz: 0 };
           for (let j = 0; j < girderStation[i].length - 1; j++) {
               let inode = girderStation[i][j].key;
               let jnode = girderStation[i][j + 1].key;
-              let sectionName = "noname"; // 임시로 작성 추후 수정 바람.
-              let section1 = sectionPropDict[inode].forward[step];
-              let section2 = sectionPropDict[jnode].backward[step];
-              if (SectionCompare(tempSection, section1)){
-                  if (SectionCompare(section1,section2)){
-                      sectionName = tempSection.name;
+              if (nodeNumDict[inode] !== nodeNumDict[jnode]) {
+                  let sectionName = "noname"; // 임시로 작성 추후 수정 바람.
+                  let section1 = sectionPropDict[inode].forward[step];
+                  let section2 = sectionPropDict[jnode].backward[step];
+                  if (SectionCompare(tempSection, section1)) {
+                      if (SectionCompare(section1, section2)) {
+                          sectionName = tempSection.name;
+                      }
+                      else {
+                          sectionName = "t" + tsectionNum;
+                          tsectionNum++;
+                          generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section2.A, I: [section2.Iyy, section2.Izz], J: section2.Ixx });
+                          taperedSectionList.push({
+                              Name: sectionName,
+                              type: "Nonpr",
+                              Sec: [tempSection.name, sectionNum],  //isection, jsection
+                              Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+                              Vl: 1
+                          });
+                          sectionNum++;
+                      }
                   }
                   else {
-                      sectionName = "t" + tsectionNum;
-                      generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx});
-                      taperedSectionList.push({
-                          Name: sectionName,
-                          type: "Nonpr",
-                          Sec: [tempSection.name, sectionNum],  //isection, jsection
-                          Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
-                          Vl: 1
-                      });
-                      sectionNum ++;
-                  }
-              }
-              else {
-                  if (SectionCompare(section1,section2)){
-                      sectionName = sectionNum;
-                      generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx});
-                  }else {
-                      sectionName = "t" + tsectionNum;
-                      generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx});
-                      sectionNum++;
-                      generalSectionList.push({NAME : sectionNum, Mat : materials[2][0], A: section2.A, I:[section2.Iyy,section2.Izz], j:section2.Ixx});
-                      taperedSectionList.push({
-                          Name: sectionName,
-                          type: "Nonpr",
-                          Sec: [sectionNum -1, sectionNum],  //isection, jsection
-                          Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
-                          Vl: 1
-                      });
-                      sectionNum ++;
-                  }
+                      if (SectionCompare(section1, section2)) {
+                          sectionName = sectionNum;
+                          generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx });
+                          sectionNum++;
+                      } else {
+                          sectionName = "t" + tsectionNum;
+                          tsectionNum++;
+                          generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx });
+                          sectionNum++;
+                          generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section2.A, I: [section2.Iyy, section2.Izz], J: section2.Ixx });
+                          taperedSectionList.push({
+                              Name: sectionName,
+                              type: "Nonpr",
+                              Sec: [sectionNum - 1, sectionNum],  //isection, jsection
+                              Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
+                              Vl: 1
+                          });
+                          sectionNum++;
+                      }
 
+                  }
+                  tempSection = section2;
+                  // sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
+                  let elem = {
+                      iNode: nodeNumDict[inode],
+                      jNode: nodeNumDict[jnode],
+                      sectionName: sectionName, // node_group.Key & added_index,
+                      endOffset: false,
+                      number: elemNum
+                  };
+                  allElement.push(elem);
+                  let p1 = -1 * section1.A * material.data[2].W;   //materials : steel
+                  let p2 = -1 * section2.A * material.data[2].W;   //materials : steel
+                  selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] });
+                  elemNum++;
               }
-              // sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
-              let elem = {
-                  iNode: nodeNumDict[inode],
-                  jNode: nodeNumDict[jnode],
-                  sectionName: sectionName, // node_group.Key & added_index,
-                  endOffset: false,
-                  number: elemNum
-              };
-              allElement.push(elem);
-              let p1 = -1 * section1.A * material.data[2].W;   //materials : steel
-              let p2 = -1 * section2.A * material.data[2].W;   //materials : steel
-              selfWeight.data.push({elem : elemNum, RD : [0, 1], Uzp : [p1,p2] });
-              elemNum++;
           }
       }
       let DBSectionList = [];
@@ -5737,8 +5790,8 @@
       for (let i in xbeamData) {
           if (xbeamData[i].isKframe) {
               let KLink = [[0, 1], [2, 4], [3, 4], [0, 4], [1, 4]]; // 상현, 하현1, 하현2, 사재1, 사재2
-              xbeamData[i].section.forEach(function(elem){
-                  if (DBSectionList.includes(elem)===false){
+              xbeamData[i].section.forEach(function (elem) {
+                  if (DBSectionList.includes(elem) === false) {
                       DBSectionList.push(elem);
                   }
               });
@@ -5759,7 +5812,7 @@
           } else {
               let sectionName = xbeamData[i].key; // 임시로 작성 추후 수정 바람.
               let section1 = sectionPropDict[xbeamData[i].key][step];
-              generalSectionList.push({NAME : sectionName, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx});
+              generalSectionList.push({ NAME: sectionName, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx });
               // sectionNameDict[sectionName] = [sectionPropDict[sectionName]]  //가로보는 변단면 반영하지 않음.
               let elem = {
                   iNode: nodeNumDict[xbeamData[i].inode],
@@ -5774,12 +5827,26 @@
               elemNum++;
           }
       }
-      
-      DBSectionList.forEach(function(elem){
+
+      DBSectionList.forEach(function (elem) {
           let section1 = sectionDB[elem];
-          generalSectionList.push({NAME : elem, Mat : materials[2][0], A: section1.A, I:[section1.Iyy,section1.Izz], j:section1.Ixx});
+          generalSectionList.push({ NAME: elem, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx });
       });
-      
+
+      generalSectionList.push({ NAME: "rigid", Mat: materials[2][0], A: 1000000000, I: [10000000000, 10000000000], J: 10000000000 });
+
+      for (let i in supportNode) {
+          let elem = {
+              iNode: nodeNumDict[supportNode[i].basePointName],
+              jNode: nodeNumDict[supportNode[i].key],
+              sectionName: "rigid", // node_group.Key & added_index,
+              endOffset: false,
+              number: elemNum,
+          };
+          allElement.push(elem);
+          elemNum++;
+      }
+
       // deck, stringer  추후 작성
       // sectionDB운용방안 마련
       //    const materials = {
@@ -5789,9 +5856,9 @@
       //     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
       // }
 
-      
+
       let frame = { command: "FRAME", data: allElement };
-      let section = { command: "FRAME SECTION", data: {generalSectionList, taperedSectionList} };
+      let section = { command: "FRAME SECTION", data: { generalSectionList, taperedSectionList } };
       return { sectionPropDict, input: { frame, section, material, selfWeight } }
   }
 
@@ -5825,6 +5892,7 @@
       this.addInput("girderStation", "girderStation");
       this.addInput("sectionPointDict", "sectionPointDict");
       this.addInput("xbeamData", "xbeamData");
+      this.addInput("supportData", "supportData");
       this.addInput("nodeNumDict", "nodeNumDict");
       this.addInput("materials", "arr");
       this.addInput("sectionDB", "sectionDB");
@@ -5833,7 +5901,7 @@
   }
 
   SapFrame.prototype.onExecute = function () {
-      const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4),this.getInputData(5));
+      const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4),this.getInputData(5),this.getInputData(6));
       this.setOutputData(0, result.sectionPropDict);
       this.setOutputData(1, result.input);
   };
