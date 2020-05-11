@@ -49,17 +49,26 @@ export function AnalysisModel(node,frame){
              jvec)
         group.add(new THREE.Line(geo,aquaLine));
     }
-
+    let arrow = 200;
     for (let i in node.boundary.data){
         // let arrow = new THREE.Group();
         let nodeNum = node.boundary.data[i].nodeNum-1
         let vec = geometry.vertices[nodeNum]
-        // let ang = node.local.data.find()
+        let localData = node.local.data.find(function(elem){return elem.nodeNum === node.boundary.data[i].nodeNum})
+        console.log("local", localData, nodeNum)
         let geo = new THREE.Geometry();
         if (node.boundary.data[i].DOF[0]===false){
             geo.vertices.push( 
                 new THREE.Vector3( -1000,  0, 0 ), 
                 new THREE.Vector3( 1000,  0, 0 ), 
+                new THREE.Vector3( -1000,  0, 0 ), 
+                new THREE.Vector3( -1000 + arrow, arrow, 0 ), 
+                new THREE.Vector3( -1000,  0, 0 ), 
+                new THREE.Vector3( -1000 + arrow, -arrow, 0 ), 
+                new THREE.Vector3( 1000,  0, 0 ), 
+                new THREE.Vector3( 1000 - arrow, arrow, 0 ), 
+                new THREE.Vector3( 1000,  0, 0 ), 
+                new THREE.Vector3( 1000 - arrow, -arrow, 0 ), 
                 )
         }
         if (node.boundary.data[i].DOF[1]===false){
@@ -68,6 +77,7 @@ export function AnalysisModel(node,frame){
                 new THREE.Vector3( 0,  1000, 0 ), 
                 )
         }
+        geo.rotateZ(localData.ANG * Math.PI/180)
         geo.translate(vec.x, vec.y, vec.z)
         group.add(new THREE.LineSegments(geo,yellowLine));
 
