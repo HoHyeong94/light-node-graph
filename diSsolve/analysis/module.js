@@ -458,6 +458,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
                     }
 
                 }
+                tempSection = section2;
                 // sectionNameDict[sectionName] = [sectionPropDict[inode].forward, sectionPropDict[jnode].backward]
                 let elem = {
                     iNode: nodeNumDict[inode],
