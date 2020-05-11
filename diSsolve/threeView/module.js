@@ -91,8 +91,9 @@ export function AnalysisModel(node,frame){
             group.add(new THREE.Mesh(circle, circleMaterial));
         }
 
-        let text = new SpriteText("test1")
+        let text = new SpriteText("test1",200);
         text.translate(vec.x, vec.y, vec.z)
+        text.layers.set(layer);
         group.add(text)
         geo.rotateZ(localData.ANG * Math.PI/180)
         geo.translate(vec.x, vec.y, vec.z)
