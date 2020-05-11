@@ -563,19 +563,21 @@ function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, ind
     return meshes
 }
 
-function roundedRect(x, y, width, height, radius, lineMaterial) {
+function roundedRect(x, y, rot, width, height, radius, lineMaterial ) {
     let shape = new THREE.Shape()
-    shape.moveTo(x, y + radius);
-    shape.lineTo(x, y + height - radius);
-    shape.quadraticCurveTo(x, y + height, x + radius, y + height);
-    shape.lineTo(x + width - radius, y + height);
-    shape.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
-    shape.lineTo(x + width, y + radius);
-    shape.quadraticCurveTo(x + width, y, x + width - radius, y);
-    shape.lineTo(x + radius, y);
-    shape.quadraticCurveTo(x, y, x, y + radius);
+    shape.moveTo(0, 0 + radius);
+    shape.lineTo(0, 0 + height - radius);
+    shape.quadraticCurveTo(0, 0 + height, 0 + radius, 0 + height);
+    shape.lineTo(0 + width - radius, 0 + height);
+    shape.quadraticCurveTo(0 + width, 0 + height, 0 + width, 0 + height - radius);
+    shape.lineTo(0 + width, 0 + radius);
+    shape.quadraticCurveTo(0 + width, 0, 0 + width - radius, 0);
+    shape.lineTo(0 + radius, 0);
+    shape.quadraticCurveTo(0, 0, 0, 0 + radius);
     let points = shape.getPoints();
     let geometry = new THREE.BufferGeometry().setFromPoints(points)
+    geometry.rotateZ(rot)
+    geometry.translate(x, y, 0)
     console.log("geo", geometry)
     return new THREE.Line(geometry, lineMaterial)
 }
@@ -589,14 +591,12 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
     let labels = [];
     for (let station in pointDict) {
         if (station.substr(2, 1) !== "K" && !station.includes("CR")) { //station.substr(0,2)==="G1" && 
-            let x = (pointDict[station].x + pointDict[station].normalCos * Yoffset + pointDict[station].normalSin * Yoffset - initPoint.x) * sc
-            let y = (pointDict[station].y + pointDict[station].normalCos * Yoffset - pointDict[station].normalSin * Yoffset - initPoint.y) * sc
+            let x = (pointDict[station].x - pointDict[station].normalCos * Yoffset - initPoint.x) * sc
+            let y = (pointDict[station].y - pointDict[station].normalSin * Yoffset - initPoint.y) * sc
             let position = [Math.cos(r) * x - Math.sin(r) * y, Math.cos(r) * y + Math.sin(r) * x]
-            let mesh = roundedRect(position[0] - 200 * sc, position[1] - 100 * sc, 400 * sc, 200 * sc, 100 * sc, lineMaterial)
             let rot = Math.atan2(pointDict[station].normalCos, - pointDict[station].normalSin) + r
-            mesh.rotateZ(rot)
+            let mesh = roundedRect(position[0] - 200 * sc, position[1] - 100 * sc, rot, 400 * sc, 200 * sc, 100 * sc, lineMaterial)
             meshes.push(mesh)
-
             labels.push({
                 text: station,
                 anchor: [position[0], position[1], 0],
