@@ -579,16 +579,19 @@ function roundedRect(x, y, rot, width, height, radius, lineMaterial ) {
     geometry.rotateZ(rot)
     geometry.translate(x, y, 0)
     console.log("geo", geometry)
-    return new THREE.Line(geometry, lineMaterial)
+    return new THREE.Line(geometry, lineMafterial)
 }
 
 
 function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
 
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
+    let geo = new THREE.Geometry();
     let fontSize = 80 * sc;
     let meshes = [];
     let labels = [];
+
     for (let station in pointDict) {
         if (station.substr(2, 1) !== "K" && !station.includes("CR")) { //station.substr(0,2)==="G1" && 
             let x = (pointDict[station].x - pointDict[station].normalCos * Yoffset - initPoint.x) * sc
@@ -603,8 +606,15 @@ function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
                 rotation: rot,
                 fontSize: fontSize
             })
+            geo.vertices.push(
+                new THREE.Vector3(x,y,0),
+                new THREE.Vector3(x + 2 * pointDict[station].normalCos * Yoffset,y + 2 * pointDict[station].normalSin * Yoffset,0))
         }
     }
+    let segLine = new THREE.LineSegments(geo,redDotLine)
+    segLine.computeLineDistances();
+    segLine.rotateZ(rot)
+    meshes.push(segLine)
     return { meshes, labels }
 }
 
