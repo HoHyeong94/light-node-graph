@@ -7,6 +7,7 @@ export function AnalysisModel(node,frame){
     let initPoint = node.node.data[0].coord
     let greenLine = new THREE.LineBasicMaterial({ color: 0x00ff00 })
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
+    let yellowLine = new THREE.LineBasicMaterial({ color: 0xffff00 })
     let elemDict = {};
     for (let i in node.node.data){
         geometry.vertices.push(new THREE.Vector3(
@@ -46,6 +47,23 @@ export function AnalysisModel(node,frame){
             new THREE.Vector3( jvec.x,  jvec.y, jvec.z + jzload ), 
              jvec)
         group.add(new THREE.Line(geo,aquaLine));
+    }
+
+    for (let i in node.boundary.data){
+        let nodeNum = node.boundary.data[i].nodeNum-1
+        let vec = geometry.vertices[nodeNum]
+        if (node.boundary.data[i].DOF[0]===false){
+            let geo = new THREE.Geometry();
+            geo.vertices.push( 
+                new THREE.Vector3( -1000,  0, 0 ), 
+                new THREE.Vector3( 1000,  0, 0 ), 
+                )
+                geo.translate(vec)
+            group.add(new THREE.Line(geo,yellowLine));
+        }
+        if (node.boundary.data[i].DOF[1]===false){
+
+        }
     }
 
     return group
