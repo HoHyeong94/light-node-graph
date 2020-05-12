@@ -421,6 +421,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
                 if (SectionCompare(tempSection, section1)) {
                     if (SectionCompare(section1, section2)) {
                         sectionName = tempSection.name
+                        section2["name"] = sectionName
                     }
                     else {
                         sectionName = "t" + tsectionNum
