@@ -426,6 +426,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
                         sectionName = "t" + tsectionNum
                         tsectionNum++
                         generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section2.A, I: [section2.Iyy, section2.Izz], J: section2.Ixx })
+                        section2["name"] = sectionNum
                         taperedSectionList.push({
                             Name: sectionName,
                             type: "Nonpr",
@@ -440,6 +441,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
                     if (SectionCompare(section1, section2)) {
                         sectionName = sectionNum
                         generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx })
+                        section2["name"] = sectionNum
                         sectionNum++
                     } else {
                         sectionName = "t" + tsectionNum
@@ -454,6 +456,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
                             Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
                             Vl: 1
                         })
+                        section2["name"] = sectionNum
                         sectionNum++
                     }
 
