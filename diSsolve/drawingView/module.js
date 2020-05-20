@@ -5,7 +5,7 @@ import { PointGenerator } from "../line/module"
 // import {PointLength, hBracingPlate} from './geometryFunc'
 import { ToGlobalPoint, ToGlobalPoint2 } from '../geometryModule'
 
-export function GirderLayoutView(girderLayout) {
+export function GirderLayoutView(girderLayout) { //종단/평면선형에서의 거더 배치 뷰
     let scale = 0.01; // scale 은 추후 외부에서 받아오는 변수로 지정할 계획임
     let group = new THREE.Group();
     let skewLength = 5000;
@@ -36,16 +36,16 @@ export function GirderLayoutView(girderLayout) {
 
         let rot = Math.atan2(pt.normalSin, pt.normalCos)
         if (rot >= Math.PI / 2) { rot = rot - Math.PI }
-        sign = sign === 1? -1 : 1;
+        sign = sign === 1 ? -1 : 1;
         let cos = Math.cos(rot)
         let sin = Math.sin(rot)
         let dimLine = [{ x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale },
         { x: (pt.x - initPoint.x) * scale + sign * cos * fontSize * 2 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sign * sin * fontSize * 2 + cos * fontSize * 2 },
-        { x: (pt.x - initPoint.x) * scale + sign * cos * fontSize * 8 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sign * sin * fontSize * 8 + cos * fontSize * 2 }        ];
+        { x: (pt.x - initPoint.x) * scale + sign * cos * fontSize * 8 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sign * sin * fontSize * 8 + cos * fontSize * 2 }];
         let station = pt.masterStationNumber;
         label.push({
             text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
-            anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 2.25,(pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 2.25, 0],
+            anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 2.25, (pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 2.25, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
@@ -53,7 +53,7 @@ export function GirderLayoutView(girderLayout) {
 
         label.push({
             text: "x:" + (pt.x / 1000).toFixed(4) + ", y:" + (pt.y / 1000).toFixed(4),
-            anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 1.75,(pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 1.75, 0],
+            anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 1.75, (pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 1.75, 0],
             rotation: rot,
             align: "center",
             fontSize: fontSize / 4
@@ -89,23 +89,23 @@ export function GirderLayoutView(girderLayout) {
         let pt = girderLayout.gridKeyPoint[key]
         let pt1 = {
             x: (pt.masterStationNumber - initPoint.x) * xscale,
-            y: (pt.z - initPoint.y) * yscale + fontSize/4
+            y: (pt.z - initPoint.y) * yscale + fontSize / 4
         }
         let pt2 = {
             x: (pt.masterStationNumber - initPoint.x) * xscale,
-            y: (pt.z - initPoint.y) * yscale - fontSize/4
+            y: (pt.z - initPoint.y) * yscale - fontSize / 4
         }
-        group2.add(LineMesh([pt1,pt2], aquaLine))
+        group2.add(LineMesh([pt1, pt2], aquaLine))
         topLine.push(pt1);
         botLine.push(pt2);
     }
     group2.add(LineMesh(topLine, aquaLine))
     group2.add(LineMesh(botLine, aquaLine))
 
-    return {plan:group, side:group2}
+    return { plan: group, side: group2 }
 }
 
-export function LineSideView(masterLine) {
+export function LineSideView(masterLine) {  //종단선형뷰
     let xscale = 0.003;
     let yscale = 0.02;
     let fontSize = 80;
@@ -252,8 +252,8 @@ export function LineSideView(masterLine) {
 
     return group
 }
-// 평면선형 그리기 //
-export function LineDrawView(masterLine, slaveLines) {
+
+export function LineDrawView(masterLine, slaveLines) {  //평면선형 그리기
     let scale = 0.01;
     let group = new THREE.Group();
     let meshes = [];
@@ -343,8 +343,6 @@ export function LineDrawView(masterLine, slaveLines) {
     return group
 }
 
-
-
 function LabelInsert(label, textMaterial, layer) {
     let group = new THREE.Group()
     var loader = new THREE.FontLoader();
@@ -377,10 +375,8 @@ function LabelInsert(label, textMaterial, layer) {
     return group// text.position.z = 0;
 }
 
-
-
-function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc, initPoint, r, lineMaterial) {
-    // console.log(partDict)
+function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc, initPoint, r, lineMaterial) { //횡단면도 그리기
+    // console.log(partDict)    
     // let result = {models:{},layer:color };
     let meshes = [];
 
@@ -426,8 +422,8 @@ function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc,
     return meshes
 }
 
-function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) {
-    // let result = {models:{},layer:lineMaterial };
+function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //측면도 그리기
+    // let result = {models:{},layer:lineMaterial }; 
     // let index = 1;
     let meshes = [];
     for (let part in steelBoxDict) {
@@ -491,7 +487,7 @@ function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, ind
     return meshes
 }
 
-function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) {
+function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //강박스 일반도 그리기
     // let result = {models:{},layer:color };
     // let index = 1;
     let meshes = [];
@@ -563,17 +559,17 @@ function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, ind
     return meshes
 }
 
-function roundedRect(x, y, rot, width, height, radius, lineMaterial ) {
+function roundedRect(x, y, rot, width, height, radius, lineMaterial) { //마크 테두리
     let shape = new THREE.Shape()
-    shape.moveTo( -width/2, -height/2 + radius);
-    shape.lineTo( -width/2, height/2 - radius);
-    shape.quadraticCurveTo(-width/2, height/2, -width/2 + radius, height/2);
-    shape.lineTo( width/2 - radius, height/2);
-    shape.quadraticCurveTo(width/2, height/2, width/2, height/2 - radius);
-    shape.lineTo( width/2, -height/2 + radius);
-    shape.quadraticCurveTo( width/2, -height/2, width/2 - radius, -height/2);
-    shape.lineTo( -width/2 + radius, -height/2);
-    shape.quadraticCurveTo(-width/2, -height/2, -width/2, -height/2 + radius);
+    shape.moveTo(-width / 2, -height / 2 + radius);
+    shape.lineTo(-width / 2, height / 2 - radius);
+    shape.quadraticCurveTo(-width / 2, height / 2, -width / 2 + radius, height / 2);
+    shape.lineTo(width / 2 - radius, height / 2);
+    shape.quadraticCurveTo(width / 2, height / 2, width / 2, height / 2 - radius);
+    shape.lineTo(width / 2, -height / 2 + radius);
+    shape.quadraticCurveTo(width / 2, -height / 2, width / 2 - radius, -height / 2);
+    shape.lineTo(-width / 2 + radius, -height / 2);
+    shape.quadraticCurveTo(-width / 2, -height / 2, -width / 2, -height / 2 + radius);
     let points = shape.getPoints();
     let geometry = new THREE.BufferGeometry().setFromPoints(points)
     geometry.rotateZ(rot)
@@ -583,47 +579,53 @@ function roundedRect(x, y, rot, width, height, radius, lineMaterial ) {
 }
 
 
-function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
+function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
     let geo = new THREE.Geometry();
-    let fontSize = 80 * sc;
+    let fontSize = 80 * scale;
     let meshes = [];
     let labels = [];
     let rot = 0;
 
-    for (let station in pointDict) {
-        if (station.substr(2, 1) !== "K" && !station.includes("CR")) { //station.substr(0,2)==="G1" && 
-            let cos = pointDict[station].normalCos
-            let sin = pointDict[station].normalSin
-            let x = (pointDict[station].x - cos * Yoffset - initPoint.x) * sc
-            let y = (pointDict[station].y - sin * Yoffset - initPoint.y) * sc
-            let position = [Math.cos(r) * x - Math.sin(r) * y, Math.cos(r) * y + Math.sin(r) * x]
-            rot = Math.atan2(cos, - sin) + r
-            let mesh = roundedRect(position[0], position[1], rot, 400 * sc, 200 * sc, 100 * sc, lineMaterial)
-            meshes.push(mesh)
-            labels.push({
-                text: station,
-                anchor: [position[0], position[1], 0],
-                rotation: rot,
-                fontSize: fontSize
-            })
-            geo.vertices.push(
-                new THREE.Vector3(x + cos * 100 * sc ,y + sin * 100 * sc,0),
-                new THREE.Vector3(x + cos * (2 * Yoffset - 100) * sc,
-                                  y  + sin * (2 * Yoffset - 100) * sc,0))
+    for (let i = 0; i < girderStation.length; i++) {
+        let girderLine = [];
+        for (let j = 0; j < girderStation[i].length; j++) {
+            let gridObj = girderStation[i][j]
+            girderLine.push({x : (gridObj.point.x - initPoint.x) * scale,y:(gridObj.point.y - initPoint.y) * scale})
+            if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
+                let cos = gridObj.point.normalCos
+                let sin = gridObj.point.normalSin
+                let x = (gridObj.point.x - cos * Yoffset - initPoint.x) * scale
+                let y = (gridObj.point.y - sin * Yoffset - initPoint.y) * scale
+                let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x]
+                rot = Math.atan2(cos, - sin) + rotate
+                let mesh = roundedRect(position[0], position[1], rot, 400 * scale, 200 * scale, 100 * scale, lineMaterial)
+                meshes.push(mesh)
+                labels.push({
+                    text: gridObj,
+                    anchor: [position[0], position[1], 0],
+                    rotation: rot,
+                    fontSize: fontSize
+                })
+                geo.vertices.push(
+                    new THREE.Vector3(x + cos * 100 * scale, y + sin * 100 * scale, 0),
+                    new THREE.Vector3(x + cos * (2 * Yoffset - 100) * scale,
+                        y + sin * (2 * Yoffset - 100) * scale, 0))
+            }
         }
+        meshes.push(LineMesh(girderLine,redDotLine,0))
     }
-    let segLine = new THREE.LineSegments(geo,redDotLine)
+    let segLine = new THREE.LineSegments(geo, redDotLine)
     segLine.computeLineDistances();
-    segLine.rotateZ(r)
+    segLine.rotateZ(rotate)
     meshes.push(segLine)
     return { meshes, labels }
 }
 
 // r is rotation angle to radian
-export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint) {
+export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint, girderStation) {
     let group = new THREE.Group();
 
     const hBracingDict = hBracing.hBracingDict
@@ -645,7 +647,7 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, 
     vStiffner.forEach(function (mesh) { group.add(mesh) });
     let bracing = GeneralPlanView(hBracingDict, [""], 4, 0, 1, sc, initPoint, r, green);
     bracing.forEach(function (mesh) { group.add(mesh) });
-    let gridMark = GridMarkView(gridPoint, sc, initPoint, r, 1400)
+    let gridMark = GridMarkView(girderStation, sc, initPoint, r, 1400)
     gridMark.meshes.forEach(function (mesh) { group.add(mesh) });
     let label = gridMark.labels
 
@@ -753,7 +755,7 @@ function sectionMesh(point0, lineMaterial) {
     return new THREE.LineLoop(geometry, lineMaterial)
 }
 
-export function sectionView(sectionName, sectionPoint, diaPoint) {
+export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면도
     // var makerjs = require('makerjs');
     let sc = 1;
     // let sections = {models:{ }};

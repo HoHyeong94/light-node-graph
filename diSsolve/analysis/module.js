@@ -38,37 +38,37 @@ const materials = {
     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
-
-    // [
-    //     [
-    //         "slabConc",
-    //         28825.3,
-    //         12318.5,
-    //         0.17,
-    //         25
-    //     ],
-    //     [
-    //         "lowerConc",
-    //         31209.5,
-    //         13337.4,
-    //         0.17,
-    //         25
-    //     ],
-    //     [
-    //         "steelBox",
-    //         210000,
-    //         81000,
-    //         0.3,
-    //         78.5
-    //     ],
-    //     [
-    //         "rebar",
-    //         200000,
-    //         80000,
-    //         0.3,
-    //         78.5
-    //     ]
-    // ]
+    input : 
+    [
+        [
+            "slabConc",
+            28825.3,
+            12318.5,
+            0.17,
+            25
+        ],
+        [
+            "lowerConc",
+            31209.5,
+            13337.4,
+            0.17,
+            25
+        ],
+        [
+            "steelBox",
+            210000,
+            81000,
+            0.3,
+            78.5
+        ],
+        [
+            "rebar",
+            200000,
+            80000,
+            0.3,
+            78.5
+        ]
+    ]
 }
 const xbeamInput = {
     tfw: 0,
@@ -404,7 +404,7 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
     }
 
     let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData)
-    let selfWeight = { command: "LOAD", type: "Distributed Span", Name: "SteelBox", data: [] }
+    let selfWeight = { command: "LOAD", type: "Distributed Span", Name: "StBox", data: [] }
     let sectionNum = 1;
     let tsectionNum = 1;
     let generalSectionList = [];
