@@ -641,10 +641,12 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
                     dummy1 = gridObj.point
                 } else {
                     let dimProp = splineProp(dummy1,gridObj.point)
-                    let x = (dimProp.midPoint.x - initPoint.x) * scale;
-                    let y = (dimProp.midPoint.y - initPoint.y) * scale;
+                    let cos = dimProp.midPoint.sin  //normalCos로 변환
+                    let sin = - dimProp.midPoint.cos ////normalSin로 변환 
+                    let x = (dimProp.midPoint.x + cos * Yoffset * (1.25) -  initPoint.x) * scale;
+                    let y = (dimProp.midPoint.y + sin * Yoffset * (1.25)- initPoint.y) * scale;
                     let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
-                    rot = Math.atan2(dimProp.midPoint.sin, dimProp.midPoint.cos) + rotate;
+                    rot = Math.atan2(cos, - sin) + rotate;
                     labels.push({
                         text: dimProp.length.toFixed(0),
                         anchor: [position[0], position[1], 0],
