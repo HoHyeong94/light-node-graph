@@ -595,6 +595,8 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
     let w2 = 1.2
     let w3 = -1.2
     let dummy1 = {};
+    let dummy2 = {};
+    let dummy3 = {};
 
     for (let i = 0; i < girderStation.length; i++) {
         let girderLine = [];
@@ -630,21 +632,21 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
             if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) { //상부플렌지 이음
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
-                    new THREE.Vector3(Math.cos(rotate) * x2 - Math.sin(rotate) * y2,Math.cos(rotate) * y2 + Math.sin(rotate) * x2, 0));
+                    new THREE.Vector3(Math.cos(rotate) * x2 - Math.sin(rotate) * y2, Math.cos(rotate) * y2 + Math.sin(rotate) * x2, 0));
             }
-            if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S" 
+            if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S"
                 && gridObj.key.substr(3, 1) !== "P") {  // 그리드 기호에 대해서 한번 대대적인 수정이 필요할 것으로 판단됨
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
                     new THREE.Vector3(Math.cos(rotate) * x3 - Math.sin(rotate) * y3, Math.cos(rotate) * y3 + Math.sin(rotate) * x3, 0));
-                if (j === 0 ){
+                if (j === 0) {
                     dummy1 = gridObj.point
                 } else {
-                    let dimProp = splineProp(dummy1,gridObj.point)
+                    let dimProp = splineProp(dummy1, gridObj.point)
                     let cos = dimProp.midPoint.sin  //normalCos로 변환
                     let sin = - dimProp.midPoint.cos ////normalSin로 변환 
-                    let x = (dimProp.midPoint.x + cos * Yoffset * (1.25) -  initPoint.x) * scale;
-                    let y = (dimProp.midPoint.y + sin * Yoffset * (1.25)- initPoint.y) * scale;
+                    let x = (dimProp.midPoint.x + cos * Yoffset * (1.25) - initPoint.x) * scale;
+                    let y = (dimProp.midPoint.y + sin * Yoffset * (1.25) - initPoint.y) * scale;
                     let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
                     rot = Math.atan2(cos, - sin) + rotate;
                     labels.push({
@@ -656,15 +658,51 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
                     dummy1 = gridObj.point
                 }
             }
-            if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP")|| gridObj.key.includes("BF")) {  //하부플렌지 이음
+            if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("BF")) {  //하부플렌지 이음
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
                     new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0));
+                    if (j === 0) {
+                        dummy2 = gridObj.point
+                    } else {
+                        let dimProp = splineProp(dummy2, gridObj.point)
+                        let cos = dimProp.midPoint.sin  //normalCos로 변환
+                        let sin = - dimProp.midPoint.cos ////normalSin로 변환 
+                        let x = (dimProp.midPoint.x + cos * Yoffset * (1.35) - initPoint.x) * scale;
+                        let y = (dimProp.midPoint.y + sin * Yoffset * (1.35) - initPoint.y) * scale;
+                        let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
+                        rot = Math.atan2(cos, - sin) + rotate;
+                        labels.push({
+                            text: dimProp.length.toFixed(0),
+                            anchor: [position[0], position[1], 0],
+                            rotation: rot,
+                            fontSize: fontSize
+                        });
+                        dummy2 = gridObj.point
+                    }
             }
-            if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP")|| gridObj.key.includes("W")) {   //웹플렌지 이음
+            if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("W")) {   //웹플렌지 이음
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
                     new THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
+                    if (j === 0) {
+                        dummy3 = gridObj.point
+                    } else {
+                        let dimProp = splineProp(dummy3, gridObj.point)
+                        let cos = dimProp.midPoint.sin  //normalCos로 변환
+                        let sin = - dimProp.midPoint.cos ////normalSin로 변환 
+                        let x = (dimProp.midPoint.x + cos * Yoffset * (1.45) - initPoint.x) * scale;
+                        let y = (dimProp.midPoint.y + sin * Yoffset * (1.45) - initPoint.y) * scale;
+                        let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
+                        rot = Math.atan2(cos, - sin) + rotate;
+                        labels.push({
+                            text: dimProp.length.toFixed(0),
+                            anchor: [position[0], position[1], 0],
+                            rotation: rot,
+                            fontSize: fontSize
+                        });
+                        dummy3 = gridObj.point
+                    }
             }
 
 
