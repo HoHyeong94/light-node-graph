@@ -591,6 +591,8 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
     let labels = [];
     let rot = 0;
     let w = [1.5, 1.4, 1.3, -1.3, -1.4, -1.5];
+    let w2 = 1.2
+    let w3 = -1.2
 
     for (let i = 0; i < girderStation.length; i++) {
         let girderLine = [];
@@ -608,6 +610,11 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
                 let y1 = y0 - sin * Yoffset * w[k] * scale;
                 dimLine[k].push({ x: Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 })
             }
+            let x2 = x0 - cos * Yoffset * w2 * scale;
+            let y2 = y0 - sin * Yoffset * w2 * scale;
+            let x3 = x0 - cos * Yoffset * w3 * scale;
+            let y3 = y0 - sin * Yoffset * w3 * scale;
+
             if (j === 0 || j === girderStation[i].length - 1) {
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
@@ -621,8 +628,9 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
             if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) {
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
-                    new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0));
+                    new THREE.Vector3(Math.cos(rotate) * x2 - Math.sin(rotate) * y2,Math.cos(rotate) * y2 + Math.sin(rotate) * x2, 0));
             }
+            
 
 
             if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
