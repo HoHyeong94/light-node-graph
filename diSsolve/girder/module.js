@@ -263,6 +263,22 @@ export const splineCoefficient = (point1, point2) => {
   return { a1: a1, b1: b1, c1: c1, a2: a2, b2: b2, c2: c2 }
 }
 
+export function splineProp(point1, point2){
+  const coe = splineCoefficient(point1, point2)
+  const w1 = 5 / 9
+  const w2 = 8 / 9
+  const w3 = w1
+  const t1 = -0.77459666924
+  const t2 = 0
+  const t3 = 0.77459666924
+  let length = Math.sqrt(Math.pow((2 * coe.a1 * t1 + coe.b1), 2) + Math.pow((2 * coe.a2 * t1 + coe.b2), 2)) * w1
+    + Math.sqrt(Math.pow((2 * coe.a1 * t2 + coe.b1), 2) + Math.pow((2 * coe.a2 * t2 + coe.b2), 2)) * w2
+    + Math.sqrt(Math.pow((2 * coe.a1 * t3 + coe.b1), 2) + Math.pow((2 * coe.a2 * t3 + coe.b2), 2)) * w3;
+  let l = Math.sqrt(coe.b2**2 + coe.b1**2)
+  let midPoint = {x : coe.c2, y : coe.c1, cos : coe.b2/l, sin : coe.b1/l}
+  return { length : length.toFixed(4) * 1, midPoint }
+}
+
 export function GridStationList(pointDict){
   let gs = [];
   let cs = [];
