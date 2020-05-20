@@ -644,7 +644,7 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
                     let x = (dimProp.midPoint.x - initPoint.x) * scale;
                     let y = (dimProp.midPoint.y - initPoint.y) * scale;
                     let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
-                    rot = Math.atan2(midPoint.sin, midPoint.cos) + rotate;
+                    rot = Math.atan2(dimProp.midPoint.sin, dimProp.midPoint.cos) + rotate;
                     labels.push({
                         text: dimProp.length,
                         anchor: [position[0], position[1], 0],
