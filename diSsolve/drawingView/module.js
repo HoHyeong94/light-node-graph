@@ -643,10 +643,17 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
                     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
                     new THREE.Vector3(Math.cos(rotate) * x3 - Math.sin(rotate) * y3, Math.cos(rotate) * y3 + Math.sin(rotate) * x3, 0));
                 if (j === 0) {
+                    rot = Math.atan2(cos, - sin) + rotate;
                     dummy1 = gridObj.point
                     dimgeo.vertices.push(
                         new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
-                        new THREE.Vector3(dimLine[3][j].x + Math.cos(rotate) * x31 - Math.sin(rotate) * y31,dimLine[3][j].y + Math.cos(rotate) * y31 + Math.sin(rotate) * x31, 0));
+                        new THREE.Vector3(dimLine[3][j].x + Math.cos(rotate) * x31 - Math.sin(rotate) * y31, dimLine[3][j].y + Math.cos(rotate) * y31 + Math.sin(rotate) * x31, 0));
+                    labels.push({
+                        text: "수직보강재/다이아프램",
+                        anchor: [dimLine[3][j].x + Math.cos(rotate) * x31/2 - Math.sin(rotate) * y31/2, dimLine[3][j].y + Math.cos(rotate) * y31/2 + Math.sin(rotate) * x31/2, 0],
+                        rotation: rot,
+                        fontSize: fontSize
+                    });
                 } else {
                     let dimProp = splineProp(dummy1, gridObj.point)
                     let cos = dimProp.midPoint.sin  //normalCos로 변환
@@ -668,47 +675,47 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
                     new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0));
-                    if (j === 0) {
-                        dummy2 = gridObj.point
-                    } else {
-                        let dimProp = splineProp(dummy2, gridObj.point)
-                        let cos = dimProp.midPoint.sin  //normalCos로 변환
-                        let sin = - dimProp.midPoint.cos ////normalSin로 변환 
-                        let x = (dimProp.midPoint.x + cos * Yoffset * (1.35) - initPoint.x) * scale;
-                        let y = (dimProp.midPoint.y + sin * Yoffset * (1.35) - initPoint.y) * scale;
-                        let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
-                        rot = Math.atan2(cos, - sin) + rotate;
-                        labels.push({
-                            text: dimProp.length.toFixed(0),
-                            anchor: [position[0], position[1], 0],
-                            rotation: rot,
-                            fontSize: fontSize
-                        });
-                        dummy2 = gridObj.point
-                    }
+                if (j === 0) {
+                    dummy2 = gridObj.point
+                } else {
+                    let dimProp = splineProp(dummy2, gridObj.point)
+                    let cos = dimProp.midPoint.sin  //normalCos로 변환
+                    let sin = - dimProp.midPoint.cos ////normalSin로 변환 
+                    let x = (dimProp.midPoint.x + cos * Yoffset * (1.35) - initPoint.x) * scale;
+                    let y = (dimProp.midPoint.y + sin * Yoffset * (1.35) - initPoint.y) * scale;
+                    let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
+                    rot = Math.atan2(cos, - sin) + rotate;
+                    labels.push({
+                        text: dimProp.length.toFixed(0),
+                        anchor: [position[0], position[1], 0],
+                        rotation: rot,
+                        fontSize: fontSize
+                    });
+                    dummy2 = gridObj.point
+                }
             }
             if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("W")) {   //웹플렌지 이음
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
                     new THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
-                    if (j === 0) {
-                        dummy3 = gridObj.point
-                    } else {
-                        let dimProp = splineProp(dummy3, gridObj.point)
-                        let cos = dimProp.midPoint.sin  //normalCos로 변환
-                        let sin = - dimProp.midPoint.cos ////normalSin로 변환 
-                        let x = (dimProp.midPoint.x + cos * Yoffset * (1.45) - initPoint.x) * scale;
-                        let y = (dimProp.midPoint.y + sin * Yoffset * (1.45) - initPoint.y) * scale;
-                        let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
-                        rot = Math.atan2(cos, - sin) + rotate;
-                        labels.push({
-                            text: dimProp.length.toFixed(0),
-                            anchor: [position[0], position[1], 0],
-                            rotation: rot,
-                            fontSize: fontSize
-                        });
-                        dummy3 = gridObj.point
-                    }
+                if (j === 0) {
+                    dummy3 = gridObj.point
+                } else {
+                    let dimProp = splineProp(dummy3, gridObj.point)
+                    let cos = dimProp.midPoint.sin  //normalCos로 변환
+                    let sin = - dimProp.midPoint.cos ////normalSin로 변환 
+                    let x = (dimProp.midPoint.x + cos * Yoffset * (1.45) - initPoint.x) * scale;
+                    let y = (dimProp.midPoint.y + sin * Yoffset * (1.45) - initPoint.y) * scale;
+                    let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
+                    rot = Math.atan2(cos, - sin) + rotate;
+                    labels.push({
+                        text: dimProp.length.toFixed(0),
+                        anchor: [position[0], position[1], 0],
+                        rotation: rot,
+                        fontSize: fontSize
+                    });
+                    dummy3 = gridObj.point
+                }
             }
 
 
