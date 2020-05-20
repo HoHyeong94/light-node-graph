@@ -608,10 +608,24 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
                 let y1 = y0 - sin * Yoffset * w[k] * scale;
                 dimLine[k].push({x:Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 })
             }
-
-            dimgeo.vertices.push(
+            if ( j===0 || j === girderStation[i].length -1){
+                dimgeo.vertices.push(
                 new THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
                 new THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
+            }
+            if ( j===0 || j === girderStation[i].length -1 || gridObj.key.includes("SP")){
+                dimgeo.vertices.push(
+                    new THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0),
+                    new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
+                }
+            }
+            if ( j===0 || j === girderStation[i].length -1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")){
+                dimgeo.vertices.push(
+                    new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
+                    new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0));
+                }
+            }
+
 
             if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
                 let x = (gridObj.point.x - cos * Yoffset - initPoint.x) * scale;
