@@ -582,20 +582,29 @@ function roundedRect(x, y, rot, width, height, radius, lineMaterial) { //마크 
 function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
     let geo = new THREE.Geometry();
     let fontSize = 80 * scale;
     let meshes = [];
     let labels = [];
     let rot = 0;
+    let w = [1.5, 1.4, 1.3, -1.3, -1.4, -1.5];
 
     for (let i = 0; i < girderStation.length; i++) {
         let girderLine = [];
+        let dimLine = [[],[],[],[],[],[]];
+
         for (let j = 0; j < girderStation[i].length; j++) {
-            let gridObj = girderStation[i][j]
-            let x0 = (gridObj.point.x - initPoint.x) * scale
-            let y0 = (gridObj.point.y - initPoint.y) * scale
+            let gridObj = girderStation[i][j];
+            let x0 = (gridObj.point.x - initPoint.x) * scale;
+            let y0 = (gridObj.point.y - initPoint.y) * scale;
             girderLine.push({ x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 })
+            for (let k = 0; k<6; k++){
+                let x1 = x0 - cos * Yoffset * w[k] * scale; 
+                let y1 = y0 - sin * Yoffset * w[k] * scale;
+                dimLine[k].push({x:Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 })
+            }
             if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
                 let cos = gridObj.point.normalCos
                 let sin = gridObj.point.normalSin
@@ -618,6 +627,7 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
             }
         }
         meshes.push(LineMesh(girderLine, redDotLine, 0))
+        dimLine.forEach(function(dim){meshes.push(LineMesh(dim, redLine, 0))})
     }
     let segLine = new THREE.LineSegments(geo, redDotLine)
     segLine.computeLineDistances();
