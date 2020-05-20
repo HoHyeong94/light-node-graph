@@ -593,7 +593,9 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
         let girderLine = [];
         for (let j = 0; j < girderStation[i].length; j++) {
             let gridObj = girderStation[i][j]
-            girderLine.push({x : (gridObj.point.x - initPoint.x) * scale,y:(gridObj.point.y - initPoint.y) * scale})
+            let x0 = (gridObj.point.x - initPoint.x) * scale
+            let y0 = (gridObj.point.y - initPoint.y) * scale
+            girderLine.push({ x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 })
             if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
                 let cos = gridObj.point.normalCos
                 let sin = gridObj.point.normalSin
@@ -604,7 +606,7 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
                 let mesh = roundedRect(position[0], position[1], rot, 400 * scale, 200 * scale, 100 * scale, lineMaterial)
                 meshes.push(mesh)
                 labels.push({
-                    text: gridObj,
+                    text: gridObj.key,
                     anchor: [position[0], position[1], 0],
                     rotation: rot,
                     fontSize: fontSize
@@ -615,7 +617,7 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
                         y + sin * (2 * Yoffset - 100) * scale, 0))
             }
         }
-        meshes.push(LineMesh(girderLine,redDotLine,0))
+        meshes.push(LineMesh(girderLine, redDotLine, 0))
     }
     let segLine = new THREE.LineSegments(geo, redDotLine)
     segLine.computeLineDistances();
