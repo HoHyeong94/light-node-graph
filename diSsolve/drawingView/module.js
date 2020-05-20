@@ -618,8 +618,8 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
             let y2 = y0 - sin * Yoffset * w2 * scale;
             let x3 = x0 - cos * Yoffset * w3 * scale;
             let y3 = y0 - sin * Yoffset * w3 * scale;
-            let x31 = x3 + sin * 1000 * scale;  //치수선 라벨용
-            let y31 = y3 + cos * 1000 * scale;
+            let x31 = dimLine[3][0].x + sin * 1000 * scale;  //치수선 라벨용
+            let y31 = dimLine[3][0].y - cos * 1000 * scale;
 
 
             if (j === 0 || j === girderStation[i].length - 1) { //거더총길이
