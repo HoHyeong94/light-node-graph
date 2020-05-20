@@ -585,6 +585,7 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
     let geo = new THREE.Geometry();
+    let dimgeo = new THREE.Geometry();
     let fontSize = 80 * scale;
     let meshes = [];
     let labels = [];
@@ -607,32 +608,39 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
                 let y1 = y0 - sin * Yoffset * w[k] * scale;
                 dimLine[k].push({x:Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 })
             }
+
+            dimgeo.vertices.push(
+                new THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
+                new THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
+
             if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
-                let x = (gridObj.point.x - cos * Yoffset - initPoint.x) * scale
-                let y = (gridObj.point.y - sin * Yoffset - initPoint.y) * scale
-                let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x]
-                rot = Math.atan2(cos, - sin) + rotate
-                let mesh = roundedRect(position[0], position[1], rot, 400 * scale, 200 * scale, 100 * scale, lineMaterial)
-                meshes.push(mesh)
+                let x = (gridObj.point.x - cos * Yoffset - initPoint.x) * scale;
+                let y = (gridObj.point.y - sin * Yoffset - initPoint.y) * scale;
+                let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
+                rot = Math.atan2(cos, - sin) + rotate;
+                let mesh = roundedRect(position[0], position[1], rot, 400 * scale, 200 * scale, 100 * scale, lineMaterial);
+                meshes.push(mesh);
                 labels.push({
                     text: gridObj.key,
                     anchor: [position[0], position[1], 0],
                     rotation: rot,
                     fontSize: fontSize
-                })
+                });
                 geo.vertices.push(
                     new THREE.Vector3(x + cos * 100 * scale, y + sin * 100 * scale, 0),
                     new THREE.Vector3(x + cos * (2 * Yoffset - 100) * scale,
-                        y + sin * (2 * Yoffset - 100) * scale, 0))
+                        y + sin * (2 * Yoffset - 100) * scale, 0));
             }
         }
-        meshes.push(LineMesh(girderLine, redDotLine, 0))
-        dimLine.forEach(function(dim){meshes.push(LineMesh(dim, redLine, 0))})
+        meshes.push(LineMesh(girderLine, redDotLine, 0));
+        dimLine.forEach(function(dim){meshes.push(LineMesh(dim, redLine, 0))});
     }
-    let segLine = new THREE.LineSegments(geo, redDotLine)
+    let segLine = new THREE.LineSegments(geo, redDotLine);
+    let dimSegLine = new THREE.LineSegments(dimgeo, redLine);
     segLine.computeLineDistances();
-    segLine.rotateZ(rotate)
-    meshes.push(segLine)
+    segLine.rotateZ(rotate);
+    meshes.push(segLine);
+    meshes.push(dimSegLine);
     return { meshes, labels }
 }
 
