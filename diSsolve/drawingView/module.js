@@ -646,12 +646,12 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
                     let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
                     rot = Math.atan2(dimProp.midPoint.sin, dimProp.midPoint.cos) + rotate;
                     labels.push({
-                        text: dimProp.length,
+                        text: dimProp.length.toFixed(0),
                         anchor: [position[0], position[1], 0],
                         rotation: rot,
                         fontSize: fontSize
                     });
-
+                    dummy1 = gridObj.point
                 }
             }
             if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP")|| gridObj.key.includes("BF")) {  //하부플렌지 이음
