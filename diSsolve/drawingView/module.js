@@ -596,9 +596,9 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
         let dimLine = [[],[],[],[],[],[]];
 
         for (let j = 0; j < girderStation[i].length; j++) {
+            let gridObj = girderStation[i][j];
             let cos = gridObj.point.normalCos
             let sin = gridObj.point.normalSin
-            let gridObj = girderStation[i][j];
             let x0 = (gridObj.point.x - initPoint.x) * scale;
             let y0 = (gridObj.point.y - initPoint.y) * scale;
             girderLine.push({ x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 })
