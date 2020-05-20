@@ -618,6 +618,9 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
             let y2 = y0 - sin * Yoffset * w2 * scale;
             let x3 = x0 - cos * Yoffset * w3 * scale;
             let y3 = y0 - sin * Yoffset * w3 * scale;
+            let x31 = x3 + sin * 1000 * scale;  //치수선 라벨용
+            let y31 = y3 - cos * 1000 * scale;
+
 
             if (j === 0 || j === girderStation[i].length - 1) { //거더총길이
                 dimgeo.vertices.push(
@@ -636,11 +639,14 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //�
             }
             if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S"
                 && gridObj.key.substr(3, 1) !== "P") {  // 그리드 기호에 대해서 한번 대대적인 수정이 필요할 것으로 판단됨
-                dimgeo.vertices.push(
+                dimgeo.vertices.push(//치수선 라벨
                     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
                     new THREE.Vector3(Math.cos(rotate) * x3 - Math.sin(rotate) * y3, Math.cos(rotate) * y3 + Math.sin(rotate) * x3, 0));
                 if (j === 0) {
                     dummy1 = gridObj.point
+                    dimgeo.vertices.push(
+                        new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
+                        new THREE.Vector3(Math.cos(rotate) * x31 - Math.sin(rotate) * y31, Math.cos(rotate) * y31 + Math.sin(rotate) * x31, 0));
                 } else {
                     let dimProp = splineProp(dummy1, gridObj.point)
                     let cos = dimProp.midPoint.sin  //normalCos로 변환
