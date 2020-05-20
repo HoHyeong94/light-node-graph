@@ -594,7 +594,7 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
 
     for (let i = 0; i < girderStation.length; i++) {
         let girderLine = [];
-        let dimLine = [[],[],[],[],[],[]];
+        let dimLine = [[], [], [], [], [], []];
 
         for (let j = 0; j < girderStation[i].length; j++) {
             let gridObj = girderStation[i][j];
@@ -603,27 +603,25 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
             let x0 = (gridObj.point.x - initPoint.x) * scale;
             let y0 = (gridObj.point.y - initPoint.y) * scale;
             girderLine.push({ x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 })
-            for (let k = 0; k<6; k++){
-                let x1 = x0 - cos * Yoffset * w[k] * scale; 
+            for (let k = 0; k < 6; k++) {
+                let x1 = x0 - cos * Yoffset * w[k] * scale;
                 let y1 = y0 - sin * Yoffset * w[k] * scale;
-                dimLine[k].push({x:Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 })
+                dimLine[k].push({ x: Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 })
             }
-            if ( j===0 || j === girderStation[i].length -1){
+            if (j === 0 || j === girderStation[i].length - 1) {
                 dimgeo.vertices.push(
-                new THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
-                new THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
+                    new THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
+                    new THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
             }
-            if ( j===0 || j === girderStation[i].length -1 || gridObj.key.includes("SP")){
+            if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP")) {
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0),
                     new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
-                }
             }
-            if ( j===0 || j === girderStation[i].length -1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")){
+            if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) {
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
                     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0));
-                }
             }
 
 
@@ -647,7 +645,7 @@ function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //ê·
             }
         }
         meshes.push(LineMesh(girderLine, redDotLine, 0));
-        dimLine.forEach(function(dim){meshes.push(LineMesh(dim, redLine, 0))});
+        dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
     }
     let segLine = new THREE.LineSegments(geo, redDotLine);
     let dimSegLine = new THREE.LineSegments(dimgeo, redLine);

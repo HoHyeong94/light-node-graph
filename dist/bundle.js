@@ -3758,52 +3758,118 @@
 
     };
 
-  function AnalysisModel(node,frame){
+  function AnalysisModel(node, frame) {
       let group = new global.THREE.Group();
-      let material = new global.THREE.PointsMaterial( { color: 0xff0000, size :300 } );
+      let layer = 2; //frame Layer
+      let material = new global.THREE.PointsMaterial({ color: 0xff0000, size: 300 });
       let geometry = new global.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
       let initPoint = node.node.data[0].coord;
       let greenLine = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });
       let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
+      let yellowLine = new global.THREE.LineBasicMaterial({ color: 0xffff00 });
+      let circleMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffff00 });
       let elemDict = {};
-      for (let i in node.node.data){
-          geometry.vertices.push(new global.THREE.Vector3(
+      for (let i in node.node.data) {
+          let pt = new global.THREE.Vector3(
               node.node.data[i].coord[0] - initPoint[0],
-              node.node.data[i].coord[1] - initPoint[1], 
-              node.node.data[i].coord[2] - initPoint[2] ));
+              node.node.data[i].coord[1] - initPoint[1],
+              node.node.data[i].coord[2] - initPoint[2]);
+          geometry.vertices.push(pt);
+          let text = new global.SpriteText(node.node.data[i].nodeNum, 150);
+          text.position.set(pt.x, pt.y, pt.z);
+          text.layers.set(layer);
+          text.backgroundColor = "red";
+          group.add(text);
       }
-      for (let i in node.rigid.data){
+
+      for (let i in node.rigid.data) {
           let mNum = node.rigid.data[i].master - 1;
-          for (let j in node.rigid.data[i].slave){
+          for (let j in node.rigid.data[i].slave) {
               let sNum = node.rigid.data[i].slave[j] - 1;
               let geo = new global.THREE.Geometry();
-              geo.vertices.push(geometry.vertices[mNum],geometry.vertices[sNum]);
-              group.add(new global.THREE.Line(geo,aquaLine ));
+              geo.vertices.push(geometry.vertices[mNum], geometry.vertices[sNum]);
+              group.add(new global.THREE.Line(geo, aquaLine));
           }
       }
 
-      for (let i in frame.frame.data){
+      for (let i in frame.frame.data) {
           let geo = new global.THREE.Geometry();
-          let iNum = frame.frame.data[i].iNode -1;
-          let jNum = frame.frame.data[i].jNode -1;
+          let iNum = frame.frame.data[i].iNode - 1;
+          let jNum = frame.frame.data[i].jNode - 1;
           elemDict[frame.frame.data[i].number] = [iNum, jNum];
-          geo.vertices.push(geometry.vertices[iNum],geometry.vertices[jNum]);
-          group.add(new global.THREE.Line(geo,greenLine ));
+          geo.vertices.push(geometry.vertices[iNum], geometry.vertices[jNum]);
+          group.add(new global.THREE.Line(geo, greenLine));
+
+          let text = new global.SpriteText(frame.frame.data[i].number, 150, "red");
+          text.position.set(
+              (geometry.vertices[iNum].x + geometry.vertices[jNum].x)/2, 
+              (geometry.vertices[iNum].y + geometry.vertices[jNum].y)/2, 
+              (geometry.vertices[iNum].z + geometry.vertices[jNum].z)/2);
+          text.layers.set(layer);
+          group.add(text);
       }
-      group.add(new global.THREE.Points(geometry, material));
 
 
-      for (let i in frame.selfWeight.data){
+      // group.add(new THREE.Points(geometry, material));
+
+
+      for (let i in frame.selfWeight.data) {
           let geo = new global.THREE.Geometry();
           let ivec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][0]];
           let jvec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][1]];
-          let izload =  -1 * frame.selfWeight.data[i].Uzp[0] /100;
-          let jzload =  -1 * frame.selfWeight.data[i].Uzp[1] /100;
-          geo.vertices.push(ivec, 
-              new global.THREE.Vector3( ivec.x,  ivec.y, ivec.z + izload ), 
-              new global.THREE.Vector3( jvec.x,  jvec.y, jvec.z + jzload ), 
-               jvec);
-          group.add(new global.THREE.Line(geo,aquaLine));
+          let izload = -1 * frame.selfWeight.data[i].Uzp[0] / 10;
+          let jzload = -1 * frame.selfWeight.data[i].Uzp[1] / 10;
+          geo.vertices.push(ivec,
+              new global.THREE.Vector3(ivec.x, ivec.y, ivec.z + izload),
+              new global.THREE.Vector3(jvec.x, jvec.y, jvec.z + jzload),
+              jvec);
+          group.add(new global.THREE.Line(geo, aquaLine));
+      }
+      let arrow = 200;
+      for (let i in node.boundary.data) {
+          // let arrow = new THREE.Group();
+          let nodeNum = node.boundary.data[i].nodeNum - 1;
+          let vec = geometry.vertices[nodeNum];
+          let localData = node.local.data.find(function (elem) { return elem.nodeNum === node.boundary.data[i].nodeNum });
+          let geo = new global.THREE.Geometry();
+          if (node.boundary.data[i].DOF[0] === false) {
+              geo.vertices.push(
+                  new global.THREE.Vector3(-1000, 0, 0),
+                  new global.THREE.Vector3(1000, 0, 0),
+                  new global.THREE.Vector3(-1000, 0, 0),
+                  new global.THREE.Vector3(-1000 + arrow, arrow, 0),
+                  new global.THREE.Vector3(-1000, 0, 0),
+                  new global.THREE.Vector3(-1000 + arrow, -arrow, 0),
+                  new global.THREE.Vector3(1000, 0, 0),
+                  new global.THREE.Vector3(1000 - arrow, arrow, 0),
+                  new global.THREE.Vector3(1000, 0, 0),
+                  new global.THREE.Vector3(1000 - arrow, -arrow, 0),
+              );
+          }
+          if (node.boundary.data[i].DOF[1] === false) {
+              geo.vertices.push(
+                  new global.THREE.Vector3(0, -1000, 0),
+                  new global.THREE.Vector3(0, 1000, 0),
+                  new global.THREE.Vector3(0, -1000, 0),
+                  new global.THREE.Vector3(arrow, -1000 + arrow, 0),
+                  new global.THREE.Vector3(0, -1000, 0),
+                  new global.THREE.Vector3(-arrow, -1000 + arrow, 0),
+                  new global.THREE.Vector3(0, 1000, 0),
+                  new global.THREE.Vector3(arrow, 1000 - arrow, 0),
+                  new global.THREE.Vector3(0, 1000, 0),
+                  new global.THREE.Vector3(-arrow, 1000 - arrow, 0),
+              );
+          }
+          if (node.boundary.data[i].DOF[0] && node.boundary.data[i].DOF[1]) {
+              let circle = new global.THREE.CircleGeometry(arrow, 16);
+              circle.translate(vec.x, vec.y, vec.z);
+              group.add(new global.THREE.Mesh(circle, circleMaterial));
+          }
+          geo.rotateZ(localData.ANG * Math.PI / 180);
+          geo.translate(vec.x, vec.y, vec.z);
+          group.add(new global.THREE.LineSegments(geo, yellowLine));
+
+          // group.add(arrow)
       }
 
       return group
@@ -3821,7 +3887,7 @@
       }
       var colorCode = color ? color : 0xffff00;  //  : 
       var line = new global.THREE.Line(
-          geometry, new global.THREE.LineBasicMaterial({ color: parseInt(colorCode,16) })
+          geometry, new global.THREE.LineBasicMaterial({ color: parseInt(colorCode, 16) })
       );
       group.add(line);
       return group
@@ -3941,7 +4007,7 @@
       for (let pk in hBraicngPlateDict) {
           //    let point = pointDict[pk]
           for (let partkey in hBraicngPlateDict[pk]) {
-              if (partkey!=="point"){
+              if (partkey !== "point") {
                   let shapeNode = hBraicngPlateDict[pk][partkey].points;
                   let Thickness = hBraicngPlateDict[pk][partkey].Thickness;
                   let zPosition = hBraicngPlateDict[pk][partkey].z;
@@ -4013,21 +4079,21 @@
       }
       for (let i = 0; i < deckPointDict.length - 1; i++) {
           for (let j = 0; j < pNum; j++) {
-              let k = j === pNum-1? 0: j+1;
+              let k = j === pNum - 1 ? 0 : j + 1;
               geometry.faces.push(new global.THREE.Face3(i * pNum + j, i * pNum + k, (i + 1) * pNum + j));
               geometry.faces.push(new global.THREE.Face3(i * pNum + k, (i + 1) * pNum + k, (i + 1) * pNum + j));
           }
-          if (i===0){
+          if (i === 0) {
               geometry.faces.push(new global.THREE.Face3(i * pNum, (i + 1) * pNum - 1, i * pNum + 1));
               geometry.faces.push(new global.THREE.Face3(i * pNum + 1, i * pNum + 3, i * pNum + 2));
-              for (let j = 1; j < pNum -3;j++){
-                  geometry.faces.push(new global.THREE.Face3((i+1) * pNum - j, (i + 1) * pNum - j -1, i * pNum + 1));
+              for (let j = 1; j < pNum - 3; j++) {
+                  geometry.faces.push(new global.THREE.Face3((i + 1) * pNum - j, (i + 1) * pNum - j - 1, i * pNum + 1));
               }
-          } else if (i === deckPointDict.length -2){
-              geometry.faces.push(new global.THREE.Face3((i+1) * pNum, (i+1) * pNum + 1, (i + 2) * pNum - 1, ));
-              geometry.faces.push(new global.THREE.Face3((i+1) * pNum + 1, (i+1) * pNum + 2 , (i+1) * pNum + 3 ));
-              for (let j = 1; j < pNum -3;j++){
-                  geometry.faces.push(new global.THREE.Face3((i+2) * pNum - j, (i+1) * pNum + 1, (i + 2) * pNum - j -1 ));
+          } else if (i === deckPointDict.length - 2) {
+              geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + 1, (i + 2) * pNum - 1));
+              geometry.faces.push(new global.THREE.Face3((i + 1) * pNum + 1, (i + 1) * pNum + 2, (i + 1) * pNum + 3));
+              for (let j = 1; j < pNum - 3; j++) {
+                  geometry.faces.push(new global.THREE.Face3((i + 2) * pNum - j, (i + 1) * pNum + 1, (i + 2) * pNum - j - 1));
               }
           }
       }
@@ -4037,38 +4103,38 @@
       return group
   }
 
-  function boltView(spliceDict,initPoint){
+  function boltView(spliceDict, initPoint) {
       var group = new global.THREE.Group();
       // var meshMaterial = new THREE.MeshNormalMaterial()
-      var meshMaterial = new global.THREE.MeshLambertMaterial( {
+      var meshMaterial = new global.THREE.MeshLambertMaterial({
           color: 0xffffff,
           emissive: 0x000000,
           opacity: 1,
-          side:global.THREE.DoubleSide,
+          side: global.THREE.DoubleSide,
           transparent: false,
-          wireframe : false
-      } );
+          wireframe: false
+      });
 
       // let bolt0 = { startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 }
       // var radius = bolt0.size/2
       // var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
       // let dummyList = [];
-      for (let key in spliceDict){
-      //    let point = nameToPointDict[diakey]
-         for (let partkey in spliceDict[key]){
+      for (let key in spliceDict) {
+          //    let point = nameToPointDict[diakey]
+          for (let partkey in spliceDict[key]) {
               let Thickness = spliceDict[key][partkey].Thickness;
               let zPosition = spliceDict[key][partkey].z;
-              let rotationY = spliceDict[key][partkey].rotationY+Math.PI/2;
+              let rotationY = spliceDict[key][partkey].rotationY + Math.PI / 2;
               let rotationX = spliceDict[key][partkey].rotationX;
               let point = spliceDict[key][partkey].point;
-              if (spliceDict[key][partkey].bolt){
+              if (spliceDict[key][partkey].bolt) {
                   let bolt = spliceDict[key][partkey].bolt;
-                  for (let k in bolt){
-                      for (let i = 0;i<bolt[k].gNum;i++){
-                          for (let j=0;j<bolt[k].pNum;j++){
-                              let xtranslate = bolt[k].startPoint.x - i*bolt[k].G;
-                              let ytranslate= bolt[k].startPoint.y - j*bolt[k].P;
-                              group.add(boltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint, meshMaterial));
+                  for (let k in bolt) {
+                      for (let i = 0; i < bolt[k].gNum; i++) {
+                          for (let j = 0; j < bolt[k].pNum; j++) {
+                              let xtranslate = bolt[k].startPoint.x - i * bolt[k].G;
+                              let ytranslate = bolt[k].startPoint.y - j * bolt[k].P;
+                              group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial));
                               // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                           }
                       }
@@ -4087,21 +4153,21 @@
       return group
   }
 
-  function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate,initPoint, meshMaterial){
-      var radius = bolt.size/2;
-      var geometry = new global.THREE.CylinderBufferGeometry(radius,radius,bolt.t*2+bolt.l,6,1);
+  function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint, meshMaterial) {
+      var radius = bolt.size / 2;
+      var geometry = new global.THREE.CylinderBufferGeometry(radius, radius, bolt.t * 2 + bolt.l, 6, 1);
       var mesh = new global.THREE.Mesh(geometry, meshMaterial);
-      var rad = Math.atan( - point.normalCos/point.normalSin) + Math.PI/2;  //+ 
-      mesh.rotation.set(rotationX,rotationY,Math.PI/2); //(rotationY - 90)*Math.PI/180
-      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0,0,1),rad);
-      mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
-      mesh.translateY(zPosition-bolt.l/2);
+      var rad = Math.atan(- point.normalCos / point.normalSin) + Math.PI / 2;  //+ 
+      mesh.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
+      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0, 0, 1), rad);
+      mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z);
+      mesh.translateY(zPosition - bolt.l / 2);
       mesh.translateX(XYtranslate[1]);
       mesh.translateZ(XYtranslate[0]);
       return mesh
   }
 
-  function StudMeshView(studList, initPoint){
+  function StudMeshView(studList, initPoint) {
       let group = new global.THREE.Group();
       var meshMaterial = new global.THREE.MeshNormalMaterial();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
@@ -4112,21 +4178,21 @@
       //     transparent: false,
       //     wireframe : false
       // } );
-      for (let i in studList){
-          var geometry = new global.THREE.CylinderBufferGeometry(studList[i].stud.dia/2,studList[i].stud.dia/2,studList[i].stud.height,8,1);
-          var geometry2 = new global.THREE.CylinderBufferGeometry(studList[i].stud.headDia/2,studList[i].stud.headDia/2,studList[i].stud.headDepth,8,1);
+      for (let i in studList) {
+          var geometry = new global.THREE.CylinderBufferGeometry(studList[i].stud.dia / 2, studList[i].stud.dia / 2, studList[i].stud.height, 8, 1);
+          var geometry2 = new global.THREE.CylinderBufferGeometry(studList[i].stud.headDia / 2, studList[i].stud.headDia / 2, studList[i].stud.headDepth, 8, 1);
           let rotationX = Math.atan(studList[i].gradientX);
           let rotationY = Math.atan(studList[i].gradientY);
-          for (let j in studList[i].points){
+          for (let j in studList[i].points) {
               let point = studList[i].points[j];
               var mesh = new global.THREE.Mesh(geometry, meshMaterial);
               var mesh2 = new global.THREE.Mesh(geometry2, meshMaterial);
-              mesh.rotation.set(rotationX + Math.PI/2, rotationY,0);
-              mesh.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
-              mesh.translateY(studList[i].stud.height/2);
-              mesh2.rotation.set(rotationX + Math.PI/2, rotationY,0);
-              mesh2.position.set(point.x - initPoint.x, point.y- initPoint.y, point.z- initPoint.z);
-              mesh2.translateY(studList[i].stud.height - studList[i].stud.headDepth/2);
+              mesh.rotation.set(rotationX + Math.PI / 2, rotationY, 0);
+              mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z);
+              mesh.translateY(studList[i].stud.height / 2);
+              mesh2.rotation.set(rotationX + Math.PI / 2, rotationY, 0);
+              mesh2.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z);
+              mesh2.translateY(studList[i].stud.height - studList[i].stud.headDepth / 2);
               group.add(mesh);
               group.add(mesh2);
           }
@@ -4134,44 +4200,44 @@
       return group
   }
 
-  function BarrierPointView(deckSection,initPoint,opacity){
+  function BarrierPointView(deckSection, initPoint, opacity) {
       let group = new global.THREE.Group();
-      var meshMaterial = new global.THREE.MeshLambertMaterial( {
+      var meshMaterial = new global.THREE.MeshLambertMaterial({
           color: 0x000000,
           emissive: 0x777777,
           opacity: opacity,
           // side:THREE.DoubleSide,
           transparent: true,
-          wireframe : false
-        } );
+          wireframe: false
+      });
       // let meshMaterial = new THREE.MeshNormalMaterial()
       //     meshMaterial.side = THREE.DoubleSide
-      
+
       let pNum = deckSection[0].points.length;
       let geometry = new global.THREE.Geometry();
-      for (let key in deckSection){
-          deckSection[key].points.forEach(function(Point){
-                  geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+      for (let key in deckSection) {
+          deckSection[key].points.forEach(function (Point) {
+              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
           });
       }
-      
-      for (let i =0;i<deckSection.length -1 ;i++ ){
-          for (let j = 0;j<pNum-1;j++){
-              geometry.faces.push(new global.THREE.Face3(i*pNum+j,(i+1)*pNum+j,i*pNum+j+1));
-              geometry.faces.push(new global.THREE.Face3(i*pNum+j+1,(i+1)*pNum+j,(i+1)*pNum+j+1));
+
+      for (let i = 0; i < deckSection.length - 1; i++) {
+          for (let j = 0; j < pNum - 1; j++) {
+              geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + j + 1));
+              geometry.faces.push(new global.THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
           }
-          if (i ===0){
-              for (let j=1;j<pNum-1;j++){
-                 geometry.faces.push(new global.THREE.Face3(i, i + j, i + j +1));
+          if (i === 0) {
+              for (let j = 1; j < pNum - 1; j++) {
+                  geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
               }
-          }else if (i === deckSection.length -2){
-              for (let j=1;j<pNum-1;j++){
-                  geometry.faces.push(new global.THREE.Face3((i + 1)*pNum, (i + 1)*pNum + j + 1, (i + 1)*pNum + j));
-               }
+          } else if (i === deckSection.length - 2) {
+              for (let j = 1; j < pNum - 1; j++) {
+                  geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+              }
           }
       }
       geometry.computeFaceNormals();
-      group.add( new global.THREE.Mesh(geometry,meshMaterial) );
+      group.add(new global.THREE.Mesh(geometry, meshMaterial));
       return group
   }
 
@@ -4325,7 +4391,7 @@
 
   // import makerjs from 'makerjs'
 
-  function GirderLayoutView(girderLayout) {
+  function GirderLayoutView(girderLayout) { //종단/평면선형에서의 거더 배치 뷰
       let scale = 0.01; // scale 은 추후 외부에서 받아오는 변수로 지정할 계획임
       let group = new global.THREE.Group();
       let skewLength = 5000;
@@ -4356,16 +4422,16 @@
 
           let rot = Math.atan2(pt.normalSin, pt.normalCos);
           if (rot >= Math.PI / 2) { rot = rot - Math.PI; }
-          sign = sign === 1? -1 : 1;
+          sign = sign === 1 ? -1 : 1;
           let cos = Math.cos(rot);
           let sin = Math.sin(rot);
           let dimLine = [{ x: (pt.x - initPoint.x) * scale, y: (pt.y - initPoint.y) * scale },
           { x: (pt.x - initPoint.x) * scale + sign * cos * fontSize * 2 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sign * sin * fontSize * 2 + cos * fontSize * 2 },
-          { x: (pt.x - initPoint.x) * scale + sign * cos * fontSize * 8 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sign * sin * fontSize * 8 + cos * fontSize * 2 }        ];
+          { x: (pt.x - initPoint.x) * scale + sign * cos * fontSize * 8 - sin * fontSize * 2, y: (pt.y - initPoint.y) * scale + sign * sin * fontSize * 8 + cos * fontSize * 2 }];
           let station = pt.masterStationNumber;
           label.push({
               text: "STA. " + Math.floor(station / 1000000).toFixed(0) + "K+" + ((station % 1000000) / 1000).toFixed(4),
-              anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 2.25,(pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 2.25, 0],
+              anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 2.25, (pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 2.25, 0],
               rotation: rot,
               align: "center",
               fontSize: fontSize / 4
@@ -4373,7 +4439,7 @@
 
           label.push({
               text: "x:" + (pt.x / 1000).toFixed(4) + ", y:" + (pt.y / 1000).toFixed(4),
-              anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 1.75,(pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 1.75, 0],
+              anchor: [(pt.x - initPoint.x) * scale + sign * cos * fontSize * 5 - sin * fontSize * 1.75, (pt.y - initPoint.y) * scale + sign * sin * fontSize * 5 + cos * fontSize * 1.75, 0],
               rotation: rot,
               align: "center",
               fontSize: fontSize / 4
@@ -4409,23 +4475,23 @@
           let pt = girderLayout.gridKeyPoint[key];
           let pt1 = {
               x: (pt.masterStationNumber - initPoint.x) * xscale,
-              y: (pt.z - initPoint.y) * yscale + fontSize/4
+              y: (pt.z - initPoint.y) * yscale + fontSize / 4
           };
           let pt2 = {
               x: (pt.masterStationNumber - initPoint.x) * xscale,
-              y: (pt.z - initPoint.y) * yscale - fontSize/4
+              y: (pt.z - initPoint.y) * yscale - fontSize / 4
           };
-          group2.add(LineMesh([pt1,pt2], aquaLine));
+          group2.add(LineMesh([pt1, pt2], aquaLine));
           topLine.push(pt1);
           botLine.push(pt2);
       }
       group2.add(LineMesh(topLine, aquaLine));
       group2.add(LineMesh(botLine, aquaLine));
 
-      return {plan:group, side:group2}
+      return { plan: group, side: group2 }
   }
 
-  function LineSideView(masterLine) {
+  function LineSideView(masterLine) {  //종단선형뷰
       let xscale = 0.003;
       let yscale = 0.02;
       let fontSize = 80;
@@ -4572,8 +4638,8 @@
 
       return group
   }
-  // 평면선형 그리기 //
-  function LineDrawView(masterLine, slaveLines) {
+
+  function LineDrawView(masterLine, slaveLines) {  //평면선형 그리기
       let scale = 0.01;
       let group = new global.THREE.Group();
       let IPpoints = [];
@@ -4661,8 +4727,6 @@
       return group
   }
 
-
-
   function LabelInsert(label, textMaterial, layer) {
       let group = new global.THREE.Group();
       var loader = new global.THREE.FontLoader();
@@ -4695,10 +4759,8 @@
       return group// text.position.z = 0;
   }
 
-
-
-  function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc, initPoint, r, lineMaterial) {
-      // console.log(partDict)
+  function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc, initPoint, r, lineMaterial) { //횡단면도 그리기
+      // console.log(partDict)    
       // let result = {models:{},layer:color };
       let meshes = [];
 
@@ -4744,8 +4806,8 @@
       return meshes
   }
 
-  function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) {
-      // let result = {models:{},layer:lineMaterial };
+  function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //측면도 그리기
+      // let result = {models:{},layer:lineMaterial }; 
       // let index = 1;
       let meshes = [];
       for (let part in steelBoxDict) {
@@ -4809,7 +4871,7 @@
       return meshes
   }
 
-  function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) {
+  function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //강박스 일반도 그리기
       // let result = {models:{},layer:color };
       // let index = 1;
       let meshes = [];
@@ -4881,50 +4943,105 @@
       return meshes
   }
 
-  function roundedRect(x, y, width, height, radius, lineMaterial) {
+  function roundedRect(x, y, rot, width, height, radius, lineMaterial) { //마크 테두리
       let shape = new global.THREE.Shape();
-      shape.moveTo(x, y + radius);
-      shape.lineTo(x, y + height - radius);
-      shape.quadraticCurveTo(x, y + height, x + radius, y + height);
-      shape.lineTo(x + width - radius, y + height);
-      shape.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
-      shape.lineTo(x + width, y + radius);
-      shape.quadraticCurveTo(x + width, y, x + width - radius, y);
-      shape.lineTo(x + radius, y);
-      shape.quadraticCurveTo(x, y, x, y + radius);
+      shape.moveTo(-width / 2, -height / 2 + radius);
+      shape.lineTo(-width / 2, height / 2 - radius);
+      shape.quadraticCurveTo(-width / 2, height / 2, -width / 2 + radius, height / 2);
+      shape.lineTo(width / 2 - radius, height / 2);
+      shape.quadraticCurveTo(width / 2, height / 2, width / 2, height / 2 - radius);
+      shape.lineTo(width / 2, -height / 2 + radius);
+      shape.quadraticCurveTo(width / 2, -height / 2, width / 2 - radius, -height / 2);
+      shape.lineTo(-width / 2 + radius, -height / 2);
+      shape.quadraticCurveTo(-width / 2, -height / 2, -width / 2, -height / 2 + radius);
       let points = shape.getPoints();
       let geometry = new global.THREE.BufferGeometry().setFromPoints(points);
+      geometry.rotateZ(rot);
+      geometry.translate(x, y, 0);
       console.log("geo", geometry);
       return new global.THREE.Line(geometry, lineMaterial)
   }
 
 
-  function GridMarkView(pointDict, sc, initPoint, r, Yoffset) {
+  function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
       let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
-      let fontSize = 80 * sc;
+      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
+      let geo = new global.THREE.Geometry();
+      let dimgeo = new global.THREE.Geometry();
+      let fontSize = 80 * scale;
       let meshes = [];
       let labels = [];
-      for (let station in pointDict) {
-          if (station.substr(2, 1) !== "K" && !station.includes("CR")) { //station.substr(0,2)==="G1" && 
-              let x = (pointDict[station].x - initPoint.x) * sc;
-              let y = (pointDict[station].y - initPoint.y) * sc;
-              let position = [Math.cos(r) * x - Math.sin(r) * y, Math.cos(r) * y + Math.sin(r) * x + Yoffset * sc];
-              meshes.push(roundedRect(position[0] - 200 * sc, position[1] - 100 * sc, 400 * sc, 200 * sc, 100 * sc, lineMaterial));
+      let rot = 0;
+      let w = [1.5, 1.4, 1.3, -1.3, -1.4, -1.5];
 
-              labels.push({
-                  text: station,
-                  anchor: [position[0], position[1], 0],
-                  rotation: 0,
-                  fontSize: fontSize
-              });
+      for (let i = 0; i < girderStation.length; i++) {
+          let girderLine = [];
+          let dimLine = [[], [], [], [], [], []];
+
+          for (let j = 0; j < girderStation[i].length; j++) {
+              let gridObj = girderStation[i][j];
+              let cos = gridObj.point.normalCos;
+              let sin = gridObj.point.normalSin;
+              let x0 = (gridObj.point.x - initPoint.x) * scale;
+              let y0 = (gridObj.point.y - initPoint.y) * scale;
+              girderLine.push({ x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 });
+              for (let k = 0; k < 6; k++) {
+                  let x1 = x0 - cos * Yoffset * w[k] * scale;
+                  let y1 = y0 - sin * Yoffset * w[k] * scale;
+                  dimLine[k].push({ x: Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 });
+              }
+              if (j === 0 || j === girderStation[i].length - 1) {
+                  dimgeo.vertices.push(
+                      new global.THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
+                      new global.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
+              }
+              if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP")) {
+                  dimgeo.vertices.push(
+                      new global.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0),
+                      new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
+              }
+              if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) {
+                  dimgeo.vertices.push(
+                      new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
+                      new global.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0));
+              }
+
+
+              if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
+                  let x = (gridObj.point.x - cos * Yoffset - initPoint.x) * scale;
+                  let y = (gridObj.point.y - sin * Yoffset - initPoint.y) * scale;
+                  let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
+                  rot = Math.atan2(cos, - sin) + rotate;
+                  let mesh = roundedRect(position[0], position[1], rot, 400 * scale, 200 * scale, 100 * scale, lineMaterial);
+                  meshes.push(mesh);
+                  labels.push({
+                      text: gridObj.key,
+                      anchor: [position[0], position[1], 0],
+                      rotation: rot,
+                      fontSize: fontSize
+                  });
+                  geo.vertices.push(
+                      new global.THREE.Vector3(x + cos * 100 * scale, y + sin * 100 * scale, 0),
+                      new global.THREE.Vector3(x + cos * (2 * Yoffset - 100) * scale,
+                          y + sin * (2 * Yoffset - 100) * scale, 0));
+              }
           }
+          meshes.push(LineMesh(girderLine, redDotLine, 0));
+          dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)); });
       }
+      let segLine = new global.THREE.LineSegments(geo, redDotLine);
+      let dimSegLine = new global.THREE.LineSegments(dimgeo, redLine);
+      segLine.computeLineDistances();
+      segLine.rotateZ(rotate);
+      meshes.push(segLine);
+      meshes.push(dimSegLine);
       return { meshes, labels }
   }
 
   // r is rotation angle to radian
-  function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint) {
+  function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint, girderStation) {
       let group = new global.THREE.Group();
 
       const hBracingDict = hBracing.hBracingDict;
@@ -4946,7 +5063,7 @@
       vStiffner.forEach(function (mesh) { group.add(mesh); });
       let bracing = GeneralPlanView(hBracingDict, [""], 4, 0, 1, sc, initPoint, r, green);
       bracing.forEach(function (mesh) { group.add(mesh); });
-      let gridMark = GridMarkView(gridPoint, sc, initPoint, r, 1400);
+      let gridMark = GridMarkView(girderStation, sc, initPoint, r, 1400);
       gridMark.meshes.forEach(function (mesh) { group.add(mesh); });
       let label = gridMark.labels;
 
@@ -5054,7 +5171,7 @@
       return new global.THREE.LineLoop(geometry, lineMaterial)
   }
 
-  function sectionView(sectionName, sectionPoint, diaPoint) {
+  function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면도
       // var makerjs = require('makerjs');
       let sc = 1;
       // let sections = {models:{ }};
@@ -5309,6 +5426,7 @@
     this.addInput("vstiffDict","diaDict");
     this.addInput("gridPoint","gridPoint");
     this.addInput("initPoint","point");
+    this.addInput("girderStation","girderStation");
   }
 
   TopViewer.prototype.onExecute = function() {
@@ -5316,7 +5434,7 @@
 
   TopViewer.prototype.on3DExecute = function() {
     let offset = 5000;
-    let group = topDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5));
+    let group = topDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5),this.getInputData(6));
     // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
     group.position.set(0,-offset,0);
     global.sceneAdder({layer:1, mesh:group},"topView");
@@ -5714,7 +5832,7 @@
       }
 
       let sectionPropDict = AllSectionGenerator(girderStation, sectionPointDict, materials, xbeamData);
-      let selfWeight = { command: "LOAD", type: "Distributed Span", Name: "SteelBox", data: [] };
+      let selfWeight = { command: "LOAD", type: "Distributed Span", Name: "StBox", data: [] };
       let sectionNum = 1;
       let tsectionNum = 1;
       let generalSectionList = [];
@@ -5731,11 +5849,13 @@
                   if (SectionCompare(tempSection, section1)) {
                       if (SectionCompare(section1, section2)) {
                           sectionName = tempSection.name;
+                          section2["name"] = sectionName;
                       }
                       else {
                           sectionName = "t" + tsectionNum;
                           tsectionNum++;
                           generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section2.A, I: [section2.Iyy, section2.Izz], J: section2.Ixx });
+                          section2["name"] = sectionNum;
                           taperedSectionList.push({
                               Name: sectionName,
                               type: "Nonpr",
@@ -5750,6 +5870,7 @@
                       if (SectionCompare(section1, section2)) {
                           sectionName = sectionNum;
                           generalSectionList.push({ NAME: sectionNum, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx });
+                          section2["name"] = sectionNum;
                           sectionNum++;
                       } else {
                           sectionName = "t" + tsectionNum;
@@ -5764,6 +5885,7 @@
                               Eivar: [2, 1],  //EI variation 1: linear, 2: parabola, 3: cubic {EI22, EI33}
                               Vl: 1
                           });
+                          section2["name"] = sectionNum;
                           sectionNum++;
                       }
 
