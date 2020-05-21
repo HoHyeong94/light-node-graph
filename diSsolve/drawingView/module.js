@@ -587,7 +587,7 @@ export function PointToDraw(point, scale, initPoint, rotate, xOffset, yOffset) {
     return { x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 }
 }
 
-export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
+export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
@@ -618,12 +618,12 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
         rot = Math.atan2(cos, - sin) + rotate;
         girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
         for (let k in w) {
-            dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * Yoffset));
+            dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
         }
         for (let k = 0; k < 6; k++) {
             if (j === 0) {
-                let anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * Yoffset + fontSize * 0.75);
-                let p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * Yoffset)
+                let anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset + fontSize * 0.75);
+                let p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset)
                 dimgeo.vertices.push(
                     new THREE.Vector3(dimLine[k][j].x, dimLine[k][j].y, 0),
                     new THREE.Vector3(p1.x, p1.y, 0));
@@ -649,7 +649,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
             if (j !== 0) {
                 let dimProp = splineProp(dummy1, gridObj.point)
                 // console.log("spline", dimProp,dummy1,gridObj.point)
-                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] * markOffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
                 labels.push({
                     text: dimProp.length.toFixed(0),
                     anchor: [position.x, position.y, 0],
@@ -666,7 +666,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 new THREE.Vector3(dimLine[6][j].x, dimLine[6][j].y, 0));
             if (j !== 0) {
                 let dimProp = splineProp(dummy2, gridObj.point)
-                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[2] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[2] * markOffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
                 labels.push({
                     text: dimProp.length.toFixed(0),
                     anchor: [position.x, position.y, 0],
@@ -684,7 +684,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 new THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
             if (j !== 0) {
                 let dimProp = splineProp(dummy3, gridObj.point)
-                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[3] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[3] * markOffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
                 labels.push({
                     text: dimProp.length.toFixed(0),
                     anchor: [position.x, position.y, 0],
@@ -700,7 +700,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0));
             if (j !== 0) {
                 let dimProp = splineProp(dummy4, gridObj.point)
-                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[4] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[4] * markOffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
                 labels.push({
                     text: dimProp.length.toFixed(0),
                     anchor: [position.x, position.y, 0],
@@ -716,7 +716,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 new THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
             if (j !== 0) {
                 let dimProp = splineProp(dummy5, gridObj.point)
-                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] * markOffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
                 labels.push({
                     text: dimProp.length.toFixed(0),
                     anchor: [position.x, position.y, 0],
@@ -728,7 +728,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
         }
 
         if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
-            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, Yoffset);
+            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset);
             let mesh = roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine);
             meshes.push(mesh);
             labels.push({
@@ -737,13 +737,22 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 rotation: rot,
                 fontSize: fontSize * scale
             });
-            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, Yoffset - 100);
-            let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - Yoffset + 100);
+            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset - 100);
+            let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - markOffset + 100);
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
                 new THREE.Vector3(pt2.x, pt2.y, 0));
         }
     }
+
+    let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 500, 0);
+    labels.push({
+        text: "GIRDER" + girderIndex +  " C.L.",
+        anchor: [position.x, position.y, 0],
+        rotation: rot,
+        fontSize: fontSize * scale
+    });
+
     meshes.push(LineMesh(girderLine, redDotLine, 0));
     for (let k = 0; k < 6; k++) {
         meshes.push(LineMesh(dimLine[k], redLine, 0))
@@ -800,7 +809,7 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
         let initPoint = girderStation[i][0].point
         let endPoint = girderStation[i][girderStation[i].length - 1].point
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
-        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width)
+        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i+1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset,0);
             group.add(mesh);
