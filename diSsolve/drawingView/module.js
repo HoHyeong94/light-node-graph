@@ -798,7 +798,7 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
     for (let i = 0; i < girderStation.length; i++) {
         let initPoint = girderStation[i][0].point
         let endPoint = girderStation[i][girderStation[i].length - 1].point
-        let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.point.x))
+        let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset);
