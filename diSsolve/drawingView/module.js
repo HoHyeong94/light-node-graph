@@ -607,7 +607,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
 
     for (let i = 0; i < girderStation.length; i++) {
         let girderLine = [];
-        let dimLine = [[], [], [], [], [], []];
+        let dimLine = [[], [], [], [], [], [], [], []]; //8개, w와 동일한 개수
 
         for (let j = 0; j < girderStation[i].length; j++) {
             let gridObj = girderStation[i][j];
