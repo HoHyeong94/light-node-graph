@@ -617,6 +617,9 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
         let sin = gridObj.point.normalSin
         rot = Math.atan2(cos, - sin) + rotate;
         girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
+        for (let k in w) {
+            dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
+        }
         if (j === 0) {
             let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 500, 0);
             labels.push({
@@ -640,11 +643,6 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 });
             }
         }
-
-        for (let k in w) {
-            dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
-        }
-
         if (j === 0 || j === girderStation.length - 1) { //거더총길이
             dimgeo.vertices.push(
                 new THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
