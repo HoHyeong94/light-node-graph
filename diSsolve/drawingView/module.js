@@ -785,7 +785,7 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, 
     gridMark.meshes.forEach(function (mesh) { group.add(mesh) });
     let label = gridMark.labels
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
-    group.add(labelInsert(gridMark.labels, textMaterial,1))
+    group.add(LabelInsert(gridMark.labels, textMaterial,1))
     
     // let textMesh;
     // let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
