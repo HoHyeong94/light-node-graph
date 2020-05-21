@@ -613,8 +613,9 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
             let gridObj = girderStation[i][j];
             let cos = gridObj.point.normalCos
             let sin = gridObj.point.normalSin
-            let x0 = (gridObj.point.x - initPoint.x) * scale;
-            let y0 = (gridObj.point.y - initPoint.y) * scale;
+            rot = Math.atan2(cos, - sin) + rotate;
+            // let x0 = (gridObj.point.x - initPoint.x) * scale;
+            // let y0 = (gridObj.point.y - initPoint.y) * scale;
             // girderLine.push({ x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 })
             girderLine.push(PointToDraw(gridObj.point,scale,initPoint,rotate,0,0));
             for (let k in w) {
@@ -623,10 +624,10 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 // dimLine[k].push({ x: Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 })
                 dimLine[k].push(PointToDraw(gridObj.point, scale,initPoint,rotate,0,Yoffset*w[k]));
             }
-            let x2 = x0 - cos * Yoffset * w2 * scale;
-            let y2 = y0 - sin * Yoffset * w2 * scale;
-            let x3 = x0 - cos * Yoffset * w3 * scale;
-            let y3 = y0 - sin * Yoffset * w3 * scale;
+            // let x2 = x0 - cos * Yoffset * w2 * scale;
+            // let y2 = y0 - sin * Yoffset * w2 * scale;
+            // let x3 = x0 - cos * Yoffset * w3 * scale;
+            // let y3 = y0 - sin * Yoffset * w3 * scale;
 
             if (j === 0 || j === girderStation[i].length - 1) { //거더총길이
                 dimgeo.vertices.push(
@@ -649,12 +650,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
                     new THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
                 if (j === 0) {
-                    let anchor = PointToDraw(gridObj.point,scale,initPoint,rotate,-1000,(w[3]+0.05)*Yoffset);
-                    let x31 = sin * 1000 * scale;  //치수선 라벨용
-                    let y31 = - cos * 1000 * scale;
-                    let dx = - cos * 0.05*Yoffset*scale
-                    let dy = - sin * 0.05*Yoffset*scale
-                    rot = Math.atan2(cos, - sin) + rotate;
+                    let anchor = PointToDraw(gridObj.point,scale,initPoint,rotate,-500,(w[3]+0.05)*Yoffset);
                     dummy1 = gridObj.point
                     let p1 = PointToDraw(gridObj.point,scale,initPoint,rotate,-1000,(w[3])*Yoffset)
                     dimgeo.vertices.push(
@@ -669,16 +665,17 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                     });
                 } else {
                     let dimProp = splineProp(dummy1, gridObj.point)
-                    let cos = dimProp.midPoint.sin  //normalCos로 변환
-                    let sin = - dimProp.midPoint.cos ////normalSin로 변환 
-                    let x = (dimProp.midPoint.x + cos * Yoffset * (1.25) - initPoint.x) * scale;
-                    let y = (dimProp.midPoint.y + sin * Yoffset * (1.25) - initPoint.y) * scale;
-                    let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
-                    rot = Math.atan2(cos, - sin) + rotate;
+                    // let cos = dimProp.midPoint.sin  //normalCos로 변환
+                    // let sin = - dimProp.midPoint.cos ////normalSin로 변환 
+                    // let x = (dimProp.midPoint.x + cos * Yoffset * (1.25) - initPoint.x) * scale;
+                    // let y = (dimProp.midPoint.y + sin * Yoffset * (1.25) - initPoint.y) * scale;
+                    // let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
+                    let position = PointToDraw(dimProp.midPoint,scale,initPoint, rotate,0, w[3] * Yoffset + 80/2)   //fontSize에 대한 값을 scale 적용않고 정의
+                    // rot = Math.atan2(cos, - sin) + rotate;
                     labels.push({
                         text: dimProp.length.toFixed(0),
                         anchor: [position[0], position[1], 0],
-                        rotation: rot,
+                        rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
                         fontSize: fontSize
                     });
                     dummy1 = gridObj.point
