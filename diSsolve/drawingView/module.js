@@ -744,7 +744,10 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
             }
         }
         meshes.push(LineMesh(girderLine, redDotLine, 0));
-        dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
+        for (let k = 0; k<6;k++){
+            meshes.push(LineMesh(dimLine[k], redLine, 0))
+        }
+        // dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
     }
     let segLine = new THREE.LineSegments(geo, redDotLine);
     segLine.computeLineDistances();
