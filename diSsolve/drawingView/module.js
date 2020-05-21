@@ -674,7 +674,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                     // rot = Math.atan2(cos, - sin) + rotate;
                     labels.push({
                         text: dimProp.length.toFixed(0),
-                        anchor: [position[0], position[1], 0],
+                        anchor: [position.x, position.y, 0],
                         rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
                         fontSize: fontSize
                     });
