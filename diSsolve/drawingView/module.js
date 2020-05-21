@@ -784,38 +784,33 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, 
     let gridMark = GridMarkView(girderStation, sc, initPoint, r, 1400)
     gridMark.meshes.forEach(function (mesh) { group.add(mesh) });
     let label = gridMark.labels
-
-    // wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
-    // wholeModel.models["bottomPlate"].origin = [0,-1000]
-    // wholeModel.models["leftWeB"] = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0,1,sc, initPoint,r,"aqua")
-    // wholeModel.models["leftWeB"].origin = [0,-1500]
-    // wholeModel.models["gridMark"] = 
-
-    let textMesh;
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
-
-    var loader = new THREE.FontLoader();
-    loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-        // console.log(font)
-        // var font = {generateShapes:(messagem , num)=>{}}
-        for (let i in label) {
-            var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-            var geometry = new THREE.ShapeBufferGeometry(shapes);
-            var xMid
-            geometry.computeBoundingBox();
-            xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-            geometry.translate(xMid, -label[i].fontSize / 2, 0);
-            if (label[i].rotation) {
-                geometry.rotateZ(label[i].rotation)
-            }
-            geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
-            // make shape ( N.B. edge view not visible )
-            textMesh = new THREE.Mesh(geometry, textMaterial);
-            textMesh.layers.set(1)
-            group.add(textMesh);
-        }
-        // text.position.z = 0;
-    });
+    group.add(labelInsert(gridMark.labels, textMaterial,1))
+    
+    // let textMesh;
+    // let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+    // var loader = new THREE.FontLoader();
+    // loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+    //     // console.log(font)
+    //     // var font = {generateShapes:(messagem , num)=>{}}
+    //     for (let i in label) {
+    //         var shapes = font.generateShapes(label[i].text, label[i].fontSize);
+    //         var geometry = new THREE.ShapeBufferGeometry(shapes);
+    //         var xMid
+    //         geometry.computeBoundingBox();
+    //         xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+    //         geometry.translate(xMid, -label[i].fontSize / 2, 0);
+    //         if (label[i].rotation) {
+    //             geometry.rotateZ(label[i].rotation)
+    //         }
+    //         geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
+    //         // make shape ( N.B. edge view not visible )
+    //         textMesh = new THREE.Mesh(geometry, textMaterial);
+    //         textMesh.layers.set(1)
+    //         group.add(textMesh);
+    //     }
+    //     // text.position.z = 0;
+    // });
 
     return group
 }
