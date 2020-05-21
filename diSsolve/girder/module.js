@@ -222,6 +222,7 @@ export const splineCoefficient = (point1, point2) => {
   const y1 = point1.y;
   const x2 = point2.x;
   const y2 = point2.y;
+  const err = 0.0001;
 
   let b1 = (y2 - y1) / 2;
   let b2 = (x2 - x1) / 2;
@@ -249,7 +250,7 @@ export const splineCoefficient = (point1, point2) => {
   if (point1.normalSin !== 0 && point2.normalSin !== 0) {
     df1 = -point1.normalCos / point1.normalSin
     df2 = -point2.normalCos / point2.normalSin
-    if (df1 === df2) {
+    if (Math.abs(df1 - df2) < err) {
       a1 = 0
       a2 = 0
     } else {
@@ -306,7 +307,7 @@ export function splineProp(point1, point2) {
     + Math.sqrt(Math.pow((2 * coe.a1 * t2 + coe.b1), 2) + Math.pow((2 * coe.a2 * t2 + coe.b2), 2)) * w2
     + Math.sqrt(Math.pow((2 * coe.a1 * t3 + coe.b1), 2) + Math.pow((2 * coe.a2 * t3 + coe.b2), 2)) * w3;
   let l = Math.sqrt(coe.b2 ** 2 + coe.b1 ** 2)
-  let midPoint = { x: coe.c2, y: coe.c1, cos: coe.b2 / l, sin: coe.b1 / l, normalCos: coe.b1 / l, normalSin: -coe.b2 / l, coe : coe }
+  let midPoint = { x: coe.c2, y: coe.c1, cos: coe.b2 / l, sin: coe.b1 / l, normalCos: coe.b1 / l, normalSin: -coe.b2 / l, coe: coe }
   return { length: length.toFixed(4) * 1, midPoint }
 }
 

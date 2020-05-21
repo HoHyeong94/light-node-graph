@@ -648,6 +648,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
             if (j !== 0) {
                 let dimProp = splineProp(dummy1, gridObj.point)
+                console.log("spline", dimProp,dummy1,gridObj.point)
                 let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
                 labels.push({
                     text: dimProp.length.toFixed(0),
