@@ -55,7 +55,7 @@ LiteGraph.registerNodeType("Drawing/SideView", SideViewer );
 LiteGraph.registerNodeType("Drawing/LineDraw", LineDraw );
 LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
 LiteGraph.registerNodeType("Drawing/GirderLayoutDraw", GirderLayoutDraw );
-LiteGraph.registerNodeType("GirderGeneralView1", GirderGeneralView1 );
+LiteGraph.registerNodeType("Drawing/GirderGeneralView1", GirderGeneralView1 );
 
 
 // const {
