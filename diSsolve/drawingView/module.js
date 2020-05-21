@@ -600,8 +600,6 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
     let rot = 0;
     let w = [1.5, 1.4, 1.3, -1.3, -1.4, -1.5, 1.2, -1.2];
     let dimName = ["Girder Length", "Splice", "Top Plate", "V-Stiffener", "Bottom Plate", "Web"]
-    let w2 = 1.2
-    let w3 = -1.2
     let dummy1 = {};
     let dummy2 = {};
     let dummy3 = {};
@@ -630,12 +628,11 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                         text: dimName[k],
                         anchor: [anchor.x, anchor.y, 0],
                         rotation: rot,
-                        fontSize: fontSize * scale
+                        fontSize: fontSize * scale,
+                        align : "left"
                     });
                 }
             }
-
-
 
             if (j === 0 || j === girderStation[i].length - 1) { //거더총길이
                 dimgeo.vertices.push(
@@ -657,21 +654,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 dimgeo.vertices.push(//치수선 라벨
                     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
                     new THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
-                if (j === 0) {
-                    // let anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -500, (w[3] + 0.05) * Yoffset);
-                    dummy1 = gridObj.point
-                    // let p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, (w[3]) * Yoffset)
-                    // dimgeo.vertices.push(
-                    //     new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
-                    //     new THREE.Vector3(p1.x, p1.y, 0));
-                    // labels.push({
-                    //     text: "V-Stiffener",
-                    //     // anchor: [dimLine[3][j].x + Math.cos(rotate) * (x31/2 + dx) - Math.sin(rotate) * (y31/2 + dy), dimLine[3][j].y + Math.cos(rotate) * (y31/2 +dy) + Math.sin(rotate) * (x31/2 + dx), 0],
-                    //     anchor: [anchor.x, anchor.y, 0],
-                    //     rotation: rot,
-                    //     fontSize: fontSize * scale
-                    // });
-                } else {
+                if (j !== 0) {
                     let dimProp = splineProp(dummy1, gridObj.point)
                     let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[3] * Yoffset + fontSize * 0.6)   //fontSize에 대한 값을 scale 적용않고 정의
                     labels.push({
@@ -680,8 +663,8 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                         rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
                         fontSize: fontSize * scale
                     });
-                    dummy1 = gridObj.point
                 }
+                dummy1 = gridObj.point
             }
             if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("BF")) {  //하부플렌지 이음
                 dimgeo.vertices.push(
@@ -722,25 +705,25 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 }
             }
 
-
-
             if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
-                let x = (gridObj.point.x - cos * Yoffset - initPoint.x) * scale;
-                let y = (gridObj.point.y - sin * Yoffset - initPoint.y) * scale;
-                let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
-                rot = Math.atan2(cos, - sin) + rotate;
-                let mesh = roundedRect(position[0], position[1], rot, 400 * scale, 200 * scale, 100 * scale, lineMaterial);
+                // let x = (gridObj.point.x - cos * Yoffset - initPoint.x) * scale;
+                // let y = (gridObj.point.y - sin * Yoffset - initPoint.y) * scale;
+                // let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
+                let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, Yoffset);
+                // rot = Math.atan2(cos, - sin) + rotate;
+                let mesh = roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine);
                 meshes.push(mesh);
                 labels.push({
                     text: gridObj.key,
-                    anchor: [position[0], position[1], 0],
+                    anchor: [position.x, position.y, 0],
                     rotation: rot,
                     fontSize: fontSize * scale
                 });
+                let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, Yoffset -100);
+                let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - 2 * Yoffset +100);
                 geo.vertices.push(
-                    new THREE.Vector3(x + cos * 100 * scale, y + sin * 100 * scale, 0),
-                    new THREE.Vector3(x + cos * (2 * Yoffset - 100) * scale,
-                        y + sin * (2 * Yoffset - 100) * scale, 0));
+                    new THREE.Vector3(pt1.x, pt1.y,0), //x + cos * 100 * scale, y + sin * 100 * scale, 0),
+                    new THREE.Vector3(pt2.x, pt2.y,0)); // x + cos * (2 * Yoffset - 100) * scale, y + sin * (2 * Yoffset - 100) * scale, 0));
             }
         }
         meshes.push(LineMesh(girderLine, redDotLine, 0));
