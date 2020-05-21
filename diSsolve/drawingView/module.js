@@ -648,7 +648,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                 new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
             if (j !== 0) {
                 let dimProp = splineProp(dummy1, gridObj.point)
-                console.log("spline", dimProp,dummy1,gridObj.point)
+                // console.log("spline", dimProp,dummy1,gridObj.point)
                 let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
                 labels.push({
                     text: dimProp.length.toFixed(0),
@@ -660,89 +660,89 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
             dummy1 = gridObj.point
 
         }
-        // if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) { //상부플렌지 이음
-        //     dimgeo.vertices.push(
-        //         new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
-        //         new THREE.Vector3(dimLine[6][j].x, dimLine[6][j].y, 0));
-        //     if (j !== 0) {
-        //         let dimProp = splineProp(dummy2, gridObj.point)
-        //         let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[2] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
-        //         labels.push({
-        //             text: dimProp.length.toFixed(0),
-        //             anchor: [position.x, position.y, 0],
-        //             rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
-        //             fontSize: fontSize * scale
-        //         });
-        //     }
-        //     dummy2 = gridObj.point
+        if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) { //상부플렌지 이음
+            dimgeo.vertices.push(
+                new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
+                new THREE.Vector3(dimLine[6][j].x, dimLine[6][j].y, 0));
+            if (j !== 0) {
+                let dimProp = splineProp(dummy2, gridObj.point)
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[2] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                labels.push({
+                    text: dimProp.length.toFixed(0),
+                    anchor: [position.x, position.y, 0],
+                    rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                    fontSize: fontSize * scale
+                });
+            }
+            dummy2 = gridObj.point
 
-        // }
-        // if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S"
-        //     && gridObj.key.substr(3, 1) !== "P") {  // 그리드 기호에 대해서 한번 대대적인 수정이 필요할 것으로 판단됨
-        //     dimgeo.vertices.push(//치수선 라벨
-        //         new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
-        //         new THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
-        //     if (j !== 0) {
-        //         let dimProp = splineProp(dummy3, gridObj.point)
-        //         let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[3] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
-        //         labels.push({
-        //             text: dimProp.length.toFixed(0),
-        //             anchor: [position.x, position.y, 0],
-        //             rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
-        //             fontSize: fontSize * scale
-        //         });
-        //     }
-        //     dummy3 = gridObj.point
-        // }
-        // if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("BF")) {  //하부플렌지 이음
-        //     dimgeo.vertices.push(
-        //         new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
-        //         new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0));
-        //     if (j !== 0) {
-        //         let dimProp = splineProp(dummy4, gridObj.point)
-        //         let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[4] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
-        //         labels.push({
-        //             text: dimProp.length.toFixed(0),
-        //             anchor: [position.x, position.y, 0],
-        //             rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
-        //             fontSize: fontSize * scale
-        //         });
-        //     }
-        //     dummy4 = gridObj.point
-        // }
-        // if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("W")) {   //웹플렌지 이음
-        //     dimgeo.vertices.push(
-        //         new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
-        //         new THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
-        //     if (j !== 0) {
-        //         let dimProp = splineProp(dummy5, gridObj.point)
-        //         let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
-        //         labels.push({
-        //             text: dimProp.length.toFixed(0),
-        //             anchor: [position.x, position.y, 0],
-        //             rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
-        //             fontSize: fontSize * scale
-        //         });
-        //     }
-        //     dummy5 = gridObj.point
-        // }
+        }
+        if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S"
+            && gridObj.key.substr(3, 1) !== "P") {  // 그리드 기호에 대해서 한번 대대적인 수정이 필요할 것으로 판단됨
+            dimgeo.vertices.push(//치수선 라벨
+                new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
+                new THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
+            if (j !== 0) {
+                let dimProp = splineProp(dummy3, gridObj.point)
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[3] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                labels.push({
+                    text: dimProp.length.toFixed(0),
+                    anchor: [position.x, position.y, 0],
+                    rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                    fontSize: fontSize * scale
+                });
+            }
+            dummy3 = gridObj.point
+        }
+        if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("BF")) {  //하부플렌지 이음
+            dimgeo.vertices.push(
+                new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
+                new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0));
+            if (j !== 0) {
+                let dimProp = splineProp(dummy4, gridObj.point)
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[4] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                labels.push({
+                    text: dimProp.length.toFixed(0),
+                    anchor: [position.x, position.y, 0],
+                    rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                    fontSize: fontSize * scale
+                });
+            }
+            dummy4 = gridObj.point
+        }
+        if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("W")) {   //웹플렌지 이음
+            dimgeo.vertices.push(
+                new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
+                new THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
+            if (j !== 0) {
+                let dimProp = splineProp(dummy5, gridObj.point)
+                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] * Yoffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                labels.push({
+                    text: dimProp.length.toFixed(0),
+                    anchor: [position.x, position.y, 0],
+                    rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                    fontSize: fontSize * scale
+                });
+            }
+            dummy5 = gridObj.point
+        }
 
-        // if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
-        //     let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, Yoffset);
-        //     let mesh = roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine);
-        //     meshes.push(mesh);
-        //     labels.push({
-        //         text: gridObj.key,
-        //         anchor: [position.x, position.y, 0],
-        //         rotation: rot,
-        //         fontSize: fontSize * scale
-        //     });
-        //     let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, Yoffset - 100);
-        //     let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - Yoffset + 100);
-        //     geo.vertices.push(
-        //         new THREE.Vector3(pt1.x, pt1.y, 0),
-        //         new THREE.Vector3(pt2.x, pt2.y, 0));
-        // }
+        if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
+            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, Yoffset);
+            let mesh = roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine);
+            meshes.push(mesh);
+            labels.push({
+                text: gridObj.key,
+                anchor: [position.x, position.y, 0],
+                rotation: rot,
+                fontSize: fontSize * scale
+            });
+            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, Yoffset - 100);
+            let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - Yoffset + 100);
+            geo.vertices.push(
+                new THREE.Vector3(pt1.x, pt1.y, 0),
+                new THREE.Vector3(pt2.x, pt2.y, 0));
+        }
     }
     meshes.push(LineMesh(girderLine, redDotLine, 0));
     for (let k = 0; k < 6; k++) {
