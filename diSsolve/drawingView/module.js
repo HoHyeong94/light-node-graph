@@ -598,7 +598,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let meshes = [];
     let labels = [];
     let rot = 0;
-    let w = [1.5, 1.4, 1.3, -1.3, -1.4, -1.5, 1.2, -1.2];
+    let w = [1.8, 1.6, 1.4, -1.4, -1.6, -1.8, 1.2, -1.2];
     let dimName = ["Girder Length", "Splice", "Top Plate", "V-Stiffener", "Bottom Plate", "Web"]
     let dummy1 = {};
     let dummy2 = {};
