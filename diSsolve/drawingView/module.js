@@ -656,9 +656,10 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                     let dy = - sin * 0.05*Yoffset*scale
                     rot = Math.atan2(cos, - sin) + rotate;
                     dummy1 = gridObj.point
+                    let p1 = PointToDraw(gridObj.point,scale,initPoint,rotate,-1000,(w[3])*Yoffset)
                     dimgeo.vertices.push(
                         new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
-                        new THREE.Vector3(PointToDraw(gridObj.point,scale,initPoint,rotate,-1000,(w[3])*Yoffset)));
+                        new THREE.Vector3(p1.x, p1.y, 0));
                     labels.push({
                         text: "V-Stiffener",
                         // anchor: [dimLine[3][j].x + Math.cos(rotate) * (x31/2 + dx) - Math.sin(rotate) * (y31/2 + dy), dimLine[3][j].y + Math.cos(rotate) * (y31/2 +dy) + Math.sin(rotate) * (x31/2 + dx), 0],
