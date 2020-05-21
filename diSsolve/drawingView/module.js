@@ -624,7 +624,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
                     let anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -500, w[k] * Yoffset + fontSize * 0.6);
                     let p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * Yoffset)
                     dimgeo.vertices.push(
-                        new THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
+                        new THREE.Vector3(dimLine[k][j].x, dimLine[k][j].y, 0),
                         new THREE.Vector3(p1.x, p1.y, 0));
                     labels.push({
                         text: dimName[k],
