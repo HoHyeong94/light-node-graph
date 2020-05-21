@@ -804,9 +804,9 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
             mesh.position.set(0, -i * girderOffset);
             group.add(mesh);
         });
-        let label = gridMark.labels
+        let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum)
         label.position.set(0, -i * girderOffset);
-        group.add(LabelInsert(label, new THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum))
+        group.add(label)
     }
     return group
 }
