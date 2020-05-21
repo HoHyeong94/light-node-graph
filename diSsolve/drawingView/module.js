@@ -621,9 +621,9 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
             dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
         }
         if (j === 0) {
-            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 500, 0);
+            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, -500, 0);
             labels.push({
-                text: "GIRDER" + girderIndex + " C.L.",
+                text: "GIRDER-" + girderIndex + " C.L.",
                 anchor: [position.x, position.y, 0],
                 rotation: rot,
                 fontSize: fontSize * scale
