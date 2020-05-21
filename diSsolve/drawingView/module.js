@@ -782,9 +782,9 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, 
     let bracing = GeneralPlanView(hBracingDict, [""], 4, 0, 1, sc, initPoint, r, green);
     bracing.forEach(function (mesh) { group.add(mesh) });
 
-    // let gridMark = GridMarkView(girderStation, sc, initPoint, r, 1400)
-    // gridMark.meshes.forEach(function (mesh) { group.add(mesh) });
-    // group.add(LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), 1))
+    let gridMark = GridMarkView(girderStation[0], sc, initPoint, r, 1400)
+    gridMark.meshes.forEach(function (mesh) { group.add(mesh) });
+    group.add(LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), 1))
 
     return group
 }
