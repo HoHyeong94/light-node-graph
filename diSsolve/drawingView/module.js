@@ -617,11 +617,15 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
         let sin = gridObj.point.normalSin
         rot = Math.atan2(cos, - sin) + rotate;
         girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
-        for (let k in w) {
-            dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
-        }
-        for (let k = 0; k < 6; k++) {
-            if (j === 0) {
+        if (j === 0) {
+            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 500, 0);
+            labels.push({
+                text: "GIRDER" + girderIndex + " C.L.",
+                anchor: [position.x, position.y, 0],
+                rotation: rot,
+                fontSize: fontSize * scale
+            });
+            for (let k = 0; k < 6; k++) {
                 let anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset + fontSize * 0.75);
                 let p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset)
                 dimgeo.vertices.push(
@@ -635,6 +639,10 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                     align: "left"
                 });
             }
+        }
+
+        for (let k in w) {
+            dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
         }
 
         if (j === 0 || j === girderStation.length - 1) { //거더총길이
@@ -745,14 +753,6 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
         }
     }
 
-    let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 500, 0);
-    labels.push({
-        text: "GIRDER" + girderIndex +  " C.L.",
-        anchor: [position.x, position.y, 0],
-        rotation: rot,
-        fontSize: fontSize * scale
-    });
-
     meshes.push(LineMesh(girderLine, redDotLine, 0));
     for (let k = 0; k < 6; k++) {
         meshes.push(LineMesh(dimLine[k], redLine, 0))
@@ -809,13 +809,13 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
         let initPoint = girderStation[i][0].point
         let endPoint = girderStation[i][girderStation[i].length - 1].point
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
-        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i+1)
+        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
         gridMark.meshes.forEach(function (mesh) {
-            mesh.position.set(0, -i * girderOffset,0);
+            mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh);
         });
         let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum)
-        label.position.set(0, -i * girderOffset,0);
+        label.position.set(0, -i * girderOffset, 0);
         group.add(label)
     }
     return group
