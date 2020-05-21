@@ -732,7 +732,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {
     let segLine = new THREE.LineSegments(geo, redDotLine);
     let dimSegLine = new THREE.LineSegments(dimgeo, redLine);
     segLine.computeLineDistances();
-    segLine.rotateZ(rotate);
+    // segLine.rotateZ(rotate);
     meshes.push(segLine);
     meshes.push(dimSegLine);
     return { meshes, labels }
