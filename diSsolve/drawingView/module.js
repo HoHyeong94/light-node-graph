@@ -801,11 +801,11 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width)
         gridMark.meshes.forEach(function (mesh) {
-            mesh.position.set(0, -i * girderOffset);
+            mesh.position.set(0, -i * girderOffset,0);
             group.add(mesh);
         });
         let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum)
-        label.position.set(0, -i * girderOffset);
+        label.position.set(0, -i * girderOffset,0);
         group.add(label)
     }
     return group
