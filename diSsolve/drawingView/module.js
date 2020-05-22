@@ -649,7 +649,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 let anchor = {};
                 let p1 = {};
                 let p2 = {};
-                if (k <4){
+                if (k <5){
                     anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset + fontSize * 0.75);
                     p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset);
                     p2 = dimLine[k][j];
