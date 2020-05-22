@@ -891,7 +891,7 @@ export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh) 
         });
-        let webPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "LeftWeB","G" + (i+1).toFixed(0) + "RightWeB"], 4, 1, 2, sc, initPoint, r, green)
+        let webPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "LeftWeB","G" + (i+1).toFixed(0) + "RightWeB"], 4, 1, 2, scale, initPoint, rotate, green)
         webPlate.forEach(function (mesh) { 
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh)
