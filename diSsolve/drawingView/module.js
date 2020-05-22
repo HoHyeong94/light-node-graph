@@ -590,7 +590,7 @@ export function PointToDraw(point, scale, initPoint, rotate, xOffset, yOffset) {
 export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
+    let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 100, gapSize: 20, });
     let geo = new THREE.Geometry();
     let dimgeo = new THREE.Geometry();
     let fontSize = 80;
