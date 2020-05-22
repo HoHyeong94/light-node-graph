@@ -641,10 +641,20 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 fontSize: fontSize * scale
             });
             for (let k = 0; k < 6; k++) {
-                let anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset + fontSize * 0.75);
-                let p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset)
+                let anchor = {};
+                let p1 = {};
+                let p2 = {};
+                if (k <4){
+                    anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset + fontSize * 0.75);
+                    p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset);
+                    p2 = dimLine[k][j];
+                }else {
+                    anchor = {x : (totalLength - 1000) * scale, y : sideViewOffset +  1.2 * markOffset + fontSize * 0.75};
+                    p1 = {x : (totalLength - 1000) * scale, y : sideViewOffset +  1.2 * markOffset};
+                    p2 = {x : (totalLength) * scale, y : sideViewOffset +  1.2 * markOffset};
+                }
                 dimgeo.vertices.push(
-                    new THREE.Vector3(dimLine[k][j].x, dimLine[k][j].y, 0),
+                    new THREE.Vector3(p2.x, p2.y, 0),
                     new THREE.Vector3(p1.x, p1.y, 0));
                 labels.push({
                     text: dimName[k],
