@@ -745,8 +745,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
 
         if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
             let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset);
-            let mesh = roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine);
-            meshes.push(mesh);
+            meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
                 anchor: [position.x, position.y, 0],
@@ -760,17 +759,16 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 new THREE.Vector3(pt2.x, pt2.y, 0));
             
                 // side View gridMark
-            let position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + markOffset*scale, z: 0 };
-            let mesh = roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine);
-            meshes.push(mesh);
+            rposition = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + markOffset*scale, z: 0 };
+            meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
                 anchor: [position.x, position.y, 0],
                 rotation: 0,
                 fontSize: fontSize * scale
             });
-            let pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (markOffset-100)*scale , z: 0 };
-            let pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset - (markOffset-100)*scale , z: 0 };
+            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (markOffset-100)*scale , z: 0 };
+            pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset - (markOffset-100)*scale , z: 0 };
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
                 new THREE.Vector3(pt2.x, pt2.y, 0));

@@ -1345,126 +1345,126 @@
   // };
 
   function GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput) {
-      const angle = 0;
-      const spanLength = 1;
-      const baseLine = 0;
-      const alignOffset = 1;
-      const margin = 12000; // 해당변수로 충분한 거더 간격이 포함되어야 함.
+    const angle = 0;
+    const spanLength = 1;
+    const baseLine = 0;
+    const alignOffset = 1;
+    const margin = 12000; // 해당변수로 충분한 거더 간격이 포함되어야 함.
 
-      let result = {
-          masterLine: masterLine,
-          startPoint: {},
-          endPoint: {},
-          girderLine: [],
-          gridKeyPoint: {}
-      };
-      let supportStation = girderLayoutInput.baseValue;
-      let bridgeLength = 0;
-      let i = 0;
-      girderLayoutInput.supportData.forEach(function (elem) {
-          bridgeLength += elem[spanLength] ? elem[spanLength] : 0;
-          let gridName = "CRS" + i;
-          result.gridKeyPoint[gridName] = MasterPointGenerator(supportStation + bridgeLength, masterLine, elem[angle]);
-          if (i === 0) {
-              result.startPoint = result.gridKeyPoint[gridName];
-          } else if (i === girderLayoutInput.supportData.length - 1) {
-              result.endPoint = result.gridKeyPoint[gridName];
-          }
-          i++;
-      });
-      // 시종점 교대사각 자동계산 //
-      result.gridKeyPoint["CRS"+1].skew = OffsetSkewCalculator(result.startPoint, result.startPoint.skew, girderLayoutInput.supportData[1][1], masterLine);
-      result.gridKeyPoint["CRS"+ (girderLayoutInput.supportData.length - 2)].skew = OffsetSkewCalculator(result.endPoint, result.endPoint.skew, -1*girderLayoutInput.supportData[girderLayoutInput.supportData.length - 1][1], masterLine);
-      // 시종점 교대사각 자동계산 끝 //
-      let stp = MasterPointGenerator(result.startPoint.masterStationNumber-margin,masterLine,result.startPoint.skew);
-      let edp = MasterPointGenerator(result.endPoint.masterStationNumber+margin,masterLine,result.startPoint.skew);
-
-      for (let j = 0; j < girderLayoutInput.getGirderList.length; j++) {
-          let girderBaseLine = girderLayoutInput.getGirderList[j][baseLine] === "MasterLine" ? masterLine : slaveLine[girderLayoutInput.getGirderList[j][baseLine]];
-          result.girderLine.push(OffsetLine(girderLayoutInput.getGirderList[j][alignOffset], girderBaseLine, stp, edp));
-          // 추후에 거더라인이 포인트만 가져간다고 하면, 포인트에대한 내용만 보내줄것!
+    let result = {
+      masterLine: masterLine,
+      startPoint: {},
+      endPoint: {},
+      girderLine: [],
+      gridKeyPoint: {}
+    };
+    let supportStation = girderLayoutInput.baseValue;
+    let bridgeLength = 0;
+    let i = 0;
+    girderLayoutInput.supportData.forEach(function (elem) {
+      bridgeLength += elem[spanLength] ? elem[spanLength] : 0;
+      let gridName = "CRS" + i;
+      result.gridKeyPoint[gridName] = MasterPointGenerator(supportStation + bridgeLength, masterLine, elem[angle]);
+      if (i === 0) {
+        result.startPoint = result.gridKeyPoint[gridName];
+      } else if (i === girderLayoutInput.supportData.length - 1) {
+        result.endPoint = result.gridKeyPoint[gridName];
       }
+      i++;
+    });
+    // 시종점 교대사각 자동계산 //
+    result.gridKeyPoint["CRS" + 1].skew = OffsetSkewCalculator(result.startPoint, result.startPoint.skew, girderLayoutInput.supportData[1][1], masterLine);
+    result.gridKeyPoint["CRS" + (girderLayoutInput.supportData.length - 2)].skew = OffsetSkewCalculator(result.endPoint, result.endPoint.skew, -1 * girderLayoutInput.supportData[girderLayoutInput.supportData.length - 1][1], masterLine);
+    // 시종점 교대사각 자동계산 끝 //
+    let stp = MasterPointGenerator(result.startPoint.masterStationNumber - margin, masterLine, result.startPoint.skew);
+    let edp = MasterPointGenerator(result.endPoint.masterStationNumber + margin, masterLine, result.startPoint.skew);
 
-      return result
+    for (let j = 0; j < girderLayoutInput.getGirderList.length; j++) {
+      let girderBaseLine = girderLayoutInput.getGirderList[j][baseLine] === "MasterLine" ? masterLine : slaveLine[girderLayoutInput.getGirderList[j][baseLine]];
+      result.girderLine.push(OffsetLine(girderLayoutInput.getGirderList[j][alignOffset], girderBaseLine, stp, edp));
+      // 추후에 거더라인이 포인트만 가져간다고 하면, 포인트에대한 내용만 보내줄것!
+    }
+
+    return result
   }
 
 
   function GridPointGenerator3(girderLayout, SEShape, gridInput) {
-      let masterLine = girderLayout.masterLine;
-      let nameToPointDict = {};
-      const girderNumber = girderLayout.girderLine.length;
-      let pointName = "";
-      let offset = 0;
-      for (let k = 0; k < 8; k++) {
-          switch (k) {
-              case 0: offset = SEShape.start.A; break;
-              case 1: offset = SEShape.start.A + SEShape.start.D; break;
-              case 2: offset = SEShape.start.A + SEShape.start.D + SEShape.start.F; break;
-              case 3: offset = SEShape.start.A + SEShape.start.D + SEShape.start.F + SEShape.start.G; break;
-              case 4: offset = -(SEShape.end.A + SEShape.end.D + SEShape.end.F + SEShape.end.G); break;
-              case 5: offset = -(SEShape.end.A + SEShape.end.D + SEShape.end.F); break;
-              case 6: offset = -(SEShape.end.A + SEShape.end.D); break;
-              case 7: offset = -(SEShape.end.A); break;
-          }
-          let masterPoint = k < 4 ? girderLayout.startPoint : girderLayout.endPoint;
-          let skew = k < 4 ? OffsetSkewCalculator(masterPoint, girderLayout.startPoint.skew, offset, masterLine) : OffsetSkewCalculator(masterPoint, girderLayout.endPoint.skew, offset, masterLine);
-          let centerPoint = MasterPointGenerator(masterPoint.masterStationNumber + offset, masterLine, skew);
-          for (let i = 0; i < girderNumber; i++) {
-              pointName = "G" + (i + 1) + "K" + k;
-              nameToPointDict[pointName] = LineMatch2(centerPoint, masterLine, girderLayout.girderLine[i]);
-          }
-          nameToPointDict["CRK" + k] = centerPoint;
+    let masterLine = girderLayout.masterLine;
+    let nameToPointDict = {};
+    const girderNumber = girderLayout.girderLine.length;
+    let pointName = "";
+    let offset = 0;
+    for (let k = 0; k < 8; k++) {
+      switch (k) {
+        case 0: offset = SEShape.start.A; break;
+        case 1: offset = SEShape.start.A + SEShape.start.D; break;
+        case 2: offset = SEShape.start.A + SEShape.start.D + SEShape.start.F; break;
+        case 3: offset = SEShape.start.A + SEShape.start.D + SEShape.start.F + SEShape.start.G; break;
+        case 4: offset = -(SEShape.end.A + SEShape.end.D + SEShape.end.F + SEShape.end.G); break;
+        case 5: offset = -(SEShape.end.A + SEShape.end.D + SEShape.end.F); break;
+        case 6: offset = -(SEShape.end.A + SEShape.end.D); break;
+        case 7: offset = -(SEShape.end.A); break;
       }
-      for (let k in girderLayout.gridKeyPoint) {
-          let centerPoint = girderLayout.gridKeyPoint[k];
-          for (let i = 0; i < girderNumber; i++) {
-              pointName = "G" + (i + 1) + k.substr(2);
-              nameToPointDict[pointName] = LineMatch2(centerPoint, masterLine, girderLayout.girderLine[i]);
-          }
-          nameToPointDict[k] = centerPoint;
+      let masterPoint = k < 4 ? girderLayout.startPoint : girderLayout.endPoint;
+      let skew = k < 4 ? OffsetSkewCalculator(masterPoint, girderLayout.startPoint.skew, offset, masterLine) : OffsetSkewCalculator(masterPoint, girderLayout.endPoint.skew, offset, masterLine);
+      let centerPoint = MasterPointGenerator(masterPoint.masterStationNumber + offset, masterLine, skew);
+      for (let i = 0; i < girderNumber; i++) {
+        pointName = "G" + (i + 1) + "K" + k;
+        nameToPointDict[pointName] = LineMatch2(centerPoint, masterLine, girderLayout.girderLine[i]);
       }
-      // for (let i=0;i<girderNumber;i++){
-      const name = 0;
-      const BenchMark = 1;
-      const off =2;
-      for (let gp in gridInput)
-          gridInput[gp].forEach(function (elem) {
-              pointName = elem[name];
-              let i = pointName.substr(1, 1) * 1 - 1;
-              let masterstation = nameToPointDict[elem[BenchMark]].masterStationNumber + elem[off];
+      nameToPointDict["CRK" + k] = centerPoint;
+    }
+    for (let k in girderLayout.gridKeyPoint) {
+      let centerPoint = girderLayout.gridKeyPoint[k];
+      for (let i = 0; i < girderNumber; i++) {
+        pointName = "G" + (i + 1) + k.substr(2);
+        nameToPointDict[pointName] = LineMatch2(centerPoint, masterLine, girderLayout.girderLine[i]);
+      }
+      nameToPointDict[k] = centerPoint;
+    }
+    // for (let i=0;i<girderNumber;i++){
+    const name = 0;
+    const BenchMark = 1;
+    const off = 2;
+    for (let gp in gridInput)
+      gridInput[gp].forEach(function (elem) {
+        pointName = elem[name];
+        let i = pointName.substr(1, 1) * 1 - 1;
+        let masterstation = nameToPointDict[elem[BenchMark]].masterStationNumber + elem[off];
 
-              let masterPoint = MasterPointGenerator(masterstation, masterLine);
-              nameToPointDict[pointName] = LineMatch2(masterPoint, masterLine, girderLayout.girderLine[i]);
-              //SplinePointGenerator(masterPoint, girderLayout.girderLine[i].points, masterLine.VerticalDataList, masterLine.SuperElevation);
-          });
-      // }
-      let i = 0;
-      girderLayout.masterLine.points.forEach(function (point) {
-          if (point.masterStationNumber > nameToPointDict["CRK0"].masterStationNumber
-              && point.masterStationNumber < nameToPointDict["CRK7"].masterStationNumber) {
-              nameToPointDict["CRN" + i] = point;
-              i++;
-          }
+        let masterPoint = MasterPointGenerator(masterstation, masterLine);
+        nameToPointDict[pointName] = LineMatch2(masterPoint, masterLine, girderLayout.girderLine[i]);
+        //SplinePointGenerator(masterPoint, girderLayout.girderLine[i].points, masterLine.VerticalDataList, masterLine.SuperElevation);
       });
+    // }
+    let i = 0;
+    girderLayout.masterLine.points.forEach(function (point) {
+      if (point.masterStationNumber > nameToPointDict["CRK0"].masterStationNumber
+        && point.masterStationNumber < nameToPointDict["CRK7"].masterStationNumber) {
+        nameToPointDict["CRN" + i] = point;
+        i++;
+      }
+    });
 
-      return nameToPointDict
+    return nameToPointDict
   }
 
   function OffsetSkewCalculator(masterPoint, masterSkew, offset, masterLine) {
-      const startSkew = masterSkew;
-      let offsetStation = masterPoint.masterStationNumber + offset;
-      const offsetPoint = PointGenerator(offsetStation, masterLine);
-      let sign = 1;
-      if (masterPoint.normalCos * offsetPoint.normalSin - masterPoint.normalSin * offsetPoint.normalCos >= 0) {
-          sign = 1;
-      } else {
-          sign = -1;
-      }
-      let deltaSkew = (Math.acos(masterPoint.normalCos * offsetPoint.normalCos + masterPoint.normalSin * offsetPoint.normalSin) * 180 / Math.PI).toFixed(4) * 1;
-      let offsetSkew = startSkew - sign * (deltaSkew);
-      if (offsetSkew > 90) { offsetSkew -= 180; }
-      else if (offsetSkew < -90) { offsetSkew += 180; }
-      return offsetSkew
+    const startSkew = masterSkew;
+    let offsetStation = masterPoint.masterStationNumber + offset;
+    const offsetPoint = PointGenerator(offsetStation, masterLine);
+    let sign = 1;
+    if (masterPoint.normalCos * offsetPoint.normalSin - masterPoint.normalSin * offsetPoint.normalCos >= 0) {
+      sign = 1;
+    } else {
+      sign = -1;
+    }
+    let deltaSkew = (Math.acos(masterPoint.normalCos * offsetPoint.normalCos + masterPoint.normalSin * offsetPoint.normalSin) * 180 / Math.PI).toFixed(4) * 1;
+    let offsetSkew = startSkew - sign * (deltaSkew);
+    if (offsetSkew > 90) { offsetSkew -= 180; }
+    else if (offsetSkew < -90) { offsetSkew += 180; }
+    return offsetSkew
   }
 
   const LineMatch2 = (masterPoint, masterLine, slavePoints) => {
@@ -1515,7 +1515,7 @@
           t = -c / b;
         } else {
           t = (-b + Math.sqrt(b ** 2 - 4 * a * c)) / (2 * a);
-          if (t > 1+err || t < -1 -err) {
+          if (t > 1 + err || t < -1 - err) {
             t = (-b - Math.sqrt(b ** 2 - 4 * a * c)) / (2 * a);
           }      }
 
@@ -1534,26 +1534,26 @@
       }
     }
 
-      let newMasterPoint = masterPoint.skew === 90? masterPoint:PointLineMatch2(resultPoint, masterLine);
+    let newMasterPoint = masterPoint.skew === 90 ? masterPoint : PointLineMatch2(resultPoint, masterLine);
 
-      resultPoint.masterStationNumber = newMasterPoint.masterStationNumber.toFixed(4) * 1;
-      resultPoint.stationNumber = resultPoint.masterStationNumber;
-      if (newMasterPoint.normalCos * (resultPoint.x - newMasterPoint.x) + newMasterPoint.normalSin * (resultPoint.y - newMasterPoint.y) >= 0) {
-        sign = 1;
-      }
-      else {
-        sign = -1;
-      }
-      resultPoint.offset = sign * Math.sqrt((resultPoint.x - newMasterPoint.x) ** 2 + (resultPoint.y - newMasterPoint.y) ** 2).toFixed(4) * 1;
-      if (sign>0){
-        resultPoint.z = newMasterPoint.z + newMasterPoint.rightGradient * resultPoint.offset;
-      }else {
-        resultPoint.z = newMasterPoint.z + newMasterPoint.leftGradient * resultPoint.offset;
-      }
-      resultPoint.gradientX = newMasterPoint.gradientX;
-      resultPoint.gradientY = sign>0? newMasterPoint.rightGradient : newMasterPoint.leftGradient;
-      // resultPoint.check = check
-     
+    resultPoint.masterStationNumber = newMasterPoint.masterStationNumber.toFixed(4) * 1;
+    resultPoint.stationNumber = resultPoint.masterStationNumber;
+    if (newMasterPoint.normalCos * (resultPoint.x - newMasterPoint.x) + newMasterPoint.normalSin * (resultPoint.y - newMasterPoint.y) >= 0) {
+      sign = 1;
+    }
+    else {
+      sign = -1;
+    }
+    resultPoint.offset = sign * Math.sqrt((resultPoint.x - newMasterPoint.x) ** 2 + (resultPoint.y - newMasterPoint.y) ** 2).toFixed(4) * 1;
+    if (sign > 0) {
+      resultPoint.z = newMasterPoint.z + newMasterPoint.rightGradient * resultPoint.offset;
+    } else {
+      resultPoint.z = newMasterPoint.z + newMasterPoint.leftGradient * resultPoint.offset;
+    }
+    resultPoint.gradientX = newMasterPoint.gradientX;
+    resultPoint.gradientY = sign > 0 ? newMasterPoint.rightGradient : newMasterPoint.leftGradient;
+    // resultPoint.check = check
+
     return resultPoint
   };
 
@@ -1562,6 +1562,7 @@
     const y1 = point1.y;
     const x2 = point2.x;
     const y2 = point2.y;
+    const err = 0.0001;
 
     let b1 = (y2 - y1) / 2;
     let b2 = (x2 - x1) / 2;
@@ -1569,24 +1570,27 @@
     let a2 = 0.0;
     let df1 = 0.0;
     let df2 = 0.0;
-    if (point1.normalSin === 0) {
-      if (point2.normalSin === 0) ;
-      else {
-        df2 = -point2.normalCos / point2.normalSin;
-        a2 = b2 / 2;
-        a1 = (-b1 + df2 * (2 * a2 + b2)) / 2;
-      }
-    } else if (point2.normalSin === 0) {
-      if (point2.normalSin === 0) ; else {
-        df1 = -point1.normalCos / point1.normalSin;
-        a2 = b2 / -2;
-        a1 = (-b1 + df1 * (-2 * a2 + b2)) / -2;
-      }
-    } else {
+
+
+    if (point1.normalSin === 0 && point2.normalSin === 0) {
+      a2 = 0;
+      b2 = 0;
+      a1 = 0;
+    }
+    if (point1.normalSin === 0 && point2.normalSin !== 0) {
+      a2 = b2 / 2;
+      df2 = -point2.normalCos / point2.normalSin;
+      a1 = (-b1 + df2 * (2 * a2 + b2)) / 2;
+    }
+    if (point1.normalSin !== 0 && point2.normalSin === 0) {
+      a2 = - b2 / 2;
+      df1 = -point1.normalCos / point1.normalSin;
+      a1 = (-b1 + df1 * (-2 * a2 + b2)) / -2;
+    }
+    if (point1.normalSin !== 0 && point2.normalSin !== 0) {
       df1 = -point1.normalCos / point1.normalSin;
       df2 = -point2.normalCos / point2.normalSin;
-
-      if (df1 === df2) {
+      if (Math.abs(df1 - df2) < err) {
         a1 = 0;
         a2 = 0;
       } else {
@@ -1594,37 +1598,85 @@
         a1 = (-b1 + df1 * (-2 * a2 + b2)) / -2;
       }
     }
+
+
+
+    // if (point1.normalSin === 0) {
+    //   if (point2.normalSin === 0) {
+    //     // return Math.abs(y2 - y1)
+    //   }
+    //   else {
+    //     df2 = -point2.normalCos / point2.normalSin
+    //     a2 = b2 / 2
+    //     a1 = (-b1 + df2 * (2 * a2 + b2)) / 2
+    //   }
+    // } else if (point2.normalSin === 0) {
+    //   if (point2.normalSin === 0) {
+    //     // return Math.abs(y2 - y1)
+    //   } else {
+    //     df1 = -point1.normalCos / point1.normalSin
+    //     a2 = b2 / -2
+    //     a1 = (-b1 + df1 * (-2 * a2 + b2)) / -2
+    //   }
+    // } else {
+    //   df1 = -point1.normalCos / point1.normalSin
+    //   df2 = -point2.normalCos / point2.normalSin
+
+    //   if (df1 === df2) {
+    //     a1 = 0
+    //     a2 = 0
+    //   } else {
+    //     a2 = (2 * b1 - (df1 + df2) * b2) / (2 * (df2 - df1))
+    //     a1 = (-b1 + df1 * (-2 * a2 + b2)) / -2
+    //   }
+    // }
     const c1 = y2 - a1 - b1;
     const c2 = x2 - a2 - b2;
     return { a1: a1, b1: b1, c1: c1, a2: a2, b2: b2, c2: c2 }
   };
 
-  function GridStationList(pointDict){
+  function splineProp(point1, point2) {
+    const coe = splineCoefficient(point1, point2);
+    const w1 = 5 / 9;
+    const w2 = 8 / 9;
+    const w3 = w1;
+    const t1 = -0.77459666924;
+    const t2 = 0;
+    const t3 = 0.77459666924;
+    let length = Math.sqrt(Math.pow((2 * coe.a1 * t1 + coe.b1), 2) + Math.pow((2 * coe.a2 * t1 + coe.b2), 2)) * w1
+      + Math.sqrt(Math.pow((2 * coe.a1 * t2 + coe.b1), 2) + Math.pow((2 * coe.a2 * t2 + coe.b2), 2)) * w2
+      + Math.sqrt(Math.pow((2 * coe.a1 * t3 + coe.b1), 2) + Math.pow((2 * coe.a2 * t3 + coe.b2), 2)) * w3;
+    let l = Math.sqrt(coe.b2 ** 2 + coe.b1 ** 2);
+    let midPoint = { x: coe.c2, y: coe.c1, cos: coe.b2 / l, sin: coe.b1 / l, normalCos: coe.b1 / l, normalSin: -coe.b2 / l, coe: coe };
+    return { length: length.toFixed(4) * 1, midPoint }
+  }
+
+  function GridStationList(pointDict) {
     let gs = [];
     let cs = [];
-    for (let k in pointDict){
+    for (let k in pointDict) {
       let girderIndex = k.substr(1, 1) - 1;
-      if (gs.length <= girderIndex){
-        for (let i=0; i<=girderIndex - gs.length;i++){
+      if (gs.length <= girderIndex) {
+        for (let i = 0; i <= girderIndex - gs.length; i++) {
           gs.push([]);
         }
       }
 
       if (k.substr(0, 1) === "G") {
-          let s = pointDict[k].masterStationNumber;
-          if (s>=pointDict["G"+(girderIndex+1)+"K1"].masterStationNumber&&
-            s<=pointDict["G"+(girderIndex+1)+"K6"].masterStationNumber){
-            gs[girderIndex].push({station:pointDict[k].masterStationNumber,key:k, point:pointDict[k]});
-          }
-        }else {
-          cs.push({station:pointDict[k].masterStationNumber,key:k, point:pointDict[k]});
+        let s = pointDict[k].masterStationNumber;
+        if (s >= pointDict["G" + (girderIndex + 1) + "K1"].masterStationNumber &&
+          s <= pointDict["G" + (girderIndex + 1) + "K6"].masterStationNumber) {
+          gs[girderIndex].push({ station: pointDict[k].masterStationNumber, key: k, point: pointDict[k] });
         }
+      } else {
+        cs.push({ station: pointDict[k].masterStationNumber, key: k, point: pointDict[k] });
+      }
 
     }
-    gs.forEach(function(elem){elem.sort(function (a, b) { return a.station < b.station ? -1 : 1; });});
+    gs.forEach(function (elem) { elem.sort(function (a, b) { return a.station < b.station ? -1 : 1; }); });
     cs.sort(function (a, b) { return a.station < b.station ? -1 : 1; });
-    
-    return   {girder:gs,centerLine:cs}
+
+    return { girder: gs, centerLine: cs }
   }
 
   // import { LiteGraph, meshArr, THREE } from "global";
@@ -4962,81 +5014,216 @@
       return new global.THREE.Line(geometry, lineMaterial)
   }
 
+  function PointToDraw(point, scale, initPoint, rotate, xOffset, yOffset) { //DrawingPointConverter
+      let cos = point.normalCos;
+      let sin = point.normalSin;
+      let x0 = (point.x - initPoint.x - sin * xOffset - cos * yOffset) * scale;
+      let y0 = (point.y - initPoint.y + cos * xOffset - sin * yOffset) * scale;
+      return { x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 }
+  }
 
-  function GridMarkView(girderStation, scale, initPoint, rotate, Yoffset) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
+  function GridMarkView(girderStation, scale, initPoint, rotate, markOffset, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
-      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
       let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
       let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
       let geo = new global.THREE.Geometry();
       let dimgeo = new global.THREE.Geometry();
-      let fontSize = 80 * scale;
+      let fontSize = 80;
       let meshes = [];
       let labels = [];
       let rot = 0;
-      let w = [1.5, 1.4, 1.3, -1.3, -1.4, -1.5];
+      let w = [1.8, 1.6, 1.4, -1.4, -1.6, -1.8, 1.2, -1.2];
+      let dimName = ["Girder Length", "Splice", "Top Plate", "V-Stiffener", "Bottom Plate", "Web"];
+      let dummy0 = {};
+      let dummy1 = {};
+      let dummy2 = {};
+      let dummy3 = {};
+      let dummy4 = {};
+      let dummy5 = {};
+      let sideViewOffset = -8000 * scale;
+      let segLength = 0;
+      let totalLength = 0;
 
-      for (let i = 0; i < girderStation.length; i++) {
-          let girderLine = [];
-          let dimLine = [[], [], [], [], [], []];
 
-          for (let j = 0; j < girderStation[i].length; j++) {
-              let gridObj = girderStation[i][j];
-              let cos = gridObj.point.normalCos;
-              let sin = gridObj.point.normalSin;
-              let x0 = (gridObj.point.x - initPoint.x) * scale;
-              let y0 = (gridObj.point.y - initPoint.y) * scale;
-              girderLine.push({ x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 });
+      // for (let i = 0; i < girderStation.length; i++) {
+      let girderLine = [];
+      let girderSideLine = [];
+      let dimLine = [[], [], [], [], [], [], [], []]; //8개, w와 동일한 개수
+
+      for (let j = 0; j < girderStation.length; j++) {
+          let gridObj = girderStation[j];
+          let cos = gridObj.point.normalCos;
+          let sin = gridObj.point.normalSin;
+          rot = Math.atan2(cos, - sin) + rotate;
+          if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length; }        totalLength += segLength;
+          console.log("totalLength", totalLength);
+          dummy0 = gridObj.point;
+          girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
+          girderSideLine.push({ x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 });
+
+          for (let k in w) {
+              dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
+          }
+          if (j === 0) {
+              let position = PointToDraw(gridObj.point, scale, initPoint, rotate, -500, 0);
+              labels.push({
+                  text: "GIRDER-" + girderIndex + " C.L.",
+                  anchor: [position.x, position.y, 0],
+                  rotation: rot,
+                  fontSize: fontSize * scale
+              });
               for (let k = 0; k < 6; k++) {
-                  let x1 = x0 - cos * Yoffset * w[k] * scale;
-                  let y1 = y0 - sin * Yoffset * w[k] * scale;
-                  dimLine[k].push({ x: Math.cos(rotate) * x1 - Math.sin(rotate) * y1, y: Math.cos(rotate) * y1 + Math.sin(rotate) * x1 });
-              }
-              if (j === 0 || j === girderStation[i].length - 1) {
+                  let anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset + fontSize * 0.75);
+                  let p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset);
                   dimgeo.vertices.push(
-                      new global.THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
-                      new global.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
-              }
-              if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP")) {
-                  dimgeo.vertices.push(
-                      new global.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0),
-                      new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
-              }
-              if (j === 0 || j === girderStation[i].length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) {
-                  dimgeo.vertices.push(
-                      new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
-                      new global.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0));
-              }
-
-
-              if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
-                  let x = (gridObj.point.x - cos * Yoffset - initPoint.x) * scale;
-                  let y = (gridObj.point.y - sin * Yoffset - initPoint.y) * scale;
-                  let position = [Math.cos(rotate) * x - Math.sin(rotate) * y, Math.cos(rotate) * y + Math.sin(rotate) * x];
-                  rot = Math.atan2(cos, - sin) + rotate;
-                  let mesh = roundedRect(position[0], position[1], rot, 400 * scale, 200 * scale, 100 * scale, lineMaterial);
-                  meshes.push(mesh);
+                      new global.THREE.Vector3(dimLine[k][j].x, dimLine[k][j].y, 0),
+                      new global.THREE.Vector3(p1.x, p1.y, 0));
                   labels.push({
-                      text: gridObj.key,
-                      anchor: [position[0], position[1], 0],
+                      text: dimName[k],
+                      anchor: [anchor.x, anchor.y, 0],
                       rotation: rot,
-                      fontSize: fontSize
+                      fontSize: fontSize * scale,
+                      align: "left"
                   });
-                  geo.vertices.push(
-                      new global.THREE.Vector3(x + cos * 100 * scale, y + sin * 100 * scale, 0),
-                      new global.THREE.Vector3(x + cos * (2 * Yoffset - 100) * scale,
-                          y + sin * (2 * Yoffset - 100) * scale, 0));
               }
           }
-          meshes.push(LineMesh(girderLine, redDotLine, 0));
-          dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)); });
+          if (j === 0 || j === girderStation.length - 1) { //거더총길이
+              dimgeo.vertices.push(
+                  new global.THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
+                  new global.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
+          }
+          if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP")) {   //현장이음부
+              dimgeo.vertices.push(
+                  new global.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0),
+                  new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
+              if (j !== 0) {
+                  let dimProp = splineProp(dummy1, gridObj.point);
+                  // console.log("spline", dimProp,dummy1,gridObj.point)
+                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  labels.push({
+                      text: dimProp.length.toFixed(0),
+                      anchor: [position.x, position.y, 0],
+                      rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                      fontSize: fontSize * scale
+                  });
+              }
+              dummy1 = gridObj.point;
+
+          }
+          if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) { //상부플렌지 이음
+              dimgeo.vertices.push(
+                  new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
+                  new global.THREE.Vector3(dimLine[6][j].x, dimLine[6][j].y, 0));
+              if (j !== 0) {
+                  let dimProp = splineProp(dummy2, gridObj.point);
+                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[2] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  labels.push({
+                      text: dimProp.length.toFixed(0),
+                      anchor: [position.x, position.y, 0],
+                      rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                      fontSize: fontSize * scale
+                  });
+              }
+              dummy2 = gridObj.point;
+
+          }
+          if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S"
+              && gridObj.key.substr(3, 1) !== "P") {  // 그리드 기호에 대해서 한번 대대적인 수정이 필요할 것으로 판단됨
+              dimgeo.vertices.push(//치수선 라벨
+                  new global.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
+                  new global.THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
+              if (j !== 0) {
+                  let dimProp = splineProp(dummy3, gridObj.point);
+                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[3] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  labels.push({
+                      text: dimProp.length.toFixed(0),
+                      anchor: [position.x, position.y, 0],
+                      rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                      fontSize: fontSize * scale
+                  });
+              }
+              dummy3 = gridObj.point;
+          }
+          if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("BF")) {  //하부플렌지 이음
+              dimgeo.vertices.push(
+                  new global.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
+                  new global.THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0));
+              if (j !== 0) {
+                  let dimProp = splineProp(dummy4, gridObj.point);
+                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[4] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  labels.push({
+                      text: dimProp.length.toFixed(0),
+                      anchor: [position.x, position.y, 0],
+                      rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                      fontSize: fontSize * scale
+                  });
+              }
+              dummy4 = gridObj.point;
+          }
+          if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("WF")) {   //웹플렌지 이음
+              dimgeo.vertices.push(
+                  new global.THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
+                  new global.THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
+              if (j !== 0) {
+                  let dimProp = splineProp(dummy5, gridObj.point);
+                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  labels.push({
+                      text: dimProp.length.toFixed(0),
+                      anchor: [position.x, position.y, 0],
+                      rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                      fontSize: fontSize * scale
+                  });
+              }
+              dummy5 = gridObj.point;
+          }
+
+          if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
+              let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset);
+              meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
+              labels.push({
+                  text: gridObj.key,
+                  anchor: [position.x, position.y, 0],
+                  rotation: rot,
+                  fontSize: fontSize * scale
+              });
+              let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset - 100);
+              let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - markOffset + 100);
+              geo.vertices.push(
+                  new global.THREE.Vector3(pt1.x, pt1.y, 0),
+                  new global.THREE.Vector3(pt2.x, pt2.y, 0));
+              
+                  // side View gridMark
+              position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + markOffset*scale, z: 0 };
+              meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
+              labels.push({
+                  text: gridObj.key,
+                  anchor: [position.x, position.y, 0],
+                  rotation: 0,
+                  fontSize: fontSize * scale
+              });
+              pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (markOffset-100)*scale , z: 0 };
+              pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset - (markOffset-100)*scale , z: 0 };
+              geo.vertices.push(
+                  new global.THREE.Vector3(pt1.x, pt1.y, 0),
+                  new global.THREE.Vector3(pt2.x, pt2.y, 0));
+
+
+          }
       }
+
+      meshes.push(LineMesh(girderLine, redDotLine, 0));
+      meshes.push(LineMesh(girderSideLine, redDotLine, 0));
+      for (let k = 0; k < 6; k++) {
+          meshes.push(LineMesh(dimLine[k], redLine, 0));
+      }
+      // dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
+      // }
       let segLine = new global.THREE.LineSegments(geo, redDotLine);
-      let dimSegLine = new global.THREE.LineSegments(dimgeo, redLine);
       segLine.computeLineDistances();
-      segLine.rotateZ(rotate);
+      let dimSegLine = new global.THREE.LineSegments(dimgeo, redLine);
       meshes.push(segLine);
       meshes.push(dimSegLine);
+
       return { meshes, labels }
   }
 
@@ -5063,42 +5250,33 @@
       vStiffner.forEach(function (mesh) { group.add(mesh); });
       let bracing = GeneralPlanView(hBracingDict, [""], 4, 0, 1, sc, initPoint, r, green);
       bracing.forEach(function (mesh) { group.add(mesh); });
-      let gridMark = GridMarkView(girderStation, sc, initPoint, r, 1400);
+
+      let gridMark = GridMarkView(girderStation[0], sc, initPoint, r, 1400);
       gridMark.meshes.forEach(function (mesh) { group.add(mesh); });
-      let label = gridMark.labels;
+      group.add(LabelInsert(gridMark.labels, new global.THREE.MeshBasicMaterial({ color: 0xffffff }), 1));
 
-      // wholeModel.models["bottomPlate"] = GeneralPlanView(steelBoxDict, ["G1BottomPlate"], 4, 0,1,sc, initPoint,r,"aqua")
-      // wholeModel.models["bottomPlate"].origin = [0,-1000]
-      // wholeModel.models["leftWeB"] = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0,1,sc, initPoint,r,"aqua")
-      // wholeModel.models["leftWeB"].origin = [0,-1500]
-      // wholeModel.models["gridMark"] = 
+      return group
+  }
 
-      let textMesh;
-      let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
-
-      var loader = new global.THREE.FontLoader();
-      loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-          // console.log(font)
-          // var font = {generateShapes:(messagem , num)=>{}}
-          for (let i in label) {
-              var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-              var geometry = new global.THREE.ShapeBufferGeometry(shapes);
-              var xMid;
-              geometry.computeBoundingBox();
-              xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-              geometry.translate(xMid, -label[i].fontSize / 2, 0);
-              if (label[i].rotation) {
-                  geometry.rotateZ(label[i].rotation);
-              }
-              geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
-              // make shape ( N.B. edge view not visible )
-              textMesh = new global.THREE.Mesh(geometry, textMaterial);
-              textMesh.layers.set(1);
-              group.add(textMesh);
-          }
-          // text.position.z = 0;
-      });
-
+  function GirderGeneralDraw1(girderStation, layerNum) {
+      let group = new global.THREE.Group();
+      // let layerNum = 5;
+      let scale = 1;
+      let girderOffset = 16000;
+      let gridMark_width = 1500; // unit : mm
+      for (let i = 0; i < girderStation.length; i++) {
+          let initPoint = girderStation[i][0].point;
+          let endPoint = girderStation[i][girderStation[i].length - 1].point;
+          let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x));
+          let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1);
+          gridMark.meshes.forEach(function (mesh) {
+              mesh.position.set(0, -i * girderOffset, 0);
+              group.add(mesh);
+          });
+          let label = LabelInsert(gridMark.labels, new global.THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum);
+          label.position.set(0, -i * girderOffset, 0);
+          group.add(label);
+      }
       return group
   }
 
@@ -5439,6 +5617,20 @@
     group.position.set(0,-offset,0);
     global.sceneAdder({layer:1, mesh:group},"topView");
   };
+
+  function GirderGeneralView1(){
+    this.addInput("girderStation","girderStation");
+    this.addInput("layerNumber","number");
+  }
+
+  GirderGeneralView1.prototype.onExecute = function() {
+  };
+
+  GirderGeneralView1.prototype.on3DExecute = function() {
+    let group = GirderGeneralDraw1(this.getInputData(0),this.getInputData(1));
+    global.sceneAdder({layer:this.getInputData(1), mesh:group},"GirderGeneralView1");
+  };
+
 
 
   function SideViewer(){
@@ -6704,6 +6896,7 @@
   global.LiteGraph.registerNodeType("Drawing/LineDraw", LineDraw );
   global.LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
   global.LiteGraph.registerNodeType("Drawing/GirderLayoutDraw", GirderLayoutDraw );
+  global.LiteGraph.registerNodeType("Drawing/GirderGeneralView1", GirderGeneralView1 );
 
 
   // const {
