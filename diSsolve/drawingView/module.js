@@ -618,7 +618,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let dimName = ["Girder Length", "Splice", "Top Plate", "", "", "Bottom Plate", "Web", "V-Stiffener", ""]
     let w = [1.8 * markOffset, 1.6 * markOffset, 1.4 * markOffset, 1.2 * markOffset, -1.2 * markOffset, -1.4 * markOffset,
     sideViewOffset + 1.6 * markOffset, sideViewOffset + 1.4 * markOffset, sideViewOffset + 1.2 * markOffset];    //dim line 기준점
-
+    w.forEach(function(x){ dimLine.push([]) })
     for (let j = 0; j < girderStation.length; j++) {
         let gridObj = girderStation[j];
         let cos = gridObj.point.normalCos;
@@ -632,7 +632,6 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
         girderSideLine.push({ x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 })
 
         for (let k = 0; k < w.length; k++) {
-            dimLine.push([]);
             if (k > 5) {
                 dimLine[k].push({ x: (totalLength) * scale, y: w[k] });
             }
