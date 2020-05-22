@@ -665,7 +665,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                     labels.push({
                         text: dimName[k],
                         anchor: [anchor.x, anchor.y, 0],
-                        rotation: rot,
+                        rotation: k>5? 0: rot,
                         fontSize: fontSize * scale,
                         align: "left"
                     });
@@ -783,7 +783,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
 
             // side View gridMark
             position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 300 * scale, z: 0 };
-            meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
+            meshes.push(roundedRect(position.x, position.y, 0, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
                 anchor: [position.x, position.y, 0],
@@ -802,8 +802,10 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
 
     meshes.push(LineMesh(girderLine, redDotLine, 0));
     meshes.push(LineMesh(girderSideLine, redDotLine, 0));
-    for (let k = 0; k < 6; k++) {
-        meshes.push(LineMesh(dimLine[k], redLine, 0))
+    for (let k = 0; k < w.length; k++) {
+        if (dimName[k]!==""){
+            meshes.push(LineMesh(dimLine[k], redLine, 0))
+        }
     }
     // meshes.push(LineMesh(dimWF, redLine,0))
     // dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
