@@ -743,10 +743,10 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
             // dummy5 = gridObj.point
             //sideView
             dimgeo.vertices.push(
-                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.2*Yoffset)*scale, 0 ),
-                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.4*Yoffset)*scale, 0 ));
+                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.2 * Yoffset) * scale, 0),
+                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.4 * Yoffset) * scale, 0));
             if (j !== 0) {
-                let position = {x: (totalLength + dummyLength)/2 * scale, y : (sideViewOffset + 1.4*Yoffset + fontSize * 0.75) * scale }
+                let position = { x: (totalLength + dummyLength) / 2 * scale, y: (sideViewOffset + 1.4 * markOffset + fontSize * 0.75) * scale }
                 labels.push({
                     text: (totalLength - dummyLength).toFixed(0),
                     anchor: [position.x, position.y, 0],
@@ -772,9 +772,9 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
                 new THREE.Vector3(pt2.x, pt2.y, 0));
-            
-                // side View gridMark
-            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 300*scale, z: 0 };
+
+            // side View gridMark
+            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 300 * scale, z: 0 };
             meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
@@ -782,8 +782,8 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 rotation: 0,
                 fontSize: fontSize * scale
             });
-            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 200*scale , z: 0 };
-            pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset  , z: 0 };
+            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 200 * scale, z: 0 };
+            pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 };
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
                 new THREE.Vector3(pt2.x, pt2.y, 0));
