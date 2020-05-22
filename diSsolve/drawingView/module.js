@@ -608,7 +608,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let sideViewOffset = -8000 * scale;
     let segLength = 0;
     let totalLength = 0;
-
+    let dummyLength = 0;
 
     // for (let i = 0; i < girderStation.length; i++) {
     let girderLine = [];
@@ -727,20 +727,35 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
             dummy4 = gridObj.point
         }
         if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("WF")) {   //웹플렌지 이음
+            // dimgeo.vertices.push(
+            //     new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
+            //     new THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
+            // if (j !== 0) {
+            //     let dimProp = splineProp(dummy5, gridObj.point)
+            //     let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] * markOffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+            //     labels.push({
+            //         text: dimProp.length.toFixed(0),
+            //         anchor: [position.x, position.y, 0],
+            //         rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+            //         fontSize: fontSize * scale
+            //     });
+            // }
+            // dummy5 = gridObj.point
+            //sideView
             dimgeo.vertices.push(
-                new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
-                new THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
+                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.2*Yoffset)*scale, 0 ),
+                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.4*Yoffset)*scale, 0 ));
             if (j !== 0) {
-                let dimProp = splineProp(dummy5, gridObj.point)
-                let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] * markOffset + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
+                let position = {x: (totalLength + dummyLength)/2 * scale, y : (sideViewOffset + 1.4*Yoffset + fontSize * 0.75) * scale }
                 labels.push({
-                    text: dimProp.length.toFixed(0),
+                    text: (totalLength - dummyLength).toFixed(0),
                     anchor: [position.x, position.y, 0],
-                    rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                    rotation: 0,
                     fontSize: fontSize * scale
                 });
             }
-            dummy5 = gridObj.point
+            dummyLength = totalLength;
+
         }
 
         if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
@@ -759,7 +774,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 new THREE.Vector3(pt2.x, pt2.y, 0));
             
                 // side View gridMark
-            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + markOffset*scale, z: 0 };
+            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 300*scale, z: 0 };
             meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
@@ -767,8 +782,8 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 rotation: 0,
                 fontSize: fontSize * scale
             });
-            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (markOffset-100)*scale , z: 0 };
-            pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset - (markOffset-100)*scale , z: 0 };
+            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 200*scale , z: 0 };
+            pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset  , z: 0 };
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
                 new THREE.Vector3(pt2.x, pt2.y, 0));
