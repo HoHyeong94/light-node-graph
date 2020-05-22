@@ -605,7 +605,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let dummy3 = {};
     let dummy4 = {};
     let dummy5 = {};
-    let sideViewOffset = -8000;
+    let sideViewOffset = -8000*scale;
     let segLength = 0;
     let totalLength = 0;
 
@@ -622,9 +622,10 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
         rot = Math.atan2(cos, - sin) + rotate;
         if (j !== 0) { segLength = splineProp(dummy0, gridObj.point) };
         totalLength += segLength;
+        console.log("totalLength",totalLength)
         dummy0 = gridObj.point;
         girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
-        girderSideLine.push({x : totalLength * scale, y: (gridObj.point.z-initPoint.z)*scale,z:0})
+        girderSideLine.push({x : totalLength * scale, y: (gridObj.point.z-initPoint.z)*scale + sideViewOffset,z:0})
 
         for (let k in w) {
             dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
