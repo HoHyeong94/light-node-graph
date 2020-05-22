@@ -743,8 +743,8 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
             // dummy5 = gridObj.point
             //sideView
             dimgeo.vertices.push(
-                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.2 * Yoffset) * scale, 0),
-                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.4 * Yoffset) * scale, 0));
+                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.2 * markOffset) * scale, 0),
+                new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.4 * markOffset) * scale, 0));
             if (j !== 0) {
                 let position = { x: (totalLength + dummyLength) / 2 * scale, y: (sideViewOffset + 1.4 * markOffset + fontSize * 0.75) * scale }
                 labels.push({
