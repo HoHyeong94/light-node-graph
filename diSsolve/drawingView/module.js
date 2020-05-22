@@ -887,9 +887,15 @@ export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
         let endPoint = girderStation[i][girderStation[i].length - 1].point
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
         let topPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "TopPlate"], 4, 0, 1, scale, initPoint, rotate, aqua)
-        topPlate.forEach(function (mesh) { group.add(mesh) });
-        // let webPlate = GeneralPlanView(steelBoxDict, ["LeftWeB", "RightWeB"], 4, 1, 2, sc, initPoint, r, green)
-        // webPlate.forEach(function (mesh) { group.add(mesh) });
+        topPlate.forEach(function (mesh) { 
+            mesh.position.set(0, -i * girderOffset, 0);
+            group.add(mesh) 
+        });
+        let webPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "LeftWeB","G" + (i+1).toFixed(0) + "RightWeB"], 4, 1, 2, sc, initPoint, r, green)
+        webPlate.forEach(function (mesh) { 
+            mesh.position.set(0, -i * girderOffset, 0);
+            group.add(mesh)
+         });
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
