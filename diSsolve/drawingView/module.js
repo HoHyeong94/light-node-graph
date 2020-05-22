@@ -597,7 +597,6 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let meshes = [];
     let labels = [];
     let rot = 0;
-    let w = [1.8, 1.6, 1.4, -1.4, -1.6, -1.8, 1.2, -1.2];
     let dimName = ["Girder Length", "Splice", "Top Plate", "V-Stiffener", "Bottom Plate", "Web"]
     let dummy0 = {};
     let dummy1 = {};
@@ -617,6 +616,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let dimWF = [];
 
 
+    let w = [1.8, 1.6, 1.4, -1.4, -1.6, -1.8, 1.2, -1.2];
     for (let j = 0; j < girderStation.length; j++) {
         let gridObj = girderStation[j];
         let cos = gridObj.point.normalCos;
@@ -629,8 +629,13 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
         girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
         girderSideLine.push({ x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 })
 
-        for (let k in w) {
-            dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
+        for (let k = 0; k < 8; k++) {
+            if (k === 5){
+                dimLine[k].push({x : (totalLength) * scale, y : sideViewOffset +  1.4 * markOffset});
+            }
+            else{
+                dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
+            }
         }
         if (j === 0) {
             let position = PointToDraw(gridObj.point, scale, initPoint, rotate, -500, 0);
@@ -649,9 +654,9 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                     p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset);
                     p2 = dimLine[k][j];
                 }else {
-                    anchor = {x : (totalLength - 1000) * scale, y : sideViewOffset +  1.2 * markOffset + fontSize * 0.75};
-                    p1 = {x : (totalLength - 1000) * scale, y : sideViewOffset +  1.2 * markOffset};
-                    p2 = {x : (totalLength) * scale, y : sideViewOffset +  1.2 * markOffset};
+                    anchor = {x : (totalLength - 1000) * scale, y : sideViewOffset +  1.4 * markOffset + fontSize * 0.75};
+                    p1 = {x : (totalLength - 1000) * scale, y : sideViewOffset +  1.4 * markOffset};
+                    p2 = {x : (totalLength) * scale, y : sideViewOffset +  1.4 * markOffset};
                 }
                 dimgeo.vertices.push(
                     new THREE.Vector3(p2.x, p2.y, 0),
