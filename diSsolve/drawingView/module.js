@@ -759,7 +759,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 new THREE.Vector3(pt2.x, pt2.y, 0));
             
                 // side View gridMark
-            rposition = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + markOffset*scale, z: 0 };
+            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + markOffset*scale, z: 0 };
             meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
