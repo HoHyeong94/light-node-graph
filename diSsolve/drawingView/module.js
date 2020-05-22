@@ -589,7 +589,6 @@ export function PointToDraw(point, scale, initPoint, rotate, xOffset, yOffset) {
 
 export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
-    let lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
     let geo = new THREE.Geometry();
@@ -600,23 +599,33 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let rot = 0;
     let w = [1.8, 1.6, 1.4, -1.4, -1.6, -1.8, 1.2, -1.2];
     let dimName = ["Girder Length", "Splice", "Top Plate", "V-Stiffener", "Bottom Plate", "Web"]
+    let dummy0 = {};
     let dummy1 = {};
     let dummy2 = {};
     let dummy3 = {};
     let dummy4 = {};
     let dummy5 = {};
+    let sideViewOffset = -8000;
+    let segLength = 0;
+    let totalLength = 0;
 
 
     // for (let i = 0; i < girderStation.length; i++) {
     let girderLine = [];
+    let girderSideLine = [];
     let dimLine = [[], [], [], [], [], [], [], []]; //8개, w와 동일한 개수
 
     for (let j = 0; j < girderStation.length; j++) {
         let gridObj = girderStation[j];
-        let cos = gridObj.point.normalCos
-        let sin = gridObj.point.normalSin
+        let cos = gridObj.point.normalCos;
+        let sin = gridObj.point.normalSin;
         rot = Math.atan2(cos, - sin) + rotate;
+        if (j !== 0) { segLength = splineProp(dummy0, gridObj.point) };
+        totalLength += segLength;
+        dummy0 = gridObj.point;
         girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
+        girderSideLine.push({x : totalLength * scale, y: (gridObj.point.z-initPoint.z)*scale,z:0})
+
         for (let k in w) {
             dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
         }
@@ -716,7 +725,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
             }
             dummy4 = gridObj.point
         }
-        if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("W")) {   //웹플렌지 이음
+        if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("WF")) {   //웹플렌지 이음
             dimgeo.vertices.push(
                 new THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
                 new THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
@@ -752,6 +761,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     }
 
     meshes.push(LineMesh(girderLine, redDotLine, 0));
+    meshes.push(LineMesh(girderSideLine,redDotLine,0));
     for (let k = 0; k < 6; k++) {
         meshes.push(LineMesh(dimLine[k], redLine, 0))
     }
@@ -801,7 +811,7 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
     let group = new THREE.Group();
     // let layerNum = 5;
     let scale = 1;
-    let girderOffset = 8000;
+    let girderOffset = 16000;
     let gridMark_width = 1500; // unit : mm
     for (let i = 0; i < girderStation.length; i++) {
         let initPoint = girderStation[i][0].point
