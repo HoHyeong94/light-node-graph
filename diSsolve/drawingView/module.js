@@ -758,7 +758,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                 labels.push({
                     text: (totalLength - dummyLength2).toFixed(0),
                     anchor: [position.x, position.y, 0],
-                    rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                    rotation: 0,
                     fontSize: fontSize * scale
                 });
             }
