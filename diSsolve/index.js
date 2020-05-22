@@ -8,7 +8,7 @@ import {SteelBox } from "./steelBox/index"
 import { VstiffDict, DiaDict, HBracing } from "./stiffner/index"
 import { Xbeam } from "./xbeam/index"
 import { LineViewer, SteelPlateView, InitPoint, DiaPhragmView,HorBracingView, DeckView, BarrierView, SpliceBoltView, RebarView, StudView, AnalysisView } from "./threeView/index"
-import { SectionViewer, TopViewer, SideViewer, LineDraw, LineSideDraw, GirderLayoutDraw, GirderGeneralView1 } from "./drawingView/index"
+import { SectionViewer, TopViewer, SideViewer, LineDraw, LineSideDraw, GirderLayoutDraw, GirderGeneralView1, GirderGeneralView2} from "./drawingView/index"
 import { Support, SapJoint, SapFrame } from "./analysis/index"
 import { SectionDB } from "./DB/index"
 import { SplicePart } from "./splice/index"
@@ -56,6 +56,7 @@ LiteGraph.registerNodeType("Drawing/LineDraw", LineDraw );
 LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
 LiteGraph.registerNodeType("Drawing/GirderLayoutDraw", GirderLayoutDraw );
 LiteGraph.registerNodeType("Drawing/GirderGeneralView1", GirderGeneralView1 );
+LiteGraph.registerNodeType("Drawing/GirderGeneralView2", GirderGeneralView2 );
 
 
 // const {

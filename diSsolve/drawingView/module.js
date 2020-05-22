@@ -615,6 +615,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let girderSideLine = [];
     let dimLine = []; //8개, w와 동일한 개수
     // let dimWF = [];
+    // 지지선 입력체계 수립필요 2020.5.22 by dr.lim
     let dimName = ["Girder Length", "Splice", "Top Plate", "", "", "Bottom Plate", "Web", "V-Stiffener", ""]
     let w = [1.8 * markOffset, 1.6 * markOffset, 1.4 * markOffset, 1.2 * markOffset, -1.2 * markOffset, -1.4 * markOffset,
     sideViewOffset + 1.6 * markOffset, sideViewOffset + 1.4 * markOffset, sideViewOffset + 1.2 * markOffset];    //dim line 기준점
@@ -850,7 +851,7 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, 
     return group
 }
 
-export function GirderGeneralDraw1(girderStation, layerNum) {
+export function GirderGeneralDraw1(girderStation,layerNum) {
     let group = new THREE.Group();
     // let layerNum = 5;
     let scale = 1;
@@ -860,6 +861,35 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
         let initPoint = girderStation[i][0].point
         let endPoint = girderStation[i][girderStation[i].length - 1].point
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
+        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
+        gridMark.meshes.forEach(function (mesh) {
+            mesh.position.set(0, -i * girderOffset, 0);
+            group.add(mesh);
+        });
+        let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum)
+        label.position.set(0, -i * girderOffset, 0);
+        group.add(label)
+    }
+    return group
+}
+
+export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
+    let group = new THREE.Group();
+    // let layerNum = 5;
+    let scale = 1;
+    let girderOffset = 24000;
+    let gridMark_width = 1500; // unit : mm
+    let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
+    let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+
+    for (let i = 0; i < girderStation.length; i++) {
+        let initPoint = girderStation[i][0].point
+        let endPoint = girderStation[i][girderStation[i].length - 1].point
+        let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
+        let topPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "TopPlate"], 4, 0, 1, scale, initPoint, rotate, aqua)
+        topPlate.forEach(function (mesh) { group.add(mesh) });
+        // let webPlate = GeneralPlanView(steelBoxDict, ["LeftWeB", "RightWeB"], 4, 1, 2, sc, initPoint, r, green)
+        // webPlate.forEach(function (mesh) { group.add(mesh) });
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
