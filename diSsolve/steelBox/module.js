@@ -3,7 +3,6 @@ import { THREE } from "global"
 
 
 function FilletPoints(plate1, plate2, isForward, radius, smoothness){
-  let smoothness = 8
   let filletPoint = [[],[],[],[]];
 
   let plt1 = isForward? plate1 : plate2;
