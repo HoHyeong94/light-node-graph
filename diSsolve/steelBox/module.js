@@ -2,27 +2,27 @@ import { ToGlobalPoint } from "../geometryModule"
 import { THREE } from "global"
 
 
-function FilletPoints(plate1, plate2, isForward, radius, smoothness){
-  let filletPoint = [[],[],[],[]];
+function FilletPoints(plate1, plate2, isForward, radius, smoothness) {
+  let filletPoint = [[], [], [], []];
 
-  let plt1 = isForward? plate1 : plate2;
-  let plt2 = isForward? plate2 : plate1;
-  let result = [[],[]];
+  let plt1 = isForward ? plate1 : plate2;
+  let plt2 = isForward ? plate2 : plate1;
+  let result = [[], []];
 
-  for (let ii = 0; ii<2; ii++){
-    let p1 = new THREE.Vector3(plt1[0][ii+1].x, plt1[0][ii+1].y, plt1[0][ii+1].z);
-    let p2 = new THREE.Vector3(plt2[0][ii+1].x, plt2[0][ii+1].y, plt2[0][ii+1].z);
-    let p3 = new THREE.Vector3(plt2[1][ii+1].x, plt2[1][ii+1].y, plt2[1][ii+1].z);
-    filletPoint[ii] = fillet3D(p1,p2,p3,radius,smoothness);
+  for (let ii = 0; ii < 2; ii++) {
+    let p1 = new THREE.Vector3(plt1[0][ii + 1].x, plt1[0][ii + 1].y, plt1[0][ii + 1].z);
+    let p2 = new THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
+    let p3 = new THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
+    filletPoint[ii] = fillet3D(p1, p2, p3, radius, smoothness);
   }
-  for (let ii = 0; ii<2; ii++){
-    let p1 = new THREE.Vector3(plt1[1][ii+1].x, plt1[1][ii+1].y, plt1[1][ii+1].z);
-    let p2 = new THREE.Vector3(plt2[1][ii+1].x, plt2[1][ii+1].y, plt2[1][ii+1].z);
-    let p3 = new THREE.Vector3(plt2[0][ii+1].x, plt2[0][ii+1].y, plt2[0][ii+1].z);
-    filletPoint[ii+2] = fillet3D(p1,p2,p3,radius,smoothness);
+  for (let ii = 0; ii < 2; ii++) {
+    let p1 = new THREE.Vector3(plt1[1][ii + 1].x, plt1[1][ii + 1].y, plt1[1][ii + 1].z);
+    let p2 = new THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
+    let p3 = new THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
+    filletPoint[ii + 2] = fillet3D(p1, p2, p3, radius, smoothness);
   }
-  for (let jj = 0; jj < smoothness + 2 ; jj++){
-    let kk = isForward? jj : smoothness + 1 - jj
+  for (let jj = 0; jj < smoothness + 2; jj++) {
+    let kk = isForward ? jj : smoothness + 1 - jj
     result[0].push(plt2[0][0])
     result[0].push(filletPoint[0][kk])
     result[0].push(filletPoint[1][kk])
@@ -69,63 +69,38 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       let uf2 = sectionPointDict[pk2].backward.uflange
       let uf3 = sectionPointDict[pk2].forward.uflange
 
-      let plate1 = [[],[],[]];
-      let plate2 = [[],[],[]];
+      let FisB = true;  //forward is backward?  
+      for (let kk in uf2[0]) { if (uf2[0][kk] !== uf3[0][kk] || uf2[1][kk] !== uf3[1][kk]) { FisB = false } }
 
-      for (let k in uf1){
-        uf1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
-      }
+      let plate1 = [[], [], []];
+      let plate2 = [[], [], []];
+      let smoothness = 8
 
-      for (let k in uf1){
+      // for (let k in uf1){
+      //   uf1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
+      // }
+      for (let k in uf1) {
         uf1[k].forEach(element => plate1[k].push(ToGlobalPoint(point1, element)));
         uf2[k].forEach(element => plate2[k].push(ToGlobalPoint(point2, element)));
       }
-
-      if (uf2[2].length === 0 && uf3[2].length > 0){  
-        let smoothness = 8
-        let filletPoints = FilletPoints(plate1,plate2, true, filletR, smoothness)
+      if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작
+        let filletPoints = FilletPoints(plate1, plate2, false, filletR, smoothness)
         steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
         steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
-        // let filletPoint = [[],[],[],[]];
-        // for (let ii = 0; ii<2; ii++){
-        //   let pt1 = ToGlobalPoint(point1, uf1[0][ii+1])
-        //   let pt2 = ToGlobalPoint(point2, uf2[0][ii+1])
-        //   let pt3 = ToGlobalPoint(point2, uf2[1][ii+1])
-        //   let p1 = new THREE.Vector3(pt1.x, pt1.y, pt1.z);
-        //   let p2 = new THREE.Vector3(pt2.x, pt2.y, pt2.z);
-        //   let p3 = new THREE.Vector3(pt3.x, pt3.y, pt3.z);
-        //   filletPoint[ii] = fillet3D(p1,p2,p3,filletR,smoothness);
-        // }
-        // for (let ii = 0; ii<2; ii++){
-        //   let pt1 = ToGlobalPoint(point1, uf1[1][ii+1])
-        //   let pt2 = ToGlobalPoint(point2, uf2[1][ii+1])
-        //   let pt3 = ToGlobalPoint(point2, uf2[0][ii+1])
-        //   let p1 = new THREE.Vector3(pt1.x, pt1.y, pt1.z);
-        //   let p2 = new THREE.Vector3(pt2.x, pt2.y, pt2.z);
-        //   let p3 = new THREE.Vector3(pt3.x, pt3.y, pt3.z);
-        //   filletPoint[ii+2] = fillet3D(p1,p2,p3,filletR,smoothness);
-        // }
-        // let pt4 = ToGlobalPoint(point2, uf2[0][0])
-        // let pt5 = ToGlobalPoint(point2, uf2[0][3])
-        // let pt6 = ToGlobalPoint(point2, uf2[1][0])
-        // let pt7 = ToGlobalPoint(point2, uf2[1][3])
-        // for (let jj = 0; jj < smoothness + 2 ; jj++){
-        //   steelBoxDict[keyname]["points"][0].push(pt4)
-        //   steelBoxDict[keyname]["points"][0].push(filletPoint[0][jj])
-        //   steelBoxDict[keyname]["points"][0].push(filletPoint[1][jj])
-        //   steelBoxDict[keyname]["points"][0].push(pt5)
-        //   steelBoxDict[keyname]["points"][1].push(pt6)
-        //   steelBoxDict[keyname]["points"][1].push(filletPoint[2][jj])
-        //   steelBoxDict[keyname]["points"][1].push(filletPoint[3][jj])
-        //   steelBoxDict[keyname]["points"][1].push(pt7)
-        // }
-
-      }
-      if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-        for (let k in uf2){
-          uf2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point2, element)));
+      } else {
+        for (let k in uf1) {
+          plate1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
         }
-        UFi += 1 
+      }
+      if (uf2[2].length === 0 && uf3[2].length > 0) {
+        let filletPoints = FilletPoints(plate1, plate2, true, filletR, smoothness)
+        steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
+        steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
+      } else if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+        for (let k in uf2) {
+          plate2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+        }
+        UFi += 1
       }
 
       // if (L1[1].x >= R1[1].x) { //폐합인 경우 
@@ -135,9 +110,6 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       //   L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
       //   R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)))
       // }
-
-      let FisB = true;  //forward is backward?  
-      // for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false } }
       // if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
       //   if (L2[1].x >= R2[1].x) { //폐합인 경우 
       //     let C2 = [L2[0], R2[0], R2[3], L2[3]];
@@ -232,24 +204,24 @@ function fillet3D(point1, point2, point3, radius, smoothness) {
   let ang
   let l1
 
-     //console.log(points[i].x);
-    v1.subVectors(point1, point2).normalize();
-    v2.subVectors(point3, point2).normalize();
-    ang = Math.acos(v1.dot(v2))
-    l1 = radius / Math.sin(ang / 2)
-    v3.addVectors(v1, v2).setLength(l1);
-    center.addVectors(point2, v3);
-    let p1 = new THREE.Vector3().addVectors(point2, v1.multiplyScalar(radius / Math.tan(ang / 2)))
-    let p2 = new THREE.Vector3().addVectors(point2, v2.multiplyScalar(radius / Math.tan(ang / 2)))
-    vc1.subVectors(p1, center);
-    vc2.subVectors(p2, center);
+  //console.log(points[i].x);
+  v1.subVectors(point1, point2).normalize();
+  v2.subVectors(point3, point2).normalize();
+  ang = Math.acos(v1.dot(v2))
+  l1 = radius / Math.sin(ang / 2)
+  v3.addVectors(v1, v2).setLength(l1);
+  center.addVectors(point2, v3);
+  let p1 = new THREE.Vector3().addVectors(point2, v1.multiplyScalar(radius / Math.tan(ang / 2)))
+  let p2 = new THREE.Vector3().addVectors(point2, v2.multiplyScalar(radius / Math.tan(ang / 2)))
+  vc1.subVectors(p1, center);
+  vc2.subVectors(p2, center);
 
-    newPoints.push(p1)
-    for (let j = 0; j < smoothness; j++) {
-      let dirVec = new THREE.Vector3().addVectors(vc1.clone().multiplyScalar(smoothness - j), vc2.clone().multiplyScalar(j + 1)).setLength(radius);
-      newPoints.push(new THREE.Vector3().addVectors(center, dirVec));
-    }
-    newPoints.push(p2)
+  newPoints.push(p1)
+  for (let j = 0; j < smoothness; j++) {
+    let dirVec = new THREE.Vector3().addVectors(vc1.clone().multiplyScalar(smoothness - j), vc2.clone().multiplyScalar(j + 1)).setLength(radius);
+    newPoints.push(new THREE.Vector3().addVectors(center, dirVec));
+  }
+  newPoints.push(p2)
   //let line2 = new THREE.Line(newGeometry,line.material);
   //scene.add(line2)
   return newPoints;
