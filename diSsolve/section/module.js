@@ -57,11 +57,25 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         // TopPlate
         let tl1 = { x: lw2.x - sectionInfo.C, y: lw2.y + gradient * (- sectionInfo.C) };
         let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW) };
-        let topPlate1 = PlateRestPoint(tl1, tl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);
+        let topPlate1 = PlateRestPoint(tl1, tl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
         let tr1 = { x: rw2.x + sectionInfo.D, y: rw2.y + gradient * (sectionInfo.D) };
         let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW) };
         let topPlate2 = PlateRestPoint(tr1, tr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);;
-        
+        // newTopPlate
+        let uflange = [[],[],[]];
+        let newtl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
+        let newtl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW) };
+        let newtr1 = { x: rw2.x + ps.uFlangeC, y: rw2.y + gradient * (ps.uFlangeC) };
+        let newtr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
+
+        if (newtl2.x < newtr2.x ){ //양측의 플렌지가 서로 중첩될 경우
+            uflange[0] = PlateRestPoint(newtl1, newtl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+            uflange[1] = PlateRestPoint(newtr1, newtr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);;
+        }else{
+            uflange[2] = PlateRestPoint(newtl1, newtr1, -1 / gradient, -1 / gradient, ps.uFlangeThk);;
+        }
+
+
         baseInput = {
             isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
             isClosedTop: tl2.x < tr1.x?true:false,         
@@ -86,9 +100,9 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
             horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
           }
         if (i === 0) {
-          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib }
+          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange : uflange }
         } else {
-          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib }
+          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange : uflange }
         }
       }
       result[k] = { forward, backward }
@@ -102,7 +116,8 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
         height: 0,
         slabThickness: 0,
         skew: skew,
-        uFlangeW: 0,
+        uFlangeC: 0,//플렌지 하나의 폭을 의미함, 0 이거나 전체폭과 값과 같거나 절반보다 크면 폐합단면, 보다 절반보다 작으면 개구단면, 하부플렌지에도 동일하게 적용함
+        uFlangeW: 0,//전체폭을 의미함
         uFlangeThk: 0,
         lFlangeThk: 0,
         webThk: 0,
@@ -117,6 +132,7 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
         height: 0,
         slabThickness: 0,
         skew: skew,
+        uFlangeC: 0,
         uFlangeW: 0,
         uFlangeThk: 0,
         lFlangeThk: 0,
@@ -193,6 +209,7 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     if(uFlange.length>0){
         forward.uFlangeThk = uFlange[0][2]
         forward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
+        forward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
     }
     uFlange = girderBaseInfo.uFlange.filter(function(element){ 
         return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
@@ -200,6 +217,7 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     if(uFlange.length>0){
         backward.uFlangeThk = uFlange[0][2]
         backward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
+        backward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
     }
 
     var lFlange = girderBaseInfo.lFlange.filter(function(element){ 
