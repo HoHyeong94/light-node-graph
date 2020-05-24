@@ -32,6 +32,7 @@ function FilletPoints(plate1, plate2, isForward, radius, smoothness){
     result[1].push(filletPoint[3][kk])
     result[1].push(plt2[1][3])
   }
+  return result
 }
 
 export function SteelBoxDict2(girderStationList, sectionPointDict) {
