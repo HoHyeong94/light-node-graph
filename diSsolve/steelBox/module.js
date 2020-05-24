@@ -63,8 +63,8 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         }
         let pt4 = ToGlobalPoint(point2, uf2[0][0])
         let pt5 = ToGlobalPoint(point2, uf2[0][3])
-        let pt6 = ToGlobalPoint(point3, uf2[1][0])
-        let pt7 = ToGlobalPoint(point3, uf2[1][3])
+        let pt6 = ToGlobalPoint(point2, uf2[1][0])
+        let pt7 = ToGlobalPoint(point2, uf2[1][3])
         for (let jj = 0; jj < smoothness + 2 ; jj++){
           steelBoxDict[keyname]["points"][0].push(pt4)
           steelBoxDict[keyname]["points"][0].push(filletPoint[0][jj])
