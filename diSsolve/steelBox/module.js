@@ -11,7 +11,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let RWi = 1;
   let Ribi = 1;
   let keyname = ""
-  let filletR = 1000;
+  let filletR = 500;
 
   for (let i in girderStationList) {
     for (let j = 0; j < girderStationList[i].length - 1; j++) {
@@ -41,7 +41,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       }
 
       if (uf2[2].length === 0 && uf3[2].length > 0){  
-        let smoothness = 4
+        let smoothness = 8
         let filletPoint = [[],[]];
         for (let ii = 0; ii<2; ii++){
           let pt1 = ToGlobalPoint(point1, uf1[0][ii+1])
@@ -54,7 +54,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         }
         let pt4 = ToGlobalPoint(point2, uf2[0][0])
         let pt5 = ToGlobalPoint(point2, uf2[0][3])
-        for (let jj = 0; jj < smoothness + 1 ; jj++){
+        for (let jj = 0; jj < smoothness + 2 ; jj++){
           steelBoxDict[keyname]["points"][0].push(pt4)
           steelBoxDict[keyname]["points"][0].push(filletPoint[0][jj])
           steelBoxDict[keyname]["points"][0].push(filletPoint[1][jj])
