@@ -38,22 +38,21 @@ function FilletPoints(plate1, plate2, isForward, radius, smoothness) {
 export function plateCompare(plate1, plate2) {
   let result = true;
   let err = 0.1;
-  for (let i in plate1) { 
-    for (let j in plate1[i]){
-      if (plate2[i][j]){
-        if (Math.abs(plate1[i][j].x - plate2[i][j].x) > err || 
-        Math.abs(plate1[i][j].y - plate2[i][j].y) > err
-        ){
-        result = false //오류발생, 값이 급격하게 차이나는 경우 입력하는 방법이 있어야함
-      }
-      }else{
+  for (let i in plate1) {
+    for (let j in plate1[i]) {
+      if (plate2[i][j]) {
+        if (Math.abs(plate1[i][j].x - plate2[i][j].x) > err ||
+          Math.abs(plate1[i][j].y - plate2[i][j].y) > err
+        ) {
+          result = false //오류발생, 값이 급격하게 차이나는 경우 입력하는 방법이 있어야함
+        }
+      } else {
         result = false
       }
     }
-    
+  }
   return result
 }
-
 export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let steelBoxDict = {};
   let pk1 = ""
@@ -92,7 +91,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       let FisB = true;  //forward is backward?  
       FisB = plateCompare(uf2, uf3)
       // for (let kk in uf2[0]) { if (uf2[0][kk] !== uf3[0][kk] || uf2[1][kk] !== uf3[1][kk]) { FisB = false } } //오류발생, 값이 급격하게 차이나는 경우 입력하는 방법이 있어야함
-      
+
       let plate1 = [[], [], []];
       let plate2 = [[], [], []];
       let smoothness = 8
@@ -105,7 +104,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         uf2[k].forEach(element => plate2[k].push(ToGlobalPoint(point2, element)));
       }
 
-      
+
 
       if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작
         let filletPoints = FilletPoints(plate1, plate2, false, filletR, smoothness)
@@ -128,7 +127,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         }
       }
 
-      if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {UFi += 1}
+      if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
 
       // if (L1[1].x >= R1[1].x) { //폐합인 경우 
       //   let C1 = [L1[0], R1[0], R1[3], L1[3]];
