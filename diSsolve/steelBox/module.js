@@ -96,12 +96,14 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         let filletPoints = FilletPoints(plate1, plate2, true, filletR, smoothness)
         steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
         steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
-      } else if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+      } else {
+       if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
         for (let k in uf2) {
           plate2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
         }
         UFi += 1
       }
+    }
 
       // if (L1[1].x >= R1[1].x) { //폐합인 경우 
       //   let C1 = [L1[0], R1[0], R1[3], L1[3]];
