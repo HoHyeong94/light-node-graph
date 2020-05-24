@@ -97,7 +97,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
         steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
       } else {
-       if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+       if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
         for (let k in uf2) {
           plate2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
         }
