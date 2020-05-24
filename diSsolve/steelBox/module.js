@@ -13,7 +13,7 @@ function FilletPoints(plate1, plate2, isForward, radius, smoothness){
     let p1 = new THREE.Vector3(plt1[0][ii+1].x, plt1[0][ii+1].y, plt1[0][ii+1].z);
     let p2 = new THREE.Vector3(plt2[0][ii+1].x, plt2[0][ii+1].y, plt2[0][ii+1].z);
     let p3 = new THREE.Vector3(plt2[1][ii+1].x, plt2[1][ii+1].y, plt2[1][ii+1].z);
-    filletPoint[ii] = fillet3D(p1,p2,p3,filletR,smoothness);
+    filletPoint[ii] = fillet3D(p1,p2,p3,radius,smoothness);
   }
   for (let ii = 0; ii<2; ii++){
     let p1 = new THREE.Vector3(plt1[1][ii+1].x, plt1[1][ii+1].y, plt1[1][ii+1].z);
