@@ -76,7 +76,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       //   R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)))
       // }
 
-      // let FisB = true;  //forward is backward?  
+      let FisB = true;  //forward is backward?  
       // for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false } }
       // if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
       //   if (L2[1].x >= R2[1].x) { //폐합인 경우 
