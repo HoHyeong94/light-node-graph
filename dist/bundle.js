@@ -1976,7 +1976,7 @@
             ps = pointSectionInfo.backward;
           }
           let slabThickness = ps.slabThickness - centerThickness;
-
+          
           let Rib = {};
           for (let j in ps.lRibLO) {
             let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height + ps.lRibH },
@@ -2001,10 +2001,22 @@
           // TopPlate
           let tl1 = { x: lw2.x - sectionInfo.C, y: lw2.y + gradient * (- sectionInfo.C) };
           let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW) };
-          let topPlate1 = PlateRestPoint(tl1, tl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);
+          let topPlate1 = PlateRestPoint(tl1, tl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
           let tr1 = { x: rw2.x + sectionInfo.D, y: rw2.y + gradient * (sectionInfo.D) };
           let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW) };
-          let topPlate2 = PlateRestPoint(tr1, tr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);        
+          let topPlate2 = PlateRestPoint(tr1, tr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);        // newTopPlate
+          let uflange = [[],[],[]];
+          let newtl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
+          let newtl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW) };
+          let newtr1 = { x: rw2.x + ps.uFlangeC, y: rw2.y + gradient * (ps.uFlangeC) };
+          let newtr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
+
+          if (newtl2.x < newtr2.x ){ //양측의 플렌지가 서로 중첩될 경우
+              uflange[0] = PlateRestPoint(newtl1, newtl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+              uflange[1] = PlateRestPoint(newtr1, newtr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);        }else {
+              uflange[2] = PlateRestPoint(newtl1, newtr1, -1 / gradient, -1 / gradient, ps.uFlangeThk);        }
+
+
           baseInput = {
               isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
               isClosedTop: tl2.x < tr1.x?true:false,         
@@ -2029,9 +2041,9 @@
               horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
             };
           if (i === 0) {
-            forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib };
+            forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange : uflange };
           } else {
-            backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib };
+            backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange : uflange };
           }
         }
         result[k] = { forward, backward };
@@ -2045,7 +2057,8 @@
           height: 0,
           slabThickness: 0,
           skew: skew,
-          uFlangeW: 0,
+          uFlangeC: 0,//플렌지 하나의 폭을 의미함, 0 이거나 전체폭과 값과 같거나 절반보다 크면 폐합단면, 보다 절반보다 작으면 개구단면, 하부플렌지에도 동일하게 적용함
+          uFlangeW: 0,//전체폭을 의미함
           uFlangeThk: 0,
           lFlangeThk: 0,
           webThk: 0,
@@ -2060,6 +2073,7 @@
           height: 0,
           slabThickness: 0,
           skew: skew,
+          uFlangeC: 0,
           uFlangeW: 0,
           uFlangeThk: 0,
           lFlangeThk: 0,
@@ -2136,6 +2150,7 @@
       if(uFlange.length>0){
           forward.uFlangeThk = uFlange[0][2];
           forward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
+          forward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
       }
       uFlange = girderBaseInfo.uFlange.filter(function(element){ 
           return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
@@ -2143,6 +2158,7 @@
       if(uFlange.length>0){
           backward.uFlangeThk = uFlange[0][2];
           backward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
+          backward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
       }
 
       var lFlange = girderBaseInfo.lFlange.filter(function(element){ 
@@ -2362,113 +2378,187 @@
     let RWi = 1;
     let Ribi = 1;
     let keyname = "";
+    let filletR = 1000;
 
-      for (let i in girderStationList){
-        for (let j = 0; j<girderStationList[i].length -1;j++){
-          
-          let point1 = girderStationList[i][j].point;
-          let point2 = girderStationList[i][j+1].point;
+    for (let i in girderStationList) {
+      for (let j = 0; j < girderStationList[i].length - 1; j++) {
 
-          pk1 = girderStationList[i][j].key;
-          pk2 = girderStationList[i][j+1].key;
+        let point1 = girderStationList[i][j].point;
+        let point2 = girderStationList[i][j + 1].point;
 
-          keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi;
-          if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-          let L1 = sectionPointDict[pk1].forward.leftTopPlate;
-          let R1 = sectionPointDict[pk1].forward.rightTopPlate;
-          let L2 = sectionPointDict[pk2].backward.leftTopPlate;
-          let L3 = sectionPointDict[pk2].forward.leftTopPlate;
-          let R2 = sectionPointDict[pk2].backward.rightTopPlate;
-          let R3 = sectionPointDict[pk2].forward.rightTopPlate;
+        pk1 = girderStationList[i][j].key;
+        pk2 = girderStationList[i][j + 1].key;
+        keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi;
+        if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], [], []] }; }
+        let L1 = sectionPointDict[pk1].forward.leftTopPlate;
+        let L2 = sectionPointDict[pk2].backward.leftTopPlate;
+        let L3 = sectionPointDict[pk2].forward.leftTopPlate;
+        let R1 = sectionPointDict[pk1].forward.rightTopPlate;
+        let R2 = sectionPointDict[pk2].backward.rightTopPlate;
+        let R3 = sectionPointDict[pk2].forward.rightTopPlate;
+        
 
-          if (L1[1].x >= R1[1].x) { //폐합인 경우 
-            let C1 = [L1[0], R1[0], R1[3], L1[3]];
-            C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
-          } else {
-            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-            R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)));
-          }
-          let FisB = true;
-          for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false; } }
-          if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-            if (L2[1].x >= R2[1].x) { //폐합인 경우 
-              let C2 = [L2[0], R2[0], R2[3], L2[3]];
-              C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
-            } else {
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-              R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)));
-            }
-          }
-          if (pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP") { UFi += 1; }
+        let uf0 = sectionPointDict[pk1].backward.uflange;
+        let uf1 = sectionPointDict[pk1].forward.uflange;
+        let uf2 = sectionPointDict[pk2].backward.uflange;
+        let uf3 = sectionPointDict[pk2].forward.uflange;
 
-
-          keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi;
-          if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-          L1 = sectionPointDict[pk1].forward.bottomPlate;
-          L2 = sectionPointDict[pk2].backward.bottomPlate;
-          L3 = sectionPointDict[pk2].forward.bottomPlate;
-
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-
-          FisB = true;
-          for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
-          if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
-            L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-          }
-          if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1; }
-
-          keyname = "G"+(i*1+1).toString()+"LeftWeB" + LWi;
-          if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
-          L1 = sectionPointDict[pk1].forward.lWeb;
-          L2 = sectionPointDict[pk2].backward.lWeb;
-          L3 = sectionPointDict[pk2].forward.lWeb;
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-          FisB = true;
-          for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
-          if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || pk2.substr(2, 2) === "K6"){
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-          }
-          if(pk2.substr(2,2)==="LW" || pk2.substr(2,2)==="SP" ){ LWi +=1; }
-
-          keyname = "G"+(i*1+1).toString()+"RightWeB" + RWi;
-          if (!steelBoxDict[keyname]){steelBoxDict[keyname] = {points:[[],[],[]]};}
-          L1 = sectionPointDict[pk1].forward.rWeb;
-          L2 = sectionPointDict[pk2].backward.rWeb;
-          L3 = sectionPointDict[pk2].forward.rWeb;
-          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-          FisB = true;
-          for (let i in L2){ if(L2[i] !== L3[i] ){FisB = false;}}
-          if (!FisB || pk2.substr(2,2)==="TF" || pk2.substr(2,2)==="SP" || pk2.substr(2, 2) === "K6"){
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-          }
-          if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){ RWi +=1; }
-
-          let RibList = [];
-          for (let ii in sectionPointDict[pk1].forward) {
-            if (ii.includes("Rib"))
-              RibList.push(ii);
-          }
-          for (let Ribkey of RibList) {
-            keyname = "G" + (i * 1 + 1).toString() + "lRib" + Ribi;
-            if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-            L1 = sectionPointDict[pk1].forward[Ribkey];
-            L2 = sectionPointDict[pk2].backward[Ribkey];
-            L3 = sectionPointDict[pk2].forward[Ribkey];
-            L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-            FisB = true;
-            for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false; }
-            if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-              L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
-              Ribi += 1;
-            }
-            // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){  }
-          }
-
+        for (let k in uf1){
+          uf1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
         }
+
+        if (uf2[2].length === 0 && uf3[2].length > 0){  
+          let smoothness = 4;
+          let filletPoint = [[],[]];
+          for (let ii = 0; ii<2; ii++){
+            let pt1 = ToGlobalPoint(point1, uf1[0][ii+1]);
+            let pt2 = ToGlobalPoint(point2, uf2[0][ii+1]);
+            let pt3 = ToGlobalPoint(point2, uf2[1][ii+1]);
+            let p1 = new global.THREE.Vector3(pt1.x, pt1.y, pt1.z);
+            let p2 = new global.THREE.Vector3(pt2.x, pt2.y, pt2.z);
+            let p3 = new global.THREE.Vector3(pt3.x, pt3.y, pt3.z);
+            filletPoint[ii] = fillet3D(p1,p2,p3,filletR,smoothness);
+          }
+          let pt4 = ToGlobalPoint(point2, uf2[0][0]);
+          let pt5 = ToGlobalPoint(point2, uf2[0][3]);
+          for (let jj = 0; jj < smoothness + 1 ; jj++){
+            steelBoxDict[keyname]["points"][0].push(pt4);
+            steelBoxDict[keyname]["points"][0].push(filletPoint[0][jj]);
+            steelBoxDict[keyname]["points"][0].push(filletPoint[1][jj]);
+            steelBoxDict[keyname]["points"][0].push(pt5);
+          }
+        }
+        if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+          for (let k in uf2){
+            uf2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point2, element)));
+          }
+          UFi += 1; 
+        }
+
+        // if (L1[1].x >= R1[1].x) { //폐합인 경우 
+        //   let C1 = [L1[0], R1[0], R1[3], L1[3]];
+        //   C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
+        // } else {
+        //   L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+        //   R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)))
+        // }
+
+        // let FisB = true;  //forward is backward?  
+        // for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false } }
+        // if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+        //   if (L2[1].x >= R2[1].x) { //폐합인 경우 
+        //     let C2 = [L2[0], R2[0], R2[3], L2[3]];
+        //     C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
+        //   } else {
+        //     L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+        //     R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)))
+        //   }
+        // }
+        // if (pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP") { UFi += 1 }
+
+
+        keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi;
+        if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+        L1 = sectionPointDict[pk1].forward.bottomPlate;
+        L2 = sectionPointDict[pk2].backward.bottomPlate;
+        L3 = sectionPointDict[pk2].forward.bottomPlate;
+
+        L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+
+        FisB = true;
+        for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
+        if (!FisB || pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+          L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+        }
+        if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1; }
+
+        keyname = "G" + (i * 1 + 1).toString() + "LeftWeB" + LWi;
+        if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+        L1 = sectionPointDict[pk1].forward.lWeb;
+        L2 = sectionPointDict[pk2].backward.lWeb;
+        L3 = sectionPointDict[pk2].forward.lWeb;
+        L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+        FisB = true;
+        for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
+        if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+          L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+        }
+        if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { LWi += 1; }
+
+        keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + RWi;
+        if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+        L1 = sectionPointDict[pk1].forward.rWeb;
+        L2 = sectionPointDict[pk2].backward.rWeb;
+        L3 = sectionPointDict[pk2].forward.rWeb;
+        L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+        FisB = true;
+        for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
+        if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+          L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+        }
+        if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { RWi += 1; }
+
+        let RibList = [];
+        for (let ii in sectionPointDict[pk1].forward) {
+          if (ii.includes("Rib"))
+            RibList.push(ii);
+        }
+        for (let Ribkey of RibList) {
+          keyname = "G" + (i * 1 + 1).toString() + "lRib" + Ribi;
+          if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+          L1 = sectionPointDict[pk1].forward[Ribkey];
+          L2 = sectionPointDict[pk2].backward[Ribkey];
+          L3 = sectionPointDict[pk2].forward[Ribkey];
+          L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+          FisB = true;
+          for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false; }
+          if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+            L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+            Ribi += 1;
+          }
+          // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){  }
+        }
+
       }
+    }
     // }
 
     return steelBoxDict
+  }
+
+
+  function fillet3D(point1, point2, point3, radius, smoothness) {
+    let newPoints = [];
+    let v1 = new global.THREE.Vector3();
+    let v2 = new global.THREE.Vector3();
+    let v3 = new global.THREE.Vector3();
+    let vc1 = new global.THREE.Vector3();
+    let vc2 = new global.THREE.Vector3();
+    let center = new global.THREE.Vector3();
+    let ang;
+    let l1;
+
+       //console.log(points[i].x);
+      v1.subVectors(point1, point2).normalize();
+      v2.subVectors(point3, point2).normalize();
+      ang = Math.acos(v1.dot(v2));
+      l1 = radius / Math.sin(ang / 2);
+      v3.addVectors(v1, v2).setLength(l1);
+      center.addVectors(point2, v3);
+      let p1 = new global.THREE.Vector3().addVectors(point2, v1.multiplyScalar(radius / Math.tan(ang / 2)));
+      let p2 = new global.THREE.Vector3().addVectors(point2, v2.multiplyScalar(radius / Math.tan(ang / 2)));
+      vc1.subVectors(p1, center);
+      vc2.subVectors(p2, center);
+
+      newPoints.push(p1);
+      for (let j = 0; j < smoothness; j++) {
+        let dirVec = new global.THREE.Vector3().addVectors(vc1.clone().multiplyScalar(smoothness - j), vc2.clone().multiplyScalar(j + 1)).setLength(radius);
+        newPoints.push(new global.THREE.Vector3().addVectors(center, dirVec));
+      }
+      newPoints.push(p2);
+    //let line2 = new THREE.Line(newGeometry,line.material);
+    //scene.add(line2)
+    return newPoints;
   }
 
   // import { sceneAdder } from "global";
@@ -5010,7 +5100,7 @@
       let geometry = new global.THREE.BufferGeometry().setFromPoints(points);
       geometry.rotateZ(rot);
       geometry.translate(x, y, 0);
-      console.log("geo", geometry);
+      // console.log("geo", geometry)
       return new global.THREE.Line(geometry, lineMaterial)
   }
 
@@ -5025,44 +5115,52 @@
   function GridMarkView(girderStation, scale, initPoint, rotate, markOffset, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
       let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
-      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
+      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
       let geo = new global.THREE.Geometry();
       let dimgeo = new global.THREE.Geometry();
       let fontSize = 80;
       let meshes = [];
       let labels = [];
       let rot = 0;
-      let w = [1.8, 1.6, 1.4, -1.4, -1.6, -1.8, 1.2, -1.2];
-      let dimName = ["Girder Length", "Splice", "Top Plate", "V-Stiffener", "Bottom Plate", "Web"];
+
       let dummy0 = {};
       let dummy1 = {};
       let dummy2 = {};
-      let dummy3 = {};
       let dummy4 = {};
-      let dummy5 = {};
       let sideViewOffset = -8000 * scale;
       let segLength = 0;
       let totalLength = 0;
-
+      let dummyLength = 0;
+      let dummyLength2 = 0;
 
       // for (let i = 0; i < girderStation.length; i++) {
       let girderLine = [];
       let girderSideLine = [];
-      let dimLine = [[], [], [], [], [], [], [], []]; //8개, w와 동일한 개수
-
+      let dimLine = []; //8개, w와 동일한 개수
+      // let dimWF = [];
+      // 지지선 입력체계 수립필요 2020.5.22 by dr.lim
+      let dimName = ["Girder Length", "Splice", "Top Plate", "", "", "Bottom Plate", "Web", "V-Stiffener", ""];
+      let w = [1.8 * markOffset, 1.6 * markOffset, 1.4 * markOffset, 1.2 * markOffset, -1.2 * markOffset, -1.4 * markOffset,
+      sideViewOffset + 1.6 * markOffset, sideViewOffset + 1.4 * markOffset, sideViewOffset + 1.2 * markOffset];    //dim line 기준점
+      w.forEach(function(x){ dimLine.push([]); });
       for (let j = 0; j < girderStation.length; j++) {
           let gridObj = girderStation[j];
           let cos = gridObj.point.normalCos;
           let sin = gridObj.point.normalSin;
           rot = Math.atan2(cos, - sin) + rotate;
           if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length; }        totalLength += segLength;
-          console.log("totalLength", totalLength);
+          // console.log("totalLength", totalLength)
           dummy0 = gridObj.point;
           girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
           girderSideLine.push({ x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 });
 
-          for (let k in w) {
-              dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k] * markOffset));
+          for (let k = 0; k < w.length; k++) {
+              if (k > 5) {
+                  dimLine[k].push({ x: (totalLength) * scale, y: w[k] });
+              }
+              else {
+                  dimLine[k].push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, w[k]));
+              }
           }
           if (j === 0) {
               let position = PointToDraw(gridObj.point, scale, initPoint, rotate, -500, 0);
@@ -5072,19 +5170,29 @@
                   rotation: rot,
                   fontSize: fontSize * scale
               });
-              for (let k = 0; k < 6; k++) {
-                  let anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset + fontSize * 0.75);
-                  let p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] * markOffset);
-                  dimgeo.vertices.push(
-                      new global.THREE.Vector3(dimLine[k][j].x, dimLine[k][j].y, 0),
-                      new global.THREE.Vector3(p1.x, p1.y, 0));
-                  labels.push({
-                      text: dimName[k],
-                      anchor: [anchor.x, anchor.y, 0],
-                      rotation: rot,
-                      fontSize: fontSize * scale,
-                      align: "left"
-                  });
+              for (let k = 0; k < w.length; k++) {
+                  if (dimName[k] !== "") {
+                      let anchor = {};
+                      let p1 = {};
+                      let p2 = dimLine[k][j];
+                      if (k > 5) {
+                          anchor = { x: dimLine[k][j].x - 1000 * scale, y: dimLine[k][j].y + fontSize * 0.75 };
+                          p1 = { x: dimLine[k][j].x - 1000 * scale, y: dimLine[k][j].y };
+                      } else {
+                          anchor = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k] + fontSize * 0.75);
+                          p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k]);
+                      }
+                      dimgeo.vertices.push(
+                          new global.THREE.Vector3(p2.x, p2.y, 0),
+                          new global.THREE.Vector3(p1.x, p1.y, 0));
+                      labels.push({
+                          text: dimName[k],
+                          anchor: [anchor.x, anchor.y, 0],
+                          rotation: k>5? 0: rot,
+                          fontSize: fontSize * scale,
+                          align: "left"
+                      });
+                  }
               }
           }
           if (j === 0 || j === girderStation.length - 1) { //거더총길이
@@ -5099,7 +5207,7 @@
               if (j !== 0) {
                   let dimProp = splineProp(dummy1, gridObj.point);
                   // console.log("spline", dimProp,dummy1,gridObj.point)
-                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
                   labels.push({
                       text: dimProp.length.toFixed(0),
                       anchor: [position.x, position.y, 0],
@@ -5113,10 +5221,10 @@
           if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) { //상부플렌지 이음
               dimgeo.vertices.push(
                   new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
-                  new global.THREE.Vector3(dimLine[6][j].x, dimLine[6][j].y, 0));
+                  new global.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0));
               if (j !== 0) {
                   let dimProp = splineProp(dummy2, gridObj.point);
-                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[2] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[2] + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
                   labels.push({
                       text: dimProp.length.toFixed(0),
                       anchor: [position.x, position.y, 0],
@@ -5127,30 +5235,13 @@
               dummy2 = gridObj.point;
 
           }
-          if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S"
-              && gridObj.key.substr(3, 1) !== "P") {  // 그리드 기호에 대해서 한번 대대적인 수정이 필요할 것으로 판단됨
-              dimgeo.vertices.push(//치수선 라벨
-                  new global.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
-                  new global.THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
-              if (j !== 0) {
-                  let dimProp = splineProp(dummy3, gridObj.point);
-                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[3] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
-                  labels.push({
-                      text: dimProp.length.toFixed(0),
-                      anchor: [position.x, position.y, 0],
-                      rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
-                      fontSize: fontSize * scale
-                  });
-              }
-              dummy3 = gridObj.point;
-          }
           if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("BF")) {  //하부플렌지 이음
               dimgeo.vertices.push(
-                  new global.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0),
-                  new global.THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0));
+                  new global.THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
+                  new global.THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
               if (j !== 0) {
                   let dimProp = splineProp(dummy4, gridObj.point);
-                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[4] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
                   labels.push({
                       text: dimProp.length.toFixed(0),
                       anchor: [position.x, position.y, 0],
@@ -5161,21 +5252,42 @@
               dummy4 = gridObj.point;
           }
           if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("WF")) {   //웹플렌지 이음
+              // let pt1 = { x: totalLength * scale, y: (sideViewOffset + 1.4 * markOffset) * scale, z: 0 }
               dimgeo.vertices.push(
-                  new global.THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
-                  new global.THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
+                  new global.THREE.Vector3(dimLine[6][j].x, dimLine[6][j].y, 0),
+                  new global.THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
+              // new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.2 * markOffset) * scale, 0),
+              // new THREE.Vector3(pt1.x, pt1.y, pt1.z));
               if (j !== 0) {
-                  let dimProp = splineProp(dummy5, gridObj.point);
-                  let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] * markOffset + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
+                  let position = { x: (totalLength + dummyLength) / 2 * scale, y: (w[6] + fontSize * 0.75) * scale };
                   labels.push({
-                      text: dimProp.length.toFixed(0),
+                      text: (totalLength - dummyLength).toFixed(0),
                       anchor: [position.x, position.y, 0],
-                      rotation: Math.atan2(dimProp.midPoint.normalCos, - dimProp.midPoint.normalSin) + rotate,
+                      rotation: 0,
                       fontSize: fontSize * scale
                   });
               }
-              dummy5 = gridObj.point;
+              dummyLength = totalLength;
+
           }
+
+          if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S"
+              && gridObj.key.substr(3, 1) !== "P") {  // 그리드 기호에 대해서 한번 대대적인 수정이 필요할 것으로 판단됨
+              dimgeo.vertices.push(//치수선 라벨
+                  new global.THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0),
+                  new global.THREE.Vector3(dimLine[8][j].x, dimLine[8][j].y, 0));
+              if (j !== 0) {
+                  let position = { x: (totalLength + dummyLength2) / 2 * scale, y: (w[7] + fontSize * 0.75) * scale };
+                  labels.push({
+                      text: (totalLength - dummyLength2).toFixed(0),
+                      anchor: [position.x, position.y, 0],
+                      rotation: 0,
+                      fontSize: fontSize * scale
+                  });
+              }
+              dummyLength2 = totalLength;
+          }
+
 
           if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
               let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset);
@@ -5191,18 +5303,18 @@
               geo.vertices.push(
                   new global.THREE.Vector3(pt1.x, pt1.y, 0),
                   new global.THREE.Vector3(pt2.x, pt2.y, 0));
-              
-                  // side View gridMark
-              position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + markOffset*scale, z: 0 };
-              meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
+
+              // side View gridMark
+              position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 300 * scale, z: 0 };
+              meshes.push(roundedRect(position.x, position.y, 0, 400 * scale, 200 * scale, 100 * scale, redLine));
               labels.push({
                   text: gridObj.key,
                   anchor: [position.x, position.y, 0],
                   rotation: 0,
                   fontSize: fontSize * scale
               });
-              pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (markOffset-100)*scale , z: 0 };
-              pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset - (markOffset-100)*scale , z: 0 };
+              pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 200 * scale, z: 0 };
+              pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 };
               geo.vertices.push(
                   new global.THREE.Vector3(pt1.x, pt1.y, 0),
                   new global.THREE.Vector3(pt2.x, pt2.y, 0));
@@ -5213,9 +5325,12 @@
 
       meshes.push(LineMesh(girderLine, redDotLine, 0));
       meshes.push(LineMesh(girderSideLine, redDotLine, 0));
-      for (let k = 0; k < 6; k++) {
-          meshes.push(LineMesh(dimLine[k], redLine, 0));
+      for (let k = 0; k < w.length; k++) {
+          if (dimName[k]!==""){
+              meshes.push(LineMesh(dimLine[k], redLine, 0));
+          }
       }
+      // meshes.push(LineMesh(dimWF, redLine,0))
       // dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
       // }
       let segLine = new global.THREE.LineSegments(geo, redDotLine);
@@ -5258,16 +5373,51 @@
       return group
   }
 
-  function GirderGeneralDraw1(girderStation, layerNum) {
+  function GirderGeneralDraw1(girderStation,layerNum) {
       let group = new global.THREE.Group();
       // let layerNum = 5;
       let scale = 1;
-      let girderOffset = 16000;
+      let girderOffset = 24000;
       let gridMark_width = 1500; // unit : mm
       for (let i = 0; i < girderStation.length; i++) {
           let initPoint = girderStation[i][0].point;
           let endPoint = girderStation[i][girderStation[i].length - 1].point;
           let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x));
+          let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1);
+          gridMark.meshes.forEach(function (mesh) {
+              mesh.position.set(0, -i * girderOffset, 0);
+              group.add(mesh);
+          });
+          let label = LabelInsert(gridMark.labels, new global.THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum);
+          label.position.set(0, -i * girderOffset, 0);
+          group.add(label);
+      }
+      return group
+  }
+
+  function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
+      let group = new global.THREE.Group();
+      // let layerNum = 5;
+      let scale = 1;
+      let girderOffset = 24000;
+      let gridMark_width = 1500; // unit : mm
+      let aqua = new global.THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
+      let green = new global.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+
+      for (let i = 0; i < girderStation.length; i++) {
+          let initPoint = girderStation[i][0].point;
+          let endPoint = girderStation[i][girderStation[i].length - 1].point;
+          let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x));
+          let topPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "TopPlate"], 4, 0, 1, scale, initPoint, rotate, aqua);
+          topPlate.forEach(function (mesh) { 
+              mesh.position.set(0, -i * girderOffset, 0);
+              group.add(mesh); 
+          });
+          let webPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "LeftWeB","G" + (i+1).toFixed(0) + "RightWeB"], 4, 1, 2, scale, initPoint, rotate, green);
+          webPlate.forEach(function (mesh) { 
+              mesh.position.set(0, -i * girderOffset, 0);
+              group.add(mesh);
+           });
           let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1);
           gridMark.meshes.forEach(function (mesh) {
               mesh.position.set(0, -i * girderOffset, 0);
@@ -5631,6 +5781,19 @@
     global.sceneAdder({layer:this.getInputData(1), mesh:group},"GirderGeneralView1");
   };
 
+  function GirderGeneralView2(){
+    this.addInput("girderStation","girderStation");
+    this.addInput("steelBoxDict","steelBoxDict");
+    this.addInput("layerNumber","number");
+  }
+
+  GirderGeneralView2.prototype.onExecute = function() {
+  };
+
+  GirderGeneralView2.prototype.on3DExecute = function() {
+    let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2));
+    global.sceneAdder({layer:this.getInputData(2), mesh:group},"GirderGeneralView2");
+  };
 
 
   function SideViewer(){
@@ -6897,6 +7060,7 @@
   global.LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
   global.LiteGraph.registerNodeType("Drawing/GirderLayoutDraw", GirderLayoutDraw );
   global.LiteGraph.registerNodeType("Drawing/GirderGeneralView1", GirderGeneralView1 );
+  global.LiteGraph.registerNodeType("Drawing/GirderGeneralView2", GirderGeneralView2 );
 
 
   // const {

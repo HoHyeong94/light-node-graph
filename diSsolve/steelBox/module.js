@@ -1,4 +1,5 @@
 import { ToGlobalPoint } from "../geometryModule"
+import { THREE } from "global"
 
 export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let steelBoxDict = {};
@@ -10,6 +11,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let RWi = 1;
   let Ribi = 1;
   let keyname = ""
+  let filletR = 1000;
 
   for (let i in girderStationList) {
     for (let j = 0; j < girderStationList[i].length - 1; j++) {
@@ -27,16 +29,41 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       let R1 = sectionPointDict[pk1].forward.rightTopPlate
       let R2 = sectionPointDict[pk2].backward.rightTopPlate
       let R3 = sectionPointDict[pk2].forward.rightTopPlate
+      
 
-
+      let uf0 = sectionPointDict[pk1].backward.uflange
       let uf1 = sectionPointDict[pk1].forward.uflange
       let uf2 = sectionPointDict[pk2].backward.uflange
+      let uf3 = sectionPointDict[pk2].forward.uflange
+
       for (let k in uf1){
         uf1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
       }
+
+      if (uf2[2].length === 0 && uf3[2].length > 0){  
+        let smoothness = 4
+        let filletPoint = [[],[]];
+        for (let ii = 0; ii<2; ii++){
+          let pt1 = ToGlobalPoint(point1, uf1[0][ii+1])
+          let pt2 = ToGlobalPoint(point2, uf2[0][ii+1])
+          let pt3 = ToGlobalPoint(point2, uf2[1][ii+1])
+          let p1 = new THREE.Vector3(pt1.x, pt1.y, pt1.z);
+          let p2 = new THREE.Vector3(pt2.x, pt2.y, pt2.z);
+          let p3 = new THREE.Vector3(pt3.x, pt3.y, pt3.z);
+          filletPoint[ii] = fillet3D(p1,p2,p3,filletR,smoothness);
+        }
+        let pt4 = ToGlobalPoint(point2, uf2[0][0])
+        let pt5 = ToGlobalPoint(point2, uf2[0][3])
+        for (let jj = 0; jj < smoothness + 1 ; jj++){
+          steelBoxDict[keyname]["points"][0].push(pt4)
+          steelBoxDict[keyname]["points"][0].push(filletPoint[0][jj])
+          steelBoxDict[keyname]["points"][0].push(filletPoint[1][jj])
+          steelBoxDict[keyname]["points"][0].push(pt5)
+        }
+      }
       if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
         for (let k in uf2){
-          uf2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
+          uf2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point2, element)));
         }
         UFi += 1 
       }
@@ -130,4 +157,40 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
   // }
 
   return steelBoxDict
+}
+
+
+function fillet3D(point1, point2, point3, radius, smoothness) {
+  let points = [point1, point2, point3]
+  let newPoints = [];
+  let v1 = new THREE.Vector3();
+  let v2 = new THREE.Vector3();
+  let v3 = new THREE.Vector3();
+  let vc1 = new THREE.Vector3();
+  let vc2 = new THREE.Vector3();
+  let center = new THREE.Vector3();
+  let ang
+  let l1
+
+     //console.log(points[i].x);
+    v1.subVectors(point1, point2).normalize();
+    v2.subVectors(point3, point2).normalize();
+    ang = Math.acos(v1.dot(v2))
+    l1 = radius / Math.sin(ang / 2)
+    v3.addVectors(v1, v2).setLength(l1);
+    center.addVectors(point2, v3);
+    let p1 = new THREE.Vector3().addVectors(point2, v1.multiplyScalar(radius / Math.tan(ang / 2)))
+    let p2 = new THREE.Vector3().addVectors(point2, v2.multiplyScalar(radius / Math.tan(ang / 2)))
+    vc1.subVectors(p1, center);
+    vc2.subVectors(p2, center);
+
+    newPoints.push(p1)
+    for (let j = 0; j < smoothness; j++) {
+      let dirVec = new THREE.Vector3().addVectors(vc1.clone().multiplyScalar(smoothness - j), vc2.clone().multiplyScalar(j + 1)).setLength(radius);
+      newPoints.push(new THREE.Vector3().addVectors(center, dirVec));
+    }
+    newPoints.push(p2)
+  //let line2 = new THREE.Line(newGeometry,line.material);
+  //scene.add(line2)
+  return newPoints;
 }
