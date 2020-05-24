@@ -42,7 +42,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
 
       if (uf2[2].length === 0 && uf3[2].length > 0){  
         let smoothness = 8
-        let filletPoint = [[],[]];
+        let filletPoint = [[],[],[],[]];
         for (let ii = 0; ii<2; ii++){
           let pt1 = ToGlobalPoint(point1, uf1[0][ii+1])
           let pt2 = ToGlobalPoint(point2, uf2[0][ii+1])
@@ -52,14 +52,30 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           let p3 = new THREE.Vector3(pt3.x, pt3.y, pt3.z);
           filletPoint[ii] = fillet3D(p1,p2,p3,filletR,smoothness);
         }
+        for (let ii = 0; ii<2; ii++){
+          let pt1 = ToGlobalPoint(point1, uf1[1][ii+1])
+          let pt2 = ToGlobalPoint(point2, uf2[1][ii+1])
+          let pt3 = ToGlobalPoint(point2, uf2[0][ii+1])
+          let p1 = new THREE.Vector3(pt1.x, pt1.y, pt1.z);
+          let p2 = new THREE.Vector3(pt2.x, pt2.y, pt2.z);
+          let p3 = new THREE.Vector3(pt3.x, pt3.y, pt3.z);
+          filletPoint[ii+2] = fillet3D(p1,p2,p3,filletR,smoothness);
+        }
         let pt4 = ToGlobalPoint(point2, uf2[0][0])
         let pt5 = ToGlobalPoint(point2, uf2[0][3])
+        let pt6 = ToGlobalPoint(point3, uf2[1][0])
+        let pt7 = ToGlobalPoint(point3, uf2[1][3])
         for (let jj = 0; jj < smoothness + 2 ; jj++){
           steelBoxDict[keyname]["points"][0].push(pt4)
           steelBoxDict[keyname]["points"][0].push(filletPoint[0][jj])
           steelBoxDict[keyname]["points"][0].push(filletPoint[1][jj])
           steelBoxDict[keyname]["points"][0].push(pt5)
+          steelBoxDict[keyname]["points"][1].push(pt6)
+          steelBoxDict[keyname]["points"][1].push(filletPoint[2][jj])
+          steelBoxDict[keyname]["points"][1].push(filletPoint[3][jj])
+          steelBoxDict[keyname]["points"][1].push(pt7)
         }
+
       }
       if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
         for (let k in uf2){
