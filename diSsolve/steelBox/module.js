@@ -28,25 +28,39 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       let R2 = sectionPointDict[pk2].backward.rightTopPlate
       let R3 = sectionPointDict[pk2].forward.rightTopPlate
 
-      if (L1[1].x >= R1[1].x) { //폐합인 경우 
-        let C1 = [L1[0], R1[0], R1[3], L1[3]];
-        C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
-      } else {
-        L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
-        R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)))
+
+      let uf1 = sectionPointDict[pk1].forward.uflange
+      let uf2 = sectionPointDict[pk2].backward.uflange
+      for (let k in uf1){
+        uf1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
       }
-      let FisB = true;  //forward is backward?
-      for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false } }
-      if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-        if (L2[1].x >= R2[1].x) { //폐합인 경우 
-          let C2 = [L2[0], R2[0], R2[3], L2[3]];
-          C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
-        } else {
-          L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
-          R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)))
+      if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+        for (let k in uf2){
+          uf2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
         }
+        UFi += 1 
       }
-      if (pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP") { UFi += 1 }
+
+      // if (L1[1].x >= R1[1].x) { //폐합인 경우 
+      //   let C1 = [L1[0], R1[0], R1[3], L1[3]];
+      //   C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
+      // } else {
+      //   L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+      //   R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)))
+      // }
+
+      // let FisB = true;  //forward is backward?  
+      // for (let i in L2) { if (L2[i] !== L3[i] || R2[i] !== R3[i]) { FisB = false } }
+      // if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+      //   if (L2[1].x >= R2[1].x) { //폐합인 경우 
+      //     let C2 = [L2[0], R2[0], R2[3], L2[3]];
+      //     C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
+      //   } else {
+      //     L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+      //     R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)))
+      //   }
+      // }
+      // if (pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP") { UFi += 1 }
 
 
       keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi

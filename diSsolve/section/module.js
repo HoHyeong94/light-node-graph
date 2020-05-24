@@ -32,7 +32,7 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
           ps = pointSectionInfo.backward
         }
         let slabThickness = ps.slabThickness - centerThickness
-
+        
         let Rib = {}
         for (let j in ps.lRibLO) {
           let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height + ps.lRibH },
