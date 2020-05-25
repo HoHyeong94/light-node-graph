@@ -221,7 +221,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         let l21 = DividingPoint(dpt3, dpt2, b1 + h1)
         let r11 = DividingPoint(dpt0, dpt1, b1)
         let r21 = DividingPoint(dpt3, dpt2, b1)
-        let filletPoints = FilletPoints(plate1, plate2, true, filletR, smoothness)
+        let filletPoints = FilletPoints(plate1, plate2, true, r, smoothness)
         steelBoxDict[keyname]["points"][0].push(wplate1[0], r1, r2, wplate1[3])
         steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
         steelBoxDict[keyname]["points"][1].push(wplate1[1], l1, l2, wplate1[2])
