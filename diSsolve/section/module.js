@@ -13,11 +13,12 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
       let girderIndex = k.substr(1, 1) - 1;
       let baseInput = {}
       let station = point.masterStationNumber;
+      let isFlat = girderBaseInfo[girderIndex].section.isFlat;
       let gradient = isFlat? 0: point.gradientY;
       let skew = point.skew;
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
       let sectionInfo = girderBaseInfo[girderIndex].section;
-      let isFlat = girderBaseInfo[girderIndex].section.isFlat;
+      
       const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
     //   const height = pointSectionInfo.forward.height + centerThickness;
       const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
