@@ -207,11 +207,38 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
             }
             break;
         }
-        else if (station == ep.masterStationNumber){
-            heightb = girderBaseInfo.height[i][3];
+
+        if (station > sp.masterStationNumber && station <= ep.masterStationNumber){
+            deltaH = girderBaseInfo.height[i][2] - girderBaseInfo.height[i][3];
+            L = ep.masterStationNumber - sp.masterStationNumber;
+            if (girderBaseInfo.height[i][4] == "circle"){
+                if (deltaH>0){
+                    R = Math.abs((L**2 + deltaH**2) / 2 / deltaH)
+                    x1 = ep.masterStationNumber - station;
+                    heightb = girderBaseInfo.height[i][3] + (R -Math.sqrt(R**2 - x1**2));
+                }else if (deltaH<0){
+                    R = Math.abs((L**2 + deltaH**2) / 2 / deltaH)
+                    x1 = station - sp.masterStationNumber;
+                    heightb = girderBaseInfo.height[i][2] + (R -Math.sqrt(R**2 - x1**2))
+                }else{
+                    heightb = girderBaseInfo.height[i][2]
+                }
+            }else if (girderBaseInfo.height[i][4] == "parabola"){
+                if (deltaH>0){
+                    x1 = ep.masterStationNumber - station;
+                    heightb = girderBaseInfo.height[i][3] + deltaH / L**2 * x1**2;
+                }else if (deltaH<0){
+                    x1 = station - sp.masterStationNumber;
+                    heightb = girderBaseInfo.height[i][2] - deltaH / L**2 * x1**2;
+                }else{
+                    heightb = girderBaseInfo.height[i][2]
+                }
+            }else{  //straight
+                x1 = station - sp.masterStationNumber;
+                heightb = girderBaseInfo.height[i][2] - x1/L * deltaH
+            }
             break;
         }
-    }
     forward.height = height;    //
     backward.height = heightb===0? height:heightb;   //형고가 불연속인 경우, 단부절취의 경우 수정이 필요함
 
