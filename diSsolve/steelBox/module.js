@@ -110,9 +110,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   } else {
     let spCheck = false
     splicer.forEach(function(sp){ if (pk2.substr(2, 2) === sp){ spCheck = true}})
-    console.log("splicer",spCheck)
-    if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-      console.log("splicerCheck")
+    if (spCheck) {
       for (let k in uf2) {
         plate2[k].forEach(element => result[k].push(element));
       }
