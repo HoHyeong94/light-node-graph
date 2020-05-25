@@ -5,22 +5,25 @@ import { OffsetPoint } from "../line/module"
 
 export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
   let result = {};
+  let slabToGirder = true; // 슬래브 두께를 거더에 반영할지에 대한 여부(추후 slabInfo 에 추가)
+  let isFlat = false; // 거더상부의 경사를 편경사 반영 여부
+
   for (let k in pointDict) {
     if (k.substr(0, 1) === "G") {
       let point = pointDict[k];
       let girderIndex = k.substr(1, 1) - 1;
       let baseInput = {}
       let station = point.masterStationNumber;
-      let gradient = point.gradientY;
+      let gradient = isFlat? 0 : point.gradientY;
       let skew = point.skew;
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
       let sectionInfo = girderBaseInfo[girderIndex].section;
       const centerThickness = slabInfo.slabThickness; //  slab변수 추가
-      const height = pointSectionInfo.forward.height + centerThickness;
-      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
-      const lwt = { x: - sectionInfo.UL, y: - centerThickness };
-      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
-      const rwt = { x: sectionInfo.UR, y: -centerThickness };
+      const hauchHeight = slabInfo.hauchHeight
+      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness - hauchHeight };
+      const lwt = { x: - sectionInfo.UL, y: - centerThickness - hauchHeight };
+      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness - hauchHeight };
+      const rwt = { x: sectionInfo.UR, y: -centerThickness - hauchHeight };
       let forward = {};
       let backward = {};
       let ps = {};
@@ -31,36 +34,37 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         } else {
           ps = pointSectionInfo.backward
         }
-        let slabThickness = ps.slabThickness
+        let bottomY = ps.height + centerThickness + hauchHeight;
+        let topY = slabToGirder? ps.slabThickness + hauchHeight : centerThickness + hauchHeight
 
         let Rib = {}
         for (let j in ps.lRibLO) {
-          let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height + ps.lRibH },
-          { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -height + ps.lRibH }, { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -height }]
+          let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY + ps.lRibH },
+          { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY + ps.lRibH }, { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY }]
           let keyname = "lRib" + j
           Rib[keyname] = lRib
         }
 
 
         // leftWeb
-        let lw1 = WebPoint(lwb, lwt, 0, -height) //{x:blwX,y:-height}
-        let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
+        let lw1 = WebPoint(lwb, lwt, 0, -bottomY) //{x:blwX,y:-height}
+        let lw2 = WebPoint(lwb, lwt, gradient, -topY) //{x:tlwX,y:gradient*tlwX - slabThickness}
         let lWeb = PlateRestPoint(lw1, lw2, 0, gradient, -ps.webThk);
         // rightWeb
-        let rw1 = WebPoint(rwb, rwt, 0, -height) //{x:brwX,y:-height}
-        let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
+        let rw1 = WebPoint(rwb, rwt, 0, -bottomY) //{x:brwX,y:-height}
+        let rw2 = WebPoint(rwb, rwt, gradient, -topY) //{x:trwX,y:gradient*trwX - slabThickness}
         let rWeb = PlateRestPoint(rw1, rw2, 0, gradient, ps.webThk);
         // bottomplate
-        let b1 = { x: lw1.x - sectionInfo.C1, y: -height }
-        let b2 = { x: rw1.x + sectionInfo.D1, y: -height }
+        let b1 = { x: lw1.x - sectionInfo.C1, y: -bottomY }
+        let b2 = { x: rw1.x + sectionInfo.D1, y: -bottomY }
         let bottomPlate = PlateRestPoint(b1, b2, null, null, -ps.lFlangeThk)
         
         // newbottomplate
         let lflange = [[],[],[]];
-        let newbl1 = { x: lw1.x - ps.lFlangeC, y: -height };
-        let newbl2 = { x: lw1.x - ps.lFlangeC + ps.lFlangeW, y: -height };
-        let newbr1 = { x: rw1.x + ps.lFlangeC, y: -height };
-        let newbr2 = { x: rw1.x + ps.lFlangeC - ps.lFlangeW, y: -height };
+        let newbl1 = { x: lw1.x - ps.lFlangeC, y: -bottomY };
+        let newbl2 = { x: lw1.x - ps.lFlangeC + ps.lFlangeW, y: -bottomY };
+        let newbr1 = { x: rw1.x + ps.lFlangeC, y: -bottomY };
+        let newbr2 = { x: rw1.x + ps.lFlangeC - ps.lFlangeW, y: -bottomY };
         if (newbl2.x < newbr2.x ){ //양측의 플렌지가 서로 중첩될 경우
             lflange[0] = PlateRestPoint(newbl1, newbl2, null, null, -ps.lFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
             lflange[1] = PlateRestPoint(newbr1, newbr2, null, null, -ps.lFlangeThk);;
@@ -99,7 +103,7 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
             wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
             wuf: tl2.x < tr1.x?ps.uFlangeW:tr2.x - tl1.x,       //상부플랜지 폭
             wlf: b2.x - b1.x,                                   //하부플랜지 폭
-            H: height -slabThickness,                           //강거더 높이
+            H: bottomY -topY,                           //강거더 높이
             tlf: ps.lFlangeThk ,                                //하부플랜지 두께
             tuf: ps.uFlangeThk,                                 //상부플랜지두께
             tw: ps.webThk,                                      //웹두께
