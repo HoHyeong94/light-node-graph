@@ -186,19 +186,28 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
 
 
 
-
       keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-      L1 = sectionPointDict[pk1].forward.bottomPlate
-      L2 = sectionPointDict[pk2].backward.bottomPlate
-      L3 = sectionPointDict[pk2].forward.bottomPlate
-      L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
-      FisB = true;
-      for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
-      if (!FisB || pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-        L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+      splicer = ["BF", "SP", "K6"]
+      let lflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflange", splicer)
+      for (let k in lflangePoint) {
+        lflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
       }
-      if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1 }
+      splicer.forEach(function(sp){ if (pk2.substr(2, 2) === sp){Bi += 1; return}})
+      // pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
+
+      // keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi
+      // if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+      // L1 = sectionPointDict[pk1].forward.bottomPlate
+      // L2 = sectionPointDict[pk2].backward.bottomPlate
+      // L3 = sectionPointDict[pk2].forward.bottomPlate
+      // L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+      // FisB = true;
+      // for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
+      // if (!FisB || pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+      //   L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+      // }
+      // if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1 }
 
 
 
