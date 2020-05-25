@@ -53,6 +53,92 @@ export function plateCompare(plate1, plate2) {
   }
   return result
 }
+
+export function steelPlateGenerator(sectionPoint1, sectionPoint2, plateKey){
+  let result = [[],[],[]];
+  
+  let uf0 = sectionPoint1.backward[plateKey];
+  let uf1 = sectionPoint1.forward[plateKey];
+  let uf2 = sectionPoint2.backward[plateKey];
+  let uf3 = sectionPoint2.forward[plateKey];
+  let FisB = plateCompare(uf2, uf3);  //forward is backward?  
+  let plate0 = [[], [], []];
+  let plate1 = [[], [], []];
+  let plate2 = [[], [], []];
+  let plate3 = [[], [], []];
+  let smoothness = 8
+
+  for (let k in uf1) {
+    uf0[k].forEach(element => plate0[k].push(ToGlobalPoint(point1, element)));
+    uf1[k].forEach(element => plate1[k].push(ToGlobalPoint(point1, element)));
+    uf2[k].forEach(element => plate2[k].push(ToGlobalPoint(point2, element)));
+    uf3[k].forEach(element => plate3[k].push(ToGlobalPoint(point2, element)));
+  }
+  // outborder 
+  if (!FisB) {
+    let former1 = uf0[0][0] ? uf0[0][0].x : uf0[2][0].x
+    let latter1 = uf1[0][0] ? uf1[0][0].x : uf1[2][0].x
+    if (former1 < latter1) {
+      if (uf1[2][0]) {
+        plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
+        plate1[0][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2)
+        plate1[0][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2)
+        plate1[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (latter1 - former1) * 2)
+      }
+      for (let k in uf1) {
+        plate0[k].forEach(element => result[k].push(element));
+      }
+    }
+  }
+  if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작 // 외측과 내측필렛이 같은요소에 작용하면 오류가 발생할 것으로 예상, 필렛이 없는 폐합요소에만 외측 챔퍼 적용
+    let filletPoints = FilletPoints(plate1, plate2, false, filletR, smoothness)
+    result[0].push(...filletPoints[0])
+    result[1].push(...filletPoints[1])
+  } else {
+    for (let k in uf1) {
+      plate1[k].forEach(element => result[k].push(element));
+    }
+  }
+  if (uf2[2].length === 0 && uf3[2].length > 0) {
+    let filletPoints = FilletPoints(plate1, plate2, true, filletR, smoothness)
+    result[0].push(...filletPoints[0])
+    result[1].push(...filletPoints[1])
+  } else {
+    if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+      for (let k in uf2) {
+        plate2[k].forEach(element => result[k].push(element));
+      }
+    }
+  }
+  if (!FisB) {
+    let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
+    let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
+    if (former2 > latter2) {
+      if (uf2[2][0]) {
+        plate2[2][0] = DividingPoint(plate2[2][0], plate1[2][0], (former2 - latter2) * 2)
+        plate2[2][1] = DividingPoint(plate2[2][1], plate1[2][1], (former2 - latter2) * 2)
+        plate2[2][2] = DividingPoint(plate2[2][2], plate1[2][2], (former2 - latter2) * 2)
+        plate2[2][3] = DividingPoint(plate2[2][3], plate1[2][3], (former2 - latter2) * 2)
+        if (!uf3[2][0]) {
+          plate3[2][0] = plate3[0][0]
+          plate3[2][1] = plate3[1][0]
+          plate3[2][2] = plate3[1][3]
+          plate3[2][3] = plate3[0][3]
+          plate3[0] = [];
+          plate3[1] = [];
+        }
+      }
+      for (let k in uf2) {
+        plate2[k].forEach(element => result[k].push(element));
+      }
+      for (let k in uf2) {
+        plate3[k].forEach(element => result[k].push(element));
+      }
+    }
+  }
+  return result
+}
+
 export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let steelBoxDict = {};
   let pk1 = ""
@@ -83,10 +169,14 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       let R2 = sectionPointDict[pk2].backward.rightTopPlate
       let R3 = sectionPointDict[pk2].forward.rightTopPlate
 
+      let uflangePoint = steelPlateGenerator(sectionPointDict[pk1],sectionPointDict[pk2],"uflange")
+
+      console.log("uflange1", uflangePoint)
       let uf0 = sectionPointDict[pk1].backward.uflange
       let uf1 = sectionPointDict[pk1].forward.uflange
       let uf2 = sectionPointDict[pk2].backward.uflange
       let uf3 = sectionPointDict[pk2].forward.uflange
+
 
       let FisB = true;  //forward is backward?  
       FisB = plateCompare(uf2, uf3)
@@ -111,12 +201,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         let former1 = uf0[0][0] ? uf0[0][0].x : uf0[2][0].x
         let latter1 = uf1[0][0] ? uf1[0][0].x : uf1[2][0].x
         if (former1 < latter1) {
-          if (uf1[0][0]) {
-            plate1[0][0] = DividingPoint(plate1[0][0], plate2[0][0], (latter1 - former1) * 2)
-            plate1[0][1] = DividingPoint(plate1[0][1], plate2[0][1], (latter1 - former1) * 2)
-            plate1[0][2] = DividingPoint(plate1[0][2], plate2[0][2], (latter1 - former1) * 2)
-            plate1[0][3] = DividingPoint(plate1[0][3], plate2[0][3], (latter1 - former1) * 2)
-          } else {
+          if (uf1[2][0]) {
             plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
             plate1[0][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2)
             plate1[0][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2)
@@ -127,9 +212,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           }
         }
       }
-
-
-      if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작
+      if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작 // 외측과 내측필렛이 같은요소에 작용하면 오류가 발생할 것으로 예상, 필렛이 없는 폐합요소에만 외측 챔퍼 적용
         let filletPoints = FilletPoints(plate1, plate2, false, filletR, smoothness)
         steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
         steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
@@ -153,12 +236,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
         let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
         if (former2 > latter2) {
-          if (uf2[0][0]) {
-            plate2[0][0] = DividingPoint(plate2[0][0], plate1[0][0], (former2 - latter2) * 2)
-            plate2[0][1] = DividingPoint(plate2[0][1], plate1[0][1], (former2 - latter2) * 2)
-            plate2[0][2] = DividingPoint(plate2[0][2], plate1[0][2], (former2 - latter2) * 2)
-            plate2[0][3] = DividingPoint(plate2[0][3], plate1[0][3], (former2 - latter2) * 2)
-          } else {
+          if (uf2[2][0]) {
             plate2[2][0] = DividingPoint(plate2[2][0], plate1[2][0], (former2 - latter2) * 2)
             plate2[2][1] = DividingPoint(plate2[2][1], plate1[2][1], (former2 - latter2) * 2)
             plate2[2][2] = DividingPoint(plate2[2][2], plate1[2][2], (former2 - latter2) * 2)
@@ -180,7 +258,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           }
         }
       }
-
+      console.log("uflange2", steelBoxDict[keyname]["points"])
       if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
 
       // if (L1[1].x >= R1[1].x) { //폐합인 경우 
