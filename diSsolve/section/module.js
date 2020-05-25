@@ -205,7 +205,6 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
                 x1 = station - sp.masterStationNumber;
                 height = girderBaseInfo.height[i][2] - x1/L * deltaH
             }
-            break;
         }
 
         if (station > sp.masterStationNumber && station <= ep.masterStationNumber){
@@ -237,12 +236,10 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
                 x1 = station - sp.masterStationNumber;
                 heightb = girderBaseInfo.height[i][2] - x1/L * deltaH
             }
-            break;
         }
     }
     forward.height = height;    //
     backward.height = heightb===0? height:heightb;   //형고가 불연속인 경우, 단부절취의 경우 수정이 필요함
-
     // position:0, T:1, H:2
     let slabThickness = 0;
     for (let i = 0; i < slabLayout.length - 1; i++) {
