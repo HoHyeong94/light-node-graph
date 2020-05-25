@@ -67,13 +67,15 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         }else{
             lflange[2] = PlateRestPoint(newbl1, newbr1, null, null, -ps.lFlangeThk);;
         }
+
+        let tan = gradient===0? null : -1/gradient;
         // TopPlate
         let tl1 = { x: lw2.x - sectionInfo.C, y: lw2.y + gradient * (- sectionInfo.C) };
         let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW) };
-        let topPlate1 = PlateRestPoint(tl1, tl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+        let topPlate1 = PlateRestPoint(tl1, tl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
         let tr1 = { x: rw2.x + sectionInfo.D, y: rw2.y + gradient * (sectionInfo.D) };
         let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW) };
-        let topPlate2 = PlateRestPoint(tr1, tr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);;
+        let topPlate2 = PlateRestPoint(tr1, tr2, tan, tan, ps.uFlangeThk);;
         // newTopPlate
         let uflange = [[],[],[]];
         let newtl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
@@ -82,10 +84,10 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         let newtr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
 
         if (newtl2.x < newtr2.x ){ //양측의 플렌지가 서로 중첩될 경우
-            uflange[0] = PlateRestPoint(newtl1, newtl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
-            uflange[1] = PlateRestPoint(newtr1, newtr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);;
+            uflange[0] = PlateRestPoint(newtl1, newtl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+            uflange[1] = PlateRestPoint(newtr1, newtr2, tan, tan, ps.uFlangeThk);;
         }else{
-            uflange[2] = PlateRestPoint(newtl1, newtr1, -1 / gradient, -1 / gradient, ps.uFlangeThk);;
+            uflange[2] = PlateRestPoint(newtl1, newtr1, tan, tan, ps.uFlangeThk);;
         }
 
 
