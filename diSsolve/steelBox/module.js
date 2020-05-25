@@ -109,7 +109,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         let latter1 = uf1[0][0] ? uf1[0][0].x : uf1[2][0].x
         let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
         let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
-
+        console.log("check", former1, latter1, former2, latter2)
         if (former1 < latter1) {
           if (uf1[0][0]) {
             plate1[0][0] = DividingPoint(plate1[0][0], plate2[0][0], (latter1 - former1) * 2)
