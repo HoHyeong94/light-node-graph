@@ -244,6 +244,9 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       L1 = sectionPointDict[pk1].forward.lWeb
       L2 = sectionPointDict[pk2].backward.lWeb
       L3 = sectionPointDict[pk2].forward.lWeb
+        let wplate1 = [];
+        let wplate2 = [];
+
       L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
       L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
 
