@@ -150,7 +150,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let RWi = 1;
   let Ribi = 1;
   let keyname = ""
-
+  let filletR = 300;
 
 
   for (let i in girderStationList) {
