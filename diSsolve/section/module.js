@@ -172,10 +172,11 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     let deltaH = 0;
     let L = 0;
     let height = 0;
+    let heightb = 0;
     for (let i = 0; i< girderBaseInfo.height.length;i++){
         let sp = pointDict[girderBaseInfo.height[i][0]];
         let ep = pointDict[girderBaseInfo.height[i][1]];
-        if (station >= sp.masterStationNumber && station <= ep.masterStationNumber){
+        if (station >= sp.masterStationNumber && station < ep.masterStationNumber){
             deltaH = girderBaseInfo.height[i][2] - girderBaseInfo.height[i][3]
             L = ep.masterStationNumber - sp.masterStationNumber;
             if (girderBaseInfo.height[i][4] == "circle"){
@@ -206,9 +207,13 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
             }
             break;
         }
+        else if (station == ep.masterStationNumber){
+            heightb = girderBaseInfo.height[i][3];
+            break;
+        }
     }
-    forward.height = height;
-    backward.height = height;
+    forward.height = height;    //
+    backward.height = heightb;   //형고가 불연속인 경우, 단부절취의 경우 수정이 필요함
 
     // position:0, T:1, H:2
     let slabThickness = 0;
