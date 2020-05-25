@@ -5,7 +5,8 @@ import { OffsetPoint } from "../line/module"
 
 export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
   let result = {};
-  let isFlat = true;
+  let slabToGirder = true;
+  let isFlat = false;
   for (let k in pointDict) {
     if (k.substr(0, 1) === "G") {
       let point = pointDict[k];
@@ -32,7 +33,7 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         } else {
           ps = pointSectionInfo.backward
         }
-        let slabThickness = ps.slabThickness
+        let slabThickness = slabToGirder? centerThickness : ps.slabThickness;
 
         let Rib = {}
         for (let j in ps.lRibLO) {
