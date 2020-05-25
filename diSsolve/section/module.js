@@ -54,6 +54,19 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         let b1 = { x: lw1.x - sectionInfo.C1, y: -height }
         let b2 = { x: rw1.x + sectionInfo.D1, y: -height }
         let bottomPlate = PlateRestPoint(b1, b2, null, null, -ps.lFlangeThk)
+        
+        // newbottomplate
+        let lflange = [[],[],[]];
+        let newbl1 = { x: lw2.x - ps.lFlangeC, y: -height };
+        let newbl2 = { x: lw2.x - ps.lFlangeC + ps.lFlangeW, y: -height };
+        let newbr1 = { x: rw2.x + ps.lFlangeC, y: -height };
+        let newbr2 = { x: rw2.x + ps.lFlangeC - ps.lFlangeW, y: -height };
+        if (newbl2.x < newbr2.x ){ //양측의 플렌지가 서로 중첩될 경우
+            lflange[0] = PlateRestPoint(newbl1, newbl2, null, null, -ps.lFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+            lflange[1] = PlateRestPoint(newbr1, newbr2, null, null, -ps.lFlangeThk);;
+        }else{
+            lflange[2] = PlateRestPoint(newbl1, newbr1, null, null, -ps.lFlangeThk);;
+        }
         // TopPlate
         let tl1 = { x: lw2.x - sectionInfo.C, y: lw2.y + gradient * (- sectionInfo.C) };
         let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW) };
@@ -100,9 +113,9 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
             horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
           }
         if (i === 0) {
-          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange : uflange }
+          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange : uflange, lflange : lflange }
         } else {
-          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange : uflange }
+          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange : uflange, lflange : lflange }
         }
       }
       result[k] = { forward, backward }
@@ -116,9 +129,11 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
         height: 0,
         slabThickness: 0,
         skew: skew,
-        uFlangeC: 0,//플렌지 하나의 폭을 의미함, 0 이거나 전체폭과 값과 같거나 절반보다 크면 폐합단면, 보다 절반보다 작으면 개구단면, 하부플렌지에도 동일하게 적용함
-        uFlangeW: 0,//전체폭을 의미함
+        uFlangeC: 0,//캔틸레버길이를 의미함
+        uFlangeW: 0,//
         uFlangeThk: 0,
+        lFlangeC: 0,//캘틸레버길이를 의미함
+        lFlangeW: 0,//
         lFlangeThk: 0,
         webThk: 0,
         uRibH: 0,
@@ -135,6 +150,8 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
         uFlangeC: 0,
         uFlangeW: 0,
         uFlangeThk: 0,
+        lFlangeC: 0,//캘틸레버길이를 의미함
+        lFlangeW: 0,//
         lFlangeThk: 0,
         webThk: 0,
         uRibH: 0,
@@ -225,12 +242,16 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
         })
     if(lFlange.length>0){
         forward.lFlangeThk = lFlange[0][2]
+        forward.lFlangeW = lFlange[0][3] + (lFlange[0][4] - lFlange[0][3])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber)
+        forward.lFlangeC = lFlange[0][5] + (lFlange[0][6] - lFlange[0][5])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber)
     }
     lFlange = girderBaseInfo.lFlange.filter(function(element){ 
         return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
         })
     if(lFlange.length>0){
         backward.lFlangeThk = lFlange[0][2]
+        backward.lFlangeW = lFlange[0][3] + (lFlange[0][4] - lFlange[0][3])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber)
+        backward.lFlangeC = lFlange[0][5] + (lFlange[0][6] - lFlange[0][5])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber)
     }
 
     var web = girderBaseInfo.web.filter(function(element){ 
