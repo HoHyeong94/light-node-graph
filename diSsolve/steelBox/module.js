@@ -54,13 +54,13 @@ export function plateCompare(plate1, plate2) {
   return result
 }
 
-export function steelPlateGenerator(sectionPoint1, sectionPoint2, point1, point2, plateKey){
+export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey){
   let result = [[],[],[]];
   
-  let uf0 = sectionPoint1.backward[plateKey];
-  let uf1 = sectionPoint1.forward[plateKey];
-  let uf2 = sectionPoint2.backward[plateKey];
-  let uf3 = sectionPoint2.forward[plateKey];
+  let uf0 = sectionPointDict[pk1].backward[plateKey];
+  let uf1 = sectionPointDict[pk1].forward[plateKey];
+  let uf2 = sectionPointDict[pk2].backward[plateKey];
+  let uf3 = sectionPointDict[pk2].forward[plateKey];
   let FisB = plateCompare(uf2, uf3);  //forward is backward?  
   let plate0 = [[], [], []];
   let plate1 = [[], [], []];
@@ -169,7 +169,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       let R2 = sectionPointDict[pk2].backward.rightTopPlate
       let R3 = sectionPointDict[pk2].forward.rightTopPlate
 
-      let uflangePoint = steelPlateGenerator(sectionPointDict[pk1],sectionPointDict[pk2],point1, point2, "uflange")
+      let uflangePoint = steelPlateGenerator(sectionPointDict,pk1, pk2, point1, point2, "uflange")
 
       console.log("uflange1", uflangePoint)
       let uf0 = sectionPointDict[pk1].backward.uflange
