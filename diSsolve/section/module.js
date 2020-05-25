@@ -57,10 +57,10 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         
         // newbottomplate
         let lflange = [[],[],[]];
-        let newbl1 = { x: lw2.x - ps.lFlangeC, y: -height };
-        let newbl2 = { x: lw2.x - ps.lFlangeC + ps.lFlangeW, y: -height };
-        let newbr1 = { x: rw2.x + ps.lFlangeC, y: -height };
-        let newbr2 = { x: rw2.x + ps.lFlangeC - ps.lFlangeW, y: -height };
+        let newbl1 = { x: lw1.x - ps.lFlangeC, y: -height };
+        let newbl2 = { x: lw1.x - ps.lFlangeC + ps.lFlangeW, y: -height };
+        let newbr1 = { x: rw1.x + ps.lFlangeC, y: -height };
+        let newbr2 = { x: rw1.x + ps.lFlangeC - ps.lFlangeW, y: -height };
         if (newbl2.x < newbr2.x ){ //양측의 플렌지가 서로 중첩될 경우
             lflange[0] = PlateRestPoint(newbl1, newbl2, null, null, -ps.lFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
             lflange[1] = PlateRestPoint(newbr1, newbr2, null, null, -ps.lFlangeThk);;
