@@ -122,6 +122,9 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
   let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
 
+  let former3 = uf2[0][0] ? uf2[0][0].y : uf2[2][0].y
+  let latter3 = uf3[0][0] ? uf3[0][0].y : uf3[2][0].y
+
   for (let k in uf1) {
     uf0[k].forEach(element => plate0[k].push(ToGlobalPoint(point1, element)));
     uf1[k].forEach(element => plate1[k].push(ToGlobalPoint(point1, element)));
@@ -158,7 +161,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   } else {
     let spCheck = false
     splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
-    if (spCheck ||(!FisB&&(uf2[0][0].y !== uf3[0][0].y))) {
+    if (spCheck ||(!FisB&&(former3 !== latter3))) {
       for (let k in uf2) {
         plate2[k].forEach(element => result[k].push(element));
       }
