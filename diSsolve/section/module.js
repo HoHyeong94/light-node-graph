@@ -15,12 +15,12 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
       let skew = point.skew;
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
       let sectionInfo = girderBaseInfo[girderIndex].section;
-      const height = pointSectionInfo.forward.height;
       const centerThickness = slabInfo.slabThickness; //  slab변수 추가
-      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H };
-      const lwt = { x: - sectionInfo.UL, y: 0 };
-      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H };
-      const rwt = { x: sectionInfo.UR, y: 0 };
+      const height = pointSectionInfo.forward.height + centerThickness;
+      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
+      const lwt = { x: - sectionInfo.UL, y: - centerThickness };
+      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
+      const rwt = { x: sectionInfo.UR, y: -centerThickness };
       let forward = {};
       let backward = {};
       let ps = {};
@@ -31,8 +31,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         } else {
           ps = pointSectionInfo.backward
         }
-        let slabThickness = ps.slabThickness - centerThickness
-        
+        let slabThickness = ps.slabThickness
+
         let Rib = {}
         for (let j in ps.lRibLO) {
           let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height + ps.lRibH },
