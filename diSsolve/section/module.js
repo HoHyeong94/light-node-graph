@@ -5,7 +5,7 @@ import { OffsetPoint } from "../line/module"
 
 export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
   let result = {};
-  let slabToGirder = true;
+  let slabToGirder = false;
   let isFlat = false;
   for (let k in pointDict) {
     if (k.substr(0, 1) === "G") {
@@ -17,8 +17,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
       let skew = point.skew;
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
       let sectionInfo = girderBaseInfo[girderIndex].section;
-      const centerThickness = slabInfo.slabThickness; //  slab변수 추가
-      const height = pointSectionInfo.forward.height + centerThickness;
+      const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
+    //   const height = pointSectionInfo.forward.height + centerThickness;
       const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
       const lwt = { x: - sectionInfo.UL, y: - centerThickness };
       const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
@@ -33,7 +33,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         } else {
           ps = pointSectionInfo.backward
         }
-        let slabThickness = slabToGirder? centerThickness : ps.slabThickness;
+        let height = ps.height + centerThickness;
+        let slabThickness = slabToGirder? centerThickness : ps.slabThickness  + slabInfo.haunchHeight;
 
         let Rib = {}
         for (let j in ps.lRibLO) {
