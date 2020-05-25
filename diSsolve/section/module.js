@@ -19,11 +19,11 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
       let sectionInfo = girderBaseInfo[girderIndex].section;
       const centerThickness = slabInfo.slabThickness; //  slab변수 추가
-      const hauchHeight = slabInfo.hauchHeight
-      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness - hauchHeight };
-      const lwt = { x: - sectionInfo.UL, y: - centerThickness - hauchHeight };
-      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness - hauchHeight };
-      const rwt = { x: sectionInfo.UR, y: -centerThickness - hauchHeight };
+      const haunchHeight = slabInfo.haunchHeight
+      const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness - haunchHeight };
+      const lwt = { x: - sectionInfo.UL, y: - centerThickness - haunchHeight };
+      const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness - haunchHeight };
+      const rwt = { x: sectionInfo.UR, y: -centerThickness - haunchHeight };
       let forward = {};
       let backward = {};
       let ps = {};
@@ -34,8 +34,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         } else {
           ps = pointSectionInfo.backward
         }
-        let bottomY = ps.height + centerThickness + hauchHeight;
-        let topY = slabToGirder? ps.slabThickness + hauchHeight : centerThickness + hauchHeight
+        let bottomY = ps.height + centerThickness + haunchHeight;
+        let topY = slabToGirder? ps.slabThickness + haunchHeight : centerThickness + haunchHeight
 
         let Rib = {}
         for (let j in ps.lRibLO) {
