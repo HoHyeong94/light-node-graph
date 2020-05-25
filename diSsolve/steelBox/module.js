@@ -163,7 +163,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
             plate2[2][1] = DividingPoint(plate2[2][1], plate1[2][1], (former2 - latter2) * 2)
             plate2[2][2] = DividingPoint(plate2[2][2], plate1[2][2], (former2 - latter2) * 2)
             plate2[2][3] = DividingPoint(plate2[2][3], plate1[2][3], (former2 - latter2) * 2)
-            if (utf3[2][0]) {
+            if (uf3[2][0]) {
               plate3[2][0] = plate3[0][0]
               plate3[2][1] = plate3[1][0]
               plate3[2][2] = plate3[1][3]
