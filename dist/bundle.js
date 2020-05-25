@@ -652,7 +652,7 @@
     supportData,
     diaPhragmLocate,
     vStiffLocate,
-    splice: splice$1,
+    splice,
     joint,
     height,
     taperedPoint,  
@@ -741,7 +741,7 @@
   GridPointInput.prototype.onExecute = function() {
     this.setOutputData(0,diaPhragmLocate);
     this.setOutputData(1,vStiffLocate);
-    this.setOutputData(2,splice$1);
+    this.setOutputData(2,splice);
     this.setOutputData(3,joint);
     this.setOutputData(4,height);
     this.setOutputData(5,taperedPoint);
@@ -1955,22 +1955,26 @@
 
   function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
     let result = {};
+    let slabToGirder = slabInfo.slabToGirder;
+    
     for (let k in pointDict) {
       if (k.substr(0, 1) === "G") {
-        let point = pointDict[k];
+          let point = pointDict[k];
         let girderIndex = k.substr(1, 1) - 1;
         let baseInput = {};
         let station = point.masterStationNumber;
-        let gradient = point.gradientY;
+        let isFlat = girderBaseInfo[girderIndex].section.isFlat;
+        let gradient = isFlat? 0: point.gradientY;
         let skew = point.skew;
         let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
         let sectionInfo = girderBaseInfo[girderIndex].section;
-        const height = pointSectionInfo.forward.height;
-        const centerThickness = slabInfo.slabThickness; //  slab변수 추가
-        const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H };
-        const lwt = { x: - sectionInfo.UL, y: 0 };
-        const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H };
-        const rwt = { x: sectionInfo.UR, y: 0 };
+        
+        const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
+      //   const height = pointSectionInfo.forward.height + centerThickness;
+        const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
+        const lwt = { x: - sectionInfo.UL, y: - centerThickness };
+        const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
+        const rwt = { x: sectionInfo.UR, y: -centerThickness };
         let forward = {};
         let backward = {};
         let ps = {};
@@ -1981,36 +1985,50 @@
           } else {
             ps = pointSectionInfo.backward;
           }
-          let slabThickness = ps.slabThickness - centerThickness;
-          
+          let bottomY = ps.height + centerThickness;
+          let topY = slabToGirder? ps.slabThickness  + slabInfo.haunchHeight : centerThickness;
+
           let Rib = {};
           for (let j in ps.lRibLO) {
-            let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -height + ps.lRibH },
-            { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -height + ps.lRibH }, { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -height }];
+            let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY + ps.lRibH },
+            { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY + ps.lRibH }, { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY }];
             let keyname = "lRib" + j;
             Rib[keyname] = lRib;
           }
 
 
           // leftWeb
-          let lw1 = WebPoint(lwb, lwt, 0, -height); //{x:blwX,y:-height}
-          let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness); //{x:tlwX,y:gradient*tlwX - slabThickness}
+          let lw1 = WebPoint(lwb, lwt, 0, -bottomY); //{x:blwX,y:-height}
+          let lw2 = WebPoint(lwb, lwt, gradient, -topY); //{x:tlwX,y:gradient*tlwX - slabThickness}
           let lWeb = PlateRestPoint(lw1, lw2, 0, gradient, -ps.webThk);
           // rightWeb
-          let rw1 = WebPoint(rwb, rwt, 0, -height); //{x:brwX,y:-height}
-          let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness); //{x:trwX,y:gradient*trwX - slabThickness}
+          let rw1 = WebPoint(rwb, rwt, 0, -bottomY); //{x:brwX,y:-height}
+          let rw2 = WebPoint(rwb, rwt, gradient, -topY); //{x:trwX,y:gradient*trwX - slabThickness}
           let rWeb = PlateRestPoint(rw1, rw2, 0, gradient, ps.webThk);
           // bottomplate
-          let b1 = { x: lw1.x - sectionInfo.C1, y: -height };
-          let b2 = { x: rw1.x + sectionInfo.D1, y: -height };
+          let b1 = { x: lw1.x - sectionInfo.C1, y: -bottomY };
+          let b2 = { x: rw1.x + sectionInfo.D1, y: -bottomY };
           let bottomPlate = PlateRestPoint(b1, b2, null, null, -ps.lFlangeThk);
+          
+          // newbottomplate
+          let lflange = [[],[],[]];
+          let newbl1 = { x: lw1.x - ps.lFlangeC, y: -bottomY };
+          let newbl2 = { x: lw1.x - ps.lFlangeC + ps.lFlangeW, y: -bottomY };
+          let newbr1 = { x: rw1.x + ps.lFlangeC, y: -bottomY };
+          let newbr2 = { x: rw1.x + ps.lFlangeC - ps.lFlangeW, y: -bottomY };
+          if (newbl2.x < newbr2.x ){ //양측의 플렌지가 서로 중첩될 경우
+              lflange[0] = PlateRestPoint(newbl1, newbl2, null, null, -ps.lFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+              lflange[1] = PlateRestPoint(newbr1, newbr2, null, null, -ps.lFlangeThk);        }else {
+              lflange[2] = PlateRestPoint(newbl1, newbr1, null, null, -ps.lFlangeThk);        }
+
+          let tan = gradient===0? null : -1/gradient;
           // TopPlate
           let tl1 = { x: lw2.x - sectionInfo.C, y: lw2.y + gradient * (- sectionInfo.C) };
           let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW) };
-          let topPlate1 = PlateRestPoint(tl1, tl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+          let topPlate1 = PlateRestPoint(tl1, tl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
           let tr1 = { x: rw2.x + sectionInfo.D, y: rw2.y + gradient * (sectionInfo.D) };
           let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW) };
-          let topPlate2 = PlateRestPoint(tr1, tr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);        // newTopPlate
+          let topPlate2 = PlateRestPoint(tr1, tr2, tan, tan, ps.uFlangeThk);        // newTopPlate
           let uflange = [[],[],[]];
           let newtl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
           let newtl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW) };
@@ -2018,11 +2036,9 @@
           let newtr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
 
           if (newtl2.x < newtr2.x ){ //양측의 플렌지가 서로 중첩될 경우
-              uflange[0] = PlateRestPoint(newtl1, newtl2, -1 / gradient, -1 / gradient, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
-              uflange[1] = PlateRestPoint(newtr1, newtr2, -1 / gradient, -1 / gradient, ps.uFlangeThk);        }else {
-              uflange[2] = PlateRestPoint(newtl1, newtr1, -1 / gradient, -1 / gradient, ps.uFlangeThk);        }
-
-
+              uflange[0] = PlateRestPoint(newtl1, newtl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+              uflange[1] = PlateRestPoint(newtr1, newtr2, tan, tan, ps.uFlangeThk);        }else {
+              uflange[2] = PlateRestPoint(newtl1, newtr1, tan, tan, ps.uFlangeThk);        }
           baseInput = {
               isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
               isClosedTop: tl2.x < tr1.x?true:false,         
@@ -2033,7 +2049,7 @@
               wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
               wuf: tl2.x < tr1.x?ps.uFlangeW:tr2.x - tl1.x,       //상부플랜지 폭
               wlf: b2.x - b1.x,                                   //하부플랜지 폭
-              H: height -slabThickness,                           //강거더 높이
+              H: bottomY -topY,                           //강거더 높이
               tlf: ps.lFlangeThk ,                                //하부플랜지 두께
               tuf: ps.uFlangeThk,                                 //상부플랜지두께
               tw: ps.webThk,                                      //웹두께
@@ -2047,9 +2063,9 @@
               horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
             };
           if (i === 0) {
-            forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange : uflange };
+            forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange : uflange, lflange : lflange };
           } else {
-            backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange : uflange };
+            backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange : uflange, lflange : lflange };
           }
         }
         result[k] = { forward, backward };
@@ -2063,9 +2079,11 @@
           height: 0,
           slabThickness: 0,
           skew: skew,
-          uFlangeC: 0,//플렌지 하나의 폭을 의미함, 0 이거나 전체폭과 값과 같거나 절반보다 크면 폐합단면, 보다 절반보다 작으면 개구단면, 하부플렌지에도 동일하게 적용함
-          uFlangeW: 0,//전체폭을 의미함
+          uFlangeC: 0,//캔틸레버길이를 의미함
+          uFlangeW: 0,//
           uFlangeThk: 0,
+          lFlangeC: 0,//캘틸레버길이를 의미함
+          lFlangeW: 0,//
           lFlangeThk: 0,
           webThk: 0,
           uRibH: 0,
@@ -2082,6 +2100,8 @@
           uFlangeC: 0,
           uFlangeW: 0,
           uFlangeThk: 0,
+          lFlangeC: 0,//캘틸레버길이를 의미함
+          lFlangeW: 0,//
           lFlangeThk: 0,
           webThk: 0,
           uRibH: 0,
@@ -2172,12 +2192,16 @@
           });
       if(lFlange.length>0){
           forward.lFlangeThk = lFlange[0][2];
+          forward.lFlangeW = lFlange[0][3] + (lFlange[0][4] - lFlange[0][3])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
+          forward.lFlangeC = lFlange[0][5] + (lFlange[0][6] - lFlange[0][5])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
       }
       lFlange = girderBaseInfo.lFlange.filter(function(element){ 
           return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
           });
       if(lFlange.length>0){
           backward.lFlangeThk = lFlange[0][2];
+          backward.lFlangeW = lFlange[0][3] + (lFlange[0][4] - lFlange[0][3])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
+          backward.lFlangeC = lFlange[0][5] + (lFlange[0][6] - lFlange[0][5])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
       }
 
       var web = girderBaseInfo.web.filter(function(element){ 
@@ -2426,7 +2450,53 @@
     return result
   }
 
-  function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey) {
+  function webEntrance(wplate1, wplate2, isForward) {
+    let result = [[], [], []];
+    let b1 = 300;
+    let h1 = 1100;
+    let d1 = 250;
+    let r = 150;
+    let smoothness = 8;
+    // let wplate1 = [];
+    // let wplate2 = [];
+    // L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
+    // L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
+    let dpt0 = DividingPoint(wplate1[0], wplate2[0], d1);
+    let dpt1 = DividingPoint(wplate1[1], wplate2[1], d1);
+    let dpt2 = DividingPoint(wplate1[2], wplate2[2], d1);
+    let dpt3 = DividingPoint(wplate1[3], wplate2[3], d1);
+    let l1 = DividingPoint(wplate1[0], wplate1[1], b1 + h1);
+    let l2 = DividingPoint(wplate1[3], wplate1[2], b1 + h1);
+    let r1 = DividingPoint(wplate1[0], wplate1[1], b1);
+    let r2 = DividingPoint(wplate1[3], wplate1[2], b1);
+    let l11 = DividingPoint(dpt0, dpt1, b1 + h1);
+    let l21 = DividingPoint(dpt3, dpt2, b1 + h1);
+    let r11 = DividingPoint(dpt0, dpt1, b1);
+    let r21 = DividingPoint(dpt3, dpt2, b1);
+
+    let newPlate1 = [[wplate1[0], r1, r2, wplate1[3]], [wplate1[1], l1, l2, wplate1[2]], []];
+    let newPlate2 = [[dpt0, r11, r21, dpt3], [dpt1, l11, l21, dpt2], []];
+    if (isForward) {
+      let filletPoints = FilletPoints(newPlate1, newPlate2, isForward, r, smoothness);
+      result[0].push(wplate1[0], r1, r2, wplate1[3]);
+      result[0].push(...filletPoints[0]);
+      result[1].push(wplate1[1], l1, l2, wplate1[2]);
+      result[1].push(...filletPoints[1]);
+    }
+    else {
+      let filletPoints = FilletPoints(newPlate2, newPlate1, isForward, r, smoothness);
+      result[0].push(...filletPoints[0]);
+      result[0].push(wplate1[0], r1, r2, wplate1[3]);
+      result[1].push(...filletPoints[1]);
+      result[1].push(wplate1[1], l1, l2, wplate1[2]);
+    }
+    // steelBoxDict[keyname]["points"][0].push(dpt0, r11, r21, dpt3)
+    // steelBoxDict[keyname]["points"][1].push(dpt1, l11, l21, dpt2)
+    result[2].push(dpt0, dpt1, dpt2, dpt3);
+    return result
+  }
+
+  function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey, splicer) {
     // 박스형 거더의 상하부플레이트 개구와 폐합에 대한 필렛을 위해 개발되었으며, 개구->폐합, 폐합->개구에 대해서만 가능하다, 
     // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
 
@@ -2480,7 +2550,9 @@
       result[0].push(...filletPoints[0]);
       result[1].push(...filletPoints[1]);
     } else {
-      if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+      let spCheck = false;
+      splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true; } });
+      if (spCheck) {
         for (let k in uf2) {
           plate2[k].forEach(element => result[k].push(element));
         }
@@ -2525,6 +2597,7 @@
     let RWi = 1;
     let Ribi = 1;
     let keyname = "";
+    let splicer = [];
 
     for (let i in girderStationList) {
       for (let j = 0; j < girderStationList[i].length - 1; j++) {
@@ -2544,57 +2617,90 @@
 
         keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi;
         if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-        let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange");
+        splicer = ["TF", "SP", "K6"];
+        let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer);
         for (let k in uflangePoint) {
           uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
         }
-        splice.forEach(function(sp){ if (pk2.substr(2, 2) === sp){UFi += 1; return}});
+        splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { UFi += 1; return } });
         // pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
-
-
-
 
         keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi;
         if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-        L1 = sectionPointDict[pk1].forward.bottomPlate;
-        L2 = sectionPointDict[pk2].backward.bottomPlate;
-        L3 = sectionPointDict[pk2].forward.bottomPlate;
-        L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
-        FisB = true;
-        for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
-        if (!FisB || pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-          L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+        splicer = ["BF", "SP", "K6"];
+        let lflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflange", splicer);
+        for (let k in lflangePoint) {
+          lflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
         }
-        if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1; }
-
-
-
-
-
+        splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { Bi += 1; return } });
 
         keyname = "G" + (i * 1 + 1).toString() + "LeftWeB" + LWi;
         if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
         L1 = sectionPointDict[pk1].forward.lWeb;
         L2 = sectionPointDict[pk2].backward.lWeb;
         L3 = sectionPointDict[pk2].forward.lWeb;
-        L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+        let wplate1 = [];
+        let wplate2 = [];
+        L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)));
+        L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)));
+        if (pk1.substr(2, 2) === "K1") {
+          let ent = webEntrance(wplate1, wplate2, true);
+          for (let k in ent) {
+            ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+          }
+        } else {
+          L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
+        }
         FisB = true;
         for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
         if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-          L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+          if (pk2.substr(2, 2) === "K6") {
+            let ent = webEntrance(wplate2, wplate1, false);
+            for (let k in ent) {
+              ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+            }
+          }
+          else {
+            L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
+          }
         }
         if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { LWi += 1; }
+
+
+
+
+
+
 
         keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + RWi;
         if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
         L1 = sectionPointDict[pk1].forward.rWeb;
         L2 = sectionPointDict[pk2].backward.rWeb;
         L3 = sectionPointDict[pk2].forward.rWeb;
-        L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+        wplate1 = [];
+        wplate2 = [];
+        L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)));
+        L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)));
+        if (pk1.substr(2, 2) === "K1") {
+          let ent = webEntrance(wplate1, wplate2, true);
+          for (let k in ent) {
+            ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+          }
+        } else {
+          L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
+        }
         FisB = true;
         for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
         if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-          L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+          if (pk2.substr(2, 2) === "K6") {
+            let ent = webEntrance(wplate2, wplate1, false);
+            for (let k in ent) {
+              ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+            }
+          }
+          else {
+            L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
+          }
         }
         if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { RWi += 1; }
 
@@ -2603,6 +2709,8 @@
           if (ii.includes("Rib"))
             RibList.push(ii);
         }
+
+
         for (let Ribkey of RibList) {
           keyname = "G" + (i * 1 + 1).toString() + "lRib" + Ribi;
           if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
@@ -2612,7 +2720,7 @@
           L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
           FisB = true;
           for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false; }
-          if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+          if (!FisB || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
             L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
             Ribi += 1;
           }
