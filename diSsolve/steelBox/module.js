@@ -124,6 +124,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
             plate2[0][0] = DividingPoint(plate1[0][0], plate2[0][0], (former2 - latter2) * 2)
             plate2[0][3] = DividingPoint(plate1[0][3], plate2[0][3], (former2 - latter2) * 2)
           } else {
+            console.log("check",plate2[2][0], DividingPoint(plate1[2][0], plate2[2][0], (former2 - latter2) * 2) )
             plate2[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (former2 - latter2) * 2)
             plate2[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (former2 - latter2) * 2)
           }
