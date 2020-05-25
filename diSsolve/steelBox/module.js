@@ -108,7 +108,9 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
     result[0].push(...filletPoints[0])
     result[1].push(...filletPoints[1])
   } else {
+    
     if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+      console.log(splicer.forEach(function(sp){ if (pk2.substr(2, 2) === sp){return true}}))
       for (let k in uf2) {
         plate2[k].forEach(element => result[k].push(element));
       }
@@ -175,7 +177,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
       splicer = ["TF", "SP", "K6"]
-      let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange")
+      let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer)
       for (let k in uflangePoint) {
         uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
       }
