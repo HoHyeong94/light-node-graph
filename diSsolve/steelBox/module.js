@@ -117,6 +117,10 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   let plate2 = [[], [], []];
   let plate3 = [[], [], []];
   let smoothness = 8
+  let former1 = uf0[0][0] ? uf0[0][0].x : uf0[2][0].x
+  let latter1 = uf1[0][0] ? uf1[0][0].x : uf1[2][0].x
+  let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
+  let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
 
   for (let k in uf1) {
     uf0[k].forEach(element => plate0[k].push(ToGlobalPoint(point1, element)));
@@ -126,8 +130,6 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   }
   // outborder 
   if (!FisB) {
-    let former1 = uf0[0][0] ? uf0[0][0].x : uf0[2][0].x
-    let latter1 = uf1[0][0] ? uf1[0][0].x : uf1[2][0].x
     if (former1 < latter1) {
       if (uf1[2][0]) {
         plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
@@ -161,10 +163,13 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
         plate2[k].forEach(element => result[k].push(element));
       }
     }
+    if (!FisB && former2 == latter2) {
+      for (let k in uf2) {
+        plate2[k].forEach(element => result[k].push(element));
+      }
+    }
   }
   if (!FisB) {
-    let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
-    let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
     if (former2 > latter2) {
       if (uf2[2][0]) {
         plate2[2][0] = DividingPoint(plate2[2][0], plate1[2][0], (former2 - latter2) * 2)
