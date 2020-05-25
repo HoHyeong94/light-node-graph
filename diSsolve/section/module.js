@@ -5,13 +5,14 @@ import { OffsetPoint } from "../line/module"
 
 export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
   let result = {};
+  let isFlat = true;
   for (let k in pointDict) {
     if (k.substr(0, 1) === "G") {
       let point = pointDict[k];
       let girderIndex = k.substr(1, 1) - 1;
       let baseInput = {}
       let station = point.masterStationNumber;
-      let gradient = point.gradientY;
+      let gradient = isFlat? 0: point.gradientY;
       let skew = point.skew;
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
       let sectionInfo = girderBaseInfo[girderIndex].section;
