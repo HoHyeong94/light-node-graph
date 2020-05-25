@@ -6,7 +6,7 @@ import { OffsetPoint } from "../line/module"
 export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
   let result = {};
   let slabToGirder = slabInfo.slabToGirder;
-  let isFlat = girderBaseInfo.section.isFlat;
+  let isFlat = girderBaseInfo[girderIndex].section.isFlat;
   for (let k in pointDict) {
     if (k.substr(0, 1) === "G") {
       let point = pointDict[k];
