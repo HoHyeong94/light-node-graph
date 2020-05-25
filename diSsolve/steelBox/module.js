@@ -205,6 +205,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         let h1 = 1100;
         let d1 = 250;
         let r = 150;
+        let smoothness = 8;
         let wplate1 = [];
         let wplate2 = [];
         L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
