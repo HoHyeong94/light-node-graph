@@ -239,6 +239,7 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
             }
             break;
         }
+    }
     forward.height = height;    //
     backward.height = heightb===0? height:heightb;   //형고가 불연속인 경우, 단부절취의 경우 수정이 필요함
 
