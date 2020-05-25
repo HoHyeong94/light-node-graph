@@ -54,7 +54,7 @@ export function plateCompare(plate1, plate2) {
   return result
 }
 
-export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey) {
+export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey,splicer) {
   // 박스형 거더의 상하부플레이트 개구와 폐합에 대한 필렛을 위해 개발되었으며, 개구->폐합, 폐합->개구에 대해서만 가능하다, 
   // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
 
