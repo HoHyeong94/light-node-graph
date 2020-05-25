@@ -163,7 +163,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
         plate2[k].forEach(element => result[k].push(element));
       }
     }
-    if (!FisB && former2 == latter2) {
+    if (!FisB && former2 === latter2) {
       for (let k in uf2) {
         plate2[k].forEach(element => result[k].push(element));
       }
