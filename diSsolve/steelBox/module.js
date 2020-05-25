@@ -91,42 +91,40 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       let FisB = true;  //forward is backward?  
       FisB = plateCompare(uf2, uf3)
       // for (let kk in uf2[0]) { if (uf2[0][kk] !== uf3[0][kk] || uf2[1][kk] !== uf3[1][kk]) { FisB = false } } //오류발생, 값이 급격하게 차이나는 경우 입력하는 방법이 있어야함
-
+      let plate0 = [[], [], []];
       let plate1 = [[], [], []];
       let plate2 = [[], [], []];
+      let plate3 = [[], [], []];
       let smoothness = 8
 
       // for (let k in uf1){
       //   uf1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
       // }
       for (let k in uf1) {
+        uf0[k].forEach(element => plate0[k].push(ToGlobalPoint(point1, element)));
         uf1[k].forEach(element => plate1[k].push(ToGlobalPoint(point1, element)));
         uf2[k].forEach(element => plate2[k].push(ToGlobalPoint(point2, element)));
+        uf3[k].forEach(element => plate3[k].push(ToGlobalPoint(point2, element)));
       }
       // outborder 
       if (!FisB) {
         let former1 = uf0[0][0] ? uf0[0][0].x : uf0[2][0].x
         let latter1 = uf1[0][0] ? uf1[0][0].x : uf1[2][0].x
-        let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
-        let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
         console.log("check", former1, latter1, former2, latter2)
         if (former1 < latter1) {
           if (uf1[0][0]) {
             plate1[0][0] = DividingPoint(plate1[0][0], plate2[0][0], (latter1 - former1) * 2)
+            plate1[0][1] = DividingPoint(plate1[0][1], plate2[0][1], (latter1 - former1) * 2)
+            plate1[0][2] = DividingPoint(plate1[0][2], plate2[0][2], (latter1 - former1) * 2)
             plate1[0][3] = DividingPoint(plate1[0][3], plate2[0][3], (latter1 - former1) * 2)
           } else {
             plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
+            plate1[0][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2)
+            plate1[0][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2)
             plate1[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (latter1 - former1) * 2)
           }
-        }
-        else if (former2 > latter2) {
-          if (uf2[0][0]) {
-            plate2[0][0] = DividingPoint(plate2[0][0], plate1[0][0], (former2 - latter2) * 2)
-            plate2[0][3] = DividingPoint(plate2[0][3], plate1[0][3], (former2 - latter2) * 2)
-          } else {
-            console.log("check",plate2[2][0], DividingPoint(plate1[2][0], plate2[2][0], (former2 - latter2) * 2) )
-            plate2[2][0] = DividingPoint(plate2[2][0], plate1[2][0], (former2 - latter2) * 2)
-            plate2[2][3] = DividingPoint(plate2[2][3], plate1[2][3], (former2 - latter2) * 2)
+          for (let k in uf1) {
+            plate0[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
           }
         }
       }
@@ -146,9 +144,33 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
         steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
       } else {
-        if (!FisB || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+        if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
           for (let k in uf2) {
             plate2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+          }
+        }
+      }
+      if (!FisB) {
+        let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
+        let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
+        if (former2 > latter2) {
+          if (uf2[0][0]) {
+            plate2[0][0] = DividingPoint(plate2[0][0], plate1[0][0], (former2 - latter2) * 2)
+            plate2[0][1] = DividingPoint(plate2[0][1], plate1[0][1], (former2 - latter2) * 2)
+            plate2[0][2] = DividingPoint(plate2[0][2], plate1[0][2], (former2 - latter2) * 2)
+            plate2[0][3] = DividingPoint(plate2[0][3], plate1[0][3], (former2 - latter2) * 2)
+          } else {
+            console.log("check", plate2[2][0], DividingPoint(plate1[2][0], plate2[2][0], (former2 - latter2) * 2))
+            plate2[2][0] = DividingPoint(plate2[2][0], plate1[2][0], (former2 - latter2) * 2)
+            plate2[2][1] = DividingPoint(plate2[2][1], plate1[2][1], (former2 - latter2) * 2)
+            plate2[2][2] = DividingPoint(plate2[2][2], plate1[2][2], (former2 - latter2) * 2)
+            plate2[2][3] = DividingPoint(plate2[2][3], plate1[2][3], (former2 - latter2) * 2)
+          }
+          for (let k in uf2) {
+            plate2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+          }
+          for (let k in uf2) {
+            plate3[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
           }
         }
       }
