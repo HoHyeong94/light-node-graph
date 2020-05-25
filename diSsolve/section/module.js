@@ -94,8 +94,6 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         }else{
             uflange[2] = PlateRestPoint(newtl1, newtr1, tan, tan, ps.uFlangeThk);;
         }
-
-
         baseInput = {
             isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
             isClosedTop: tl2.x < tr1.x?true:false,         
