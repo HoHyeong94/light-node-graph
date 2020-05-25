@@ -55,6 +55,9 @@ export function plateCompare(plate1, plate2) {
 }
 
 export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey) {
+  // 박스형 거더의 상하부플레이트 개구와 폐합에 대한 필렛을 위해 개발되었으며, 개구->폐합, 폐합->개구에 대해서만 가능하다, 
+  // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
+
   let result = [[], [], []];
   let filletR = 300;
 
@@ -151,140 +154,35 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let Ribi = 1;
   let keyname = ""
   let filletR = 300;
-
+  let splicer = [];
 
   for (let i in girderStationList) {
     for (let j = 0; j < girderStationList[i].length - 1; j++) {
 
       let point1 = girderStationList[i][j].point;
       let point2 = girderStationList[i][j + 1].point;
-
       pk1 = girderStationList[i][j].key
       pk2 = girderStationList[i][j + 1].key
-      keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi
-      if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+
       let L1 = sectionPointDict[pk1].forward.leftTopPlate
       let L2 = sectionPointDict[pk2].backward.leftTopPlate
       let L3 = sectionPointDict[pk2].forward.leftTopPlate
       let R1 = sectionPointDict[pk1].forward.rightTopPlate
       let R2 = sectionPointDict[pk2].backward.rightTopPlate
       let R3 = sectionPointDict[pk2].forward.rightTopPlate
+      let FisB = true;  //forward is backward?  
 
+      keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi
+      if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+      splicer = ["TF", "SP", "K6"]
       let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange")
-      
       for (let k in uflangePoint) {
-        uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(...element));
+        uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
       }
-
-      // console.log("uflange1", uflangePoint)
-      // let uf0 = sectionPointDict[pk1].backward.uflange
-      // let uf1 = sectionPointDict[pk1].forward.uflange
-      // let uf2 = sectionPointDict[pk2].backward.uflange
-      // let uf3 = sectionPointDict[pk2].forward.uflange
+      if (splice.forEach(function(sp){ if (pk2.substr(2, 2) === sp){return UFi += 1}})
+      // pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
 
 
-      // let FisB = true;  //forward is backward?  
-      // FisB = plateCompare(uf2, uf3)
-      // // for (let kk in uf2[0]) { if (uf2[0][kk] !== uf3[0][kk] || uf2[1][kk] !== uf3[1][kk]) { FisB = false } } //오류발생, 값이 급격하게 차이나는 경우 입력하는 방법이 있어야함
-      // let plate0 = [[], [], []];
-      // let plate1 = [[], [], []];
-      // let plate2 = [[], [], []];
-      // let plate3 = [[], [], []];
-      // let smoothness = 8
-
-      // // for (let k in uf1){
-      // //   uf1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point1, element)));
-      // // }
-      // for (let k in uf1) {
-      //   uf0[k].forEach(element => plate0[k].push(ToGlobalPoint(point1, element)));
-      //   uf1[k].forEach(element => plate1[k].push(ToGlobalPoint(point1, element)));
-      //   uf2[k].forEach(element => plate2[k].push(ToGlobalPoint(point2, element)));
-      //   uf3[k].forEach(element => plate3[k].push(ToGlobalPoint(point2, element)));
-      // }
-      // // outborder 
-      // if (!FisB) {
-      //   let former1 = uf0[0][0] ? uf0[0][0].x : uf0[2][0].x
-      //   let latter1 = uf1[0][0] ? uf1[0][0].x : uf1[2][0].x
-      //   if (former1 < latter1) {
-      //     if (uf1[2][0]) {
-      //       plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
-      //       plate1[0][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2)
-      //       plate1[0][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2)
-      //       plate1[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (latter1 - former1) * 2)
-      //     }
-      //     for (let k in uf1) {
-      //       plate0[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-      //     }
-      //   }
-      // }
-      // if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작 // 외측과 내측필렛이 같은요소에 작용하면 오류가 발생할 것으로 예상, 필렛이 없는 폐합요소에만 외측 챔퍼 적용
-      //   let filletPoints = FilletPoints(plate1, plate2, false, filletR, smoothness)
-      //   steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
-      //   steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
-      // } else {
-      //   for (let k in uf1) {
-      //     plate1[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-      //   }
-      // }
-      // if (uf2[2].length === 0 && uf3[2].length > 0) {
-      //   let filletPoints = FilletPoints(plate1, plate2, true, filletR, smoothness)
-      //   steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
-      //   steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
-      // } else {
-      //   if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-      //     for (let k in uf2) {
-      //       plate2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-      //     }
-      //   }
-      // }
-      // if (!FisB) {
-      //   let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
-      //   let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
-      //   if (former2 > latter2) {
-      //     if (uf2[2][0]) {
-      //       plate2[2][0] = DividingPoint(plate2[2][0], plate1[2][0], (former2 - latter2) * 2)
-      //       plate2[2][1] = DividingPoint(plate2[2][1], plate1[2][1], (former2 - latter2) * 2)
-      //       plate2[2][2] = DividingPoint(plate2[2][2], plate1[2][2], (former2 - latter2) * 2)
-      //       plate2[2][3] = DividingPoint(plate2[2][3], plate1[2][3], (former2 - latter2) * 2)
-      //       if (!uf3[2][0]) {
-      //         plate3[2][0] = plate3[0][0]
-      //         plate3[2][1] = plate3[1][0]
-      //         plate3[2][2] = plate3[1][3]
-      //         plate3[2][3] = plate3[0][3]
-      //         plate3[0] = [];
-      //         plate3[1] = [];
-      //       }
-      //     }
-      //     for (let k in uf2) {
-      //       plate2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-      //     }
-      //     for (let k in uf2) {
-      //       plate3[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-      //     }
-      //   }
-      // }
-      // console.log("uflange2", steelBoxDict[keyname]["points"])
-
-
-      if (pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
-
-      // if (L1[1].x >= R1[1].x) { //폐합인 경우 
-      //   let C1 = [L1[0], R1[0], R1[3], L1[3]];
-      //   C1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
-      // } else {
-      //   L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
-      //   R1.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point1, element)))
-      // }
-      // if (!FisB || pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-      //   if (L2[1].x >= R2[1].x) { //폐합인 경우 
-      //     let C2 = [L2[0], R2[0], R2[3], L2[3]];
-      //     C2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
-      //   } else {
-      //     L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
-      //     R2.forEach(element => steelBoxDict[keyname]["points"][1].push(ToGlobalPoint(point2, element)))
-      //   }
-      // }
-      // if (pk2.substr(2, 1) === "K" || pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP") { UFi += 1 }
 
 
       keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi
@@ -292,15 +190,18 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       L1 = sectionPointDict[pk1].forward.bottomPlate
       L2 = sectionPointDict[pk2].backward.bottomPlate
       L3 = sectionPointDict[pk2].forward.bottomPlate
-
       L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
-
       FisB = true;
       for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
       if (!FisB || pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
         L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
       }
       if (pk2.substr(2, 2) === "BF" || pk2.substr(2, 2) === "SP") { Bi += 1 }
+
+
+
+
+
 
       keyname = "G" + (i * 1 + 1).toString() + "LeftWeB" + LWi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
