@@ -179,7 +179,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       for (let k in uflangePoint) {
         uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
       }
-      if (splice.forEach(function(sp){ if (pk2.substr(2, 2) === sp){UFi += 1; return}})
+      splice.forEach(function(sp){ if (pk2.substr(2, 2) === sp){UFi += 1; return}})r
       // pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
 
 
