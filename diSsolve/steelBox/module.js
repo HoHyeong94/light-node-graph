@@ -244,95 +244,26 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       L1 = sectionPointDict[pk1].forward.lWeb
       L2 = sectionPointDict[pk2].backward.lWeb
       L3 = sectionPointDict[pk2].forward.lWeb
-        let wplate1 = [];
-        let wplate2 = [];
-
+      let wplate1 = [];
+      let wplate2 = [];
       L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
       L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
-
-
       if (pk1.substr(2, 2) === "K1") {
-        let ent = webEntrance(wplate1,wplate2,true)
+        let ent = webEntrance(wplate1, wplate2, true)
         for (let k in ent) {
           ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
         }
-        // let b1 = 300;
-        // let h1 = 1100;
-        // let d1 = 250;
-        // let r = 150;
-        // let smoothness = 8;
-        // let wplate1 = [];
-        // let wplate2 = [];
-        // L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
-        // L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
-        // let dpt0 = DividingPoint(wplate1[0], wplate2[0], d1)
-        // let dpt1 = DividingPoint(wplate1[1], wplate2[1], d1)
-        // let dpt2 = DividingPoint(wplate1[2], wplate2[2], d1)
-        // let dpt3 = DividingPoint(wplate1[3], wplate2[3], d1)
-        // let l1 = DividingPoint(wplate1[0], wplate1[1], b1 + h1)
-        // let l2 = DividingPoint(wplate1[3], wplate1[2], b1 + h1)
-        // let r1 = DividingPoint(wplate1[0], wplate1[1], b1)
-        // let r2 = DividingPoint(wplate1[3], wplate1[2], b1)
-        // let l11 = DividingPoint(dpt0, dpt1, b1 + h1)
-        // let l21 = DividingPoint(dpt3, dpt2, b1 + h1)
-        // let r11 = DividingPoint(dpt0, dpt1, b1)
-        // let r21 = DividingPoint(dpt3, dpt2, b1)
-
-        // let newPlate1 = [[wplate1[0], r1, r2, wplate1[3]], [wplate1[1], l1, l2, wplate1[2]], []]
-        // let newPlate2 = [[dpt0, r11, r21, dpt3], [dpt1, l11, l21, dpt2], []]
-        // let filletPoints = FilletPoints(newPlate1, newPlate2, true, r, smoothness)
-        // steelBoxDict[keyname]["points"][0].push(wplate1[0], r1, r2, wplate1[3])
-        // steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
-        // steelBoxDict[keyname]["points"][1].push(wplate1[1], l1, l2, wplate1[2])
-        // steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
-        // // steelBoxDict[keyname]["points"][0].push(dpt0, r11, r21, dpt3)
-        // // steelBoxDict[keyname]["points"][1].push(dpt1, l11, l21, dpt2)
-        // steelBoxDict[keyname]["points"][2].push(dpt0, dpt1, dpt2, dpt3)
-
       } else {
         L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
       }
-
       FisB = true;
       for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
       if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
         if (pk2.substr(2, 2) === "K6") {
-          let ent = webEntrance(wplate2,wplate1,false)
+          let ent = webEntrance(wplate2, wplate1, false)
           for (let k in ent) {
             ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
           }
-          // let b1 = 300;
-          // let h1 = 1100;
-          // let d1 = 250;
-          // let r = 150;
-          // let smoothness = 8;
-          // let wplate1 = [];
-          // let wplate2 = [];
-          // L1.forEach(element => wplate2.push(ToGlobalPoint(point1, element)))
-          // L2.forEach(element => wplate1.push(ToGlobalPoint(point2, element)))
-          // let dpt0 = DividingPoint(wplate1[0], wplate2[0], d1)
-          // let dpt1 = DividingPoint(wplate1[1], wplate2[1], d1)
-          // let dpt2 = DividingPoint(wplate1[2], wplate2[2], d1)
-          // let dpt3 = DividingPoint(wplate1[3], wplate2[3], d1)
-          // let l1 = DividingPoint(wplate1[0], wplate1[1], b1 + h1)
-          // let l2 = DividingPoint(wplate1[3], wplate1[2], b1 + h1)
-          // let r1 = DividingPoint(wplate1[0], wplate1[1], b1)
-          // let r2 = DividingPoint(wplate1[3], wplate1[2], b1)
-          // let l11 = DividingPoint(dpt0, dpt1, b1 + h1)
-          // let l21 = DividingPoint(dpt3, dpt2, b1 + h1)
-          // let r11 = DividingPoint(dpt0, dpt1, b1)
-          // let r21 = DividingPoint(dpt3, dpt2, b1)
-
-          // let newPlate1 = [[wplate1[0], r1, r2, wplate1[3]], [wplate1[1], l1, l2, wplate1[2]], []]
-          // let newPlate2 = [[dpt0, r11, r21, dpt3], [dpt1, l11, l21, dpt2], []]
-          // let filletPoints = FilletPoints(newPlate2, newPlate1, false, r, smoothness)
-          // steelBoxDict[keyname]["points"][0].push(...filletPoints[0])
-          // steelBoxDict[keyname]["points"][0].push(wplate1[0], r1, r2, wplate1[3])
-          // steelBoxDict[keyname]["points"][1].push(...filletPoints[1])
-          // steelBoxDict[keyname]["points"][1].push(wplate1[1], l1, l2, wplate1[2])
-          // // steelBoxDict[keyname]["points"][0].push(dpt0, r11, r21, dpt3)
-          // // steelBoxDict[keyname]["points"][1].push(dpt1, l11, l21, dpt2)
-          // steelBoxDict[keyname]["points"][2].push(dpt0, dpt1, dpt2, dpt3)
         }
         else {
           L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
@@ -351,11 +282,30 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       L1 = sectionPointDict[pk1].forward.rWeb
       L2 = sectionPointDict[pk2].backward.rWeb
       L3 = sectionPointDict[pk2].forward.rWeb
-      L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
+      let wplate1 = [];
+      let wplate2 = [];
+      L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
+      L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
+      if (pk1.substr(2, 2) === "K1") {
+        let ent = webEntrance(wplate1, wplate2, true)
+        for (let k in ent) {
+          ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+        }
+      } else {
+        L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
+      }
       FisB = true;
       for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
       if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-        L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
+        if (pk2.substr(2, 2) === "K6") {
+          let ent = webEntrance(wplate2, wplate1, false)
+          for (let k in ent) {
+            ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+          }
+        }
+        else {
+          L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
+        }
       }
       if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { RWi += 1 }
 
