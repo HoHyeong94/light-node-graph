@@ -56,6 +56,7 @@ export function plateCompare(plate1, plate2) {
 
 export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey){
   let result = [[],[],[]];
+  let filletR = 300;
   
   let uf0 = sectionPointDict[pk1].backward[plateKey];
   let uf1 = sectionPointDict[pk1].forward[plateKey];
@@ -149,7 +150,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let RWi = 1;
   let Ribi = 1;
   let keyname = ""
-  let filletR = 300;
+
 
 
   for (let i in girderStationList) {
