@@ -70,14 +70,14 @@ export function PlateRestPoint(point1, point2, tan1, tan2, thickness){
   if (point1.x === point2.x){
     x3 = point1.x + thickness 
     x4 = point2.x + thickness
-    y3 = tan1 === null? null : tan1 * (x3 - point1.x) + point1.y;
-    y4 = tan2 === null? null : tan2 * (x4 - point2.x) + point2.y
+    y3 = tan1? tan1 * (x3 - point1.x) + point1.y:null ;
+    y4 = tan2? tan2 * (x4 - point2.x) + point2.y : null ;
   }else{
     let a = (point1.y - point2.y) / (point1.x - point2.x);
     let b = point1.y - a * point1.x;
     let alpha = thickness * Math.sqrt(1 + 1/a**2);
-    x3 = tan1 === null? point1.x:(-a * alpha + b + tan1 * point1.x - point1.y) / (tan1 - a)
-    x4 = tan2 === null? point2.x:(-a * alpha + b + tan2 * point2.x - point2.y) / (tan2 - a);
+    x3 = tan1? (-a * alpha + b + tan1 * point1.x - point1.y) / (tan1 - a) : point1.x;
+    x4 = tan2? (-a * alpha + b + tan2 * point2.x - point2.y) / (tan2 - a) : point2.x; 
     y3 = a ===0? point1.y + thickness : a * (x3 - alpha) + b 
     y4 = a ===0? point2.y + thickness : a * (x4 - alpha) + b
   }
