@@ -1,4 +1,4 @@
-import { ToGlobalPoint } from "../geometryModule"
+import { ToGlobalPoint, DividingPoint } from "../geometryModule"
 import { THREE } from "global"
 
 
@@ -103,7 +103,32 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         uf1[k].forEach(element => plate1[k].push(ToGlobalPoint(point1, element)));
         uf2[k].forEach(element => plate2[k].push(ToGlobalPoint(point2, element)));
       }
+      // outborder 
+      if (!FisB) {
+        let former1 = uf0[0][0] ? uf0[0][0].x : uf0[2][0].x
+        let latter1 = uf1[0][0] ? uf1[0][0].x : uf1[2][0].x
+        let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x
+        let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x
 
+        if (former1 < latter1) {
+          if (uf1[0][0]) {
+            plate1[0][0] = DividingPoint(plate1[0][0], plate2[0][0], (latter1 - former1) * 2)
+            plate1[0][3] = DividingPoint(plate1[0][3], plate2[0][3], (latter1 - former1) * 2)
+          } else {
+            plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
+            plate1[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (latter1 - former1) * 2)
+          }
+        }
+        else if (former2 > latter2) {
+          if (uf2[0][0]) {
+            plate2[0][0] = DividingPoint(plate1[0][0], plate2[0][0], (former2 - latter2) * 2)
+            plate2[0][3] = DividingPoint(plate1[0][3], plate2[0][3], (former2 - latter2) * 2)
+          } else {
+            plate2[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (former2 - latter2) * 2)
+            plate2[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (former2 - latter2) * 2)
+          }
+        }
+      }
 
 
       if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작

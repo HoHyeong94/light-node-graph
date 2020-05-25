@@ -119,6 +119,12 @@ export function scallop(point1,point2,point3,radius,smoothness){
   return points
 }
 
+export function DividingPoint(point1, point2, length){
+  //length is distance from point1 to new point in directing point2
+  let a = length / Math.sqrt((point1.x- point2.x)**2+(point1.y- point2.y)**2+(point1.z- point2.z)**2)
+  return {x:(1-a)*point1.x + a * point2.x, y:(1-a)*point1.y + a * point2.y,z:(1-a)*point1.z + a * point2.z}
+}
+
 export function Fillet2D(point1, point2, point3, radius, smoothness){
   let lv1 = Math.sqrt((point1.x - point2.x)**2 + (point1.y - point2.y)**2)  
   let lv2 = Math.sqrt((point3.x - point2.x)**2 + (point3.y - point2.y)**2)  
