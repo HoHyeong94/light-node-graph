@@ -118,8 +118,8 @@ export function OffsetSkewCalculator(masterPoint, masterSkew, offset, masterLine
   }
   let deltaSkew = (Math.acos(masterPoint.normalCos * offsetPoint.normalCos + masterPoint.normalSin * offsetPoint.normalSin) * 180 / Math.PI).toFixed(4) * 1
   let offsetSkew = startSkew - sign * (deltaSkew)
-  if (offsetSkew > 90) { offsetSkew -= 180; }
-  else if (offsetSkew < -90) { offsetSkew += 180; }
+  // if (offsetSkew > 90) { offsetSkew -= 180; }
+  // else if (offsetSkew < -90) { offsetSkew += 180; }
   return offsetSkew
 }
 

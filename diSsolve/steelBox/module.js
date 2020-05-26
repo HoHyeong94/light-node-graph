@@ -161,7 +161,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   } else {
     let spCheck = false
     splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
-    if (spCheck ||(!FisB&&( Math.abs(former3 -latter3)>100 ))) {
+    if (spCheck ||(!FisB&&( Math.abs(former3 -latter3)>100 ))) {  //형고 높이가 100mm 이상인 경우에만 반영
       for (let k in uf2) {
         plate2[k].forEach(element => result[k].push(element));
       }
