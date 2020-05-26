@@ -546,8 +546,8 @@ export const OffsetPoint = (masterPoint,masterLine,offset) => {
       resultPoint.z = masterPoint.z + resultPoint.gradientY * offset;
     } else {
       let skewRad = (masterPoint.skew-90)*Math.PI/180;
-      let cos = Math.cos(skewRad); //반시계방향으로 회전
-      let sin = Math.sin(skewRad);
+      let cos = -Math.cos(skewRad); //반시계방향으로 회전
+      let sin = -Math.sin(skewRad);
       let skewCos = masterPoint.normalCos*cos - masterPoint.normalSin*sin
       let skewSin = masterPoint.normalCos*sin + masterPoint.normalSin*cos
       let skewC = masterPoint.x * skewSin - masterPoint.y * skewCos
@@ -563,7 +563,7 @@ export const OffsetPoint = (masterPoint,masterLine,offset) => {
         let newCos = newP.normalCos
         let newSin = newP.normalSin
         let newC = newP.x * newSin - newP.y * newCos
-        let sign = offset>0?1:-1;
+        let sign = offset>0?-1:1;
         x = (skewCos*newC - newCos * skewC)/(skewCos *newSin - skewSin * newCos)
         y = (skewSin*newC - newSin * skewC)/(skewCos *newSin - skewSin * newCos)
         dist = Math.sqrt((newP.x - x)**2 + (newP.y - y)**2)
@@ -574,10 +574,10 @@ export const OffsetPoint = (masterPoint,masterLine,offset) => {
           let icos = newCos*skewCos + newSin*skewSin
           let isin = Math.sqrt(1-icos**2)
           delta = sign*(dist - Math.abs(offset))*isin/icos //추후 검토가 필요함
-          ms += delta
+          if (skewRad > 0){ms -= delta} else{ms += delta}
         }
-        
       }
+      
       resultPoint.x =  x;
       resultPoint.y = y;
       resultPoint.normalCos =  newP.normalCos;
