@@ -410,27 +410,42 @@ export function DeckSectionPoint(
   }
   //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
   export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
+    
+    let slabToGirder = slabInfo.slabToGirder;
     let points = [];
-    // for (let i in girderBaseInfo){
     let station = girderPoint.masterStationNumber;
-    let gradient = girderPoint.gradientY;
+    let isFlat = girderBaseInfo.section.isFlat;
+    let gradient = isFlat? 0: girderPoint.gradientY;
     let skew = girderPoint.skew;
     let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict) // slabThickness만 필요한 경우에는 흠...
     let sectionInfo = girderBaseInfo.section
     let ps = pointSectionInfo.forward.uFlangeW === 0 ? pointSectionInfo.backward : pointSectionInfo.forward;
-    let slabThickness = ps.slabThickness - slabInfo.slabThickness
-  
-    const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H }
-    const lwt = { x: - sectionInfo.UL, y: 0 }
-    const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H }
-    const rwt = { x: sectionInfo.UR, y: 0 }
-    let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
-    let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
+    // let slabThickness = ps.slabThickness - slabInfo.slabThickness
+    const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
+    let topY = slabToGirder? ps.slabThickness  + slabInfo.haunchHeight : centerThickness;
+
+    //   const height = pointSectionInfo.forward.height + centerThickness;
+    const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
+    const lwt = { x: - sectionInfo.UL, y: - centerThickness };
+    const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
+    const rwt = { x: sectionInfo.UR, y: -centerThickness };
+
+    // let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
+    // let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
+
+    let lw2 = WebPoint(lwb, lwt, gradient, -topY) //{x:tlwX,y:gradient*tlwX - slabThickness}
+    let rw2 = WebPoint(rwb, rwt, gradient, -topY) //{x:trwX,y:gradient*trwX - slabThickness}
     // TopPlate
-    let tl1 = { x: lw2.x - sectionInfo.C - slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C - slabInfo.w1) };
-    let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
-    let tr1 = { x: rw2.x + sectionInfo.D + slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D + slabInfo.w1) };
-    let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
+    // let tl1 = { x: lw2.x - sectionInfo.C - slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C - slabInfo.w1) };
+    // let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
+    // let tr1 = { x: rw2.x + sectionInfo.D + slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D + slabInfo.w1) };
+    // let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
+    let tl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
+    let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW) };
+    let tr1 = { x: rw2.x + ps.uFlangeC, y: rw2.y + gradient * (ps.uFlangeC) };
+    let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
+
+    
     let dummy = [tl1, tl2, tr1, tr2];
     dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; })
     points.push(...dummy) //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
