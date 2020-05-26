@@ -384,11 +384,11 @@ export function DeckSectionPoint(
       let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
       let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
   
-      let slabUpperPoints = [ZMove(leftPoint, centerSlabThickness + haunch),
-                            ZMove(masterPoint, centerSlabThickness + haunch),
-                            ZMove(rightPoint, centerSlabThickness + haunch),];
+      let slabUpperPoints = [leftPoint,
+                            masterPoint,
+                            rightPoint];
       let slabLowerPoints = [];
-      slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z + centerSlabThickness + haunch - endT });
+      slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
        let offsetPoint = [leftOffset];
 
       for (let j in girderLayout.girderLine) {
@@ -402,7 +402,7 @@ export function DeckSectionPoint(
         offsetPoint.push(girderPoint.offset);
       }
       offsetPoint.push(rightOffset);
-      slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z + centerSlabThickness + haunch - endT });
+      slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z - endT });
       result.push({ name: masterStation, slabUpperPoints, slabLowerPoints, offsetPoint });
     
     }
