@@ -150,6 +150,7 @@ export function HBracingDict(
 
 export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
+    const centerThickness = 270; // 헌치값이 포함된 값으로 통일되어야 함. 우선 변수만 입력
     let result = {}
     const bl = webPoints[0];
     const tl = webPoints[1];
@@ -257,7 +258,7 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
       anchor:[[rightTopPlate[1].x  - 80,rightTopPlate[1].y+50],[rightTopPlate[0].x - 80,rightTopPlate[0].y + 50]]
     }
     // k-frame diaphragm
-    let leftline =  [{x:-ds.spc*gsin,y:-ds.spc*gcos},lowerTopPoints[1]]
+    let leftline =  [{x:-ds.spc*gsin,y:-centerThickness -ds.spc*gcos},lowerTopPoints[1]]
     let lcos = (leftline[1].x - leftline[0].x) / Math.sqrt((leftline[1].x - leftline[0].x)**2 + (leftline[1].y - leftline[0].y)**2)
     let ltan = (leftline[1].y - leftline[0].y) / (leftline[1].x - leftline[0].x)
     let lsin = lcos * ltan
@@ -273,7 +274,7 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
       size:{Label:"L-100x100x10x"+PointLength(...newleftline).toFixed(0)},
       anchor:[[newleftline[1].x-20,newleftline[1].y],[newleftline[0].x-20,newleftline[0].y]]}
     
-    let rightline = [{x:ds.spc*gsin,y:ds.spc*gcos},lowerTopPoints[2]]
+    let rightline = [{x:ds.spc*gsin,y:-centerThickness- ds.spc*gcos},lowerTopPoints[2]]
     let rcos = (rightline[1].x - rightline[0].x) / Math.sqrt((rightline[1].x - rightline[0].x)**2 + (rightline[1].y - rightline[0].y)**2)
     let rtan = (rightline[1].y - rightline[0].y) / (rightline[1].x - rightline[0].x)
     let rsin = rcos * rtan
