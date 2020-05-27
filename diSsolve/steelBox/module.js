@@ -274,7 +274,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
 
       keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-      sideKeyname = "G" + (i * 1 + 1).toString() + "BottomSide" + UFi
+      sideKeyname = "G" + (i * 1 + 1).toString() + "BottomSide" + Bi
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
 
       splicer = ["BF", "SP", "K6"]
