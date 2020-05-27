@@ -879,6 +879,7 @@ export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
     // let layerNum = 5;
     let scale = 1;
     let girderOffset = 24000;
+    let sideViewOffset = -8000 * scale;
     let gridMark_width = 1500; // unit : mm
     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
