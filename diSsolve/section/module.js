@@ -103,7 +103,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
             wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
             wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
             wuf: tl2.x < tr1.x?ps.uFlangeW:tr2.x - tl1.x,       //상부플랜지 폭
-            wlf: b2.x - b1.x,                                   //하부플랜지 폭
+            wlf: b2.x - b1.x,
+            topY:topY,                                   //하부플랜지 폭
             H: bottomY -topY,                           //강거더 높이
             tlf: ps.lFlangeThk ,                                //하부플랜지 두께
             tuf: ps.uFlangeThk,                                 //상부플랜지두께

@@ -336,5 +336,19 @@ export function GridStationList(pointDict) {
   gs.forEach(function (elem) { elem.sort(function (a, b) { return a.station < b.station ? -1 : 1; }) })
   cs.sort(function (a, b) { return a.station < b.station ? -1 : 1; })
 
+  let totalLength = 0;
+  let segLength = 0;
+  for (let i = 0; i < gs.length; i++) {
+    for (let j = 0; j < gs[i].length; j++) {
+      let gridObj = gs[i][j];
+      if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length };
+      totalLength += segLength;
+      // console.log("totalLength", totalLength)
+      dummy0 = gridObj.point;
+      gs[i][j]["girderStation"] = totalLength
+    }
+  }
+
+
   return { girder: gs, centerLine: cs }
 }

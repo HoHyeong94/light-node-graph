@@ -204,7 +204,6 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let RWi = 1;
   let Ribi = 1;
   let keyname = ""
-  let filletR = 300;
   let splicer = [];
 
   for (let i in girderStationList) {
@@ -215,12 +214,12 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       pk1 = girderStationList[i][j].key
       pk2 = girderStationList[i][j + 1].key
 
-      let L1 = sectionPointDict[pk1].forward.leftTopPlate
-      let L2 = sectionPointDict[pk2].backward.leftTopPlate
-      let L3 = sectionPointDict[pk2].forward.leftTopPlate
-      let R1 = sectionPointDict[pk1].forward.rightTopPlate
-      let R2 = sectionPointDict[pk2].backward.rightTopPlate
-      let R3 = sectionPointDict[pk2].forward.rightTopPlate
+      let L1 = []; //sectionPointDict[pk1].forward.leftTopPlate
+      let L2 = []; //sectionPointDict[pk2].backward.leftTopPlate
+      let L3 = []; //sectionPointDict[pk2].forward.leftTopPlate
+      // let R1 = sectionPointDict[pk1].forward.rightTopPlate
+      // let R2 = sectionPointDict[pk2].backward.rightTopPlate
+      // let R3 = sectionPointDict[pk2].forward.rightTopPlate
       let FisB = true;  //forward is backward?  
 
       keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi
@@ -273,12 +272,6 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         }
       }
       if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { LWi += 1 }
-
-
-
-
-
-
 
       keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + RWi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
