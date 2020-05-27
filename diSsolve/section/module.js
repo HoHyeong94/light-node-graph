@@ -94,6 +94,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         }else{
             uflange[2] = PlateRestPoint(newtl1, newtr1, tan, tan, ps.uFlangeThk);;
         }
+        let uflangeSide = [-topY, -topY + ps.uFlangeThk]
+        let lflangeSide = [-bottomY, -bottomY - ps.lFlangeThk]
         baseInput = {
             isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
             isClosedTop: tl2.x < tr1.x?true:false,         
@@ -103,8 +105,7 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
             wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
             wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
             wuf: tl2.x < tr1.x?ps.uFlangeW:tr2.x - tl1.x,       //상부플랜지 폭
-            wlf: b2.x - b1.x,
-            topY:topY,                                   //하부플랜지 폭
+            wlf: b2.x - b1.x,                           //하부플랜지 폭
             H: bottomY -topY,                           //강거더 높이
             tlf: ps.lFlangeThk ,                                //하부플랜지 두께
             tuf: ps.uFlangeThk,                                 //상부플랜지두께
@@ -119,9 +120,9 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
             horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
           }
         if (i === 0) {
-          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange : uflange, lflange : lflange }
+          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange, lflange, uflangeSide, lflangeSide }
         } else {
-          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange : uflange, lflange : lflange }
+          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange, lflange, uflangeSide, lflangeSide }
         }
       }
       result[k] = { forward, backward }

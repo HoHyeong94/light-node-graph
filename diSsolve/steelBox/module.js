@@ -100,23 +100,23 @@ export function webEntrance(wplate1, wplate2, isForward) {
   return result
 }
 
-export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, splicer) {
+export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer) {
   // 박스형 거더의 상하부플레이트 개구와 폐합에 대한 필렛을 위해 개발되었으며, 개구->폐합, 폐합->개구에 대해서만 가능하다, 
   // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
 
   let result = [[], [], []];
   // let uf0 = sectionPointDict[pk1].backward["input"];
-  let uf1 = sectionPointDict[pk1].forward["input"];
-  let uf2 = sectionPointDict[pk2].backward["input"];
+  let uf1 = sectionPointDict[pk1].forward[sideKey];
+  let uf2 = sectionPointDict[pk2].backward[sideKey];
   // let uf3 = sectionPointDict[pk2].forward["input"];
 
   let plate1 = [[], [], [
-    {x:point1.girderStation, y: point1.z -uf1.topY},
-    {x:point1.girderStation, y: point1.z -uf1.topY + uf1.tuf}
+    {x:point1.girderStation, y: point1.z + uf1[0]},
+    {x:point1.girderStation, y: point1.z + uf1[1]}
   ]];
   let plate2 = [[], [], [
-    {x:point2.girderStation, y: point2.z - uf2.topY},
-    {x:point2.girderStation, y: point2.z -uf2.topY + uf2.tuf}
+    {x:point2.girderStation, y: point2.z + uf2[0]},
+    {x:point2.girderStation, y: point2.z + uf2[1]}
   ]];
 
     for (let k in plate1) {
@@ -261,7 +261,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
       splicer = ["TF", "SP", "K6"]
       let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer)
-      let uflangeSide = sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, splicer)
+      let uflangeSide = sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflangeSide", splicer)
       for (let k in uflangePoint) {
         uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
       }
