@@ -423,6 +423,72 @@ function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc,
     return meshes
 }
 
+function GirderSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, lineMaterial) { //측면도 그리기
+    // let result = {models:{},layer:lineMaterial }; 
+    // let index = 1;
+    let meshes = [];
+    for (let part in steelBoxDict) {
+        for (let name of keyNamelist) {
+            if (part.includes(name)) {
+                let ptsL1 = [];
+                let ptsR1 = [];
+                let ptsC1 = [];
+                let ptsL2 = [];
+                let ptsR2 = [];
+                let ptsC2 = [];
+                for (let j in steelBoxDict[part]["points"]) {
+                    let pts1 = [];
+                    let pts2 = [];
+                    for (let i in steelBoxDict[part]["points"][j]) {
+                        if (i % sectionPointNum === index1) {
+                            let x = (steelBoxDict[part]["points"][j][i].x) * sc
+                            let y = (steelBoxDict[part]["points"][j][i].y - initPoint.z) * sc
+                            pts1.push({ x, y })
+                            // if (i==0){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+                        } else if (i % sectionPointNum === index2) {
+                            let x = (steelBoxDict[part]["points"][j][i].x) * sc
+                            let y = (steelBoxDict[part]["points"][j][i].y - initPoint.z) * sc
+                            pts2.push({ x, y })
+                            // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+                        }
+                    }
+                    if (j == 0) {
+                        ptsL1.push(...pts1)
+                        ptsL2.push(...pts2)
+                    }
+                    if (j == 1) {
+                        ptsR1.push(...pts1)
+                        ptsR2.push(...pts2)
+                    }
+                    if (j == 2) {
+                        ptsC1.push(...pts1)
+                        ptsC2.push(...pts2)
+                    }
+                }
+                if (ptsC1.length === 0) {
+                    meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial));
+                    meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial));
+                } else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
+                    if (ptsC1[0][0] === ptsL1[ptsL1.length - 1][0] && ptsC1[0][1] === ptsL1[ptsL1.length - 1][1]) {
+                        meshes.push(sectionMesh(
+                            [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsR1.reverse(), ...ptsR2, ...ptsL2.reverse()], lineMaterial));
+                    } else {
+                        meshes.push(sectionMesh(
+                            [...ptsL1.reverse(), ...ptsC1.reverse(), ...ptsC2, ...ptsR1, ...ptsR2.reverse(), ...ptsL2], lineMaterial));
+                    }
+                }
+                else if (ptsL1.length === 0 && ptsL1.length === 0) {
+                    meshes.push(sectionMesh(
+                        [...ptsC1.reverse(), ...ptsC2], lineMaterial));
+                }
+            }
+
+        }
+    }
+    return meshes
+}
+
+
 function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //측면도 그리기
     // let result = {models:{},layer:lineMaterial }; 
     // let index = 1;
@@ -898,6 +964,13 @@ export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh)
          });
+        let topSide = GirderSideView(steelBoxDict, ["G" + (i+1).toFixed(0) + "TopPlate"], 2,0,1,scale,initPoint, aqua)
+        topSide.forEach(function (mesh) { 
+            mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
+            group.add(mesh) 
+        });
+
+
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
