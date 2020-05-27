@@ -346,7 +346,7 @@ export function GridStationList(pointDict) {
       totalLength += segLength;
       // console.log("totalLength", totalLength)
       dummy0 = gridObj.point;
-      gs[i][j]["girderStation"] = totalLength
+      gs[i][j]["point"]["girderStation"] = totalLength
     }
   }
 
