@@ -112,11 +112,11 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, g
 
   let plate1 = [[], [], [
     {x:gstation1, y: point1.z -uf1.topY},
-    {x:gstation1, y: point2.z -uf1.topY + uf1.tuf}
+    {x:gstation1, y: point1.z -uf1.topY + uf1.tuf}
   ]];
   let plate2 = [[], [], [
-    {x:gstation2, y: -uf2.topY},
-    {x:gstation2, y: -uf2.topY + uf2.tuf}
+    {x:gstation2, y: point2.z - uf2.topY},
+    {x:gstation2, y: point2.z -uf2.topY + uf2.tuf}
   ]];
 
     for (let k in plate1) {
