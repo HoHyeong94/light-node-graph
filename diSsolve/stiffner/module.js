@@ -539,8 +539,8 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
     const tl = webPoints[1];
     const br = webPoints[2];
     const tr = webPoints[3];
-    let gcos = (uflangePoint[0].x - uflangePoint[1].x)/Math.sqrt((uflangePoint[1].x - uflangePoint[0].x)**2 +(uflangePoint[1].y - uflangePoint[0].y)**2 )
-    let gsin = gcos * (uflangePoint[0].y - uflangePoint[1].y) / (uflangePoint[0].x - uflangePoint[1].x)
+    let gcos = (uflangePoint[1].x - uflangePoint[0].x)/Math.sqrt((uflangePoint[1].x - uflangePoint[0].x)**2 +(uflangePoint[1].y - uflangePoint[0].y)**2 )
+    let gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
     const lwCot = (tl.x - bl.x)/(tl.y-bl.y);
     const rwCot = (tr.x - br.x)/(tr.y-br.y);
     const lcos = (tl.x - bl.x) / Math.sqrt((tl.x - bl.x)**2 + (tl.y - bl.y)**2);
@@ -564,7 +564,7 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
       tl,
       {x:bl.x + lwCot * bottomOffset, y : bl.y + bottomOffset },
       {x:bl.x + lwCot * bottomOffset + lsin*sideHeight, y : bl.y + bottomOffset - lcos*sideHeight},
-      {x:tl.x + gsin * sideHeight, y : tl.y + gcos * sideHeight },
+      {x:tl.x + gsin * sideHeight, y : tl.y - gcos * sideHeight },
     ]
     let leftPoints = [];
     leftPoints = leftPoints.concat(scallop(leftplate[3],leftplate[0],leftplate[1],scallopRadius,4));
@@ -577,7 +577,7 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
       tr,
       {x:br.x + rwCot * bottomOffset, y : br.y + bottomOffset },
       {x:br.x + rwCot * bottomOffset - rsin * sideHeight, y : br.y + bottomOffset + rcos*sideHeight},
-      {x:tr.x - gsin * sideHeight, y : tr.y - gcos * sideHeight },
+      {x:tr.x - gsin * sideHeight, y : tr.y + gcos * sideHeight },
     ]
     let rightPoints = [...scallop(rightplate[3],rightplate[0],rightplate[1],scallopRadius,4), rightplate[1],
                       ...scallop(rightplate[1],rightplate[2],rightplate[3],sideHeight-sideScallopOffset,1), rightplate[3]];
