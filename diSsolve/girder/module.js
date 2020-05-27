@@ -338,6 +338,7 @@ export function GridStationList(pointDict) {
 
   let totalLength = 0;
   let segLength = 0;
+  let dummy0 = {};
   for (let i = 0; i < gs.length; i++) {
     for (let j = 0; j < gs[i].length; j++) {
       let gridObj = gs[i][j];
