@@ -44,9 +44,9 @@ export function AnalysisModel(node, frame) {
 
         let text = new SpriteText(frame.frame.data[i].number, 150, "red");
         text.position.set(
-            (geometry.vertices[iNum].x + geometry.vertices[jNum].x)/2, 
-            (geometry.vertices[iNum].y + geometry.vertices[jNum].y)/2, 
-            (geometry.vertices[iNum].z + geometry.vertices[jNum].z)/2)
+            (geometry.vertices[iNum].x + geometry.vertices[jNum].x) / 2,
+            (geometry.vertices[iNum].y + geometry.vertices[jNum].y) / 2,
+            (geometry.vertices[iNum].z + geometry.vertices[jNum].z) / 2)
         text.layers.set(layer);
         group.add(text)
     }
@@ -150,33 +150,34 @@ export function SteelBoxView(steelBoxDict, initPoint) {
     let pk1 = ""
     let pk2 = ""
     for (let key in steelBoxDict) {
-
-        steelBoxDict[key]["points"].forEach(function (plist) {
-            if (plist.length > 0) {
-                let geometry = new THREE.Geometry();
-                for (let i = 0; i < plist.length; i++) {
-                    geometry.vertices.push(new THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z))
-                }
-
-                for (let i = 0; i < plist.length / 4 - 1; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        let k = j + 1 === 4 ? 0 : j + 1
-                        geometry.faces.push(new THREE.Face3(i * 4 + j, i * 4 + k, (i + 1) * 4 + j));
-                        geometry.faces.push(new THREE.Face3(i * 4 + k, (i + 1) * 4 + k, (i + 1) * 4 + j));
+        if (!key.includes("Side")) {
+            steelBoxDict[key]["points"].forEach(function (plist) {
+                if (plist.length > 0) {
+                    let geometry = new THREE.Geometry();
+                    for (let i = 0; i < plist.length; i++) {
+                        geometry.vertices.push(new THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z))
                     }
-                    if (i === 0) {
-                        geometry.faces.push(new THREE.Face3(0, 1, 2));
-                        geometry.faces.push(new THREE.Face3(0, 2, 3));
-                    } else if (i === (plist.length / 4 - 2)) {
-                        geometry.faces.push(new THREE.Face3((i + 1) * 4, (i + 1) * 4 + 1, (i + 1) * 4 + 2));
-                        geometry.faces.push(new THREE.Face3((i + 1) * 4, (i + 1) * 4 + 2, (i + 1) * 4 + 3));
-                    }
-                }
 
-                geometry.computeFaceNormals();
-                group.add(new THREE.Mesh(geometry, meshMaterial));
-            }
-        })
+                    for (let i = 0; i < plist.length / 4 - 1; i++) {
+                        for (let j = 0; j < 4; j++) {
+                            let k = j + 1 === 4 ? 0 : j + 1
+                            geometry.faces.push(new THREE.Face3(i * 4 + j, i * 4 + k, (i + 1) * 4 + j));
+                            geometry.faces.push(new THREE.Face3(i * 4 + k, (i + 1) * 4 + k, (i + 1) * 4 + j));
+                        }
+                        if (i === 0) {
+                            geometry.faces.push(new THREE.Face3(0, 1, 2));
+                            geometry.faces.push(new THREE.Face3(0, 2, 3));
+                        } else if (i === (plist.length / 4 - 2)) {
+                            geometry.faces.push(new THREE.Face3((i + 1) * 4, (i + 1) * 4 + 1, (i + 1) * 4 + 2));
+                            geometry.faces.push(new THREE.Face3((i + 1) * 4, (i + 1) * 4 + 2, (i + 1) * 4 + 3));
+                        }
+                    }
+
+                    geometry.computeFaceNormals();
+                    group.add(new THREE.Mesh(geometry, meshMaterial));
+                }
+            })
+        }
     }
     return group
 }
