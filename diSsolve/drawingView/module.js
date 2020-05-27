@@ -969,6 +969,13 @@ export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
             mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
             group.add(mesh) 
         });
+        let bottomSide = GirderSideView(steelBoxDict, ["G" + (i+1).toFixed(0) + "BottomSide"], 2,0,1,scale,initPoint, aqua)
+        bottomSide.forEach(function (mesh) { 
+            mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
+            group.add(mesh) 
+        });
+
+
 
 
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)

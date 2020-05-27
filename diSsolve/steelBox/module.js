@@ -261,10 +261,10 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
       splicer = ["TF", "SP", "K6"]
       let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer)
-      let uflangeSide = sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflangeSide", splicer)
       for (let k in uflangePoint) {
         uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
       }
+      let uflangeSide = sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflangeSide", splicer)
       for (let k in uflangeSide) {
         uflangeSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
@@ -274,10 +274,17 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
 
       keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+      sideKeyname = "G" + (i * 1 + 1).toString() + "BottomSide" + UFi
+      if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
+
       splicer = ["BF", "SP", "K6"]
       let lflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflange", splicer)
       for (let k in lflangePoint) {
         lflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+      }
+      let lflangeSide = sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflangeSide", splicer)
+      for (let k in lflangeSide) {
+        lflangeSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
       splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { Bi += 1; return } })
 
