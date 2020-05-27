@@ -259,7 +259,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
 
       keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-      sideKeyname = "G" + (i * 1 + 1).toString() + "TopPlateSide" + UFi
+      sideKeyname = "G" + (i * 1 + 1).toString() + "TopSide" + UFi
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
       splicer = ["TF", "SP", "K6"]
       let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer)
