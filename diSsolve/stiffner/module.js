@@ -150,7 +150,7 @@ export function HBracingDict(
 
 export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
-    const centerThickness = 270; // 헌치값이 포함된 값으로 통일되어야 함. 우선 변수만 입력
+    const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
     let result = {}
     const bl = webPoints[0];
     const tl = webPoints[1];
@@ -258,7 +258,7 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
       anchor:[[rightTopPlate[1].x  - 80,rightTopPlate[1].y+50],[rightTopPlate[0].x - 80,rightTopPlate[0].y + 50]]
     }
     // k-frame diaphragm
-    let leftline =  [{x:-ds.spc*gsin,y:-centerThickness -ds.spc*gcos},lowerTopPoints[1]]
+    let leftline =  [{x:-ds.spc*gsin,y:-topY -ds.spc*gcos},lowerTopPoints[1]]
     let lcos = (leftline[1].x - leftline[0].x) / Math.sqrt((leftline[1].x - leftline[0].x)**2 + (leftline[1].y - leftline[0].y)**2)
     let ltan = (leftline[1].y - leftline[0].y) / (leftline[1].x - leftline[0].x)
     let lsin = lcos * ltan
@@ -274,7 +274,7 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
       size:{Label:"L-100x100x10x"+PointLength(...newleftline).toFixed(0)},
       anchor:[[newleftline[1].x-20,newleftline[1].y],[newleftline[0].x-20,newleftline[0].y]]}
     
-    let rightline = [{x:ds.spc*gsin,y:-centerThickness- ds.spc*gcos},lowerTopPoints[2]]
+    let rightline = [{x:ds.spc*gsin,y:-topY- ds.spc*gcos},lowerTopPoints[2]]
     let rcos = (rightline[1].x - rightline[0].x) / Math.sqrt((rightline[1].x - rightline[0].x)**2 + (rightline[1].y - rightline[0].y)**2)
     let rtan = (rightline[1].y - rightline[0].y) / (rightline[1].x - rightline[0].x)
     let rsin = rcos * rtan
@@ -539,8 +539,8 @@ export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ 
     const tl = webPoints[1];
     const br = webPoints[2];
     const tr = webPoints[3];
-    let gcos = (uflangePoint[1].x - uflangePoint[0].x)/Math.sqrt((uflangePoint[1].x - uflangePoint[0].x)**2 +(uflangePoint[1].y - uflangePoint[0].y)**2 )
-    let gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
+    let gcos = (uflangePoint[0].x - uflangePoint[1].x)/Math.sqrt((uflangePoint[1].x - uflangePoint[0].x)**2 +(uflangePoint[1].y - uflangePoint[0].y)**2 )
+    let gsin = gcos * (uflangePoint[0].y - uflangePoint[1].y) / (uflangePoint[0].x - uflangePoint[1].x)
     const lwCot = (tl.x - bl.x)/(tl.y-bl.y);
     const rwCot = (tr.x - br.x)/(tr.y-br.y);
     const lcos = (tl.x - bl.x) / Math.sqrt((tl.x - bl.x)**2 + (tl.y - bl.y)**2);
@@ -658,7 +658,7 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
 }
 
 export function hBracingPlate(point, right, webPoints, hBSection){
-  const centerThickness = 270;
+  const topY = 270; //슬래브두께 + 헌치가 포함된 값이어야함.
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
@@ -677,10 +677,10 @@ export function hBracingPlate(point, right, webPoints, hBSection){
   let position = {};
   let rotationY = Math.atan((tr.y - tl.y)/(tr.x-tl.x));
   if (right){
-    position = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y: - centerThickness -(upperHeight + sideTopThickness)};
+    position = {x:tr.x - rwCot * (upperHeight + sideTopThickness),y: - topY -(upperHeight + sideTopThickness)};
     rotationY = -rotationY
   }else{
-    position = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y: - centerThickness -(upperHeight + sideTopThickness)}; 
+    position = {x:tl.x - lwCot * (upperHeight + sideTopThickness),y: - topY -(upperHeight + sideTopThickness)}; 
   }
   let rotation = (right)? Math.PI/2 : -Math.PI/2;
   let cos = Math.cos(rotation);
