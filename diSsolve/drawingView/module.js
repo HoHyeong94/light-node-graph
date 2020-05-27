@@ -625,8 +625,9 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
         let cos = gridObj.point.normalCos;
         let sin = gridObj.point.normalSin;
         rot = Math.atan2(cos, - sin) + rotate;
-        if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length };
-        totalLength += segLength;
+        // if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length };
+        // totalLength += segLength;
+        totalLength = gridObj.girderStation
         // console.log("totalLength", totalLength)
         dummy0 = gridObj.point;
         girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
