@@ -35,6 +35,40 @@ function FilletPoints(plate1, plate2, isForward, radius, smoothness) {
   return result
 }
 
+function FilletPoints2D(plate1, plate2, isForward, radius, smoothness) {
+  let filletPoint = [[], []];
+
+  let plt1 = isForward ? plate1 : plate2;
+  let plt2 = isForward ? plate2 : plate1;
+  let result = [[], []];
+
+  for (let ii = 0; ii < 1; ii++) {
+    let p1 = new THREE.Vector3(plt1[0][ii + 1].x, plt1[0][ii + 1].y, plt1[0][ii + 1].z);
+    let p2 = new THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
+    let p3 = new THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
+    filletPoint[ii] = fillet3D(p1, p2, p3, radius, smoothness);
+  }
+  for (let ii = 0; ii < 1; ii++) {
+    let p1 = new THREE.Vector3(plt1[1][ii + 1].x, plt1[1][ii + 1].y, plt1[1][ii + 1].z);
+    let p2 = new THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
+    let p3 = new THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
+    filletPoint[ii + 1] = fillet3D(p1, p2, p3, radius, smoothness);
+  }
+  for (let jj = 0; jj < smoothness + 2; jj++) {
+    let kk = isForward ? jj : smoothness + 1 - jj
+    result[0].push(plt2[0][0])
+    result[0].push(filletPoint[0][kk])
+    // result[0].push(filletPoint[1][kk])
+    // result[0].push(plt2[0][3])
+    result[1].push(plt2[1][0])
+    result[1].push(filletPoint[1][kk])
+    // result[1].push(filletPoint[3][kk])
+    // result[1].push(plt2[1][3])
+  }
+  return result
+}
+
+
 export function plateCompare(plate1, plate2) {
   let result = true;
   let err = 0.1;
@@ -100,6 +134,53 @@ export function webEntrance(wplate1, wplate2, isForward) {
   return result
 }
 
+export function webEntrance2D(wplate1, wplate2, isForward) {
+  let result = [[], [], []]
+  let b1 = 300;
+  let h1 = 1100;
+  let d1 = 250;
+  let r = 150;
+  let smoothness = 8;
+  // let wplate1 = [];
+  // let wplate2 = [];
+  // L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
+  // L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
+  let dpt0 = DividingPoint(wplate1[0], wplate2[0], d1)
+  let dpt1 = DividingPoint(wplate1[1], wplate2[1], d1)
+  // let dpt2 = DividingPoint(wplate1[2], wplate2[2], d1)
+  // let dpt3 = DividingPoint(wplate1[3], wplate2[3], d1)
+  let l1 = DividingPoint(wplate1[0], wplate1[1], b1 + h1)
+  // let l2 = DividingPoint(wplate1[3], wplate1[2], b1 + h1)
+  let r1 = DividingPoint(wplate1[0], wplate1[1], b1)
+  // let r2 = DividingPoint(wplate1[3], wplate1[2], b1)
+  let l11 = DividingPoint(dpt0, dpt1, b1 + h1)
+  // let l21 = DividingPoint(dpt3, dpt2, b1 + h1)
+  let r11 = DividingPoint(dpt0, dpt1, b1)
+  // let r21 = DividingPoint(dpt3, dpt2, b1)
+
+  let newPlate1 = [[wplate1[0], r1], [wplate1[1], l1], []]
+  let newPlate2 = [[dpt0, r11], [dpt1, l11], []]
+  if (isForward) {
+    let filletPoints = FilletPoints2D(newPlate1, newPlate2, isForward, r, smoothness)
+    result[0].push(wplate1[0], r1)
+    result[0].push(...filletPoints[0])
+    result[1].push(wplate1[1], l1)
+    result[1].push(...filletPoints[1])
+  }
+  else {
+    let filletPoints = FilletPoints2D(newPlate2, newPlate1, isForward, r, smoothness)
+    result[0].push(...filletPoints[0])
+    result[0].push(wplate1[0], r1)
+    result[1].push(...filletPoints[1])
+    result[1].push(wplate1[1], l1)
+  }
+  // steelBoxDict[keyname]["points"][0].push(dpt0, r11, r21, dpt3)
+  // steelBoxDict[keyname]["points"][1].push(dpt1, l11, l21, dpt2)
+  result[2].push(dpt0, dpt1)
+  return result
+}
+
+
 
 export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer) {
   let result = [[], [], []];
@@ -110,17 +191,17 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
   let spCheck = false
   splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
 
-  let plate1 = [[], [], [
+  let plate1 = [
     {x:point1.girderStation, y: point1.z + uf1[0], z: 0},
     {x:point1.girderStation, y: point1.z + uf1[1], z: 0}
-  ]];
-  let plate2 = [[], [], [
+  ];
+  let plate2 = [
     {x:point2.girderStation, y: point2.z + uf2[0], z: 0},
     {x:point2.girderStation, y: point2.z + uf2[1], z: 0}
-  ]];
+  ];
 
   if (pk1.substr(2, 2) === "K1") {
-    let ent = webEntrance(plate1, plate2, true)
+    let ent = webEntrance2D(plate1, plate2, true)
     for (let k in ent) {
       ent[k].forEach(element => result[k].push(element));
     }
@@ -129,7 +210,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
   }
   if (!FisB || spCheck) {
     if (pk2.substr(2, 2) === "K6") {
-      let ent = webEntrance(plate2, plate1, false)
+      let ent = webEntrance2D(plate2, plate1, false)
       for (let k in ent) {
         ent[k].forEach(element => result[k].push(element));
       }
