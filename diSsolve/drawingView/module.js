@@ -624,21 +624,15 @@ function WebPlanView(steelBoxDict, keyNamelist, sectionPointNum, isTop, sc, init
                     if (ptsC1[0].x === ptsL1[ptsL1.length - 1].x && ptsC1[0].y === ptsL1[ptsL1.length - 1].y) {
                         if (isTop) {
                             meshes.push(sectionMesh(
-                                [...ptsR1, ...ptsC1, ...ptsC2.reverse(), ...ptsR2.reverse()], lineMaterial));
+                                [...ptsR1, ...ptsR2.reverse()], lineMaterial));
                         } else {
                             meshes.push(sectionMesh(
-                                [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsL1.reverse()], lineMaterial));
+                                [...ptsL1, ...ptsL1.reverse()], lineMaterial));
                         }
 
                     } else {
-                        if (isTop) {
-                            meshes.push(sectionMesh(
-                                [...ptsC1, ...ptsR1, ...ptsR2.reverse(), ...ptsC2.reverse()], lineMaterial));
-                        } else {
-                            meshes.push(sectionMesh(
-                                [...ptsC1, ...ptsL1, ...ptsL1.reverse(), ...ptsC2.reverse()], lineMaterial));
-                        }
-
+                        meshes.push(sectionMesh(
+                            [...ptsC1, ...ptsC2.reverse()], lineMaterial));
                     }
                 }
                 else if (ptsL1.length === 0 && ptsL1.length === 0) {
