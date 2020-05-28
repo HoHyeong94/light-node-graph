@@ -96,6 +96,7 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
         }
         let uflangeSide = [-topY, -topY + ps.uFlangeThk]
         let lflangeSide = [-bottomY, -bottomY - ps.lFlangeThk]
+        let webSide = [-bottomY, -topY]
         baseInput = {
             isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
             isClosedTop: tl2.x < tr1.x?true:false,         
@@ -120,9 +121,9 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
             horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
           }
         if (i === 0) {
-          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange, lflange, uflangeSide, lflangeSide }
+          forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange, lflange, uflangeSide, lflangeSide, webSide }
         } else {
-          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange, lflange, uflangeSide, lflangeSide }
+          backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange, lflange, uflangeSide, lflangeSide, webSide }
         }
       }
       result[k] = { forward, backward }

@@ -100,6 +100,47 @@ export function webEntrance(wplate1, wplate2, isForward) {
   return result
 }
 
+
+export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer) {
+  let result = [[], [], []];
+  let uf1 = sectionPointDict[pk1].forward[sideKey];
+  let uf2 = sectionPointDict[pk2].backward[sideKey];
+  let uf3 = sectionPointDict[pk2].forward[sideKey];
+  let FisB = uf2[0] === uf3[0]; //기준높이가 변화하는 경우
+  let spCheck = false
+  splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
+
+  let plate1 = [[], [], [
+    {x:point1.girderStation, y: point1.z + uf1[0], z: 0},
+    {x:point1.girderStation, y: point1.z + uf1[1], z: 0}
+  ]];
+  let plate2 = [[], [], [
+    {x:point2.girderStation, y: point2.z + uf2[0], z: 0},
+    {x:point2.girderStation, y: point2.z + uf2[1], z: 0}
+  ]];
+
+  if (pk1.substr(2, 2) === "K1") {
+    let ent = webEntrance(plate1, plate2, true)
+    for (let k in ent) {
+      ent[k].forEach(element => result[k].push(element));
+    }
+  } else {
+    uf1.forEach(element => result[2].push(ToGlobalPoint(point1, element)))
+  }
+  if (!FisB || spCheck) {
+    if (pk2.substr(2, 2) === "K6") {
+      let ent = webEntrance(plate2, plate1, false)
+      for (let k in ent) {
+        ent[k].forEach(element => result[k].push(element));
+      }
+    }
+    else {
+      uf2.forEach(element => result[2].push(ToGlobalPoint(point2, element)))
+    }
+  }
+}
+
+
 export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer) {
   // 박스형 거더의 상하부플레이트 개구와 폐합에 대한 필렛을 위해 개발되었으며, 개구->폐합, 폐합->개구에 대해서만 가능하다, 
   // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
@@ -287,6 +328,14 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         lflangeSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
       splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { Bi += 1; return } })
+
+      sideKeyname = "G" + (i * 1 + 1).toString() + "WebSide" + Wi
+      if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
+      splicer = ["WF", "SP", "K6"]
+      let webSide = sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, "webSide", splicer)
+      for (let k in webSide) {
+        webSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
+      }
 
       keyname = "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
