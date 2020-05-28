@@ -1043,7 +1043,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
     let scale = 1;
     let girderOffset = 24000;
     let sideViewOffset = -8000 * scale;
-    let sectionViewOffset = 8000 * scale;
+    let sectionViewOffset = 16000 * scale;
     let gridMark_width = 1500; // unit : mm
     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
@@ -1078,7 +1078,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
             group.add(mesh)
         });
 
-        let girderSection = GirderSectionView(sectionPointDict, girderStation, sectionViewOffset);
+        let girderSection = GirderSectionView(sectionPointDict, girderStation, scale, sectionViewOffset);
         girderSection.forEach(function (mesh) {
             // mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
             group.add(mesh)
@@ -1166,7 +1166,7 @@ function sectionMesh(point0, lineMaterial) {
     return new THREE.LineLoop(geometry, lineMaterial)
 }
 
-export function GirderSectionView(sectionPointDict, girderStation, yoffset) {
+export function GirderSectionView(sectionPointDict, girderStation, scale, yoffset) {
     let meshes = [];
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
     let xoffset = 20000;
