@@ -489,70 +489,70 @@ function GirderSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, inde
 }
 
 
-function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //측면도 그리기
-    // let result = {models:{},layer:lineMaterial }; 
-    // let index = 1;
-    let meshes = [];
-    for (let part in steelBoxDict) {
-        for (let name of keyNamelist) {
-            if (part.includes(name)) {
-                let ptsL1 = [];
-                let ptsR1 = [];
-                let ptsC1 = [];
-                let ptsL2 = [];
-                let ptsR2 = [];
-                let ptsC2 = [];
-                for (let j in steelBoxDict[part]["points"]) {
-                    let pts1 = [];
-                    let pts2 = [];
-                    for (let i in steelBoxDict[part]["points"][j]) {
-                        if (i % sectionPointNum === index1) {
-                            let x = (steelBoxDict[part]["points"][j][i].s - initPoint.masterStationNumber) * sc
-                            let y = (steelBoxDict[part]["points"][j][i].z - initPoint.z) * sc
-                            pts1.push({ x, y })
-                            // if (i==0){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
-                        } else if (i % sectionPointNum === index2) {
-                            let x = (steelBoxDict[part]["points"][j][i].s - initPoint.masterStationNumber) * sc
-                            let y = (steelBoxDict[part]["points"][j][i].z - initPoint.z) * sc
-                            pts2.push({ x, y })
-                            // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
-                        }
-                    }
-                    if (j == 0) {
-                        ptsL1.push(...pts1)
-                        ptsL2.push(...pts2)
-                    }
-                    if (j == 1) {
-                        ptsR1.push(...pts1)
-                        ptsR2.push(...pts2)
-                    }
-                    if (j == 2) {
-                        ptsC1.push(...pts1)
-                        ptsC2.push(...pts2)
-                    }
-                }
-                if (ptsC1.length === 0) {
-                    meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial));
-                    meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial));
-                } else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
-                    if (ptsC1[0][0] === ptsL1[ptsL1.length - 1][0] && ptsC1[0][1] === ptsL1[ptsL1.length - 1][1]) {
-                        meshes.push(sectionMesh(
-                            [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsR1.reverse(), ...ptsR2, ...ptsL2.reverse()], lineMaterial));
-                    } else {
-                        meshes.push(sectionMesh(
-                            [...ptsL1.reverse(), ...ptsC1.reverse(), ...ptsC2, ...ptsR1, ...ptsR2.reverse(), ...ptsL2], lineMaterial));
-                    }
-                }
-                else if (ptsL1.length === 0 && ptsL1.length === 0) {
-                    meshes.push(sectionMesh(
-                        [...ptsC1.reverse(), ...ptsC2], lineMaterial));
-                }
-            }
+// function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //측면도 그리기
+//     // let result = {models:{},layer:lineMaterial }; 
+//     // let index = 1;
+//     let meshes = [];
+//     for (let part in steelBoxDict) {
+//         for (let name of keyNamelist) {
+//             if (part.includes(name)) {
+//                 let ptsL1 = [];
+//                 let ptsR1 = [];
+//                 let ptsC1 = [];
+//                 let ptsL2 = [];
+//                 let ptsR2 = [];
+//                 let ptsC2 = [];
+//                 for (let j in steelBoxDict[part]["points"]) {
+//                     let pts1 = [];
+//                     let pts2 = [];
+//                     for (let i in steelBoxDict[part]["points"][j]) {
+//                         if (i % sectionPointNum === index1) {
+//                             let x = (steelBoxDict[part]["points"][j][i].s - initPoint.masterStationNumber) * sc
+//                             let y = (steelBoxDict[part]["points"][j][i].z - initPoint.z) * sc
+//                             pts1.push({ x, y })
+//                             // if (i==0){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+//                         } else if (i % sectionPointNum === index2) {
+//                             let x = (steelBoxDict[part]["points"][j][i].s - initPoint.masterStationNumber) * sc
+//                             let y = (steelBoxDict[part]["points"][j][i].z - initPoint.z) * sc
+//                             pts2.push({ x, y })
+//                             // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+//                         }
+//                     }
+//                     if (j == 0) {
+//                         ptsL1.push(...pts1)
+//                         ptsL2.push(...pts2)
+//                     }
+//                     if (j == 1) {
+//                         ptsR1.push(...pts1)
+//                         ptsR2.push(...pts2)
+//                     }
+//                     if (j == 2) {
+//                         ptsC1.push(...pts1)
+//                         ptsC2.push(...pts2)
+//                     }
+//                 }
+//                 if (ptsC1.length === 0) {
+//                     meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial));
+//                     meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial));
+//                 } else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
+//                     if (ptsC1[0][0] === ptsL1[ptsL1.length - 1][0] && ptsC1[0][1] === ptsL1[ptsL1.length - 1][1]) {
+//                         meshes.push(sectionMesh(
+//                             [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsR1.reverse(), ...ptsR2, ...ptsL2.reverse()], lineMaterial));
+//                     } else {
+//                         meshes.push(sectionMesh(
+//                             [...ptsL1.reverse(), ...ptsC1.reverse(), ...ptsC2, ...ptsR1, ...ptsR2.reverse(), ...ptsL2], lineMaterial));
+//                     }
+//                 }
+//                 else if (ptsL1.length === 0 && ptsL1.length === 0) {
+//                     meshes.push(sectionMesh(
+//                         [...ptsC1.reverse(), ...ptsC2], lineMaterial));
+//                 }
+//             }
 
-        }
-    }
-    return meshes
-}
+//         }
+//     }
+//     return meshes
+// }
 
 function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //강박스 일반도 그리기
     // let result = {models:{},layer:color };
@@ -890,7 +890,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
 // r is rotation angle to radian
 export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint, girderStation) {
     let group = new THREE.Group();
-
+    let laynum = 6;
     const hBracingDict = hBracing.hBracingDict
     const hBracingPlateDict = hBracing.hBracingPlateDict
 
@@ -913,7 +913,7 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, 
 
     let gridMark = GridMarkView(girderStation[0], sc, initPoint, r, 1400)
     gridMark.meshes.forEach(function (mesh) { group.add(mesh) });
-    group.add(LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), 1))
+    group.add(LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layNum))
 
     return group
 }
@@ -992,50 +992,50 @@ export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
     return group
 }
 
-export function sideDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint) {
-    let group = new THREE.Group();
+// export function sideDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint) {
+//     let group = new THREE.Group();
 
-    const hBracingDict = hBracing.hBracingDict
-    const hBracingPlateDict = hBracing.hBracingPlateDict
+//     const hBracingDict = hBracing.hBracingDict
+//     const hBracingPlateDict = hBracing.hBracingPlateDict
 
-    let sc = 0.500;
-    let r = Math.PI - Math.atan((gridPoint["G1K6"].y - gridPoint["G1K1"].y) / (gridPoint["G1K6"].x - gridPoint["G1K1"].x))
-    let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
-    let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+//     let sc = 0.500;
+//     let r = Math.PI - Math.atan((gridPoint["G1K6"].y - gridPoint["G1K1"].y) / (gridPoint["G1K6"].x - gridPoint["G1K1"].x))
+//     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
+//     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
 
 
-    let side = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0, 1, sc, initPoint, r, aqua)
-    side.forEach(function (mesh) { group.add(mesh) });
+//     // let side = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0, 1, sc, initPoint, r, aqua)
+//     // side.forEach(function (mesh) { group.add(mesh) });
 
-    let textMesh;
-    let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
-    let label = [];
+//     let textMesh;
+//     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+//     let label = [];
 
-    var loader = new THREE.FontLoader();
-    loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-        // console.log(font)
-        // var font = {generateShapes:(messagem , num)=>{}}
-        for (let i in label) {
-            var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-            var geometry = new THREE.ShapeBufferGeometry(shapes);
-            var xMid
-            geometry.computeBoundingBox();
-            xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-            geometry.translate(xMid, -label[i].fontSize / 2, 0);
-            if (label[i].rotation) {
-                geometry.rotateZ(label[i].rotation)
-            }
-            geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
-            // make shape ( N.B. edge view not visible )
-            textMesh = new THREE.Mesh(geometry, textMaterial);
-            textMesh.layers.set(1)
-            group.add(textMesh);
-        }
-        // text.position.z = 0;
-    });
+//     var loader = new THREE.FontLoader();
+//     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+//         // console.log(font)
+//         // var font = {generateShapes:(messagem , num)=>{}}
+//         for (let i in label) {
+//             var shapes = font.generateShapes(label[i].text, label[i].fontSize);
+//             var geometry = new THREE.ShapeBufferGeometry(shapes);
+//             var xMid
+//             geometry.computeBoundingBox();
+//             xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+//             geometry.translate(xMid, -label[i].fontSize / 2, 0);
+//             if (label[i].rotation) {
+//                 geometry.rotateZ(label[i].rotation)
+//             }
+//             geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
+//             // make shape ( N.B. edge view not visible )
+//             textMesh = new THREE.Mesh(geometry, textMaterial);
+//             textMesh.layers.set(1)
+//             group.add(textMesh);
+//         }
+//         // text.position.z = 0;
+//     });
 
-    return group
-}
+//     return group
+// }
 
 
 
