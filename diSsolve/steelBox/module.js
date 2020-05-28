@@ -191,32 +191,32 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
   let spCheck = false
   splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
 
-  let plate1 = [
+  let plate1 = [[],[],[
     {x:point1.girderStation, y: point1.z + uf1[0], z: 0},
     {x:point1.girderStation, y: point1.z + uf1[1], z: 0}
-  ];
-  let plate2 = [
+  ]];
+  let plate2 = [[],[],[
     {x:point2.girderStation, y: point2.z + uf2[0], z: 0},
     {x:point2.girderStation, y: point2.z + uf2[1], z: 0}
-  ];
+  ]];
 
   if (pk1.substr(2, 2) === "K1") {
-    let ent = webEntrance2D(plate1, plate2, true)
+    let ent = webEntrance2D(plate1[2], plate2[2], true)
     for (let k in ent) {
       ent[k].forEach(element => result[k].push(element));
     }
   } else {
-    uf1.forEach(element => result[2].push(ToGlobalPoint(point1, element)))
+    plate1[k].forEach(element => result[k].push(element));
   }
   if (!FisB || spCheck) {
     if (pk2.substr(2, 2) === "K6") {
-      let ent = webEntrance2D(plate2, plate1, false)
+      let ent = webEntrance2D(plate2[2], plate1[2], false)
       for (let k in ent) {
         ent[k].forEach(element => result[k].push(element));
       }
     }
     else {
-      uf2.forEach(element => result[2].push(ToGlobalPoint(point2, element)))
+      plate2[k].forEach(element => result[k].push(element));
     }
   }
   return result
