@@ -612,22 +612,21 @@ function WebPlanView(steelBoxDict, keyNamelist, sectionPointNum, isTop, sc, init
                     }
                 }
                 if (ptsC1.length === 0) {
-                    meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial))
-                    meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial))
-                    // result.models[name + index.toString()] = new makerjs.models.ConnectTheDots(true,[...ptsL1,...ptsL2.reverse()]);
-                    // index +=1
-                    // result.models[name + index.toString()] = new makerjs.models.ConnectTheDots(true,[...ptsR1,...ptsR2.reverse()]);
-                    // index +=1    
+                    if (isTop){
+                        meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial))
+                    }else{
+                        meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial))
+                    }
+                    
                 }
-
                 else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
                     if (ptsC1[0].x === ptsL1[ptsL1.length - 1].x && ptsC1[0].y === ptsL1[ptsL1.length - 1].y) {
                         if (isTop) {
                             meshes.push(sectionMesh(
-                                [...ptsR1, ...ptsR2.reverse()], lineMaterial));
+                                [...ptsR1,...ptsC1, ...ptsC2.reverse(),...ptsR2.reverse()], lineMaterial));
                         } else {
                             meshes.push(sectionMesh(
-                                [...ptsL1, ...ptsL1.reverse()], lineMaterial));
+                                [...ptsC1,...ptsL1, ...ptsL1.reverse(),...ptsC2.reverse()], lineMaterial));
                         }
 
                     } else {
