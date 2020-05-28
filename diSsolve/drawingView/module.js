@@ -890,7 +890,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
 // r is rotation angle to radian
 export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint, girderStation) {
     let group = new THREE.Group();
-    let laynum = 6;
+    let layNum = 6;
     const hBracingDict = hBracing.hBracingDict
     const hBracingPlateDict = hBracing.hBracingPlateDict
 
