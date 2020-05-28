@@ -219,6 +219,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
       uf2.forEach(element => result[2].push(ToGlobalPoint(point2, element)))
     }
   }
+  return result
 }
 
 
