@@ -469,7 +469,7 @@ function GirderSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, inde
                     meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial));
                     meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial));
                 } else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
-                    if (ptsC1[0][0] === ptsL1[ptsL1.length - 1][0] && ptsC1[0][1] === ptsL1[ptsL1.length - 1][1]) {
+                    if (ptsC1[0][0].x === ptsL1[ptsL1.length - 1][0].x) {
                         meshes.push(sectionMesh(
                             [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsR1.reverse(), ...ptsR2, ...ptsL2.reverse()], lineMaterial));
                     } else {
