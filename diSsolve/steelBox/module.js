@@ -191,13 +191,13 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
   let spCheck = false
   splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
 
-  let plate1 = [[],[],[
-    {x:point1.girderStation, y: point1.z + uf1[0], z: 0},
-    {x:point1.girderStation, y: point1.z + uf1[1], z: 0}
+  let plate1 = [[], [], [
+    { x: point1.girderStation, y: point1.z + uf1[0], z: 0 },
+    { x: point1.girderStation, y: point1.z + uf1[1], z: 0 }
   ]];
-  let plate2 = [[],[],[
-    {x:point2.girderStation, y: point2.z + uf2[0], z: 0},
-    {x:point2.girderStation, y: point2.z + uf2[1], z: 0}
+  let plate2 = [[], [], [
+    { x: point2.girderStation, y: point2.z + uf2[0], z: 0 },
+    { x: point2.girderStation, y: point2.z + uf2[1], z: 0 }
   ]];
 
   if (pk1.substr(2, 2) === "K1") {
@@ -207,7 +207,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
     }
   } else {
     for (let k in plate1) {
-    plate1[k].forEach(element => result[k].push(element));
+      plate1[k].forEach(element => result[k].push(element));
     }
   }
   if (!FisB || spCheck) {
@@ -219,7 +219,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
     }
     else {
       for (let k in plate1) {
-      plate2[k].forEach(element => result[k].push(element));
+        plate2[k].forEach(element => result[k].push(element));
       }
     }
   }
@@ -239,24 +239,24 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
   let FisB = uf2[0] === uf3[0]; //기준높이가 변화하는 경우
 
   let plate1 = [[], [], [
-    {x:point1.girderStation, y: point1.z + uf1[0]},
-    {x:point1.girderStation, y: point1.z + uf1[1]}
+    { x: point1.girderStation, y: point1.z + uf1[0] },
+    { x: point1.girderStation, y: point1.z + uf1[1] }
   ]];
   let plate2 = [[], [], [
-    {x:point2.girderStation, y: point2.z + uf2[0]},
-    {x:point2.girderStation, y: point2.z + uf2[1]}
+    { x: point2.girderStation, y: point2.z + uf2[0] },
+    { x: point2.girderStation, y: point2.z + uf2[1] }
   ]];
 
-    for (let k in plate1) {
-      plate1[k].forEach(element => result[k].push(element));
+  for (let k in plate1) {
+    plate1[k].forEach(element => result[k].push(element));
+  }
+  let spCheck = false
+  splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
+  if (!FisB || spCheck) {  //형고 높이가 100mm 이상인 경우에만 반영
+    for (let k in plate2) {
+      plate2[k].forEach(element => result[k].push(element));
     }
-    let spCheck = false
-    splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
-    if (!FisB || spCheck) {  //형고 높이가 100mm 이상인 경우에만 반영
-      for (let k in plate2) {
-        plate2[k].forEach(element => result[k].push(element));
-      }
-    }
+  }
   return result
 }
 
@@ -321,7 +321,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   } else {
     let spCheck = false
     splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
-    if (spCheck ||(!FisB&&( Math.abs(former3 -latter3)>100 ))) {  //형고 높이가 100mm 이상인 경우에만 반영
+    if (spCheck || (!FisB && (Math.abs(former3 - latter3) > 100))) {  //형고 높이가 100mm 이상인 경우에만 반영
       for (let k in uf2) {
         plate2[k].forEach(element => result[k].push(element));
       }
@@ -422,69 +422,71 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       for (let k in webSide) {
         webSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
-
-      keyname = "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi
-      if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-      L1 = sectionPointDict[pk1].forward.lWeb
-      L2 = sectionPointDict[pk2].backward.lWeb
-      L3 = sectionPointDict[pk2].forward.lWeb
-      let wplate1 = [];
-      let wplate2 = [];
-      L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
-      L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
-      if (pk1.substr(2, 2) === "K1") {
-        let ent = webEntrance(wplate1, wplate2, true)
-        for (let k in ent) {
-          ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-        }
-      } else {
-        L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
-      }
-      FisB = true;
-      for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
-      if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-        if (pk2.substr(2, 2) === "K6") {
-          let ent = webEntrance(wplate2, wplate1, false)
+      for (let l = 0; l < 2; l++) {
+        
+        keyname = l===0? "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi : keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
+        if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+        L1 = sectionPointDict[pk1].forward.web[l]
+        L2 = sectionPointDict[pk2].backward.web[l]
+        L3 = sectionPointDict[pk2].forward.web[l]
+        let wplate1 = [];
+        let wplate2 = [];
+        L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
+        L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
+        if (pk1.substr(2, 2) === "K1") {
+          let ent = webEntrance(wplate1, wplate2, true)
           for (let k in ent) {
             ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
           }
+        } else {
+          L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
         }
-        else {
-          L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
+        FisB = true;
+        for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
+        if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+          if (pk2.substr(2, 2) === "K6") {
+            let ent = webEntrance(wplate2, wplate1, false)
+            for (let k in ent) {
+              ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+            }
+          }
+          else {
+            L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
+          }
         }
       }
       // if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1 }
 
-      keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
-      if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-      L1 = sectionPointDict[pk1].forward.rWeb
-      L2 = sectionPointDict[pk2].backward.rWeb
-      L3 = sectionPointDict[pk2].forward.rWeb
-      wplate1 = [];
-      wplate2 = [];
-      L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
-      L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
-      if (pk1.substr(2, 2) === "K1") {
-        let ent = webEntrance(wplate1, wplate2, true)
-        for (let k in ent) {
-          ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-        }
-      } else {
-        L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
-      }
-      FisB = true;
-      for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
-      if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-        if (pk2.substr(2, 2) === "K6") {
-          let ent = webEntrance(wplate2, wplate1, false)
-          for (let k in ent) {
-            ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-          }
-        }
-        else {
-          L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
-        }
-      }
+      // keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
+      // if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+      // L1 = sectionPointDict[pk1].forward.rWeb
+      // L2 = sectionPointDict[pk2].backward.rWeb
+      // L3 = sectionPointDict[pk2].forward.rWeb
+      // wplate1 = [];
+      // wplate2 = [];
+      // L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
+      // L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
+      // if (pk1.substr(2, 2) === "K1") {
+      //   let ent = webEntrance(wplate1, wplate2, true)
+      //   for (let k in ent) {
+      //     ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+      //   }
+      // } else {
+      //   L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
+      // }
+      // FisB = true;
+      // for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
+      // if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+      //   if (pk2.substr(2, 2) === "K6") {
+      //     let ent = webEntrance(wplate2, wplate1, false)
+      //     for (let k in ent) {
+      //       ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+      //     }
+      //   }
+      //   else {
+      //     L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
+      //   }
+      // }
       if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1 }
 
 
