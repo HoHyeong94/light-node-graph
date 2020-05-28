@@ -582,7 +582,7 @@ function WebPlanView(steelBoxDict, keyNamelist, sectionPointNum, isTop, sc, init
                     }
                     if (j == 2) {
                         index1 = isTop ? 1 : 0;
-                        index1 = isTop ? 2 : 3;
+                        index2 = isTop ? 2 : 3;
                     }
                     for (let i in steelBoxDict[part]["points"][j]) {
                         if (i % sectionPointNum === index1) {
