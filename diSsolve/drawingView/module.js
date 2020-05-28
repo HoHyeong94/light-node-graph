@@ -630,8 +630,13 @@ function WebPlanView(steelBoxDict, keyNamelist, sectionPointNum, isTop, sc, init
                         }
 
                     } else {
-                        meshes.push(sectionMesh(
-                            [...ptsC1, ...ptsC2.reverse()], lineMaterial));
+                        if (isTop) {
+                            meshes.push(sectionMesh(
+                                [...ptsR1,...ptsC1, ...ptsC2.reverse(),...ptsR2.reverse()], lineMaterial));
+                        } else {
+                            meshes.push(sectionMesh(
+                                [...ptsC1,...ptsL1, ...ptsL1.reverse(),...ptsC2.reverse()], lineMaterial));
+                        }
                     }
                 }
                 else if (ptsL1.length === 0 && ptsL1.length === 0) {
