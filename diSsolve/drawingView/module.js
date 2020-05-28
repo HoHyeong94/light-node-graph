@@ -612,29 +612,30 @@ function WebPlanView(steelBoxDict, keyNamelist, sectionPointNum, isTop, sc, init
                     }
                 }
                 if (ptsC1.length === 0) {
-                    if (isTop){
+                    if (isTop) {
                         meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial))
-                    }else{
+                    } else {
                         meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial))
                     }
-                    
+
                 }
                 else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
-                    if (ptsC1[0].x === ptsL1[ptsL1.length - 1].x && ptsC1[0].y === ptsL1[ptsL1.length - 1].y) {
-                        if (isTop) {
+
+                    if (isTop) {
+                        if (ptsC1[0].x === ptsR1[ptsL1.length - 1].x && ptsC1[0].y === ptsR1[ptsL1.length - 1].y) {
                             meshes.push(sectionMesh(
-                                [...ptsR1,...ptsC1, ...ptsC2.reverse(),...ptsR2.reverse()], lineMaterial));
+                                [...ptsR1, ...ptsC1, ...ptsC2.reverse(), ...ptsR2.reverse()], lineMaterial));
                         } else {
                             meshes.push(sectionMesh(
-                                [...ptsC1,...ptsL1, ...ptsL1.reverse(),...ptsC2.reverse()], lineMaterial));
+                                [...ptsC1, ...ptsR1, ...ptsR2.reverse(), ...ptsC2.reverse()], lineMaterial));
                         }
-
                     } else {
-                        if (isTop) {
+                        if (ptsC1[0].x === ptsL1[ptsL1.length - 1].x && ptsC1[0].y === ptsL1[ptsL1.length - 1].y) {
                             meshes.push(sectionMesh(
-                                [...ptsC1,...ptsR1, ...ptsR2.reverse(),...ptsC2.reverse()], lineMaterial));
+                                [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsL2.reverse()], lineMaterial));
                         } else {
-
+                            meshes.push(sectionMesh(
+                                [...ptsC1, ...ptsL1, ...ptsL2.reverse(), ...ptsC2.reverse()], lineMaterial));
                         }
                     }
                 }
