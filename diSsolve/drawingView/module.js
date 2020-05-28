@@ -1043,6 +1043,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
     let scale = 1;
     let girderOffset = 24000;
     let sideViewOffset = -8000 * scale;
+    let sectionViewOffset = 8000 * scale;
     let gridMark_width = 1500; // unit : mm
     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
@@ -1077,7 +1078,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
             group.add(mesh)
         });
 
-        let girderSection = GirderSectionView(sectionPointDict, girderStation);
+        let girderSection = GirderSectionView(sectionPointDict, girderStation, sectionViewOffset);
         girderSection.forEach(function (mesh) {
             // mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
             group.add(mesh)
@@ -1165,21 +1166,28 @@ function sectionMesh(point0, lineMaterial) {
     return new THREE.LineLoop(geometry, lineMaterial)
 }
 
-export function GirderSectionView(sectionPointDict, girderStation) {
+export function GirderSectionView(sectionPointDict, girderStation, yoffset) {
     let meshes = [];
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
-    let yoffset = 5000;
+    let xoffset = 20000;
+    let initZ = [];
     for (let i in girderStation) {
-        let supportSection = girderStation[i].filter(obj => obj.key.includes("G" + (i * 1 + 1) + "S"))
+        let supportSection = girderStation[i].filter(obj => obj.key.includes("G" + (i * 1 + 1) + "S") && !obj.key.includes("P"))
+        // console.log("check",supportSection)
+        
         for (let j in supportSection) {
+            if ( i == 0){ initZ.push(supportSection[j].point.z)}
             let offset = supportSection[j].point.offset
             let sectionPoint = sectionPointDict[supportSection[j].key]
-            for (let key in sectionPoint) {
-                if (sectionPoint[key] === "uflange") {
-                    for (let k in sectionPoint[key]) {
-                        if (sectionPoint[key][k].length > 0) {
-                            let mesh = sectionMesh(sectionPoint[key], lineMaterial)
-                            mesh.position.set(offset, i*yoffset,0)
+           
+            for (let key in sectionPoint.forward) {
+                if (key === "uflange" || key === "lflange") {
+                    // console.log("check",sectionPoint)
+                    for (let k in sectionPoint.forward[key]) {
+                        if (sectionPoint.forward[key][k].length > 0) {
+                            let mesh = sectionMesh(sectionPoint.forward[key][k], lineMaterial)
+                            mesh.position.set(offset + j*xoffset, yoffset + supportSection[j].point.z - initZ[j],0)
+                            console.log("check",mesh,offset,i*yoffset)
                             meshes.push(mesh)
                         }
                     }
