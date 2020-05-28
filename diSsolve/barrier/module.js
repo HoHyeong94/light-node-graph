@@ -10,7 +10,9 @@ export function BarrierSectionPoint(
     pointDict
   ){
     // slabLayout object to list 
+    
     const position = 0;
+
     const T = 1;
     const H = 2;
     // const leftOffset = 3;
@@ -48,12 +50,12 @@ export function BarrierSectionPoint(
         let l2 = OffsetPoint(masterPoint, masterLine, offset + sign*250)
         let l3 = OffsetPoint(masterPoint, masterLine, offset + sign*320)
         let l4 = OffsetPoint(masterPoint, masterLine, offset + sign*450)
-        let points = [ZMove(l4,slabThickness + haunch),
-                            ZMove(l4,slabThickness + haunch + 200),
-                            ZMove(l3,slabThickness + haunch + 380),
-                            ZMove(l2,slabThickness + haunch + 1350),
-                            ZMove(l1,slabThickness + haunch + 1350),
-                            ZMove(l1,slabThickness + haunch),]
+        let points = [ZMove(l4,0),
+                            ZMove(l4,200),
+                            ZMove(l3, 380),
+                            ZMove(l2, 1350),
+                            ZMove(l1, 1350),
+                            ZMove(l1,0),]
         if (k===0){
           leftBarrier.push({name:masterStation, points:points.reverse()}) // 추후 순서를 뒤집어서 작성 필요
         }else{
