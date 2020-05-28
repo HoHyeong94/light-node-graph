@@ -1181,7 +1181,7 @@ export function GirderSectionView(sectionPointDict, girderStation, scale, yoffse
             let sectionPoint = sectionPointDict[supportSection[j].key]
            
             for (let key in sectionPoint.forward) {
-                if (key === "uflange" || key === "lflange") {
+                if (key === "uflange" || key === "lflange" || key === "web") {
                     // console.log("check",sectionPoint)
                     for (let k in sectionPoint.forward[key]) {
                         if (sectionPoint.forward[key][k].length > 0) {
