@@ -554,6 +554,105 @@ function GirderSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, inde
 //     return meshes
 // }
 
+function WebPlanView(steelBoxDict, keyNamelist, sectionPointNum, isTop, sc, initPoint, r, lineMaterial) { //강박스 일반도 그리기
+    // let result = {models:{},layer:color };
+    // let index = 1;
+    let meshes = [];
+    let index1 = 0;
+    let index2 = 0;
+    for (let part in steelBoxDict) {
+        for (let name of keyNamelist) {
+            if (part.includes(name)) {
+                let ptsL1 = [];
+                let ptsR1 = [];
+                let ptsC1 = [];
+                let ptsL2 = [];
+                let ptsR2 = [];
+                let ptsC2 = [];
+                for (let j in steelBoxDict[part]["points"]) {
+                    let pts1 = [];
+                    let pts2 = [];
+                    if (j == 0) {
+                        index1 = 0;
+                        index2 = 3;
+                    }
+                    if (j == 1) {
+                        index1 = 0;
+                        index2 = 3;
+                    }
+                    if (j == 2) {
+                        index1 = isTop ? 1 : 0;
+                        index1 = isTop ? 2 : 3;
+                    }
+                    for (let i in steelBoxDict[part]["points"][j]) {
+                        if (i % sectionPointNum === index1) {
+                            let x = (steelBoxDict[part]["points"][j][i].x - initPoint.x) * sc
+                            let y = (steelBoxDict[part]["points"][j][i].y - initPoint.y) * sc
+                            pts1.push({ x: Math.cos(r) * x - Math.sin(r) * y, y: Math.cos(r) * y + Math.sin(r) * x })
+                            // if (i==0){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+                        } else if (i % sectionPointNum === index2) {
+                            let x = (steelBoxDict[part]["points"][j][i].x - initPoint.x) * sc
+                            let y = (steelBoxDict[part]["points"][j][i].y - initPoint.y) * sc
+                            pts2.push({ x: Math.cos(r) * x - Math.sin(r) * y, y: Math.cos(r) * y + Math.sin(r) * x })
+                            // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+                        }
+
+                    }
+                    if (j == 0) {
+                        ptsL1.push(...pts1)
+                        ptsL2.push(...pts2)
+                    }
+                    if (j == 1) {
+                        ptsR1.push(...pts1)
+                        ptsR2.push(...pts2)
+                    }
+                    if (j == 2) {
+                        ptsC1.push(...pts1)
+                        ptsC2.push(...pts2)
+                    }
+                }
+                if (ptsC1.length === 0) {
+                    meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial))
+                    meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial))
+                    // result.models[name + index.toString()] = new makerjs.models.ConnectTheDots(true,[...ptsL1,...ptsL2.reverse()]);
+                    // index +=1
+                    // result.models[name + index.toString()] = new makerjs.models.ConnectTheDots(true,[...ptsR1,...ptsR2.reverse()]);
+                    // index +=1    
+                }
+
+                else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
+                    if (ptsC1[0].x === ptsL1[ptsL1.length - 1].x && ptsC1[0].y === ptsL1[ptsL1.length - 1].y) {
+                        if (isTop) {
+                            meshes.push(sectionMesh(
+                                [...ptsR1, ...ptsC1, ...ptsC2.reverse(), ...ptsR2.reverse()], lineMaterial));
+                        } else {
+                            meshes.push(sectionMesh(
+                                [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsL1.reverse()], lineMaterial));
+                        }
+
+                    } else {
+                        if (isTop) {
+                            meshes.push(sectionMesh(
+                                [...ptsC1, ...ptsR1, ...ptsR2.reverse(), ...ptsC2.reverse()], lineMaterial));
+                        } else {
+                            meshes.push(sectionMesh(
+                                [...ptsC1, ...ptsL1, ...ptsL1.reverse(), ...ptsC2.reverse()], lineMaterial));
+                        }
+
+                    }
+                }
+                else if (ptsL1.length === 0 && ptsL1.length === 0) {
+                    meshes.push(sectionMesh(
+                        [...ptsC1.reverse(), ...ptsC2], lineMaterial));
+                }
+
+            }
+        }
+    }
+    return meshes
+}
+
+
 function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //강박스 일반도 그리기
     // let result = {models:{},layer:color };
     // let index = 1;
@@ -685,7 +784,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let dimName = ["Girder Length", "Splice", "Top Plate", "", "", "Bottom Plate", "Web", "V-Stiffener", ""]
     let w = [1.8 * markOffset, 1.6 * markOffset, 1.4 * markOffset, 1.2 * markOffset, -1.2 * markOffset, -1.4 * markOffset,
     sideViewOffset + 1.6 * markOffset, sideViewOffset + 1.4 * markOffset, sideViewOffset + 1.2 * markOffset];    //dim line 기준점
-    w.forEach(function(x){ dimLine.push([]) })
+    w.forEach(function (x) { dimLine.push([]) })
     for (let j = 0; j < girderStation.length; j++) {
         let gridObj = girderStation[j];
         let cos = gridObj.point.normalCos;
@@ -733,7 +832,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
                     labels.push({
                         text: dimName[k],
                         anchor: [anchor.x, anchor.y, 0],
-                        rotation: k>5? 0: rot,
+                        rotation: k > 5 ? 0 : rot,
                         fontSize: fontSize * scale,
                         align: "left"
                     });
@@ -871,7 +970,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     meshes.push(LineMesh(girderLine, redDotLine, 0));
     meshes.push(LineMesh(girderSideLine, redDotLine, 0));
     for (let k = 0; k < w.length; k++) {
-        if (dimName[k]!==""){
+        if (dimName[k] !== "") {
             meshes.push(LineMesh(dimLine[k], redLine, 0))
         }
     }
@@ -918,7 +1017,7 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, 
     return group
 }
 
-export function GirderGeneralDraw1(girderStation,layerNum) {
+export function GirderGeneralDraw1(girderStation, layerNum) {
     let group = new THREE.Group();
     // let layerNum = 5;
     let scale = 1;
@@ -954,30 +1053,30 @@ export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
         let initPoint = girderStation[i][0].point
         let endPoint = girderStation[i][girderStation[i].length - 1].point
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
-        let topPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "TopPlate"], 4, 0, 1, scale, initPoint, rotate, aqua)
-        topPlate.forEach(function (mesh) { 
-            mesh.position.set(0, -i * girderOffset, 0);
-            group.add(mesh) 
-        });
-        let webPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "LeftWeB","G" + (i+1).toFixed(0) + "RightWeB"], 4, 1, 2, scale, initPoint, rotate, green)
-        webPlate.forEach(function (mesh) { 
+        let topPlate = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "TopPlate"], 4, 0, 1, scale, initPoint, rotate, aqua)
+        topPlate.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh)
-         });
-        let topSide = GirderSideView(steelBoxDict, ["G" + (i+1).toFixed(0) + "TopSide"], 2,0,1,scale,initPoint, aqua)
-        topSide.forEach(function (mesh) { 
-            mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
-            group.add(mesh) 
         });
-        let bottomSide = GirderSideView(steelBoxDict, ["G" + (i+1).toFixed(0) + "BottomSide"], 2,0,1,scale,initPoint, aqua)
-        bottomSide.forEach(function (mesh) { 
-            mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
-            group.add(mesh) 
+        let webPlate = WebPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "LeftWeB", "G" + (i + 1).toFixed(0) + "RightWeB"], 4, true, scale, initPoint, rotate, green)
+        webPlate.forEach(function (mesh) {
+            mesh.position.set(0, -i * girderOffset, 0);
+            group.add(mesh)
         });
-        let webSide = GirderSideView(steelBoxDict, ["G" + (i+1).toFixed(0) + "WebSide"], 2,0,1,scale,initPoint, aqua)
-        webSide.forEach(function (mesh) { 
-            mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
-            group.add(mesh) 
+        let topSide = GirderSideView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "TopSide"], 2, 0, 1, scale, initPoint, aqua)
+        topSide.forEach(function (mesh) {
+            mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
+            group.add(mesh)
+        });
+        let bottomSide = GirderSideView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "BottomSide"], 2, 0, 1, scale, initPoint, aqua)
+        bottomSide.forEach(function (mesh) {
+            mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
+            group.add(mesh)
+        });
+        let webSide = GirderSideView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "WebSide"], 2, 0, 1, scale, initPoint, aqua)
+        webSide.forEach(function (mesh) {
+            mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
+            group.add(mesh)
         });
 
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
