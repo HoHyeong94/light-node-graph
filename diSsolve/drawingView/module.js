@@ -632,10 +632,9 @@ function WebPlanView(steelBoxDict, keyNamelist, sectionPointNum, isTop, sc, init
                     } else {
                         if (isTop) {
                             meshes.push(sectionMesh(
-                                [...ptsR1,...ptsC1, ...ptsC2.reverse(),...ptsR2.reverse()], lineMaterial));
+                                [...ptsC1,...ptsR1, ...ptsR1.reverse(),...ptsC2.reverse()], lineMaterial));
                         } else {
-                            meshes.push(sectionMesh(
-                                [...ptsC1,...ptsL1, ...ptsL1.reverse(),...ptsC2.reverse()], lineMaterial));
+
                         }
                     }
                 }
