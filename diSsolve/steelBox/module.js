@@ -108,7 +108,8 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
   // let uf0 = sectionPointDict[pk1].backward["input"];
   let uf1 = sectionPointDict[pk1].forward[sideKey];
   let uf2 = sectionPointDict[pk2].backward[sideKey];
-  // let uf3 = sectionPointDict[pk2].forward["input"];
+  let uf3 = sectionPointDict[pk2].forward[sideKey];
+  let FisB = uf2[0] === uf3[0]; //기준높이가 변화하는 경우
 
   let plate1 = [[], [], [
     {x:point1.girderStation, y: point1.z + uf1[0]},
@@ -124,7 +125,7 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
     }
     let spCheck = false
     splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
-    if (spCheck) {  //형고 높이가 100mm 이상인 경우에만 반영
+    if (!FisB || spCheck) {  //형고 높이가 100mm 이상인 경우에만 반영
       for (let k in plate2) {
         plate2[k].forEach(element => result[k].push(element));
       }
@@ -137,7 +138,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
 
   let result = [[], [], []];
-  let filletR = 300;
+  let filletR = 300; // 외부변수로 나와야함
 
   let uf0 = sectionPointDict[pk1].backward[plateKey];
   let uf1 = sectionPointDict[pk1].forward[plateKey];
@@ -232,8 +233,8 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
   let pk2 = ""
   let UFi = 1;
   let Bi = 1;
-  let LWi = 1;
-  let RWi = 1;
+  let Wi = 1;
+  // let RWi = 1;
   let Ribi = 1;
   let keyname = ""
   let splicer = [];
@@ -268,15 +269,14 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       for (let k in uflangeSide) {
         uflangeSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
-
       splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { UFi += 1; return } })
       // pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
+
 
       keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
       sideKeyname = "G" + (i * 1 + 1).toString() + "BottomSide" + Bi
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
-
       splicer = ["BF", "SP", "K6"]
       let lflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflange", splicer)
       for (let k in lflangePoint) {
@@ -288,7 +288,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       }
       splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { Bi += 1; return } })
 
-      keyname = "G" + (i * 1 + 1).toString() + "LeftWeB" + LWi
+      keyname = "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
       L1 = sectionPointDict[pk1].forward.lWeb
       L2 = sectionPointDict[pk2].backward.lWeb
@@ -318,9 +318,9 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
         }
       }
-      if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { LWi += 1 }
+      // if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1 }
 
-      keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + RWi
+      keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
       L1 = sectionPointDict[pk1].forward.rWeb
       L2 = sectionPointDict[pk2].backward.rWeb
@@ -350,7 +350,10 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
         }
       }
-      if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { RWi += 1 }
+      if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1 }
+
+
+
 
       let RibList = []
       for (let ii in sectionPointDict[pk1].forward) {
