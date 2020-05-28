@@ -206,7 +206,9 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
       ent[k].forEach(element => result[k].push(element));
     }
   } else {
+    for (let k in plate1) {
     plate1[k].forEach(element => result[k].push(element));
+    }
   }
   if (!FisB || spCheck) {
     if (pk2.substr(2, 2) === "K6") {
@@ -216,7 +218,9 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
       }
     }
     else {
+      for (let k in plate1) {
       plate2[k].forEach(element => result[k].push(element));
+      }
     }
   }
   return result
