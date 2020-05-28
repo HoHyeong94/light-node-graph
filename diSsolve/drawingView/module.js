@@ -1037,7 +1037,7 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
     return group
 }
 
-export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
+export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, layerNum) {
     let group = new THREE.Group();
     // let layerNum = 5;
     let scale = 1;
