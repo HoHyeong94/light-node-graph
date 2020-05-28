@@ -1077,6 +1077,13 @@ export function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
             group.add(mesh)
         });
 
+        let girderSection = GirderSectionView(sectionPointDict, girderStation);
+        girderSection.forEach(function (mesh) {
+            // mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
+            group.add(mesh)
+        });
+
+
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
@@ -1157,6 +1164,32 @@ function sectionMesh(point0, lineMaterial) {
     let geometry = new THREE.Geometry().setFromPoints(points)
     return new THREE.LineLoop(geometry, lineMaterial)
 }
+
+export function GirderSectionView(sectionPointDict, girderStation) {
+    let meshes = [];
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+    let yoffset = 5000;
+    for (let i in girderStation) {
+        let supportSection = girderStation[i].filter(obj => obj.key.includes("G" + (i * 1 + 1) + "S"))
+        for (let j in supportSection) {
+            let offset = supportSection[j].point.offset
+            let sectionPoint = sectionPointDict[supportSection[j].key]
+            for (let key in sectionPoint) {
+                if (sectionPoint[key] === "uflange") {
+                    for (let k in sectionPoint[key]) {
+                        if (sectionPoint[key][k].length > 0) {
+                            let mesh = sectionMesh(sectionPoint[key], lineMaterial)
+                            mesh.position.set(offset, i*yoffset,0)
+                            meshes.push(mesh)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return meshes
+}
+
 
 export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면도
     // var makerjs = require('makerjs');
