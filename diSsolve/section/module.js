@@ -399,20 +399,19 @@ export function DeckSectionPoint(
         let slabLowerPoints = [];
         slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
         let offsetPoint = [leftOffset];
-
+        let glw = [];
         for (let j in girderLayout.girderLine) {
             // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
             let girderLine = girderLayout.girderLine[j];
             let girderPoint = LineMatch2(masterPoint, masterLine, girderLine);
             let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
-            let glw = [];
             lw.forEach(elem => glw.push({x : elem.x + girderPoint.offset, y: elem.y + girderPoint.z}))
-            deckSectionPoint.push(...glw.reverse());
             //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
             //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
             lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
             offsetPoint.push(girderPoint.offset);
         }
+        deckSectionPoint.push(...glw.reverse());
         offsetPoint.push(rightOffset);
         slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z - endT });
         result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint});
