@@ -73,6 +73,7 @@ export function GirderGeneralView2(){
   this.addInput("sectionPointDict","sectionPointDict");
   this.addInput("girderStation","girderStation");
   this.addInput("steelBoxDict","steelBoxDict");
+  this.addInput("deckPointDict","deckPointDict");
   this.addInput("layerNumber","number");
 }
 
@@ -80,8 +81,8 @@ GirderGeneralView2.prototype.onExecute = function() {
 }
 
 GirderGeneralView2.prototype.on3DExecute = function() {
-  let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2), this.getInputData(3))
-  sceneAdder({layer:this.getInputData(3), mesh:group},"GirderGeneralView2");
+  let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2), this.getInputData(3), this.getInputData(4))
+  sceneAdder({layer:this.getInputData(4), mesh:group},"GirderGeneralView2");
 };
 
 // export function SideViewer(){

@@ -1037,7 +1037,7 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
     return group
 }
 
-export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, layerNum) {
+export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layerNum) {
     let group = new THREE.Group();
     // let layerNum = 5;
     let scale = 1;
@@ -1078,7 +1078,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
             group.add(mesh)
         });
 
-        let girderSection = GirderSectionView(sectionPointDict, girderStation, scale, sectionViewOffset);
+        let girderSection = GirderSectionView(deckPointDict, sectionPointDict, girderStation, scale, sectionViewOffset);
         girderSection.forEach(function (mesh) {
             // mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
             group.add(mesh)
@@ -1166,7 +1166,7 @@ function sectionMesh(point0, lineMaterial) {
     return new THREE.LineLoop(geometry, lineMaterial)
 }
 
-export function GirderSectionView(sectionPointDict, girderStation, scale, yoffset) {
+export function GirderSectionView(deckPointDict, sectionPointDict, girderStation, scale, yoffset) {
     let meshes = [];
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
     let xoffset = 20000;
@@ -1187,12 +1187,15 @@ export function GirderSectionView(sectionPointDict, girderStation, scale, yoffse
                         if (sectionPoint.forward[key][k].length > 0) {
                             let mesh = sectionMesh(sectionPoint.forward[key][k], lineMaterial)
                             mesh.position.set(offset + j*xoffset, yoffset + supportSection[j].point.z - initZ[j],0)
-                            console.log("check",mesh,offset,i*yoffset)
                             meshes.push(mesh)
                         }
                     }
                 }
             }
+            let deck = deckPointDict.find(obj => obj.key ===( "CRS" + (j*1 +1).toFixed(0)))
+            let mesh = sectionMesh(deck.deckSectionPoint, lineMaterial)
+            mesh.position.set(offset + j*xoffset, yoffset - initZ[j],0)
+            meshes.push(mesh)
         }
     }
     return meshes
