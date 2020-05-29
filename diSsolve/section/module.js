@@ -366,13 +366,14 @@ export function DeckSectionPoint(
     let leftOffset = 0;
     let rightOffset = 0;
     let slabThickness = 0;
-    let deckSectionPoint = [];
+    
 
 
     for (let i = 1; i < centerLineStations.length - 1; i++) {
 
         let masterPoint = centerLineStations[i].point
         let masterStation = masterPoint.masterStationNumber;
+        let deckSectionPoint = [];
         //deckSectionInfo로 분리예정
         for (let i = 0; i < slabLayout.length - 1; i++) {
             let ss = pointDict[slabLayout[i][position]].masterStationNumber;
