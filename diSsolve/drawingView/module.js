@@ -1195,7 +1195,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
             if (i==0){
                 let deck = deckPointDict.find(obj => obj.key ===( "CRS" + (j*1 +1).toFixed(0)))
                 let mesh = sectionMesh(deck.deckSectionPoint, lineMaterial)
-                mesh.position.set(offset + j*xoffset, yoffset - initZ[j],0)
+                mesh.position.set(j*xoffset, yoffset - initZ[j],0)
                 meshes.push(mesh)
             }
         }
