@@ -1047,6 +1047,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
     let gridMark_width = 1500; // unit : mm
     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+    let white = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
     for (let i = 0; i < girderStation.length; i++) {
         let initPoint = girderStation[i][0].point
@@ -1079,18 +1080,17 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
         });
 
         let girderSection = GirderSectionView(deckPointDict, sectionPointDict, girderStation, scale, sectionViewOffset);
-        girderSection.forEach(function (mesh) {
+        girderSection.meshes.forEach(function (mesh) {
             // mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
             group.add(mesh)
         });
-
-
+        group.add(LabelInsert(girderSection.labels, white, layerNum));
         let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh);
         });
-        let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum)
+        let label = LabelInsert(gridMark.labels, white, layerNum)
         label.position.set(0, -i * girderOffset, 0);
         group.add(label)
     }
@@ -1168,12 +1168,14 @@ function sectionMesh(point0, lineMaterial) {
 
 export function GirderSectionView(deckPointDict, sectionPointDict, girderStation, scale, yoffset) {
     let meshes = [];
+    let labels = []
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
     let xoffset = 20000;
     let initZ = [];
     let girderNum = girderStation.length
     let deck = deckPointDict.filter(obj => obj.key.includes("CRS"))
     let spanNum = deck.length
+    
     // let section = { "uflange": [[], [], []], "lflange": [[], [], []], "web": [[], [], []], "deck": [[], [], []] }
     for (let j = 0; j < spanNum; j++) {
         for (let i = 0; i < girderNum; i++) {
@@ -1198,41 +1200,11 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
         let deckPt = [];
         deck[j].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}))
         meshes.push(sectionMesh(deckPt, lineMaterial))
+        let dim0 = Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,0)
+        meshes.push(...dim0.meshes);
+        labels.push(...dim0.labels);
     }
-
-    // for (let i in girderStation) {
-    //     let supportSection = girderStation[i].filter(obj => obj.key.includes("G" + (i * 1 + 1) + "S") && !obj.key.includes("P"))
-    //     // console.log("check",supportSection)
-
-    //     for (let j in supportSection) {
-    //         if (i == 0) { initZ.push(supportSection[j].point.z) }
-    //         let offset = supportSection[j].point.offset
-    //         let sectionPoint = sectionPointDict[supportSection[j].key]
-
-    //         for (let key in sectionPoint.forward) {
-    //             if (key === "uflange" || key === "lflange" || key === "web") {
-    //                 // console.log("check",sectionPoint)
-    //                 for (let k in sectionPoint.forward[key]) {
-    //                     sectionPoint.forward[key][k].forEach(pt => section[key][k].push(
-    //                         { x: pt.x + offset + j * xoffset, y: pt.y + yoffset + supportSection[j].point.z - initZ[j] }))
-
-    //                     if (sectionPoint.forward[key][k].length > 0) {
-    //                         let mesh = sectionMesh(sectionPoint.forward[key][k], lineMaterial)
-    //                         mesh.position.set(offset + j * xoffset, yoffset + supportSection[j].point.z - initZ[j], 0)
-    //                         meshes.push(mesh)
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         if (i == 0) {
-    //             let deck = deckPointDict.find(obj => obj.key === ("CRS" + (j * 1 + 1).toFixed(0)))
-    //             let mesh = sectionMesh(deck.deckSectionPoint, lineMaterial)
-    //             mesh.position.set(j * xoffset, yoffset - initZ[j], 0)
-    //             meshes.push(mesh)
-    //         }
-    //     }
-    // }
-    return meshes
+    return {meshes, labels}
 }
 
 
