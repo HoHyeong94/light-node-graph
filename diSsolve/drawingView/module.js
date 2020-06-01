@@ -1201,6 +1201,9 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
                     }
                 }
             }
+            let gpt = { x: offset + j * xoffset, y: yoffset + girderPoint.point.z - initZ[j] }
+            dims.push(Dimension([heightDim[0], gpt], 1, 1, 1, false, false,0))
+
         }
         let deckPt = [];
         deck[j].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}))
@@ -1210,7 +1213,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
         dims.push(Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,1))
         dims.push(Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true,2))
         dims.push(Dimension([deckPt[0], deckPt[1]], 0, 1, 1, false, false,1))
-        dims.push(Dimension([heightDim[0], heightDim[1]], 0, 1, 1, false, true,1))
+        dims.push(Dimension([heightDim[0], heightDim[1]], 0, 1, 1, false, true,1)) // 각 거더별 형고를 표현해야 하는데, 웹의 높이 출력
     }
     for (let i in dims){
         meshes.push(...dims[i].meshes);
