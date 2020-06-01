@@ -414,7 +414,7 @@ export function DeckSectionPoint(
         deckSectionPoint.push(...glw.reverse());
         offsetPoint.push(rightOffset);
         slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z - endT });
-        result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint});
+        result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint, slabHeight : slabThickness + haunch});
 
     }
     return result //{ slab1, slab2 }

@@ -1201,7 +1201,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
                     }
                 }
             }
-            let gpt = { x: offset + j * xoffset, y: yoffset + girderPoint.point.z - initZ[j] }
+            let gpt = { x: offset + j * xoffset, y: yoffset + girderPoint.point.z - initZ[j] - deck[j].slabHeight }
             dims.push(Dimension([heightDim[0], gpt], 1, 1, 1, false, false,0))
 
         }
