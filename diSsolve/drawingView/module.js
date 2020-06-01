@@ -1176,7 +1176,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
     let spanNum = deck.length
     // let section = { "uflange": [[], [], []], "lflange": [[], [], []], "web": [[], [], []], "deck": [[], [], []] }
     for (let j = 0; j < spanNum - 2; j++) {
-        for (let i = 0; 0 < girderNum; i++) {
+        for (let i = 0; i < girderNum; i++) {
             let girderPoint = girderStation[i].find(obj => obj.key.includes("G" + (i + 1) + "S" + (j+1)))
             if (i === 0) { initZ.push(girderPoint.point.z) }
             let offset = girderPoint.point.offset
