@@ -1200,9 +1200,13 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
         let deckPt = [];
         deck[j].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}))
         meshes.push(sectionMesh(deckPt, lineMaterial))
-        let dim0 = Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,0)
+        let dim0 = Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,1)
         meshes.push(...dim0.meshes);
         labels.push(...dim0.labels);
+        let dim1 = Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true,2)
+        meshes.push(...dim1.meshes);
+        labels.push(...dim1.labels);
+
     }
     return {meshes, labels}
 }
@@ -1317,7 +1321,7 @@ function Dimension(points, index, scale, valueScale, isHorizontal, isTopOrRight,
     let sign = (isTopOrRight) ? 1 : -1
     // let dim = {models:{}, paths:{}}
     let add = 200 * scale * sign;
-    let fontSize = 50 * scale
+    let fontSize = 80 * scale
     let extend = 20 * scale * sign
     let offset = offsetIndex * 200 * scale * sign + 20 * scale * sign
     // dim.layer = "red"
