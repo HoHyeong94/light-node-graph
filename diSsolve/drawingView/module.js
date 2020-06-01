@@ -1193,7 +1193,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
                             sectionPoint.forward[key][k].forEach(pt => pts.push(
                                 { x: pt.x + offset + j * xoffset, y: pt.y + yoffset + girderPoint.point.z - initZ[j] }))
                             meshes.push(sectionMesh(pts, lineMaterial))
-                            if (kewy === "web"){ webDim.push(pts[1]) }
+                            if (key === "web"){ webDim.push(pts[1]) }
                         }
                     }
                 }
