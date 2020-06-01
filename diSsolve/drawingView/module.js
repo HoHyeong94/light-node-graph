@@ -1175,10 +1175,12 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
     let girderNum = girderStation.length
     let deck = deckPointDict.filter(obj => obj.key.includes("CRS"))
     let spanNum = deck.length
+    let dims = [];
     
     // let section = { "uflange": [[], [], []], "lflange": [[], [], []], "web": [[], [], []], "deck": [[], [], []] }
     for (let j = 0; j < spanNum; j++) {
         let webDim = [];
+        let heightDim = [];
         for (let i = 0; i < girderNum; i++) {
             let girderPoint = girderStation[i].find(obj => obj.key.includes("G" + (i + 1) + "S" + (j+1)))
             if (i === 0) { initZ.push(girderPoint.point.z) }
@@ -1193,7 +1195,8 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
                             sectionPoint.forward[key][k].forEach(pt => pts.push(
                                 { x: pt.x + offset + j * xoffset, y: pt.y + yoffset + girderPoint.point.z - initZ[j] }))
                             meshes.push(sectionMesh(pts, lineMaterial))
-                            if (key === "web"){ webDim.push(pts[1]) }
+                            if (key === "web"){ webDim.push(pts[1]);
+                                heightDim = [pts[0],pts[1]] }
                         }
                     }
                 }
@@ -1202,18 +1205,17 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
         let deckPt = [];
         deck[j].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}))
         meshes.push(sectionMesh(deckPt, lineMaterial))
-        let dim0 = Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,1)
-        meshes.push(...dim0.meshes);
-        labels.push(...dim0.labels);
-        let dim1 = Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true,2)
-        meshes.push(...dim1.meshes);
-        labels.push(...dim1.labels);
-        let dim2 = Dimension([deckPt[1], ...webDim, deckPt[3]], 0, 1, 1, true, true,0)
-        meshes.push(...dim2.meshes);
-        labels.push(...dim2.labels);
 
+        dims.push(Dimension([deckPt[1], ...webDim, deckPt[3]], 0, 1, 1, true, true,0))
+        dims.push(Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,1))
+        dims.push(Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true,2))
+        dims.push(Dimension([deckPt[0], deckPt[1]], 0, 1, 1, false, false,1))
+        dims.push(Dimension([heightDim[0], heightDim[1]], 0, 1, 1, false, true,1))
     }
-    return {meshes, labels}
+    for (let i in dims){
+        meshes.push(...dims[i].meshes);
+        labels.push(...dims[i].labels);
+    }
 }
 
 
