@@ -1196,7 +1196,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
             }
         }
         let deckPt = [];
-        deck[j+1].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}))
+        deck[j].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}))
         meshes.push(sectionMesh(deckPt, lineMaterial))
     }
 
