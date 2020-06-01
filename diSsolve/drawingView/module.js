@@ -1171,35 +1171,67 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
     let xoffset = 20000;
     let initZ = [];
-    for (let i in girderStation) {
-        let supportSection = girderStation[i].filter(obj => obj.key.includes("G" + (i * 1 + 1) + "S") && !obj.key.includes("P"))
-        // console.log("check",supportSection)
-        
-        for (let j in supportSection) {
-            if ( i == 0){ initZ.push(supportSection[j].point.z)}
-            let offset = supportSection[j].point.offset
-            let sectionPoint = sectionPointDict[supportSection[j].key]
-           
+    let girderNum = girderStation.length
+    let deck = deckPointDict.filter(obj => obj.key.includes("CRS"))
+    let spanNum = deck.length
+    // let section = { "uflange": [[], [], []], "lflange": [[], [], []], "web": [[], [], []], "deck": [[], [], []] }
+    for (let j = 0; j < spanNum - 2; j++) {
+        for (let i = 0; 0 < girderNum; i++) {
+            let girderPoint = girderStation[i].find(obj => obj.key.includes("G" + (i + 1) + "S" + (j+1)))
+            if (i === 0) { initZ.push(girderPoint.point.z) }
+            let offset = girderPoint.point.offset
+            let sectionPoint = sectionPointDict[girderPoint.key]
             for (let key in sectionPoint.forward) {
                 if (key === "uflange" || key === "lflange" || key === "web") {
                     // console.log("check",sectionPoint)
                     for (let k in sectionPoint.forward[key]) {
                         if (sectionPoint.forward[key][k].length > 0) {
-                            let mesh = sectionMesh(sectionPoint.forward[key][k], lineMaterial)
-                            mesh.position.set(offset + j*xoffset, yoffset + supportSection[j].point.z - initZ[j],0)
-                            meshes.push(mesh)
+                            let pts = [];
+                            sectionPoint.forward[key][k].forEach(pt => pts.push(
+                                { x: pt.x + offset + j * xoffset, y: pt.y + yoffset + girderPoint.point.z - initZ[j] }))
+                            meshes.push(sectionMesh(pts, lineMaterial))
                         }
                     }
                 }
             }
-            if (i==0){
-                let deck = deckPointDict.find(obj => obj.key ===( "CRS" + (j*1 +1).toFixed(0)))
-                let mesh = sectionMesh(deck.deckSectionPoint, lineMaterial)
-                mesh.position.set(j*xoffset, yoffset - initZ[j],0)
-                meshes.push(mesh)
-            }
         }
+        let deckPt = [];
+        deck[j+1].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}))
+        meshes.push(sectionMesh(deckPt, lineMaterial))
     }
+
+    // for (let i in girderStation) {
+    //     let supportSection = girderStation[i].filter(obj => obj.key.includes("G" + (i * 1 + 1) + "S") && !obj.key.includes("P"))
+    //     // console.log("check",supportSection)
+
+    //     for (let j in supportSection) {
+    //         if (i == 0) { initZ.push(supportSection[j].point.z) }
+    //         let offset = supportSection[j].point.offset
+    //         let sectionPoint = sectionPointDict[supportSection[j].key]
+
+    //         for (let key in sectionPoint.forward) {
+    //             if (key === "uflange" || key === "lflange" || key === "web") {
+    //                 // console.log("check",sectionPoint)
+    //                 for (let k in sectionPoint.forward[key]) {
+    //                     sectionPoint.forward[key][k].forEach(pt => section[key][k].push(
+    //                         { x: pt.x + offset + j * xoffset, y: pt.y + yoffset + supportSection[j].point.z - initZ[j] }))
+
+    //                     if (sectionPoint.forward[key][k].length > 0) {
+    //                         let mesh = sectionMesh(sectionPoint.forward[key][k], lineMaterial)
+    //                         mesh.position.set(offset + j * xoffset, yoffset + supportSection[j].point.z - initZ[j], 0)
+    //                         meshes.push(mesh)
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         if (i == 0) {
+    //             let deck = deckPointDict.find(obj => obj.key === ("CRS" + (j * 1 + 1).toFixed(0)))
+    //             let mesh = sectionMesh(deck.deckSectionPoint, lineMaterial)
+    //             mesh.position.set(j * xoffset, yoffset - initZ[j], 0)
+    //             meshes.push(mesh)
+    //         }
+    //     }
+    // }
     return meshes
 }
 
