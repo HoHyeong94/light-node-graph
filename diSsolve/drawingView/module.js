@@ -1216,6 +1216,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
         meshes.push(...dims[i].meshes);
         labels.push(...dims[i].labels);
     }
+    return {meshes, labels}
 }
 
 
