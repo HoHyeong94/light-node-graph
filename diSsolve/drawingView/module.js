@@ -1178,6 +1178,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
     
     // let section = { "uflange": [[], [], []], "lflange": [[], [], []], "web": [[], [], []], "deck": [[], [], []] }
     for (let j = 0; j < spanNum; j++) {
+        let webDim = [];
         for (let i = 0; i < girderNum; i++) {
             let girderPoint = girderStation[i].find(obj => obj.key.includes("G" + (i + 1) + "S" + (j+1)))
             if (i === 0) { initZ.push(girderPoint.point.z) }
@@ -1192,6 +1193,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
                             sectionPoint.forward[key][k].forEach(pt => pts.push(
                                 { x: pt.x + offset + j * xoffset, y: pt.y + yoffset + girderPoint.point.z - initZ[j] }))
                             meshes.push(sectionMesh(pts, lineMaterial))
+                            if (kewy === "web"){ webDim.push(pts[1]) }
                         }
                     }
                 }
@@ -1206,6 +1208,9 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
         let dim1 = Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true,2)
         meshes.push(...dim1.meshes);
         labels.push(...dim1.labels);
+        let dim2 = Dimension([deckPt[1], ...webDim, deckPt[3]], 0, 1, 1, true, true,0)
+        meshes.push(...dim2.meshes);
+        labels.push(...dim2.labels);
 
     }
     return {meshes, labels}
