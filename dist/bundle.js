@@ -1968,127 +1968,127 @@
   }
 
   function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout) {
-    let result = {};
-    let slabToGirder = slabInfo.slabToGirder;
-    
-    for (let k in pointDict) {
-      if (k.substr(0, 1) === "G") {
-          let point = pointDict[k];
-        let girderIndex = k.substr(1, 1) - 1;
-        let baseInput = {};
-        let station = point.masterStationNumber;
-        let isFlat = girderBaseInfo[girderIndex].section.isFlat;
-        let gradient = isFlat? 0: point.gradientY;
-        let skew = point.skew;
-        let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
-        let sectionInfo = girderBaseInfo[girderIndex].section;
-        
-        const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
-      //   const height = pointSectionInfo.forward.height + centerThickness;
-        const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
-        const lwt = { x: - sectionInfo.UL, y: - centerThickness };
-        const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
-        const rwt = { x: sectionInfo.UR, y: -centerThickness };
-        let forward = {};
-        let backward = {};
-        let ps = {};
-        // let skew = pointSectionInfo.forward.skew; // gridPoint의 skew가 있어 사용여부 확인후 삭제요망
-        for (let i = 0; i < 2; i++) {
-          if (i === 0) {
-            ps = pointSectionInfo.forward;
-          } else {
-            ps = pointSectionInfo.backward;
+      let result = {};
+      let slabToGirder = slabInfo.slabToGirder;
+
+      for (let k in pointDict) {
+          if (k.substr(0, 1) === "G") {
+              let point = pointDict[k];
+              let girderIndex = k.substr(1, 1) - 1;
+              let baseInput = {};
+              let station = point.masterStationNumber;
+              let isFlat = girderBaseInfo[girderIndex].section.isFlat;
+              let gradient = isFlat ? 0 : point.gradientY;
+              let skew = point.skew;
+              let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
+              let sectionInfo = girderBaseInfo[girderIndex].section;
+
+              const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
+              //   const height = pointSectionInfo.forward.height + centerThickness;
+              const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
+              const lwt = { x: - sectionInfo.UL, y: - centerThickness };
+              const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
+              const rwt = { x: sectionInfo.UR, y: -centerThickness };
+              let forward = {};
+              let backward = {};
+              let ps = {};
+              // let skew = pointSectionInfo.forward.skew; // gridPoint의 skew가 있어 사용여부 확인후 삭제요망
+              for (let i = 0; i < 2; i++) {
+                  if (i === 0) {
+                      ps = pointSectionInfo.forward;
+                  } else {
+                      ps = pointSectionInfo.backward;
+                  }
+                  let bottomY = ps.height + centerThickness;
+                  let topY = slabToGirder ? ps.slabThickness + slabInfo.haunchHeight : centerThickness;
+
+                  let Rib = {};
+                  for (let j in ps.lRibLO) {
+                      let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY + ps.lRibH },
+                      { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY + ps.lRibH }, { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY }];
+                      let keyname = "lRib" + j;
+                      Rib[keyname] = lRib;
+                  }
+
+
+                  // leftWeb
+                  let lw1 = WebPoint(lwb, lwt, 0, -bottomY); //{x:blwX,y:-height}
+                  let lw2 = WebPoint(lwb, lwt, gradient, -topY); //{x:tlwX,y:gradient*tlwX - slabThickness}
+                  let lWeb = PlateRestPoint(lw1, lw2, 0, gradient, -ps.webThk);
+                  // rightWeb
+                  let rw1 = WebPoint(rwb, rwt, 0, -bottomY); //{x:brwX,y:-height}
+                  let rw2 = WebPoint(rwb, rwt, gradient, -topY); //{x:trwX,y:gradient*trwX - slabThickness}
+                  let rWeb = PlateRestPoint(rw1, rw2, 0, gradient, ps.webThk);
+                  // bottomplate
+                  let b1 = { x: lw1.x - sectionInfo.C1, y: -bottomY };
+                  let b2 = { x: rw1.x + sectionInfo.D1, y: -bottomY };
+                  let bottomPlate = PlateRestPoint(b1, b2, null, null, -ps.lFlangeThk);
+
+                  // newbottomplate
+                  let lflange = [[], [], []];
+                  let newbl1 = { x: lw1.x - ps.lFlangeC, y: -bottomY };
+                  let newbl2 = { x: lw1.x - ps.lFlangeC + ps.lFlangeW, y: -bottomY };
+                  let newbr1 = { x: rw1.x + ps.lFlangeC, y: -bottomY };
+                  let newbr2 = { x: rw1.x + ps.lFlangeC - ps.lFlangeW, y: -bottomY };
+                  if (newbl2.x < newbr2.x) { //양측의 플렌지가 서로 중첩될 경우
+                      lflange[0] = PlateRestPoint(newbl1, newbl2, null, null, -ps.lFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+                      lflange[1] = PlateRestPoint(newbr1, newbr2, null, null, -ps.lFlangeThk);                } else {
+                      lflange[2] = PlateRestPoint(newbl1, newbr1, null, null, -ps.lFlangeThk);                }
+
+                  let tan = gradient === 0 ? null : -1 / gradient;
+                  // TopPlate
+                  let tl1 = { x: lw2.x - sectionInfo.C, y: lw2.y + gradient * (- sectionInfo.C) };
+                  let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW) };
+                  let topPlate1 = PlateRestPoint(tl1, tl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+                  let tr1 = { x: rw2.x + sectionInfo.D, y: rw2.y + gradient * (sectionInfo.D) };
+                  let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW) };
+                  let topPlate2 = PlateRestPoint(tr1, tr2, tan, tan, ps.uFlangeThk);                // newTopPlate
+                  let uflange = [[], [], []];
+                  let newtl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
+                  let newtl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW) };
+                  let newtr1 = { x: rw2.x + ps.uFlangeC, y: rw2.y + gradient * (ps.uFlangeC) };
+                  let newtr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
+
+                  if (newtl2.x < newtr2.x) { //양측의 플렌지가 서로 중첩될 경우
+                      uflange[0] = PlateRestPoint(newtl1, newtl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
+                      uflange[1] = PlateRestPoint(newtr1, newtr2, tan, tan, ps.uFlangeThk);                } else {
+                      uflange[2] = PlateRestPoint(newtl1, newtr1, tan, tan, ps.uFlangeThk);                }
+                  let uflangeSide = [-topY, -topY + ps.uFlangeThk];
+                  let lflangeSide = [-bottomY, -bottomY - ps.lFlangeThk];
+                  let webSide = [-bottomY, -topY];
+                  baseInput = {
+                      isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
+                      isClosedTop: tl2.x < tr1.x ? true : false,
+                      B1: rw1.x - lw1.x,                                 //강거더 하부 내부폭
+                      B2: rw2.x - lw2.x,                                 //강거더 상부 내부폭
+                      B3: 3500,  //바닥판 콘크리트 폭                      //슬래브에 대한 정보는 외부에서 받아와야 함
+                      wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
+                      wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
+                      wuf: tl2.x < tr1.x ? ps.uFlangeW : tr2.x - tl1.x,       //상부플랜지 폭
+                      wlf: b2.x - b1.x,                           //하부플랜지 폭
+                      H: bottomY - topY,                           //강거더 높이
+                      tlf: ps.lFlangeThk,                                //하부플랜지 두께
+                      tuf: ps.uFlangeThk,                                 //상부플랜지두께
+                      tw: ps.webThk,                                      //웹두께
+                      Tcu: ps.slabThickness,                              //바닥판콘크리트 두께          
+                      Th: slabInfo.haunchHeight,                                   //헌치두께
+                      Tcl: 0,                       //지점콘크리트 두께     //지점콘크리트에 대한 입력 변수 추가
+                      blf: (sectionInfo.C1 + sectionInfo.D1) / 2,            //하부플랜지 외부폭
+                      buf: (sectionInfo.C + sectionInfo.D) / 2,             //상부플랜지 외부폭
+                      Urib: { thickness: ps.uRibThk, height: ps.uRibH, layout: ps.uRibLO },
+                      Lrib: { thickness: ps.lRibThk, height: ps.lRibH, layout: ps.lRibLO },
+                      horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
+                  };
+                  if (i === 0) {
+                      forward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide };
+                  } else {
+                      backward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide };
+                  }
+              }
+              result[k] = { forward, backward };
           }
-          let bottomY = ps.height + centerThickness;
-          let topY = slabToGirder? ps.slabThickness  + slabInfo.haunchHeight : centerThickness;
-
-          let Rib = {};
-          for (let j in ps.lRibLO) {
-            let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY + ps.lRibH },
-            { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY + ps.lRibH }, { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY }];
-            let keyname = "lRib" + j;
-            Rib[keyname] = lRib;
-          }
-
-
-          // leftWeb
-          let lw1 = WebPoint(lwb, lwt, 0, -bottomY); //{x:blwX,y:-height}
-          let lw2 = WebPoint(lwb, lwt, gradient, -topY); //{x:tlwX,y:gradient*tlwX - slabThickness}
-          let lWeb = PlateRestPoint(lw1, lw2, 0, gradient, -ps.webThk);
-          // rightWeb
-          let rw1 = WebPoint(rwb, rwt, 0, -bottomY); //{x:brwX,y:-height}
-          let rw2 = WebPoint(rwb, rwt, gradient, -topY); //{x:trwX,y:gradient*trwX - slabThickness}
-          let rWeb = PlateRestPoint(rw1, rw2, 0, gradient, ps.webThk);
-          // bottomplate
-          let b1 = { x: lw1.x - sectionInfo.C1, y: -bottomY };
-          let b2 = { x: rw1.x + sectionInfo.D1, y: -bottomY };
-          let bottomPlate = PlateRestPoint(b1, b2, null, null, -ps.lFlangeThk);
-          
-          // newbottomplate
-          let lflange = [[],[],[]];
-          let newbl1 = { x: lw1.x - ps.lFlangeC, y: -bottomY };
-          let newbl2 = { x: lw1.x - ps.lFlangeC + ps.lFlangeW, y: -bottomY };
-          let newbr1 = { x: rw1.x + ps.lFlangeC, y: -bottomY };
-          let newbr2 = { x: rw1.x + ps.lFlangeC - ps.lFlangeW, y: -bottomY };
-          if (newbl2.x < newbr2.x ){ //양측의 플렌지가 서로 중첩될 경우
-              lflange[0] = PlateRestPoint(newbl1, newbl2, null, null, -ps.lFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
-              lflange[1] = PlateRestPoint(newbr1, newbr2, null, null, -ps.lFlangeThk);        }else {
-              lflange[2] = PlateRestPoint(newbl1, newbr1, null, null, -ps.lFlangeThk);        }
-
-          let tan = gradient===0? null : -1/gradient;
-          // TopPlate
-          let tl1 = { x: lw2.x - sectionInfo.C, y: lw2.y + gradient * (- sectionInfo.C) };
-          let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW) };
-          let topPlate1 = PlateRestPoint(tl1, tl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
-          let tr1 = { x: rw2.x + sectionInfo.D, y: rw2.y + gradient * (sectionInfo.D) };
-          let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW) };
-          let topPlate2 = PlateRestPoint(tr1, tr2, tan, tan, ps.uFlangeThk);        // newTopPlate
-          let uflange = [[],[],[]];
-          let newtl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
-          let newtl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW) };
-          let newtr1 = { x: rw2.x + ps.uFlangeC, y: rw2.y + gradient * (ps.uFlangeC) };
-          let newtr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
-
-          if (newtl2.x < newtr2.x ){ //양측의 플렌지가 서로 중첩될 경우
-              uflange[0] = PlateRestPoint(newtl1, newtl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
-              uflange[1] = PlateRestPoint(newtr1, newtr2, tan, tan, ps.uFlangeThk);        }else {
-              uflange[2] = PlateRestPoint(newtl1, newtr1, tan, tan, ps.uFlangeThk);        }
-          let uflangeSide = [-topY, -topY + ps.uFlangeThk];
-          let lflangeSide = [-bottomY, -bottomY - ps.lFlangeThk];
-          let webSide = [-bottomY, -topY];
-          baseInput = {
-              isDoubleComposite: false, // 추후 PointSectionInfo에 관련 변수 추가
-              isClosedTop: tl2.x < tr1.x?true:false,         
-              B1: rw1.x - lw1.x ,                                 //강거더 하부 내부폭
-              B2: rw2.x - lw2.x ,                                 //강거더 상부 내부폭
-              B3: 3500,  //바닥판 콘크리트 폭                      //슬래브에 대한 정보는 외부에서 받아와야 함
-              wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
-              wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
-              wuf: tl2.x < tr1.x?ps.uFlangeW:tr2.x - tl1.x,       //상부플랜지 폭
-              wlf: b2.x - b1.x,                           //하부플랜지 폭
-              H: bottomY -topY,                           //강거더 높이
-              tlf: ps.lFlangeThk ,                                //하부플랜지 두께
-              tuf: ps.uFlangeThk,                                 //상부플랜지두께
-              tw: ps.webThk,                                      //웹두께
-              Tcu: ps.slabThickness,                              //바닥판콘크리트 두께          
-              Th: slabInfo.haunchHeight ,                                   //헌치두께
-              Tcl: 0,                       //지점콘크리트 두께     //지점콘크리트에 대한 입력 변수 추가
-              blf: (sectionInfo.C1 + sectionInfo.D1)/2,            //하부플랜지 외부폭
-              buf: (sectionInfo.C + sectionInfo.D)/2,             //상부플랜지 외부폭
-              Urib: { thickness: ps.uRibThk, height: ps.uRibH, layout: ps.uRibLO },
-              Lrib: { thickness: ps.lRibThk, height: ps.lRibH, layout: ps.lRibLO }, 
-              horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
-            };
-          if (i === 0) {
-            forward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib , uflange, lflange, uflangeSide, lflangeSide, webSide };
-          } else {
-            backward = {input : baseInput , skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...Rib, uflange, lflange, uflangeSide, lflangeSide, webSide };
-          }
-        }
-        result[k] = { forward, backward };
       }
-    }
-    return result
+      return result
   }
 
   function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict) {
@@ -2135,73 +2135,73 @@
       let L = 0;
       let height = 0;
       let heightb = 0;
-      for (let i = 0; i< girderBaseInfo.height.length;i++){
+      for (let i = 0; i < girderBaseInfo.height.length; i++) {
           let sp = pointDict[girderBaseInfo.height[i][0]];
           let ep = pointDict[girderBaseInfo.height[i][1]];
-          if (station >= sp.masterStationNumber && station < ep.masterStationNumber){
+          if (station >= sp.masterStationNumber && station < ep.masterStationNumber) {
               deltaH = girderBaseInfo.height[i][2] - girderBaseInfo.height[i][3];
               L = ep.masterStationNumber - sp.masterStationNumber;
-              if (girderBaseInfo.height[i][4] == "circle"){
-                  if (deltaH>0){
-                      R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
+              if (girderBaseInfo.height[i][4] == "circle") {
+                  if (deltaH > 0) {
+                      R = Math.abs((L ** 2 + deltaH ** 2) / 2 / deltaH);
                       x1 = ep.masterStationNumber - station;
-                      height = girderBaseInfo.height[i][3] + (R -Math.sqrt(R**2 - x1**2));
-                  }else if (deltaH<0){
-                      R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
+                      height = girderBaseInfo.height[i][3] + (R - Math.sqrt(R ** 2 - x1 ** 2));
+                  } else if (deltaH < 0) {
+                      R = Math.abs((L ** 2 + deltaH ** 2) / 2 / deltaH);
                       x1 = station - sp.masterStationNumber;
-                      height = girderBaseInfo.height[i][2] + (R -Math.sqrt(R**2 - x1**2));
-                  }else {
+                      height = girderBaseInfo.height[i][2] + (R - Math.sqrt(R ** 2 - x1 ** 2));
+                  } else {
                       height = girderBaseInfo.height[i][2];
                   }
-              }else if (girderBaseInfo.height[i][4] == "parabola"){
-                  if (deltaH>0){
+              } else if (girderBaseInfo.height[i][4] == "parabola") {
+                  if (deltaH > 0) {
                       x1 = ep.masterStationNumber - station;
-                      height = girderBaseInfo.height[i][3] + deltaH / L**2 * x1**2;
-                  }else if (deltaH<0){
+                      height = girderBaseInfo.height[i][3] + deltaH / L ** 2 * x1 ** 2;
+                  } else if (deltaH < 0) {
                       x1 = station - sp.masterStationNumber;
-                      height = girderBaseInfo.height[i][2] - deltaH / L**2 * x1**2;
-                  }else {
+                      height = girderBaseInfo.height[i][2] - deltaH / L ** 2 * x1 ** 2;
+                  } else {
                       height = girderBaseInfo.height[i][2];
                   }
-              }else {  //straight
+              } else {  //straight
                   x1 = station - sp.masterStationNumber;
-                  height = girderBaseInfo.height[i][2] - x1/L * deltaH;
+                  height = girderBaseInfo.height[i][2] - x1 / L * deltaH;
               }
           }
 
-          if (station > sp.masterStationNumber && station <= ep.masterStationNumber){
+          if (station > sp.masterStationNumber && station <= ep.masterStationNumber) {
               deltaH = girderBaseInfo.height[i][2] - girderBaseInfo.height[i][3];
               L = ep.masterStationNumber - sp.masterStationNumber;
-              if (girderBaseInfo.height[i][4] == "circle"){
-                  if (deltaH>0){
-                      R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
+              if (girderBaseInfo.height[i][4] == "circle") {
+                  if (deltaH > 0) {
+                      R = Math.abs((L ** 2 + deltaH ** 2) / 2 / deltaH);
                       x1 = ep.masterStationNumber - station;
-                      heightb = girderBaseInfo.height[i][3] + (R -Math.sqrt(R**2 - x1**2));
-                  }else if (deltaH<0){
-                      R = Math.abs((L**2 + deltaH**2) / 2 / deltaH);
+                      heightb = girderBaseInfo.height[i][3] + (R - Math.sqrt(R ** 2 - x1 ** 2));
+                  } else if (deltaH < 0) {
+                      R = Math.abs((L ** 2 + deltaH ** 2) / 2 / deltaH);
                       x1 = station - sp.masterStationNumber;
-                      heightb = girderBaseInfo.height[i][2] + (R -Math.sqrt(R**2 - x1**2));
-                  }else {
+                      heightb = girderBaseInfo.height[i][2] + (R - Math.sqrt(R ** 2 - x1 ** 2));
+                  } else {
                       heightb = girderBaseInfo.height[i][2];
                   }
-              }else if (girderBaseInfo.height[i][4] == "parabola"){
-                  if (deltaH>0){
+              } else if (girderBaseInfo.height[i][4] == "parabola") {
+                  if (deltaH > 0) {
                       x1 = ep.masterStationNumber - station;
-                      heightb = girderBaseInfo.height[i][3] + deltaH / L**2 * x1**2;
-                  }else if (deltaH<0){
+                      heightb = girderBaseInfo.height[i][3] + deltaH / L ** 2 * x1 ** 2;
+                  } else if (deltaH < 0) {
                       x1 = station - sp.masterStationNumber;
-                      heightb = girderBaseInfo.height[i][2] - deltaH / L**2 * x1**2;
-                  }else {
+                      heightb = girderBaseInfo.height[i][2] - deltaH / L ** 2 * x1 ** 2;
+                  } else {
                       heightb = girderBaseInfo.height[i][2];
                   }
-              }else {  //straight
+              } else {  //straight
                   x1 = station - sp.masterStationNumber;
-                  heightb = girderBaseInfo.height[i][2] - x1/L * deltaH;
+                  heightb = girderBaseInfo.height[i][2] - x1 / L * deltaH;
               }
           }
       }
       forward.height = height;    //
-      backward.height = heightb===0? height:heightb;   //형고가 불연속인 경우, 단부절취의 경우 수정이 필요함
+      backward.height = heightb === 0 ? height : heightb;   //형고가 불연속인 경우, 단부절취의 경우 수정이 필요함
       // position:0, T:1, H:2
       let slabThickness = 0;
       for (let i = 0; i < slabLayout.length - 1; i++) {
@@ -2213,86 +2213,86 @@
               slabThickness = slabLayout[i][2] * (l - x) / l + slabLayout[i + 1][2] * (x) / l;
           }
       }
-     
+
       forward.slabThickness = slabThickness;
       backward.slabThickness = slabThickness;
 
-      var uFlange = girderBaseInfo.uFlange.filter(function(element){ 
+      var uFlange = girderBaseInfo.uFlange.filter(function (element) {
           return (station >= pointDict[element[0]].masterStationNumber && station < pointDict[element[1]].masterStationNumber)
       });
-      if(uFlange.length>0){
+      if (uFlange.length > 0) {
           forward.uFlangeThk = uFlange[0][2];
-          forward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
-          forward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
+          forward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
+          forward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
       }
-      uFlange = girderBaseInfo.uFlange.filter(function(element){ 
+      uFlange = girderBaseInfo.uFlange.filter(function (element) {
           return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
-          });
-      if(uFlange.length>0){
+      });
+      if (uFlange.length > 0) {
           backward.uFlangeThk = uFlange[0][2];
-          backward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
-          backward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0])* (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
+          backward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
+          backward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
       }
 
-      var lFlange = girderBaseInfo.lFlange.filter(function(element){ 
+      var lFlange = girderBaseInfo.lFlange.filter(function (element) {
           return (station >= pointDict[element[0]].masterStationNumber && station < pointDict[element[1]].masterStationNumber)
-          });
-      if(lFlange.length>0){
+      });
+      if (lFlange.length > 0) {
           forward.lFlangeThk = lFlange[0][2];
-          forward.lFlangeW = lFlange[0][3] + (lFlange[0][4] - lFlange[0][3])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
-          forward.lFlangeC = lFlange[0][5] + (lFlange[0][6] - lFlange[0][5])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
+          forward.lFlangeW = lFlange[0][3] + (lFlange[0][4] - lFlange[0][3]) * (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
+          forward.lFlangeC = lFlange[0][5] + (lFlange[0][6] - lFlange[0][5]) * (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
       }
-      lFlange = girderBaseInfo.lFlange.filter(function(element){ 
+      lFlange = girderBaseInfo.lFlange.filter(function (element) {
           return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
-          });
-      if(lFlange.length>0){
+      });
+      if (lFlange.length > 0) {
           backward.lFlangeThk = lFlange[0][2];
-          backward.lFlangeW = lFlange[0][3] + (lFlange[0][4] - lFlange[0][3])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
-          backward.lFlangeC = lFlange[0][5] + (lFlange[0][6] - lFlange[0][5])* (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
+          backward.lFlangeW = lFlange[0][3] + (lFlange[0][4] - lFlange[0][3]) * (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
+          backward.lFlangeC = lFlange[0][5] + (lFlange[0][6] - lFlange[0][5]) * (station - pointDict[lFlange[0][0]].masterStationNumber) / (pointDict[lFlange[0][1]].masterStationNumber - pointDict[lFlange[0][0]].masterStationNumber);
       }
 
-      var web = girderBaseInfo.web.filter(function(element){ 
+      var web = girderBaseInfo.web.filter(function (element) {
           return (station >= pointDict[element[0]].masterStationNumber && station < pointDict[element[1]].masterStationNumber)
-          });
-      if(web.length>0){
+      });
+      if (web.length > 0) {
           forward.webThk = web[0][2];
       }
-      web = girderBaseInfo.web.filter(function(element){ 
+      web = girderBaseInfo.web.filter(function (element) {
           return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
-          });
-      if(web.length>0){
+      });
+      if (web.length > 0) {
           backward.webThk = web[0][2];
       }
 
-      var uRib = girderBaseInfo.uRib.filter(function(element){ 
+      var uRib = girderBaseInfo.uRib.filter(function (element) {
           return (station >= pointDict[element[0]].masterStationNumber && station < pointDict[element[1]].masterStationNumber)
-          });
-      if(uRib.length>0){
+      });
+      if (uRib.length > 0) {
           forward.uRibThk = uRib[0][2];
           forward.uRibH = uRib[0][3];
           forward.uRibLO = uRib[0][4];
       }
-      uRib = girderBaseInfo.uRib.filter(function(element){ 
+      uRib = girderBaseInfo.uRib.filter(function (element) {
           return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
-          });
-      if(uRib.length>0){
+      });
+      if (uRib.length > 0) {
           backward.uRibThk = uRib[0][2];
           backward.uRibH = uRib[0][3];
           backward.uRibLO = uRib[0][4];
       }
 
-      var lRib = girderBaseInfo.lRib.filter(function(element){ 
+      var lRib = girderBaseInfo.lRib.filter(function (element) {
           return (station >= pointDict[element[0]].masterStationNumber && station < pointDict[element[1]].masterStationNumber)
-          });
-      if(lRib.length>0){
+      });
+      if (lRib.length > 0) {
           forward.lRibThk = lRib[0][2];
           forward.lRibH = lRib[0][3];
           forward.lRibLO = lRib[0][4];
       }
-      lRib = girderBaseInfo.lRib.filter(function(element){ 
+      lRib = girderBaseInfo.lRib.filter(function (element) {
           return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
-          });
-      if(lRib.length>0){
+      });
+      if (lRib.length > 0) {
           backward.lRibThk = lRib[0][2];
           backward.lRibH = lRib[0][3];
           backward.lRibLO = lRib[0][4];
@@ -2309,7 +2309,7 @@
       slabLayout,
       girderBaseInfo,
       pointDict,
-    ) {
+  ) {
       let result = [];
       // let slab1 = [];
       // let slab2 = [];
@@ -2318,73 +2318,81 @@
       const H = 2;
       // const leftOffset = 3;
       // const rightOffset = 4;
-    
+
       let centerSlabThickness = slabInfo.slabThickness;
       let haunch = slabInfo.haunchHeight;
       let endT = 0;
       let leftOffset = 0;
       let rightOffset = 0;
       let slabThickness = 0;
-      for (let i = 1; i < centerLineStations.length - 1; i++) {
-    
-        let masterPoint = centerLineStations[i].point;
-        let masterStation = masterPoint.masterStationNumber;
-        //deckSectionInfo로 분리예정
-        for (let i = 0; i < slabLayout.length - 1; i++) {
-          let ss = pointDict[slabLayout[i][position]].masterStationNumber;
-          let es = pointDict[slabLayout[i + 1][position]].masterStationNumber;
-          if (masterStation >= ss && masterStation <= es) {
-            let x = masterStation - ss;
-            let l = es - ss;
-            leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l;
-            rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l;
-            slabThickness = slabLayout[i][H] * (l - x) / l + slabLayout[i + 1][H] * (x) / l;
-            endT = slabLayout[i][T] * (l - x) / l + slabLayout[i + 1][T] * (x) / l;
-          }
-        }
-        //deckSectionInfo로 분리예정
-        let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
-        let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
-    
-        let slabUpperPoints = [leftPoint,
-                              masterPoint,
-                              rightPoint];
-        let slabLowerPoints = [];
-        slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
-         let offsetPoint = [leftOffset];
-
-        for (let j in girderLayout.girderLine) {
-          // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
-          let girderLine = girderLayout.girderLine[j];
-          let girderPoint = LineMatch2(masterPoint, masterLine, girderLine);
-          let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
-          //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
-          //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
-          lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
-          offsetPoint.push(girderPoint.offset);
-        }
-        offsetPoint.push(rightOffset);
-        slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z - endT });
-        result.push({ name: masterStation, slabUpperPoints, slabLowerPoints, offsetPoint });
       
+
+
+      for (let i = 1; i < centerLineStations.length - 1; i++) {
+
+          let masterPoint = centerLineStations[i].point;
+          let masterStation = masterPoint.masterStationNumber;
+          let deckSectionPoint = [];
+          //deckSectionInfo로 분리예정
+          for (let i = 0; i < slabLayout.length - 1; i++) {
+              let ss = pointDict[slabLayout[i][position]].masterStationNumber;
+              let es = pointDict[slabLayout[i + 1][position]].masterStationNumber;
+              if (masterStation >= ss && masterStation <= es) {
+                  let x = masterStation - ss;
+                  let l = es - ss;
+                  leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l;
+                  rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l;
+                  slabThickness = slabLayout[i][H] * (l - x) / l + slabLayout[i + 1][H] * (x) / l;
+                  endT = slabLayout[i][T] * (l - x) / l + slabLayout[i + 1][T] * (x) / l;
+              }
+          }
+          //deckSectionInfo로 분리예정
+          let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
+          let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
+
+          let slabUpperPoints = [leftPoint,
+              masterPoint,
+              rightPoint];
+
+          deckSectionPoint.push({ x: leftOffset, y: leftPoint.z - endT }, { x: leftOffset, y: leftPoint.z }, { x: 0, y: masterPoint.z }, { x: rightOffset, y: rightPoint.z }, { x: rightOffset, y: rightPoint.z - endT });
+          let slabLowerPoints = [];
+          slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
+          let offsetPoint = [leftOffset];
+          let glw = [];
+          for (let j in girderLayout.girderLine) {
+              // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
+              let girderLine = girderLayout.girderLine[j];
+              let girderPoint = LineMatch2(masterPoint, masterLine, girderLine);
+              let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+              lw.forEach(elem => glw.push({x : elem.x + girderPoint.offset, y: elem.y + girderPoint.z}));
+              //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
+              //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
+              lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
+              offsetPoint.push(girderPoint.offset);
+          }
+          deckSectionPoint.push(...glw.reverse());
+          offsetPoint.push(rightOffset);
+          slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z - endT });
+          result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint});
+
       }
       return result //{ slab1, slab2 }
-    }
-    //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
-    function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
-      
+  }
+  //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
+  function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
+
       let slabToGirder = slabInfo.slabToGirder;
       let points = [];
       let station = girderPoint.masterStationNumber;
       let isFlat = girderBaseInfo.section.isFlat;
-      let gradient = isFlat? 0: girderPoint.gradientY;
+      let gradient = isFlat ? 0 : girderPoint.gradientY;
       let skew = girderPoint.skew;
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict); // slabThickness만 필요한 경우에는 흠...
       let sectionInfo = girderBaseInfo.section;
       let ps = pointSectionInfo.forward.uFlangeW === 0 ? pointSectionInfo.backward : pointSectionInfo.forward;
       // let slabThickness = ps.slabThickness - slabInfo.slabThickness
       const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
-      let topY = slabToGirder? ps.slabThickness  + slabInfo.haunchHeight : centerThickness;
+      let topY = slabToGirder ? ps.slabThickness + slabInfo.haunchHeight : centerThickness;
 
       //   const height = pointSectionInfo.forward.height + centerThickness;
       const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
@@ -2407,17 +2415,17 @@
       let tr1 = { x: rw2.x + ps.uFlangeC, y: rw2.y + gradient * (ps.uFlangeC) };
       let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
 
-      
+
       let dummy = [tl1, tl2, tr1, tr2];
       dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; });
       points.push(...dummy); //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
       // }
       return points
-    }
+  }
 
-    function Point2DLength(point1, point2) {
+  function Point2DLength(point1, point2) {
       return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2)
-    }
+  }
 
   function SectionPoint(){
     this.addInput("gridPoint","gridPoint");
@@ -2649,13 +2657,13 @@
     let spCheck = false;
     splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true; } });
 
-    let plate1 = [[],[],[
-      {x:point1.girderStation, y: point1.z + uf1[0], z: 0},
-      {x:point1.girderStation, y: point1.z + uf1[1], z: 0}
+    let plate1 = [[], [], [
+      { x: point1.girderStation, y: point1.z + uf1[0], z: 0 },
+      { x: point1.girderStation, y: point1.z + uf1[1], z: 0 }
     ]];
-    let plate2 = [[],[],[
-      {x:point2.girderStation, y: point2.z + uf2[0], z: 0},
-      {x:point2.girderStation, y: point2.z + uf2[1], z: 0}
+    let plate2 = [[], [], [
+      { x: point2.girderStation, y: point2.z + uf2[0], z: 0 },
+      { x: point2.girderStation, y: point2.z + uf2[1], z: 0 }
     ]];
 
     if (pk1.substr(2, 2) === "K1") {
@@ -2665,7 +2673,7 @@
       }
     } else {
       for (let k in plate1) {
-      plate1[k].forEach(element => result[k].push(element));
+        plate1[k].forEach(element => result[k].push(element));
       }
     }
     if (!FisB || spCheck) {
@@ -2677,7 +2685,7 @@
       }
       else {
         for (let k in plate1) {
-        plate2[k].forEach(element => result[k].push(element));
+          plate2[k].forEach(element => result[k].push(element));
         }
       }
     }
@@ -2697,24 +2705,24 @@
     let FisB = uf2[0] === uf3[0]; //기준높이가 변화하는 경우
 
     let plate1 = [[], [], [
-      {x:point1.girderStation, y: point1.z + uf1[0]},
-      {x:point1.girderStation, y: point1.z + uf1[1]}
+      { x: point1.girderStation, y: point1.z + uf1[0] },
+      { x: point1.girderStation, y: point1.z + uf1[1] }
     ]];
     let plate2 = [[], [], [
-      {x:point2.girderStation, y: point2.z + uf2[0]},
-      {x:point2.girderStation, y: point2.z + uf2[1]}
+      { x: point2.girderStation, y: point2.z + uf2[0] },
+      { x: point2.girderStation, y: point2.z + uf2[1] }
     ]];
 
-      for (let k in plate1) {
-        plate1[k].forEach(element => result[k].push(element));
+    for (let k in plate1) {
+      plate1[k].forEach(element => result[k].push(element));
+    }
+    let spCheck = false;
+    splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true; } });
+    if (!FisB || spCheck) {  //형고 높이가 100mm 이상인 경우에만 반영
+      for (let k in plate2) {
+        plate2[k].forEach(element => result[k].push(element));
       }
-      let spCheck = false;
-      splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true; } });
-      if (!FisB || spCheck) {  //형고 높이가 100mm 이상인 경우에만 반영
-        for (let k in plate2) {
-          plate2[k].forEach(element => result[k].push(element));
-        }
-      }
+    }
     return result
   }
 
@@ -2779,7 +2787,7 @@
     } else {
       let spCheck = false;
       splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true; } });
-      if (spCheck ||(!FisB&&( Math.abs(former3 -latter3)>100 ))) {  //형고 높이가 100mm 이상인 경우에만 반영
+      if (spCheck || (!FisB && (Math.abs(former3 - latter3) > 100))) {  //형고 높이가 100mm 이상인 경우에만 반영
         for (let k in uf2) {
           plate2[k].forEach(element => result[k].push(element));
         }
@@ -2880,69 +2888,71 @@
         for (let k in webSide) {
           webSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
         }
-
-        keyname = "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi;
-        if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-        L1 = sectionPointDict[pk1].forward.lWeb;
-        L2 = sectionPointDict[pk2].backward.lWeb;
-        L3 = sectionPointDict[pk2].forward.lWeb;
-        let wplate1 = [];
-        let wplate2 = [];
-        L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)));
-        L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)));
-        if (pk1.substr(2, 2) === "K1") {
-          let ent = webEntrance(wplate1, wplate2, true);
-          for (let k in ent) {
-            ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-          }
-        } else {
-          L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
-        }
-        FisB = true;
-        for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
-        if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-          if (pk2.substr(2, 2) === "K6") {
-            let ent = webEntrance(wplate2, wplate1, false);
+        for (let l = 0; l < 2; l++) {
+          
+          keyname = l===0? "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi : keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi;
+          if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+          L1 = sectionPointDict[pk1].forward.web[l];
+          L2 = sectionPointDict[pk2].backward.web[l];
+          L3 = sectionPointDict[pk2].forward.web[l];
+          let wplate1 = [];
+          let wplate2 = [];
+          L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)));
+          L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)));
+          if (pk1.substr(2, 2) === "K1") {
+            let ent = webEntrance(wplate1, wplate2, true);
             for (let k in ent) {
               ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
             }
+          } else {
+            L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
           }
-          else {
-            L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
+          FisB = true;
+          for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
+          if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+            if (pk2.substr(2, 2) === "K6") {
+              let ent = webEntrance(wplate2, wplate1, false);
+              for (let k in ent) {
+                ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+              }
+            }
+            else {
+              L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
+            }
           }
         }
         // if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1 }
 
-        keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi;
-        if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-        L1 = sectionPointDict[pk1].forward.rWeb;
-        L2 = sectionPointDict[pk2].backward.rWeb;
-        L3 = sectionPointDict[pk2].forward.rWeb;
-        wplate1 = [];
-        wplate2 = [];
-        L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)));
-        L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)));
-        if (pk1.substr(2, 2) === "K1") {
-          let ent = webEntrance(wplate1, wplate2, true);
-          for (let k in ent) {
-            ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-          }
-        } else {
-          L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)));
-        }
-        FisB = true;
-        for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false; } }
-        if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-          if (pk2.substr(2, 2) === "K6") {
-            let ent = webEntrance(wplate2, wplate1, false);
-            for (let k in ent) {
-              ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-            }
-          }
-          else {
-            L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
-          }
-        }
+        // keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
+        // if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
+        // L1 = sectionPointDict[pk1].forward.rWeb
+        // L2 = sectionPointDict[pk2].backward.rWeb
+        // L3 = sectionPointDict[pk2].forward.rWeb
+        // wplate1 = [];
+        // wplate2 = [];
+        // L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
+        // L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
+        // if (pk1.substr(2, 2) === "K1") {
+        //   let ent = webEntrance(wplate1, wplate2, true)
+        //   for (let k in ent) {
+        //     ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+        //   }
+        // } else {
+        //   L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
+        // }
+        // FisB = true;
+        // for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
+        // if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+        //   if (pk2.substr(2, 2) === "K6") {
+        //     let ent = webEntrance(wplate2, wplate1, false)
+        //     for (let k in ent) {
+        //       ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
+        //     }
+        //   }
+        //   else {
+        //     L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
+        //   }
+        // }
         if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1; }
 
 
@@ -5469,10 +5479,77 @@
   }
 
 
-  function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //측면도 그리기
-      // let result = {models:{},layer:lineMaterial }; 
+  // function GeneralSideView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //측면도 그리기
+  //     // let result = {models:{},layer:lineMaterial }; 
+  //     // let index = 1;
+  //     let meshes = [];
+  //     for (let part in steelBoxDict) {
+  //         for (let name of keyNamelist) {
+  //             if (part.includes(name)) {
+  //                 let ptsL1 = [];
+  //                 let ptsR1 = [];
+  //                 let ptsC1 = [];
+  //                 let ptsL2 = [];
+  //                 let ptsR2 = [];
+  //                 let ptsC2 = [];
+  //                 for (let j in steelBoxDict[part]["points"]) {
+  //                     let pts1 = [];
+  //                     let pts2 = [];
+  //                     for (let i in steelBoxDict[part]["points"][j]) {
+  //                         if (i % sectionPointNum === index1) {
+  //                             let x = (steelBoxDict[part]["points"][j][i].s - initPoint.masterStationNumber) * sc
+  //                             let y = (steelBoxDict[part]["points"][j][i].z - initPoint.z) * sc
+  //                             pts1.push({ x, y })
+  //                             // if (i==0){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+  //                         } else if (i % sectionPointNum === index2) {
+  //                             let x = (steelBoxDict[part]["points"][j][i].s - initPoint.masterStationNumber) * sc
+  //                             let y = (steelBoxDict[part]["points"][j][i].z - initPoint.z) * sc
+  //                             pts2.push({ x, y })
+  //                             // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
+  //                         }
+  //                     }
+  //                     if (j == 0) {
+  //                         ptsL1.push(...pts1)
+  //                         ptsL2.push(...pts2)
+  //                     }
+  //                     if (j == 1) {
+  //                         ptsR1.push(...pts1)
+  //                         ptsR2.push(...pts2)
+  //                     }
+  //                     if (j == 2) {
+  //                         ptsC1.push(...pts1)
+  //                         ptsC2.push(...pts2)
+  //                     }
+  //                 }
+  //                 if (ptsC1.length === 0) {
+  //                     meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial));
+  //                     meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial));
+  //                 } else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
+  //                     if (ptsC1[0][0] === ptsL1[ptsL1.length - 1][0] && ptsC1[0][1] === ptsL1[ptsL1.length - 1][1]) {
+  //                         meshes.push(sectionMesh(
+  //                             [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsR1.reverse(), ...ptsR2, ...ptsL2.reverse()], lineMaterial));
+  //                     } else {
+  //                         meshes.push(sectionMesh(
+  //                             [...ptsL1.reverse(), ...ptsC1.reverse(), ...ptsC2, ...ptsR1, ...ptsR2.reverse(), ...ptsL2], lineMaterial));
+  //                     }
+  //                 }
+  //                 else if (ptsL1.length === 0 && ptsL1.length === 0) {
+  //                     meshes.push(sectionMesh(
+  //                         [...ptsC1.reverse(), ...ptsC2], lineMaterial));
+  //                 }
+  //             }
+
+  //         }
+  //     }
+  //     return meshes
+  // }
+
+  function WebPlanView(steelBoxDict, keyNamelist, sectionPointNum, isTop, sc, initPoint, r, lineMaterial) { //강박스 일반도 그리기
+      // let result = {models:{},layer:color };
       // let index = 1;
       let meshes = [];
+      let index1 = 0;
+      let index2 = 0;
       for (let part in steelBoxDict) {
           for (let name of keyNamelist) {
               if (part.includes(name)) {
@@ -5485,18 +5562,31 @@
                   for (let j in steelBoxDict[part]["points"]) {
                       let pts1 = [];
                       let pts2 = [];
+                      if (j == 0) {
+                          index1 = 0;
+                          index2 = 3;
+                      }
+                      if (j == 1) {
+                          index1 = 0;
+                          index2 = 3;
+                      }
+                      if (j == 2) {
+                          index1 = isTop ? 1 : 0;
+                          index2 = isTop ? 2 : 3;
+                      }
                       for (let i in steelBoxDict[part]["points"][j]) {
                           if (i % sectionPointNum === index1) {
-                              let x = (steelBoxDict[part]["points"][j][i].s - initPoint.masterStationNumber) * sc;
-                              let y = (steelBoxDict[part]["points"][j][i].z - initPoint.z) * sc;
-                              pts1.push({ x, y });
+                              let x = (steelBoxDict[part]["points"][j][i].x - initPoint.x) * sc;
+                              let y = (steelBoxDict[part]["points"][j][i].y - initPoint.y) * sc;
+                              pts1.push({ x: Math.cos(r) * x - Math.sin(r) * y, y: Math.cos(r) * y + Math.sin(r) * x });
                               // if (i==0){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
                           } else if (i % sectionPointNum === index2) {
-                              let x = (steelBoxDict[part]["points"][j][i].s - initPoint.masterStationNumber) * sc;
-                              let y = (steelBoxDict[part]["points"][j][i].z - initPoint.z) * sc;
-                              pts2.push({ x, y });
+                              let x = (steelBoxDict[part]["points"][j][i].x - initPoint.x) * sc;
+                              let y = (steelBoxDict[part]["points"][j][i].y - initPoint.y) * sc;
+                              pts2.push({ x: Math.cos(r) * x - Math.sin(r) * y, y: Math.cos(r) * y + Math.sin(r) * x });
                               // if (i==1){pts3.push([Math.cos(r)*x - Math.sin(r)*y,Math.cos(r)*y + Math.sin(r)*x])}
                           }
+
                       }
                       if (j == 0) {
                           ptsL1.push(...pts1);
@@ -5512,27 +5602,44 @@
                       }
                   }
                   if (ptsC1.length === 0) {
-                      meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial));
-                      meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial));
-                  } else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
-                      if (ptsC1[0][0] === ptsL1[ptsL1.length - 1][0] && ptsC1[0][1] === ptsL1[ptsL1.length - 1][1]) {
-                          meshes.push(sectionMesh(
-                              [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsR1.reverse(), ...ptsR2, ...ptsL2.reverse()], lineMaterial));
+                      if (isTop) {
+                          meshes.push(sectionMesh([...ptsR1, ...ptsR2.reverse()], lineMaterial));
                       } else {
-                          meshes.push(sectionMesh(
-                              [...ptsL1.reverse(), ...ptsC1.reverse(), ...ptsC2, ...ptsR1, ...ptsR2.reverse(), ...ptsL2], lineMaterial));
+                          meshes.push(sectionMesh([...ptsL1, ...ptsL2.reverse()], lineMaterial));
+                      }
+
+                  }
+                  else if (ptsC1.length > 0 && ptsL1.length > 0 && ptsR1.length > 0) {
+
+                      if (isTop) {
+                          if (ptsC1[0].x === ptsR1[ptsL1.length - 1].x && ptsC1[0].y === ptsR1[ptsL1.length - 1].y) {
+                              meshes.push(sectionMesh(
+                                  [...ptsR1, ...ptsC1, ...ptsC2.reverse(), ...ptsR2.reverse()], lineMaterial));
+                          } else {
+                              meshes.push(sectionMesh(
+                                  [...ptsC1, ...ptsR1, ...ptsR2.reverse(), ...ptsC2.reverse()], lineMaterial));
+                          }
+                      } else {
+                          if (ptsC1[0].x === ptsL1[ptsL1.length - 1].x && ptsC1[0].y === ptsL1[ptsL1.length - 1].y) {
+                              meshes.push(sectionMesh(
+                                  [...ptsL1, ...ptsC1, ...ptsC2.reverse(), ...ptsL2.reverse()], lineMaterial));
+                          } else {
+                              meshes.push(sectionMesh(
+                                  [...ptsC1, ...ptsL1, ...ptsL2.reverse(), ...ptsC2.reverse()], lineMaterial));
+                          }
                       }
                   }
                   else if (ptsL1.length === 0 && ptsL1.length === 0) {
                       meshes.push(sectionMesh(
                           [...ptsC1.reverse(), ...ptsC2], lineMaterial));
                   }
-              }
 
+              }
           }
       }
       return meshes
   }
+
 
   function GeneralPlanView(steelBoxDict, keyNamelist, sectionPointNum, index1, index2, sc, initPoint, r, lineMaterial) { //강박스 일반도 그리기
       // let result = {models:{},layer:color };
@@ -5662,7 +5769,7 @@
       let dimName = ["Girder Length", "Splice", "Top Plate", "", "", "Bottom Plate", "Web", "V-Stiffener", ""];
       let w = [1.8 * markOffset, 1.6 * markOffset, 1.4 * markOffset, 1.2 * markOffset, -1.2 * markOffset, -1.4 * markOffset,
       sideViewOffset + 1.6 * markOffset, sideViewOffset + 1.4 * markOffset, sideViewOffset + 1.2 * markOffset];    //dim line 기준점
-      w.forEach(function(x){ dimLine.push([]); });
+      w.forEach(function (x) { dimLine.push([]); });
       for (let j = 0; j < girderStation.length; j++) {
           let gridObj = girderStation[j];
           let cos = gridObj.point.normalCos;
@@ -5710,7 +5817,7 @@
                       labels.push({
                           text: dimName[k],
                           anchor: [anchor.x, anchor.y, 0],
-                          rotation: k>5? 0: rot,
+                          rotation: k > 5 ? 0 : rot,
                           fontSize: fontSize * scale,
                           align: "left"
                       });
@@ -5848,7 +5955,7 @@
       meshes.push(LineMesh(girderLine, redDotLine, 0));
       meshes.push(LineMesh(girderSideLine, redDotLine, 0));
       for (let k = 0; k < w.length; k++) {
-          if (dimName[k]!==""){
+          if (dimName[k] !== "") {
               meshes.push(LineMesh(dimLine[k], redLine, 0));
           }
       }
@@ -5867,7 +5974,7 @@
   // r is rotation angle to radian
   function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint, girderStation) {
       let group = new global.THREE.Group();
-
+      let layNum = 6;
       const hBracingDict = hBracing.hBracingDict;
       const hBracingPlateDict = hBracing.hBracingPlateDict;
 
@@ -5890,12 +5997,12 @@
 
       let gridMark = GridMarkView(girderStation[0], sc, initPoint, r, 1400);
       gridMark.meshes.forEach(function (mesh) { group.add(mesh); });
-      group.add(LabelInsert(gridMark.labels, new global.THREE.MeshBasicMaterial({ color: 0xffffff }), 1));
+      group.add(LabelInsert(gridMark.labels, new global.THREE.MeshBasicMaterial({ color: 0xffffff }), layNum));
 
       return group
   }
 
-  function GirderGeneralDraw1(girderStation,layerNum) {
+  function GirderGeneralDraw1(girderStation, layerNum) {
       let group = new global.THREE.Group();
       // let layerNum = 5;
       let scale = 1;
@@ -5917,102 +6024,110 @@
       return group
   }
 
-  function GirderGeneralDraw2(girderStation, steelBoxDict, layerNum) {
+  function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layerNum) {
       let group = new global.THREE.Group();
       // let layerNum = 5;
       let scale = 1;
       let girderOffset = 24000;
       let sideViewOffset = -8000 * scale;
+      let sectionViewOffset = 16000 * scale;
       let gridMark_width = 1500; // unit : mm
       let aqua = new global.THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
       let green = new global.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+      let white = new global.THREE.MeshBasicMaterial({ color: 0xffffff });
 
       for (let i = 0; i < girderStation.length; i++) {
           let initPoint = girderStation[i][0].point;
           let endPoint = girderStation[i][girderStation[i].length - 1].point;
           let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x));
-          let topPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "TopPlate"], 4, 0, 1, scale, initPoint, rotate, aqua);
-          topPlate.forEach(function (mesh) { 
-              mesh.position.set(0, -i * girderOffset, 0);
-              group.add(mesh); 
-          });
-          let webPlate = GeneralPlanView(steelBoxDict, ["G" + (i+1).toFixed(0) + "LeftWeB","G" + (i+1).toFixed(0) + "RightWeB"], 4, 1, 2, scale, initPoint, rotate, green);
-          webPlate.forEach(function (mesh) { 
+          let topPlate = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "TopPlate"], 4, 0, 1, scale, initPoint, rotate, aqua);
+          topPlate.forEach(function (mesh) {
               mesh.position.set(0, -i * girderOffset, 0);
               group.add(mesh);
-           });
-          let topSide = GirderSideView(steelBoxDict, ["G" + (i+1).toFixed(0) + "TopSide"], 2,0,1,scale,initPoint, aqua);
-          topSide.forEach(function (mesh) { 
-              mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
-              group.add(mesh); 
           });
-          let bottomSide = GirderSideView(steelBoxDict, ["G" + (i+1).toFixed(0) + "BottomSide"], 2,0,1,scale,initPoint, aqua);
-          bottomSide.forEach(function (mesh) { 
-              mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
-              group.add(mesh); 
+          let webPlate = WebPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "LeftWeB", "G" + (i + 1).toFixed(0) + "RightWeB"], 4, true, scale, initPoint, rotate, green);
+          webPlate.forEach(function (mesh) {
+              mesh.position.set(0, -i * girderOffset, 0);
+              group.add(mesh);
           });
-          let webSide = GirderSideView(steelBoxDict, ["G" + (i+1).toFixed(0) + "WebSide"], 2,0,1,scale,initPoint, aqua);
-          webSide.forEach(function (mesh) { 
-              mesh.position.set(0, sideViewOffset -i * girderOffset, 0);
-              group.add(mesh); 
+          let topSide = GirderSideView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "TopSide"], 2, 0, 1, scale, initPoint, aqua);
+          topSide.forEach(function (mesh) {
+              mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
+              group.add(mesh);
+          });
+          let bottomSide = GirderSideView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "BottomSide"], 2, 0, 1, scale, initPoint, aqua);
+          bottomSide.forEach(function (mesh) {
+              mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
+              group.add(mesh);
+          });
+          let webSide = GirderSideView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "WebSide"], 2, 0, 1, scale, initPoint, aqua);
+          webSide.forEach(function (mesh) {
+              mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
+              group.add(mesh);
           });
 
+          let girderSection = GirderSectionView(deckPointDict, sectionPointDict, girderStation, scale, sectionViewOffset);
+          girderSection.meshes.forEach(function (mesh) {
+              // mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
+              group.add(mesh);
+          });
+          group.add(LabelInsert(girderSection.labels, white, layerNum));
           let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1);
           gridMark.meshes.forEach(function (mesh) {
               mesh.position.set(0, -i * girderOffset, 0);
               group.add(mesh);
           });
-          let label = LabelInsert(gridMark.labels, new global.THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum);
+          let label = LabelInsert(gridMark.labels, white, layerNum);
           label.position.set(0, -i * girderOffset, 0);
           group.add(label);
       }
       return group
   }
 
-  function sideDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint) {
-      let group = new global.THREE.Group();
+  // export function sideDraw(steelBoxDict, hBracing, diaDict, vstiffDict, gridPoint, initPoint) {
+  //     let group = new THREE.Group();
 
-      const hBracingDict = hBracing.hBracingDict;
-      const hBracingPlateDict = hBracing.hBracingPlateDict;
+  //     const hBracingDict = hBracing.hBracingDict
+  //     const hBracingPlateDict = hBracing.hBracingPlateDict
 
-      let sc = 0.500;
-      let r = Math.PI - Math.atan((gridPoint["G1K6"].y - gridPoint["G1K1"].y) / (gridPoint["G1K6"].x - gridPoint["G1K1"].x));
-      let aqua = new global.THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
-      let green = new global.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+  //     let sc = 0.500;
+  //     let r = Math.PI - Math.atan((gridPoint["G1K6"].y - gridPoint["G1K1"].y) / (gridPoint["G1K6"].x - gridPoint["G1K1"].x))
+  //     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
+  //     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
 
 
-      let side = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0, 1, sc, initPoint, r, aqua);
-      side.forEach(function (mesh) { group.add(mesh); });
+  //     // let side = GeneralSideView(steelBoxDict, ["G1LeftWeB"], 4, 0, 1, sc, initPoint, r, aqua)
+  //     // side.forEach(function (mesh) { group.add(mesh) });
 
-      let textMesh;
-      let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
-      let label = [];
+  //     let textMesh;
+  //     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+  //     let label = [];
 
-      var loader = new global.THREE.FontLoader();
-      loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-          // console.log(font)
-          // var font = {generateShapes:(messagem , num)=>{}}
-          for (let i in label) {
-              var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-              var geometry = new global.THREE.ShapeBufferGeometry(shapes);
-              var xMid;
-              geometry.computeBoundingBox();
-              xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-              geometry.translate(xMid, -label[i].fontSize / 2, 0);
-              if (label[i].rotation) {
-                  geometry.rotateZ(label[i].rotation);
-              }
-              geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
-              // make shape ( N.B. edge view not visible )
-              textMesh = new global.THREE.Mesh(geometry, textMaterial);
-              textMesh.layers.set(1);
-              group.add(textMesh);
-          }
-          // text.position.z = 0;
-      });
+  //     var loader = new THREE.FontLoader();
+  //     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+  //         // console.log(font)
+  //         // var font = {generateShapes:(messagem , num)=>{}}
+  //         for (let i in label) {
+  //             var shapes = font.generateShapes(label[i].text, label[i].fontSize);
+  //             var geometry = new THREE.ShapeBufferGeometry(shapes);
+  //             var xMid
+  //             geometry.computeBoundingBox();
+  //             xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+  //             geometry.translate(xMid, -label[i].fontSize / 2, 0);
+  //             if (label[i].rotation) {
+  //                 geometry.rotateZ(label[i].rotation)
+  //             }
+  //             geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
+  //             // make shape ( N.B. edge view not visible )
+  //             textMesh = new THREE.Mesh(geometry, textMaterial);
+  //             textMesh.layers.set(1)
+  //             group.add(textMesh);
+  //         }
+  //         // text.position.z = 0;
+  //     });
 
-      return group
-  }
+  //     return group
+  // }
 
 
 
@@ -6037,6 +6152,63 @@
       let geometry = new global.THREE.Geometry().setFromPoints(points);
       return new global.THREE.LineLoop(geometry, lineMaterial)
   }
+
+  function GirderSectionView(deckPointDict, sectionPointDict, girderStation, scale, yoffset) {
+      let meshes = [];
+      let labels = [];
+      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+      let xoffset = 20000;
+      let initZ = [];
+      let girderNum = girderStation.length;
+      let deck = deckPointDict.filter(obj => obj.key.includes("CRS"));
+      let spanNum = deck.length;
+      let dims = [];
+      
+      // let section = { "uflange": [[], [], []], "lflange": [[], [], []], "web": [[], [], []], "deck": [[], [], []] }
+      for (let j = 0; j < spanNum; j++) {
+          let webDim = [];
+          let heightDim = [];
+          for (let i = 0; i < girderNum; i++) {
+              let girderPoint = girderStation[i].find(obj => obj.key.includes("G" + (i + 1) + "S" + (j+1)));
+              if (i === 0) { initZ.push(girderPoint.point.z); }
+              let offset = girderPoint.point.offset;
+              let sectionPoint = sectionPointDict[girderPoint.key];
+              for (let key in sectionPoint.forward) {
+                  if (key === "uflange" || key === "lflange" || key === "web") {
+                      // console.log("check",sectionPoint)
+                      for (let k in sectionPoint.forward[key]) {
+                          if (sectionPoint.forward[key][k].length > 0) {
+                              let pts = [];
+                              sectionPoint.forward[key][k].forEach(pt => pts.push(
+                                  { x: pt.x + offset + j * xoffset, y: pt.y + yoffset + girderPoint.point.z - initZ[j] }));
+                              meshes.push(sectionMesh(pts, lineMaterial));
+                              if (key === "web"){ webDim.push(pts[1]);
+                                  heightDim = [pts[0],pts[1]]; }
+                          }
+                      }
+                  }
+              }
+              let gpt = { x: offset + j * xoffset, y: yoffset + girderPoint.point.z - initZ[j] };
+              dims.push(Dimension([heightDim[0], gpt], 1, 1, 1, false, false,0));
+
+          }
+          let deckPt = [];
+          deck[j].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}));
+          meshes.push(sectionMesh(deckPt, lineMaterial));
+
+          dims.push(Dimension([deckPt[1], ...webDim, deckPt[3]], 0, 1, 1, true, true,0));
+          dims.push(Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,1));
+          dims.push(Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true,2));
+          dims.push(Dimension([deckPt[0], deckPt[1]], 0, 1, 1, false, false,1));
+          dims.push(Dimension([heightDim[0], heightDim[1]], 0, 1, 1, false, true,1)); // 각 거더별 형고를 표현해야 하는데, 웹의 높이 출력
+      }
+      for (let i in dims){
+          meshes.push(...dims[i].meshes);
+          labels.push(...dims[i].labels);
+      }
+      return {meshes, labels}
+  }
+
 
   function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면도
       // var makerjs = require('makerjs');
@@ -6147,7 +6319,7 @@
       let sign = (isTopOrRight) ? 1 : -1;
       // let dim = {models:{}, paths:{}}
       let add = 200 * scale * sign;
-      let fontSize = 50 * scale;
+      let fontSize = 80 * scale;
       let extend = 20 * scale * sign;
       let offset = offsetIndex * 200 * scale * sign + 20 * scale * sign;
       // dim.layer = "red"
@@ -6304,7 +6476,7 @@
     let group = topDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5),this.getInputData(6));
     // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
     group.position.set(0,-offset,0);
-    global.sceneAdder({layer:1, mesh:group},"topView");
+    global.sceneAdder({layer:6, mesh:group},"topView");
   };
 
   function GirderGeneralView1(){
@@ -6321,8 +6493,10 @@
   };
 
   function GirderGeneralView2(){
+    this.addInput("sectionPointDict","sectionPointDict");
     this.addInput("girderStation","girderStation");
     this.addInput("steelBoxDict","steelBoxDict");
+    this.addInput("deckPointDict","deckPointDict");
     this.addInput("layerNumber","number");
   }
 
@@ -6330,30 +6504,29 @@
   };
 
   GirderGeneralView2.prototype.on3DExecute = function() {
-    let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2));
-    global.sceneAdder({layer:this.getInputData(2), mesh:group},"GirderGeneralView2");
+    let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2), this.getInputData(3), this.getInputData(4));
+    global.sceneAdder({layer:this.getInputData(4), mesh:group},"GirderGeneralView2");
   };
 
+  // export function SideViewer(){
+  //   this.addInput("steelBoxDict","steelBoxDict");
+  //   this.addInput("hBracingDict","hBracingDict");
+  //   this.addInput("diaDict","diaDict");
+  //   this.addInput("vstiffDict","diaDict");
+  //   this.addInput("gridPoint","gridPoint");
+  //   this.addInput("initPoint","point");
+  // }
 
-  function SideViewer(){
-    this.addInput("steelBoxDict","steelBoxDict");
-    this.addInput("hBracingDict","hBracingDict");
-    this.addInput("diaDict","diaDict");
-    this.addInput("vstiffDict","diaDict");
-    this.addInput("gridPoint","gridPoint");
-    this.addInput("initPoint","point");
-  }
+  // SideViewer.prototype.onExecute = function() {
+  // }
 
-  SideViewer.prototype.onExecute = function() {
-  };
-
-  SideViewer.prototype.on3DExecute = function() {
-    let offset = 15000;
-    let group = sideDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5));
-    // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
-    group.position.set(0,-offset,0);
-    global.sceneAdder({layer:1, mesh:group},"SideView");
-  };
+  // SideViewer.prototype.on3DExecute = function() {
+  //   let offset = 15000;
+  //   let group = sideDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5))
+  //   // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
+  //   group.position.set(0,-offset,0)
+  //   sceneAdder({layer:1, mesh:group},"SideView");
+  // };
 
   function LineDraw(){
     this.addInput("masterLine","line");
@@ -7087,7 +7260,9 @@
       pointDict
     ){
       // slabLayout object to list 
+      
       const position = 0;
+
       const T = 1;
       // const leftOffset = 3;
       // const rightOffset =4;
@@ -7124,12 +7299,12 @@
           let l2 = OffsetPoint(masterPoint, masterLine, offset + sign*250);
           let l3 = OffsetPoint(masterPoint, masterLine, offset + sign*320);
           let l4 = OffsetPoint(masterPoint, masterLine, offset + sign*450);
-          let points = [ZMove(l4,slabThickness + haunch),
-                              ZMove(l4,slabThickness + haunch + 200),
-                              ZMove(l3,slabThickness + haunch + 380),
-                              ZMove(l2,slabThickness + haunch + 1350),
-                              ZMove(l1,slabThickness + haunch + 1350),
-                              ZMove(l1,slabThickness + haunch),];
+          let points = [ZMove(l4,0),
+                              ZMove(l4,200),
+                              ZMove(l3, 380),
+                              ZMove(l2, 1350),
+                              ZMove(l1, 1350),
+                              ZMove(l1,0),];
           if (k===0){
             leftBarrier.push({name:masterStation, points:points.reverse()}); // 추후 순서를 뒤집어서 작성 필요
           }else {
@@ -7594,7 +7769,7 @@
 
   global.LiteGraph.registerNodeType("Drawing/SectionView", SectionViewer );
   global.LiteGraph.registerNodeType("Drawing/TopView", TopViewer );
-  global.LiteGraph.registerNodeType("Drawing/SideView", SideViewer );
+  // LiteGraph.registerNodeType("Drawing/SideView", SideViewer );
   global.LiteGraph.registerNodeType("Drawing/LineDraw", LineDraw );
   global.LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
   global.LiteGraph.registerNodeType("Drawing/GirderLayoutDraw", GirderLayoutDraw );
