@@ -288,7 +288,7 @@ let lowerPlate = [
   let rightupperPoints = [];
   rightupperPoints.push(...scallop(rightupper[3],rightupper[0],rightupper[1],dsi.scallopRadius,4));
   rightupperPoints.push(...scallop(rightupper[0],rightupper[1],rightupper[2],dsi.scallopRadius,4));
-  rightupperPoints.push(rightupper[2], leftupper[3])
+  rightupperPoints.push(rightupper[2], rightupper[3])
   result["rightupper"] = {
     points:rightupperPoints,
     Thickness:dsi.stiffThickness,
