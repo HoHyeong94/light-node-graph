@@ -86,7 +86,12 @@ export function VstiffShapeDict(
       sectionPointDict[gridkey].forward.rightTopPlate[2]
     ];
     let skew = sectionPointDict[gridkey].forward.skew;
-    result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection, sectionDB);
+    if (vStiffLayout[i][section] === "vStiffType1") {
+      result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection, sectionDB);
+    }
+    else if (vStiffLayout[i][section] === "DYvStiff1") {
+      result[gridkey] = DYVstiff1(webPoints, skew, uflangePoint, vSection)
+    }
     result[gridkey].point = gridPoint[gridkey]
   }
 
@@ -158,6 +163,71 @@ export function HBracingDict(
 
   return { hBracingDict, hBracingPlateDict };
 }
+
+
+export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
+  //ds 입력변수
+  let result = {};
+  let dsi = {
+    lowerSpacing: 50,
+    stiffWidth: 150,
+    stiffThickness: 12,
+    scallopRadius: 35,
+    chamfer: 130,
+  } //  임시 입력변수
+
+  const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
+  const bl = webPoints[0];
+  const tl = webPoints[1];
+  const br = webPoints[2];
+  const tr = webPoints[3];
+  const rotationY = (skew - 90) * Math.PI / 180
+  const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
+  const rwCot = (tr.x - br.x) / (tr.y - br.y)
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+
+  let lowerPoints = [
+    { x: bl.x + lwCot * dsi.lowerSpacing, y: bl.y + dsi.lowerSpacing },
+    { x: br.x + rwCot * dsi.lowerSpacing, y: br.y + dsi.lowerSpacing }
+  ];
+
+  let left = PlateRestPoint(lowerPoints[0], tl, 0, gradient, dsi.stiffWidth)
+  let leftPoints = [];
+  leftPoints.push(left[0])
+  leftPoints.push(...scallop(left[0], left[1], left[2], dsi.scallopRadius, 4));
+  leftPoints.push(left[2])
+  leftPoints.push(...scallop(left[2], left[3], left[0], dsi.scallopRadius, 1));
+
+  result["left"] = {
+    points: leftPoints,
+    Thickness: dsi.stiffThickness,
+    z: -dsi.stiffThickness / 2,
+    rotationX: Math.PI / 2,
+    rotationY: rotationY,
+    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+  let right = PlateRestPoint(lowerPoints[1], tr, 0, gradient, -dsi.stiffWidth)
+  let rightPoints = [];
+  rightPoints.push(right[0])
+  rightPoints.push(...scallop(right[0], right[1], right[2], dsi.scallopRadius, 4));
+  rightPoints.push(right[2])
+  rightPoints.push(...scallop(right[2], right[3], right[0], dsi.scallopRadius, 1));
+
+  result["rightLower"] = {
+    points: rightPoints,
+    Thickness: dsi.stiffThickness,
+    z: -dsi.stiffThickness / 2,
+    rotationX: Math.PI / 2,
+    rotationY: rotationY,
+    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+  return result
+}
+
 
 
 export function DYdia1(webPoints, skew, uflangePoint, ds) {
