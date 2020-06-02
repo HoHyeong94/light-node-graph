@@ -90,7 +90,7 @@ export function VstiffShapeDict(
       result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection, sectionDB);
     }
     else if (vStiffLayout[i][section] === "DYvStiff1") {
-      result[gridkey] = DYVstiff1(webPoints, skew, uflangePoint, vSection)
+      result[gridkey] = DYVstiff1(webPoints, skew, uflangePoints, vSection)
     }
     result[gridkey].point = gridPoint[gridkey]
   }
