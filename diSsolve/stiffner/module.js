@@ -168,6 +168,8 @@ export function DYdia1(webPoints, skew, uflangePoint, ds){
     upperHeight : 900,
     upperThickness : 12,
     upperWidth : 250,
+    centerThickness : 12,
+    scallopRadius : 35,
   } //  임시 입력변수
 
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
@@ -188,26 +190,6 @@ let lowerPlate = [
   {x:br.x + rwCot * (dsi.lowerHeight + dsi.lowerThickness),y:br.y + dsi.lowerHeight + dsi.lowerThickness},
   {x:br.x + rwCot * dsi.lowerHeight,y:br.y + dsi.lowerHeight}
 ];
-// let lowerPoints = [];
-// lowerPoints.push(lowerPlate[0]);
-// lowerPoints = lowerPoints.concat(scallop(tl,bl,br,dsi.scallopRadius,4));
-// //// longitudinal stiffner holes
-// for (let i=0; i<dsi.longiRibRayout.length;i++){
-//   lowerPoints.push({x:dsi.longiRibRayout[i] - dsi.ribHoleD, y:lowerPlate[1].y});
-//   let curve = new THREE.ArcCurve(dsi.longiRibRayout[i],lowerPlate[1].y + dsi.longiRibHeight, dsi.ribHoleR, Math.PI,0,true);
-//   let dummyVectors = curve.getPoints(8)
-//   for (let i = 0; i< dummyVectors.length;i++){
-//     lowerPoints.push({x:dummyVectors[i].x, y:dummyVectors[i].y})
-//   }
-//   lowerPoints.push({x:dsi.longiRibRayout[i] + dsi.ribHoleD,y:lowerPlate[1].y});
-// }
-// lowerPoints = lowerPoints.concat(scallop(bl,br,tr,dsi.scallopRadius,4));
-// lowerPoints.push(lowerPlate[3]);
-// let lowerTopPoints = [lowerPlate[0],
-//                       {x:bl.x + lwCot * (dsi.lowerHeight+dsi.lowerTopThickness), y:bl.y + (dsi.lowerHeight+dsi.lowerTopThickness)},
-//                       {x:br.x + rwCot * (dsi.lowerHeight+dsi.lowerTopThickness), y:bl.y + (dsi.lowerHeight+dsi.lowerTopThickness)},
-//                       lowerPlate[3]];
-
   result["lowerPlate"] = {
     points:lowerPlate,
     Thickness:dsi.lowerWidth,
@@ -218,19 +200,34 @@ let lowerPlate = [
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
-
-
   let upperPlate = [
     {x:bl.x + lwCot * dsi.upperHeight,y:bl.y + dsi.upperHeight},
     {x:bl.x + lwCot * (dsi.upperHeight - dsi.upperThickness),y:bl.y + dsi.upperHeight - dsi.upperThickness},
     {x:br.x + rwCot * (dsi.upperHeight - dsi.upperThickness),y:br.y + dsi.upperHeight - dsi.upperThickness},
     {x:br.x + rwCot * dsi.upperHeight,y:br.y + dsi.upperHeight}
   ]
-
   result["upperPlate"] = {
     points:upperPlate,
     Thickness:dsi.upperWidth,
     z:-dsi.upperWidth/2, 
+    rotationX:Math.PI/2, 
+    rotationY:rotationY, 
+    hole:[],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+  let centerPlate = [ lowerPlate[1],lowerPlate[2], upperPlate[2], upperPlate[1] ]
+  let centerPoints = [];
+  centerPoints.push(...scallop(centerPlate[0],centerPlate[1],centerPlate[2],dsi.scallopRadius,4));
+  centerPoints.push(...scallop(centerPlate[1],centerPlate[2],centerPlate[3],dsi.scallopRadius,4));
+  centerPoints.push(...scallop(centerPlate[2],centerPlate[3],centerPlate[0],dsi.scallopRadius,4));
+  centerPoints.push(...scallop(centerPlate[3],centerPlate[0],centerPlate[1],dsi.scallopRadius,4));
+  
+  result["centerPlate"] = {
+    points:centerPoints,
+    Thickness:dsi.centerThickness,
+    z:-dsi.centerThickness/2, 
     rotationX:Math.PI/2, 
     rotationY:rotationY, 
     hole:[],
