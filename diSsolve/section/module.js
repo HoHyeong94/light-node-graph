@@ -458,16 +458,16 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
     let hl3 = hh + (- gradient + girderPoint.gradientY) * ( ps.uFlangeC + w1)//헌치높이
     let hl4 = hh + (- gradient + girderPoint.gradientY) * ( ps.uFlangeC - ps.uFlangeW - w1)//헌치높이
 
-    let tl0 = { x: lw2.x - ps.uFlangeC - w1 - hl1 * 3 , y: lw2.y + hh + girderPoint.gradientY * (- ps.uFlangeC - w1) };
+    let tl0 = { x: lw2.x - ps.uFlangeC - w1 - hl1 * 3 , y: lw2.y + hh + girderPoint.gradientY * (- ps.uFlangeC - w1 - hl1 * 3) };
     let tl1 = { x: lw2.x - ps.uFlangeC - w1, y: lw2.y + gradient * (- ps.uFlangeC - w1) };
     let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW + w1) };
-    let tl3 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1 + hl2 * 3 , y: lw2.y + hh + girderPoint.gradientY * (- ps.uFlangeC + ps.uFlangeW + w1) };
+    let tl3 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1 + hl2 * 3 , y: lw2.y + hh + girderPoint.gradientY * (- ps.uFlangeC + ps.uFlangeW + w1+ hl2 * 3) };
 
 
-    let tr0 = { x: rw2.x + ps.uFlangeC + w1 + hl1 * 3 , y: rw2.y + hh + girderPoint.gradientY * ( ps.uFlangeC + w1) };
+    let tr0 = { x: rw2.x + ps.uFlangeC + w1 + hl3 * 3 , y: rw2.y + hh + girderPoint.gradientY * ( ps.uFlangeC + w1 + hl3 * 3) };
     let tr1 = { x: rw2.x + ps.uFlangeC + w1, y: rw2.y + gradient * (ps.uFlangeC + w1) };
     let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW - w1) };
-    let tr3 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1 - hl2*3, y: rw2.y + hh + girderPoint.gradientY * (ps.uFlangeC - ps.uFlangeW - w1) };
+    let tr3 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1 - hl4*3, y: rw2.y + hh + girderPoint.gradientY * (ps.uFlangeC - ps.uFlangeW - w1 - hl4*3) };
 
 
     let dummy = [tl0, tl1, tl2,tl3, tr0, tr1, tr2, tr3];
