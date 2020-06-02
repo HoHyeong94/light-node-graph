@@ -452,15 +452,19 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
     // let tr1 = { x: rw2.x + sectionInfo.D + slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D + slabInfo.w1) };
     // let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
     let w1 = slabInfo.w1; //헌치돌출길이
-    let h1 = slabInfo.haunchHeight + (- gradient + girderPoint.gradientY) * (- ps.uFlangeC - w1)//헌치높이
-    let tl0 = { x: lw2.x - ps.uFlangeC - w1 - h1 * 3 , y: lw2.y + slabInfo.haunchHeight + girderPoint.gradientY * (- ps.uFlangeC - w1) };
+    let hl1 = slabInfo.haunchHeight + (- gradient + girderPoint.gradientY) * (- ps.uFlangeC - w1)//헌치높이
+    let hl2 = slabInfo.haunchHeight + (- gradient + girderPoint.gradientY) * (- ps.uFlangeC + ps.uFlangeW + w1)//헌치높이
+    let tl0 = { x: lw2.x - ps.uFlangeC - w1 - hl1 * 3 , y: lw2.y + slabInfo.haunchHeight + girderPoint.gradientY * (- ps.uFlangeC - w1) };
     let tl1 = { x: lw2.x - ps.uFlangeC - w1, y: lw2.y + gradient * (- ps.uFlangeC - w1) };
     let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW + w1) };
+    let tl3 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1 + hl2 * 3 , y: lw2.y + slabInfo.haunchHeight + girderPoint.gradientY * (- ps.uFlangeC + ps.uFlangeW + w1) };
+
+
     let tr1 = { x: rw2.x + ps.uFlangeC + w1, y: rw2.y + gradient * (ps.uFlangeC + w1) };
     let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW - w1) };
 
 
-    let dummy = [tl0, tl1, tl2, tr1, tr2];
+    let dummy = [tl0, tl1, tl2,tl3, tr1, tr2];
     dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; })
     points.push(...dummy) //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
     // }
