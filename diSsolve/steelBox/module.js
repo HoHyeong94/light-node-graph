@@ -308,7 +308,6 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
           plate0[1] = [];
         }
       }
-      }
       for (let k in uf1) {
         plate0[k].forEach(element => result[k].push(element));
       }
