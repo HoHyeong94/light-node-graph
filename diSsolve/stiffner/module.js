@@ -169,6 +169,8 @@ export function DYdia1(webPoints, skew, uflangePoint, ds){
     upperThickness : 12,
     upperWidth : 250,
     centerThickness : 12,
+    stiffWidth : 150,
+    stiffThickness : 12,
     scallopRadius : 35,
   } //  임시 입력변수
 
@@ -235,6 +237,22 @@ let lowerPlate = [
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
 
+  let leftLower = PlateRestPoint(bl, lowerPlate[0],0,gradient, dsi.stiffWidth)
+  let leftLowerPoints = [];
+  leftLowerPoints.push(...scallop(leftLower[3],leftLower[0],leftLower[1],dsi.scallopRadius,4));
+  leftLowerPoints.push(...scallop(leftLower[0],leftLower[1],leftLower[2],dsi.scallopRadius,4));
+  leftLowerPoints.push(leftLower[2], leftLower[3])
+
+  result["leftLower"] = {
+    points:leftLowerPoints,
+    Thickness:dsi.stiffThickness,
+    z:-dsi.stiffThickness/2, 
+    rotationX:Math.PI/2, 
+    rotationY:rotationY, 
+    hole:[],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
   return result 
 }
 
