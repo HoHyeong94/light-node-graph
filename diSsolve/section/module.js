@@ -453,24 +453,34 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
     // let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
-    let hl1 = hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC - w1)//헌치높이
-    let hl2 = hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC + ps.uFlangeW + w1)//헌치높이
-    let hl3 = hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC + w1)//헌치높이
-    let hl4 = hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC - ps.uFlangeW - w1)//헌치높이
+    let wx = [lw2.x - ps.uFlangeC - w1,lw2.x - ps.uFlangeC + ps.uFlangeW + w1, rw2.x + ps.uFlangeC + w1, rw2.x + ps.uFlangeC - ps.uFlangeW - w1]
+    let hl = [];
+    wx.forEach(x => hl1.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)))
+    // let hl1 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC - w1))//헌치높이
+    // let hl2 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC + ps.uFlangeW + w1))//헌치높이
+    // let hl3 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC + w1))//헌치높이
+    // let hl4 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC - ps.uFlangeW - w1))//헌치높이
+    let hpt = [];
+    let wpt = [];
+    const constant = [-3,3,3,-3] ; //루프계산을 위한 계수 모음
+    for (let i=0; i<wx.length;i++){
+        hpt.push({ x: wx[i] + hl[i]*constant[i], y: - ps.slabThickness  + girderPoint.gradientY * (wx[i] + hl[i]*constant[i]) })
+        wpt.push({ x: wx[i], y: - topY  + gradient * (wx[i])})
+    }
+    // let tl0 = { x: lw2.x - ps.uFlangeC - w1 - hl1 * 3 , y: - ps.slabThickness  + girderPoint.gradientY * (lw2.x - ps.uFlangeC - w1 - hl1 * 3) };
+    // let tl1 = { x: lw2.x - ps.uFlangeC - w1, y: lw2.y + gradient * (- ps.uFlangeC - w1) };
+    // let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW + w1) };
+    // let tl3 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1 + hl2 * 3 , y:  - ps.slabThickness + girderPoint.gradientY * (lw2.x - ps.uFlangeC + ps.uFlangeW + w1+ hl2 * 3) };
 
-    let tl0 = { x: lw2.x - ps.uFlangeC - w1 - hl1 * 3 , y: - ps.slabThickness  + girderPoint.gradientY * (lw2.x - ps.uFlangeC - w1 - hl1 * 3) };
-    let tl1 = { x: lw2.x - ps.uFlangeC - w1, y: lw2.y + gradient * (- ps.uFlangeC - w1) };
-    let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW + w1) };
-    let tl3 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1 + hl2 * 3 , y:  - ps.slabThickness + girderPoint.gradientY * (lw2.x - ps.uFlangeC + ps.uFlangeW + w1+ hl2 * 3) };
+
+    // let tr0 = { x: rw2.x + ps.uFlangeC + w1 + hl3 * 3 , y:  - ps.slabThickness + girderPoint.gradientY * (rw2.x + ps.uFlangeC + w1 + hl3 * 3) };
+    // let tr1 = { x: rw2.x + ps.uFlangeC + w1, y: rw2.y + gradient * (ps.uFlangeC + w1) };
+    // let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW - w1) };
+    // let tr3 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1 - hl4*3, y:  - ps.slabThickness + girderPoint.gradientY * (rw2.x + ps.uFlangeC - ps.uFlangeW - w1 - hl4*3) };
 
 
-    let tr0 = { x: rw2.x + ps.uFlangeC + w1 + hl3 * 3 , y:  - ps.slabThickness + girderPoint.gradientY * (rw2.x + ps.uFlangeC + w1 + hl3 * 3) };
-    let tr1 = { x: rw2.x + ps.uFlangeC + w1, y: rw2.y + gradient * (ps.uFlangeC + w1) };
-    let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW - w1) };
-    let tr3 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1 - hl4*3, y:  - ps.slabThickness + girderPoint.gradientY * (rw2.x + ps.uFlangeC - ps.uFlangeW - w1 - hl4*3) };
-
-
-    let dummy = [tl0, tl1, tl2,tl3, tr0, tr1, tr2, tr3];
+    // let dummy = [tl0, tl1, tl2,tl3, tr0, tr1, tr2, tr3];
+    let dummy = [...hpt, ...wpt]
     dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; })
     points.push(...dummy) //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
     // }
