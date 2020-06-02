@@ -451,10 +451,11 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
     // let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
     // let tr1 = { x: rw2.x + sectionInfo.D + slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D + slabInfo.w1) };
     // let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
-    let tl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
-    let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW) };
-    let tr1 = { x: rw2.x + ps.uFlangeC, y: rw2.y + gradient * (ps.uFlangeC) };
-    let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
+    let w1 = slabInfo.w1; //헌치돌출길이
+    let tl1 = { x: lw2.x - ps.uFlangeC - w1, y: lw2.y + gradient * (- ps.uFlangeC - w1) };
+    let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW + w1) };
+    let tr1 = { x: rw2.x + ps.uFlangeC + w1, y: rw2.y + gradient * (ps.uFlangeC + w1) };
+    let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW - w1) };
 
 
     let dummy = [tl1, tl2, tr1, tr2];
