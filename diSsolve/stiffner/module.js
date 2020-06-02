@@ -267,6 +267,43 @@ let lowerPlate = [
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
+
+  let leftupper = PlateRestPoint(tl, upperPlate[0],gradient,0, dsi.stiffWidth)
+  let leftupperPoints = [];
+  leftupperPoints.push(...scallop(leftupper[3],leftupper[0],leftupper[1],dsi.scallopRadius,4));
+  leftupperPoints.push(...scallop(leftupper[0],leftupper[1],leftupper[2],dsi.scallopRadius,4));
+  leftupperPoints.push(leftupper[2], leftupper[3])
+  result["leftLower"] = {
+    points:leftupperPoints,
+    Thickness:dsi.stiffThickness,
+    z:-dsi.stiffThickness/2, 
+    rotationX:Math.PI/2, 
+    rotationY:rotationY, 
+    hole:[],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+  let rightupper = PlateRestPoint(tr, upperPlate[3],gradient,0, -dsi.stiffWidth)
+  let rightupperPoints = [];
+  rightupperPoints.push(...scallop(rightupper[3],rightupper[0],rightupper[1],dsi.scallopRadius,4));
+  rightupperPoints.push(...scallop(rightupper[0],rightupper[1],rightupper[2],dsi.scallopRadius,4));
+  rightupperPoints.push(rightupper[2], leftupper[3])
+  result["rightLower"] = {
+    points:rightupperPoints,
+    Thickness:dsi.stiffThickness,
+    z:-dsi.stiffThickness/2, 
+    rotationX:Math.PI/2, 
+    rotationY:rotationY, 
+    hole:[],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+
+
+
+
   return result 
 }
 
