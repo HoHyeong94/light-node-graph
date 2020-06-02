@@ -296,8 +296,8 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
     if (former1 < latter1) {
       if (uf1[2][0]) {
         plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
-        plate1[0][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2)
-        plate1[0][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2)
+        plate1[2][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2)
+        plate1[2][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2)
         plate1[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (latter1 - former1) * 2)
       }
       for (let k in uf1) {
