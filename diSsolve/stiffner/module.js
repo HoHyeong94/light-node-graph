@@ -196,7 +196,7 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
   leftPoints.push(left[0])
   leftPoints.push(...scallop(left[0], left[1], left[2], dsi.scallopRadius, 4));
   leftPoints.push(left[2])
-  leftPoints.push(...scallop(left[2], left[3], left[0], dsi.scallopRadius, 1));
+  leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
   result["left"] = {
     points: leftPoints,
