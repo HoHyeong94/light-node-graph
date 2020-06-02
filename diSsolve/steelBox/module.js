@@ -292,7 +292,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
     uf3[k].forEach(element => plate3[k].push(ToGlobalPoint(point2, element)));
   }
   // outborder 
-  if (!FisB) {
+  if (!plateCompare(uf0, uf1)) {
     if (former1 < latter1) {
       if (uf1[2][0]) {
         plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
