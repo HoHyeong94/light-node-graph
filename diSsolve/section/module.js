@@ -264,7 +264,7 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     if (uFlange.length > 0) {
         forward.uFlangeThk = uFlange[0][2]
         forward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
-        forward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
+        forward.uFlangeC = uFlange[0][5] + (uFlange[0][6] - uFlange[0][5]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
     }
     uFlange = girderBaseInfo.uFlange.filter(function (element) {
         return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
@@ -272,7 +272,7 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     if (uFlange.length > 0) {
         backward.uFlangeThk = uFlange[0][2]
         backward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
-        backward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
+        backward.uFlangeC = uFlange[0][5] + (uFlange[0][6] - uFlange[0][5]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber)
     }
 
     var lFlange = girderBaseInfo.lFlange.filter(function (element) {
