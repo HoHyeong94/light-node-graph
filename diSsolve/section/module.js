@@ -397,7 +397,6 @@ export function DeckSectionPoint(
 
         deckSectionPoint.push({ x: leftOffset, y: leftPoint.z - endT }, { x: leftOffset, y: leftPoint.z }, { x: 0, y: masterPoint.z }, { x: rightOffset, y: rightPoint.z }, { x: rightOffset, y: rightPoint.z - endT })
         let slabLowerPoints = [];
-        slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
         let offsetPoint = [leftOffset];
         let glw = [];
         for (let j in girderLayout.girderLine) {
@@ -411,8 +410,14 @@ export function DeckSectionPoint(
             lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
             offsetPoint.push(girderPoint.offset);
         }
+        glw.pop();//우측캔틸레버 헌치 포인트 제거
+        glw.shift();//좌측캔틸레버 헌치 포인트 제거
+        slabLowerPoints.pop();//우측캔틸레버 헌치 포인트 제거
+        slabLowerPoints.shift();//좌측캔틸레버 헌치 포인트 제거
+
         deckSectionPoint.push(...glw.reverse());
         offsetPoint.push(rightOffset);
+        slabLowerPoints.unshift({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
         slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z - endT });
         result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint, slabHeight : slabThickness + haunch});
 
@@ -431,35 +436,20 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
     let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict) // slabThickness만 필요한 경우에는 흠...
     let sectionInfo = girderBaseInfo.section
     let ps = pointSectionInfo.forward.uFlangeW === 0 ? pointSectionInfo.backward : pointSectionInfo.forward;
-    // let slabThickness = ps.slabThickness - slabInfo.slabThickness
     const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
     let topY = slabToGirder ? ps.slabThickness + slabInfo.haunchHeight : centerThickness;
 
-    //   const height = pointSectionInfo.forward.height + centerThickness;
     const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
     const lwt = { x: - sectionInfo.UL, y: - centerThickness };
     const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
     const rwt = { x: sectionInfo.UR, y: -centerThickness };
-
-    // let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
-    // let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
-
     let lw2 = WebPoint(lwb, lwt, gradient, -topY) //{x:tlwX,y:gradient*tlwX - slabThickness}
     let rw2 = WebPoint(rwb, rwt, gradient, -topY) //{x:trwX,y:gradient*trwX - slabThickness}
-    // TopPlate
-    // let tl1 = { x: lw2.x - sectionInfo.C - slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C - slabInfo.w1) };
-    // let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
-    // let tr1 = { x: rw2.x + sectionInfo.D + slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D + slabInfo.w1) };
-    // let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
     let wx = [lw2.x - ps.uFlangeC - w1,lw2.x - ps.uFlangeC + ps.uFlangeW + w1, rw2.x + ps.uFlangeC + w1, rw2.x + ps.uFlangeC - ps.uFlangeW - w1]
     let hl = [];
     wx.forEach(x => hl.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)))
-    // let hl1 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC - w1))//헌치높이
-    // let hl2 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC + ps.uFlangeW + w1))//헌치높이
-    // let hl3 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC + w1))//헌치높이
-    // let hl4 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC - ps.uFlangeW - w1))//헌치높이
     let hpt = [];
     let wpt = [];
     const constant = [-3,3,3,-3] ; //루프계산을 위한 계수 모음
@@ -467,29 +457,14 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
         hpt.push({ x: wx[i] + hl[i]*constant[i], y: - ps.slabThickness  + girderPoint.gradientY * (wx[i] + hl[i]*constant[i]) })
         wpt.push({ x: wx[i], y: - topY  + gradient * (wx[i])})
     }
-    if (wx[1]>wx[3]){
+    if (wx[1]>wx[3]){   //임시로 작성한 내용, 개구 폐합에서는 잘못된 3차원 메쉬가 생성됨 200602 by drlim
         wpt[1] = wpt[0];
         wpt[3] = wpt[2];
         hpt[1] = wpt[0];
         hpt[3] = wpt[2];
     }
-    // let tl0 = { x: lw2.x - ps.uFlangeC - w1 - hl1 * 3 , y: - ps.slabThickness  + girderPoint.gradientY * (lw2.x - ps.uFlangeC - w1 - hl1 * 3) };
-    // let tl1 = { x: lw2.x - ps.uFlangeC - w1, y: lw2.y + gradient * (- ps.uFlangeC - w1) };
-    // let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW + w1) };
-    // let tl3 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW + w1 + hl2 * 3 , y:  - ps.slabThickness + girderPoint.gradientY * (lw2.x - ps.uFlangeC + ps.uFlangeW + w1+ hl2 * 3) };
-
-
-    // let tr0 = { x: rw2.x + ps.uFlangeC + w1 + hl3 * 3 , y:  - ps.slabThickness + girderPoint.gradientY * (rw2.x + ps.uFlangeC + w1 + hl3 * 3) };
-    // let tr1 = { x: rw2.x + ps.uFlangeC + w1, y: rw2.y + gradient * (ps.uFlangeC + w1) };
-    // let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW - w1) };
-    // let tr3 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW - w1 - hl4*3, y:  - ps.slabThickness + girderPoint.gradientY * (rw2.x + ps.uFlangeC - ps.uFlangeW - w1 - hl4*3) };
-
-
-    // let dummy = [tl0, tl1, tl2,tl3, tr0, tr1, tr2, tr3];
-    let dummy = [...hpt, ...wpt]
-    dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; })
-    points.push(...dummy) //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
-    // }
+    points = [...hpt, ...wpt]
+    points.sort(function (a, b) { return a.x < b.x ? -1 : 1; })
     return points
 }
 
