@@ -2223,7 +2223,7 @@
       if (uFlange.length > 0) {
           forward.uFlangeThk = uFlange[0][2];
           forward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
-          forward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
+          forward.uFlangeC = uFlange[0][5] + (uFlange[0][6] - uFlange[0][5]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
       }
       uFlange = girderBaseInfo.uFlange.filter(function (element) {
           return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
@@ -2231,7 +2231,7 @@
       if (uFlange.length > 0) {
           backward.uFlangeThk = uFlange[0][2];
           backward.uFlangeW = uFlange[0][3] + (uFlange[0][4] - uFlange[0][3]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
-          backward.uFlangeC = uFlange[0][5][0] + (uFlange[0][5][1] - uFlange[0][5][0]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
+          backward.uFlangeC = uFlange[0][5] + (uFlange[0][6] - uFlange[0][5]) * (station - pointDict[uFlange[0][0]].masterStationNumber) / (pointDict[uFlange[0][1]].masterStationNumber - pointDict[uFlange[0][0]].masterStationNumber);
       }
 
       var lFlange = girderBaseInfo.lFlange.filter(function (element) {
@@ -2356,7 +2356,6 @@
 
           deckSectionPoint.push({ x: leftOffset, y: leftPoint.z - endT }, { x: leftOffset, y: leftPoint.z }, { x: 0, y: masterPoint.z }, { x: rightOffset, y: rightPoint.z }, { x: rightOffset, y: rightPoint.z - endT });
           let slabLowerPoints = [];
-          slabLowerPoints.push({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
           let offsetPoint = [leftOffset];
           let glw = [];
           for (let j in girderLayout.girderLine) {
@@ -2370,10 +2369,16 @@
               lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
               offsetPoint.push(girderPoint.offset);
           }
+          glw.pop();//우측캔틸레버 헌치 포인트 제거
+          glw.shift();//좌측캔틸레버 헌치 포인트 제거
+          slabLowerPoints.pop();//우측캔틸레버 헌치 포인트 제거
+          slabLowerPoints.shift();//좌측캔틸레버 헌치 포인트 제거
+
           deckSectionPoint.push(...glw.reverse());
           offsetPoint.push(rightOffset);
+          slabLowerPoints.unshift({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
           slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z - endT });
-          result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint});
+          result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint, slabHeight : slabThickness + haunch});
 
       }
       return result //{ slab1, slab2 }
@@ -2390,36 +2395,35 @@
       let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict); // slabThickness만 필요한 경우에는 흠...
       let sectionInfo = girderBaseInfo.section;
       let ps = pointSectionInfo.forward.uFlangeW === 0 ? pointSectionInfo.backward : pointSectionInfo.forward;
-      // let slabThickness = ps.slabThickness - slabInfo.slabThickness
       const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
       let topY = slabToGirder ? ps.slabThickness + slabInfo.haunchHeight : centerThickness;
 
-      //   const height = pointSectionInfo.forward.height + centerThickness;
       const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
       const lwt = { x: - sectionInfo.UL, y: - centerThickness };
       const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
       const rwt = { x: sectionInfo.UR, y: -centerThickness };
-
-      // let lw2 = WebPoint(lwb, lwt, gradient, -slabThickness) //{x:tlwX,y:gradient*tlwX - slabThickness}
-      // let rw2 = WebPoint(rwb, rwt, gradient, -slabThickness) //{x:trwX,y:gradient*trwX - slabThickness}
-
       let lw2 = WebPoint(lwb, lwt, gradient, -topY); //{x:tlwX,y:gradient*tlwX - slabThickness}
       let rw2 = WebPoint(rwb, rwt, gradient, -topY); //{x:trwX,y:gradient*trwX - slabThickness}
-      // TopPlate
-      // let tl1 = { x: lw2.x - sectionInfo.C - slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C - slabInfo.w1) };
-      // let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW + slabInfo.w1, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW + slabInfo.w1) };
-      // let tr1 = { x: rw2.x + sectionInfo.D + slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D + slabInfo.w1) };
-      // let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
-      let tl1 = { x: lw2.x - ps.uFlangeC, y: lw2.y + gradient * (- ps.uFlangeC) };
-      let tl2 = { x: lw2.x - ps.uFlangeC + ps.uFlangeW, y: lw2.y + gradient * (- ps.uFlangeC + ps.uFlangeW) };
-      let tr1 = { x: rw2.x + ps.uFlangeC, y: rw2.y + gradient * (ps.uFlangeC) };
-      let tr2 = { x: rw2.x + ps.uFlangeC - ps.uFlangeW, y: rw2.y + gradient * (ps.uFlangeC - ps.uFlangeW) };
-
-
-      let dummy = [tl1, tl2, tr1, tr2];
-      dummy.sort(function (a, b) { return a.x < b.x ? -1 : 1; });
-      points.push(...dummy); //이렇게 하면 절대위치에 대한 답을 얻을수가 없음. girderLayout도 호출해야함. 차라리 섹션포인트에서 보간법을 이용해서 좌표를 받아오는 것도 하나의 방법일듯함
-      // }
+      let w1 = slabInfo.w1; //헌치돌출길이
+      let hh = slabInfo.haunchHeight; //헌치높이
+      let wx = [lw2.x - ps.uFlangeC - w1,lw2.x - ps.uFlangeC + ps.uFlangeW + w1, rw2.x + ps.uFlangeC + w1, rw2.x + ps.uFlangeC - ps.uFlangeW - w1];
+      let hl = [];
+      wx.forEach(x => hl.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)));
+      let hpt = [];
+      let wpt = [];
+      const constant = [-3,3,3,-3] ; //루프계산을 위한 계수 모음
+      for (let i=0; i<wx.length;i++){
+          hpt.push({ x: wx[i] + hl[i]*constant[i], y: - ps.slabThickness  + girderPoint.gradientY * (wx[i] + hl[i]*constant[i]) });
+          wpt.push({ x: wx[i], y: - topY  + gradient * (wx[i])});
+      }
+      if (wx[1]>wx[3]){   //임시로 작성한 내용, 개구 폐합에서는 잘못된 3차원 메쉬가 생성됨 200602 by drlim
+          wpt[1] = wpt[0];
+          wpt[3] = wpt[2];
+          hpt[1] = wpt[0];
+          hpt[3] = wpt[2];
+      }
+      points = [...hpt, ...wpt];
+      points.sort(function (a, b) { return a.x < b.x ? -1 : 1; });
       return points
   }
 
@@ -2758,13 +2762,21 @@
       uf3[k].forEach(element => plate3[k].push(ToGlobalPoint(point2, element)));
     }
     // outborder 
-    if (!FisB) {
+    if (!plateCompare(uf0, uf1)) {
       if (former1 < latter1) {
         if (uf1[2][0]) {
           plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2);
-          plate1[0][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2);
-          plate1[0][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2);
+          plate1[2][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2);
+          plate1[2][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2);
           plate1[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (latter1 - former1) * 2);
+          if (!uf0[2][0]) {
+            plate0[2][0] = plate0[0][0];
+            plate0[2][1] = plate0[1][0];
+            plate0[2][2] = plate0[1][3];
+            plate0[2][3] = plate0[0][3];
+            plate0[0] = [];
+            plate0[1] = [];
+          }
         }
         for (let k in uf1) {
           plate0[k].forEach(element => result[k].push(element));
@@ -3116,7 +3128,13 @@
           uflangePoints,
           diaSection
         );
+      } else if (diaphragmLayout[i][section] == "DYdia1") {
+        result[gridkey] = DYdia1(
+          webPoints,
+          skew);
       }
+
+
       result[gridkey].point = gridPoint[gridkey];
     }
     
@@ -3219,6 +3237,68 @@
     
       return { hBracingDict, hBracingPlateDict };
     }
+
+
+  function DYdia1(webPoints, skew, uflangePoint, ds){
+    //ds 입력변수
+    let result = {};
+    let dsi = {
+      lowerHeight : 300,
+      lowerThickness : 12,
+      lowerWidth : 250,
+    }; //  임시 입력변수
+    const bl = webPoints[0];
+    const tl = webPoints[1];
+    const br = webPoints[2];
+    const tr = webPoints[3];
+    const rotationY = (skew - 90)*Math.PI/180;
+    const lwCot = (tl.x - bl.x)/(tl.y-bl.y);
+    const rwCot = (tr.x - br.x)/(tr.y-br.y);
+    const gradient = (tr.y- tl.y)/(tr.x-tl.x);
+
+
+  ///lower stiffener
+  let lowerPlate = [
+    {x:bl.x + lwCot * dsi.lowerHeight,y:bl.y + dsi.lowerHeight},
+    {x:bl.x + lwCot * (dsi.lowerHeight + dsi.lowerThickness),y:bl.y + dsi.lowerHeight + dsi.lowerThickness},
+    {x:br.x + rwCot * (dsi.lowerHeight + dsi.lowerThickness),y:br.y + dsi.lowerHeight + dsi.lowerThickness},
+    {x:br.x + rwCot * dsi.lowerHeight,y:br.y + dsi.lowerHeight}
+  ];
+  // let lowerPoints = [];
+  // lowerPoints.push(lowerPlate[0]);
+  // lowerPoints = lowerPoints.concat(scallop(tl,bl,br,dsi.scallopRadius,4));
+  // //// longitudinal stiffner holes
+  // for (let i=0; i<dsi.longiRibRayout.length;i++){
+  //   lowerPoints.push({x:dsi.longiRibRayout[i] - dsi.ribHoleD, y:lowerPlate[1].y});
+  //   let curve = new THREE.ArcCurve(dsi.longiRibRayout[i],lowerPlate[1].y + dsi.longiRibHeight, dsi.ribHoleR, Math.PI,0,true);
+  //   let dummyVectors = curve.getPoints(8)
+  //   for (let i = 0; i< dummyVectors.length;i++){
+  //     lowerPoints.push({x:dummyVectors[i].x, y:dummyVectors[i].y})
+  //   }
+  //   lowerPoints.push({x:dsi.longiRibRayout[i] + dsi.ribHoleD,y:lowerPlate[1].y});
+  // }
+  // lowerPoints = lowerPoints.concat(scallop(bl,br,tr,dsi.scallopRadius,4));
+  // lowerPoints.push(lowerPlate[3]);
+  // let lowerTopPoints = [lowerPlate[0],
+  //                       {x:bl.x + lwCot * (dsi.lowerHeight+dsi.lowerTopThickness), y:bl.y + (dsi.lowerHeight+dsi.lowerTopThickness)},
+  //                       {x:br.x + rwCot * (dsi.lowerHeight+dsi.lowerTopThickness), y:bl.y + (dsi.lowerHeight+dsi.lowerTopThickness)},
+  //                       lowerPlate[3]];
+
+    result["lowerPlate"] = {
+      points:lowerPlate,
+      Thickness:dsi.lowerWidth,
+      z:-dsi.lowerWidth/2, 
+      rotationX:Math.PI/2, 
+      rotationY:rotationY, 
+      hole:[],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    };
+
+
+
+    return result 
+  }
 
   function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ //ribPoint needed
       // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
@@ -6188,7 +6268,7 @@
                       }
                   }
               }
-              let gpt = { x: offset + j * xoffset, y: yoffset + girderPoint.point.z - initZ[j] };
+              let gpt = { x: offset + j * xoffset, y: yoffset + girderPoint.point.z - initZ[j] - deck[j].slabHeight };
               dims.push(Dimension([heightDim[0], gpt], 1, 1, 1, false, false,0));
 
           }
@@ -6200,7 +6280,7 @@
           dims.push(Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,1));
           dims.push(Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true,2));
           dims.push(Dimension([deckPt[0], deckPt[1]], 0, 1, 1, false, false,1));
-          dims.push(Dimension([heightDim[0], heightDim[1]], 0, 1, 1, false, true,1)); // 각 거더별 형고를 표현해야 하는데, 웹의 높이 출력
+          // dims.push(Dimension([heightDim[0], heightDim[1]], 0, 1, 1, false, true,1)) // 각 거더별 형고를 표현해야 하는데, 웹의 높이 출력
       }
       for (let i in dims){
           meshes.push(...dims[i].meshes);

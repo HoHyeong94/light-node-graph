@@ -168,7 +168,6 @@ export function DYdia1(webPoints, skew, uflangePoint, ds){
   } //  임시 입력변수
 
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
-  let result = {}
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
