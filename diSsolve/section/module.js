@@ -455,7 +455,7 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
     let hh = slabInfo.haunchHeight; //헌치높이
     let wx = [lw2.x - ps.uFlangeC - w1,lw2.x - ps.uFlangeC + ps.uFlangeW + w1, rw2.x + ps.uFlangeC + w1, rw2.x + ps.uFlangeC - ps.uFlangeW - w1]
     let hl = [];
-    wx.forEach(x => hl1.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)))
+    wx.forEach(x => hl.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)))
     // let hl1 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC - w1))//헌치높이
     // let hl2 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC + ps.uFlangeW + w1))//헌치높이
     // let hl3 = Math.abs(hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC + w1))//헌치높이
