@@ -468,10 +468,10 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
         wpt.push({ x: wx[i], y: - topY  + gradient * (wx[i])})
     }
     if (wx[1]>wx[3]){
-        wx[1] = wx[0];
-        wx[3] = wx[2];
-        hpt[1] = wx[0];
-        hpt[3] = wx[2];
+        wpt[1] = wpt[0];
+        wpt[3] = wpt[2];
+        hpt[1] = wpt[0];
+        hpt[3] = wpt[2];
     }
     // let tl0 = { x: lw2.x - ps.uFlangeC - w1 - hl1 * 3 , y: - ps.slabThickness  + girderPoint.gradientY * (lw2.x - ps.uFlangeC - w1 - hl1 * 3) };
     // let tl1 = { x: lw2.x - ps.uFlangeC - w1, y: lw2.y + gradient * (- ps.uFlangeC - w1) };
