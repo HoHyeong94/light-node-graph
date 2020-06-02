@@ -44,7 +44,16 @@ export function DiaShapeDict(
         uflangePoints,
         diaSection
       );
+    } else if (diaphragmLayout[i][section] == "DYdia1") {
+      result[gridkey] = DYdia1(
+        webPoints,
+        skew,
+        uflangePoints,
+        diaSection
+      );
     }
+
+
     result[gridkey].point = gridPoint[gridkey];
   }
   
@@ -147,6 +156,71 @@ export function HBracingDict(
   
     return { hBracingDict, hBracingPlateDict };
   }
+
+
+export function DYdia1(webPoints, skew, uflangePoint, ds){
+  //ds 입력변수
+  let result = {};
+  let dsi = {
+    lowerHeight : 300,
+    lowerThickness : 12,
+    lowerWidth : 250,
+  } //  임시 입력변수
+
+  const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
+  let result = {}
+  const bl = webPoints[0];
+  const tl = webPoints[1];
+  const br = webPoints[2];
+  const tr = webPoints[3];
+  const rotationY = (skew - 90)*Math.PI/180
+  const lwCot = (tl.x - bl.x)/(tl.y-bl.y)
+  const rwCot = (tr.x - br.x)/(tr.y-br.y)
+  const gradient = (tr.y- tl.y)/(tr.x-tl.x)
+
+
+///lower stiffener
+let lowerPlate = [
+  {x:bl.x + lwCot * dsi.lowerHeight,y:bl.y + dsi.lowerHeight},
+  {x:bl.x + lwCot * (dsi.lowerHeight + dsi.lowerThickness),y:bl.y + dsi.lowerHeight + dsi.lowerThickness},
+  {x:br.x + rwCot * (dsi.lowerHeight + dsi.lowerThickness),y:br.y + dsi.lowerHeight + dsi.lowerThickness},
+  {x:br.x + rwCot * dsi.lowerHeight,y:br.y + dsi.lowerHeight}
+];
+// let lowerPoints = [];
+// lowerPoints.push(lowerPlate[0]);
+// lowerPoints = lowerPoints.concat(scallop(tl,bl,br,dsi.scallopRadius,4));
+// //// longitudinal stiffner holes
+// for (let i=0; i<dsi.longiRibRayout.length;i++){
+//   lowerPoints.push({x:dsi.longiRibRayout[i] - dsi.ribHoleD, y:lowerPlate[1].y});
+//   let curve = new THREE.ArcCurve(dsi.longiRibRayout[i],lowerPlate[1].y + dsi.longiRibHeight, dsi.ribHoleR, Math.PI,0,true);
+//   let dummyVectors = curve.getPoints(8)
+//   for (let i = 0; i< dummyVectors.length;i++){
+//     lowerPoints.push({x:dummyVectors[i].x, y:dummyVectors[i].y})
+//   }
+//   lowerPoints.push({x:dsi.longiRibRayout[i] + dsi.ribHoleD,y:lowerPlate[1].y});
+// }
+// lowerPoints = lowerPoints.concat(scallop(bl,br,tr,dsi.scallopRadius,4));
+// lowerPoints.push(lowerPlate[3]);
+// let lowerTopPoints = [lowerPlate[0],
+//                       {x:bl.x + lwCot * (dsi.lowerHeight+dsi.lowerTopThickness), y:bl.y + (dsi.lowerHeight+dsi.lowerTopThickness)},
+//                       {x:br.x + rwCot * (dsi.lowerHeight+dsi.lowerTopThickness), y:bl.y + (dsi.lowerHeight+dsi.lowerTopThickness)},
+//                       lowerPlate[3]];
+
+  result["lowerPlate"] = {
+    points:lowerPlate,
+    Thickness:dsi.lowerWidth,
+    z:-dsi.lowerWidth/2, 
+    rotationX:Math.PI/2, 
+    rotationY:rotationY, 
+    hole:[],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+
+
+  return result 
+}
 
 export function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB){ //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
