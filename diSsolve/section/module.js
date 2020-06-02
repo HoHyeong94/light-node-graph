@@ -453,10 +453,10 @@ export function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, s
     // let tr2 = { x: rw2.x + sectionInfo.D - ps.uFlangeW - slabInfo.w1, y: rw2.y + gradient * (sectionInfo.D - ps.uFlangeW - slabInfo.w1) };
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
-    let hl1 = hh + (- gradient + girderPoint.gradientY) * (- ps.uFlangeC - w1)//헌치높이
-    let hl2 = hh + (- gradient + girderPoint.gradientY) * (- ps.uFlangeC + ps.uFlangeW + w1)//헌치높이
-    let hl3 = hh + (- gradient + girderPoint.gradientY) * ( ps.uFlangeC + w1)//헌치높이
-    let hl4 = hh + (- gradient + girderPoint.gradientY) * ( ps.uFlangeC - ps.uFlangeW - w1)//헌치높이
+    let hl1 = hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC - w1)//헌치높이
+    let hl2 = hh + (- gradient + girderPoint.gradientY) * (lw2.x - ps.uFlangeC + ps.uFlangeW + w1)//헌치높이
+    let hl3 = hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC + w1)//헌치높이
+    let hl4 = hh + (- gradient + girderPoint.gradientY) * (rw2.x + ps.uFlangeC - ps.uFlangeW - w1)//헌치높이
 
     let tl0 = { x: lw2.x - ps.uFlangeC - w1 - hl1 * 3 , y: - ps.slabThickness  + girderPoint.gradientY * (lw2.x - ps.uFlangeC - w1 - hl1 * 3) };
     let tl1 = { x: lw2.x - ps.uFlangeC - w1, y: lw2.y + gradient * (- ps.uFlangeC - w1) };
