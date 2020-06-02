@@ -165,6 +165,9 @@ export function DYdia1(webPoints, skew, uflangePoint, ds){
     lowerHeight : 300,
     lowerThickness : 12,
     lowerWidth : 250,
+    upperHeight : 900,
+    upperThickness : 12,
+    upperWidth : 250,
   } //  임시 입력변수
 
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
@@ -217,6 +220,23 @@ let lowerPlate = [
   }
 
 
+  let upperPlate = [
+    {x:bl.x + lwCot * dsi.upperHeight,y:bl.y + dsi.upperHeight},
+    {x:bl.x + lwCot * (dsi.upperHeight - dsi.upperThickness),y:bl.y + dsi.upperHeight - dsi.upperThickness},
+    {x:br.x + rwCot * (dsi.upperHeight - dsi.upperThickness),y:br.y + dsi.upperHeight - dsi.upperThickness},
+    {x:br.x + rwCot * dsi.upperHeight,y:br.y + dsi.upperHeight}
+  ]
+
+  result["upperPlate"] = {
+    points:upperPlate,
+    Thickness:dsi.upperWidth,
+    z:-dsi.upperWidth/2, 
+    rotationX:Math.PI/2, 
+    rotationY:rotationY, 
+    hole:[],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
 
   return result 
 }
