@@ -289,7 +289,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   lowerbracket1[6], lowerbracket1[7]];
   
   for (let i = 0; i < 4; i++) {
-    result["bracket1"] = {
+    result["bracket"+ i.toFixed(0)] = {
       points: bracketShape,
       Thickness: i<2? dsi.lowerThickness:dsi.upperThickness ,
       z: 0,
