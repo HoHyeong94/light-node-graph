@@ -395,8 +395,8 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   }
   let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
                     { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y - dsi.upperThickness },
-                    { x: upperPlate[3].x + dsi.bracketLength, y: upperPlate[3].y - dsi.upperThickness },
-                    { x: upperPlate[3].x + dsi.bracketLength, y: upperPlate[3].y }]
+                    { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y - dsi.upperThickness },
+                    { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y }]
   let upperJoint1 = [{x:upperflange[0].x - dsi.upperJointWidth/2, y:upperflange[0].y},
                     {x:upperflange[0].x + dsi.upperJointWidth/2, y:upperflange[0].y},
                     {x:upperflange[0].x + dsi.upperJointWidth/2, y:upperflange[0].y + dsi.upperJointThickness},
@@ -423,8 +423,8 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
 
   let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
                     { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.lowerThickness },
-                    { x: lowerPlate[3].x + dsi.bracketLength, y: lowerPlate[3].y + dsi.lowerThickness },
-                    { x: lowerPlate[3].x + dsi.bracketLength, y: lowerPlate[3].y }]
+                    { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y + dsi.lowerThickness },
+                    { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y }]
 
   let lowerJoint1 = [{x:lowerflange[0].x - dsi.lowerJointWidth/2, y:lowerflange[0].y},
                     {x:lowerflange[0].x + dsi.lowerJointWidth/2, y:lowerflange[0].y},
