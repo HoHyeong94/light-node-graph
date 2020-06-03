@@ -256,6 +256,9 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     webJointWidth: 330,
     webJointHeight: 440,
     webJointThickness: 10,
+    upperJointWidth : 480,
+    upperJointWidth2 : 80,
+    upperJointThickness : 10,
   } //  임시 입력변수
 
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
@@ -383,10 +386,29 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
-  result["webJoint3"] = {points: webJoint3,Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],
+  result["webJoint4"] = {points: webJoint3,Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
+  let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
+                    { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y - dsi.upperThickness },
+                    { x: upperPlate[3].x + dsi.bracketLength, y: upperPlate[3].y - dsi.upperThickness },
+                    { x: upperPlate[3].x + dsi.bracketLength, y: upperPlate[3].y }]
+  let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
+                    { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.lowerThickness },
+                    { x: lowerPlate[3].x + dsi.bracketLength, y: lowerPlate[3].y + dsi.lowerThickness },
+                    { x: lowerPlate[3].x + dsi.bracketLength, y: lowerPlate[3].y }]
+  let upperJoint1 = [{x:upperflange[0].x - dsi.upperJointWidth/2, y:upperflange[0].y},
+                    {x:upperflange[0].x + dsi.upperJointWidth/2, y:upperflange[0].y},
+                    {x:upperflange[0].x + dsi.upperJointWidth/2, y:upperflange[0].y + dsi.upperJointThickness},
+                    {x:upperflange[0].x - dsi.upperJointWidth/2, y:upperflange[0].y + dsi.upperJointThickness}]
+  let upperJoint2 = [{x:upperflange[1].x - dsi.upperJointWidth/2, y:upperflange[1].y},
+                    {x:upperflange[1].x + dsi.upperJointWidth/2, y:upperflange[1].y},
+                    {x:upperflange[1].x + dsi.upperJointWidth/2, y:upperflange[1].y - dsi.upperJointThickness},
+                    {x:upperflange[1].x - dsi.upperJointWidth/2, y:upperflange[1].y - dsi.upperJointThickness}]
+  result["upperJoint1"] = {points: upperJoint1,Thickness: dsi.upperWidth , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["upperJoint2"] = {points: upperJoint2,Thickness: dsi.upperJointWidth2 , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["upperJoint3"] = {points: upperJoint2,Thickness: dsi.upperJointWidth2 , z: dsi.upperWidth / 2 - dsi.upperJointWidth2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
 
   return result
 }
