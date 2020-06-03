@@ -273,7 +273,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds){
     { x: br.x + rwCot * dsi.lowerHeight, y: br.y + dsi.lowerHeight }
   ];
 
-  point1 = ToGlobalPoint(point,lowerPlate[0]);
+  let point1 = ToGlobalPoint(point,lowerPlate[0]);
 
 
   let lowerbracket1 = [{x:0,y:bracketWidth/2}, {x:100,y:bracketWidth/2}, {x:100,y:lowerWidth/2},{x:bracketLength,y:lowerWidth/2},
