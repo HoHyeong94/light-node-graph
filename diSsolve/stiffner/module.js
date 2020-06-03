@@ -294,7 +294,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds){
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
 
-
+  return result
 }
 
 export function DYdia1(webPoints, skew, uflangePoint, ds) {
