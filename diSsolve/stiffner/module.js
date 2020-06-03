@@ -51,8 +51,15 @@ export function DiaShapeDict(
         uflangePoints,
         diaSection
       );
+    } else if (diaphragmLayout[i][section] == "DYdia2") {
+      result[gridkey] = DYdia2(
+        webPoints,
+        gridPoint[gridkey],
+        skew,
+        uflangePoints,
+        diaSection
+      );
     }
-
 
     result[gridkey].point = gridPoint[gridkey];
   }
