@@ -282,19 +282,19 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   ToGlobalPoint(point, lowerPlate[3]),
   ToGlobalPoint(point, upperPlate[1]),
   ToGlobalPoint(point, upperPlate[2])];
-  let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: 100, y: dsi.bracketWidth / 2 }, { x: 100, y: dsi.lowerWidth / 2 }, { x: dsi.bracketLength, y: dsi.lowerWidth / 2 },
-  { x: dsi.bracketLength, y: -dsi.lowerWidth / 2 }, { x: 100, y: -dsi.lowerWidth / 2 }, { x: 100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
-  let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
-  lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
-  lowerbracket1[6], lowerbracket1[7]];
-
   for (let i = 0; i < 4; i++) {
+    let sign = i % 2? 1:-1;
+    let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign*100, y: dsi.bracketWidth / 2 }, { x: sign*100, y: dsi.lowerWidth / 2 }, { x: sign*dsi.bracketLength, y: dsi.lowerWidth / 2 },
+      { x: sign*dsi.bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign*100, y: -dsi.lowerWidth / 2 }, { x: sign*100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
+      let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
+      lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
+      lowerbracket1[6], lowerbracket1[7]];
     result["bracket" + i.toFixed(0)] = {
       points: bracketShape,
       Thickness: i < 2 ? dsi.lowerThickness : dsi.upperThickness,
       z: 0,
       rotationX: 0,
-      rotationY: i % 2 === 0 ? 0 : Math.PI,
+      rotationY: 0,
       hole: [],
       point: bracketPoint[i],
       // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
