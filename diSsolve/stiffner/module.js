@@ -283,12 +283,12 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   ToGlobalPoint(point, upperPlate[1]),
   ToGlobalPoint(point, upperPlate[2])];
   for (let i = 0; i < 4; i++) {
-    let sign = i % 2? 1:-1;
-    let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign*100, y: dsi.bracketWidth / 2 }, { x: sign*100, y: dsi.lowerWidth / 2 }, { x: sign*dsi.bracketLength, y: dsi.lowerWidth / 2 },
-      { x: sign*dsi.bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign*100, y: -dsi.lowerWidth / 2 }, { x: sign*100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
-      let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
-      lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
-      lowerbracket1[6], lowerbracket1[7]];
+    let sign = i % 2 ? 1 : -1;
+    let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.lowerWidth / 2 }, { x: sign * dsi.bracketLength, y: dsi.lowerWidth / 2 },
+    { x: sign * dsi.bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
+    let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
+    lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
+    lowerbracket1[6], lowerbracket1[7]];
     result["bracket" + i.toFixed(0)] = {
       points: bracketShape,
       Thickness: i < 2 ? dsi.lowerThickness : dsi.upperThickness,
@@ -301,19 +301,39 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
-  let stiffnerPoint = [[bl, lowerPlate[0]], 
-                      [br, lowerPlate[3]],
-                      [tl, upperPlate[0]],
-                      [tr, upperPlate[3]]  ]
+  let stiffnerPoint = [[bl, lowerPlate[0]],
+  [br, lowerPlate[3]],
+  [tl, upperPlate[0]],
+  [tr, upperPlate[3]]]
   for (let i = 0; i < 4; i++) {
-    let stiffWidth = i%2===0? dsi.stiffWidth : -dsi.stiffWidth;
-    let tan1 = i<2? 0: gradient;
-    let stiffner = PlateRestPoint(stiffnerPoint[i][0],stiffnerPoint[i][1] , tan1, 0, stiffWidth)
+    let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
+    let tan1 = i < 2 ? 0 : gradient;
+    let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], tan1, 0, stiffWidth)
     let stiffnerPoints = [];
     stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
     stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
     stiffnerPoints.push(stiffner[2], stiffner[3])
     result["stiffner" + i.toFixed(0)] = {
+      points: stiffnerPoints,
+      Thickness: dsi.centerThickness,
+      z: -dsi.centerThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: rotationY,
+      hole: [],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
+  }
+
+  let centerBracketPoint = [[lowerPlate[1], upperPlate[1]], [lowerPlate[2], upperPlate[2]]];
+  for (let i = 0; i < 2; i++) {
+    let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
+    let stiffner = PlateRestPoint(centerBracketPoint[i][0], centerBracketPoint[i][1], 0, 0, stiffWidth)
+    let stiffnerPoints = [];
+    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    stiffnerPoints.push(stiffner[2], stiffner[3])
+    result["CenterBracket" + i.toFixed(0)] = {
       points: stiffnerPoints,
       Thickness: dsi.stiffThickness,
       z: -dsi.stiffThickness / 2,
@@ -324,6 +344,27 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
+
+
+  let centerPlate = [lowerPlate[1], lowerPlate[2], upperPlate[2], upperPlate[1]]
+  let centerPoints = [];
+  centerPoints.push(...scallop(centerPlate[0], centerPlate[1], centerPlate[2], dsi.scallopRadius, 4));
+  centerPoints.push(...scallop(centerPlate[1], centerPlate[2], centerPlate[3], dsi.scallopRadius, 4));
+  centerPoints.push(...scallop(centerPlate[2], centerPlate[3], centerPlate[0], dsi.scallopRadius, 4));
+  centerPoints.push(...scallop(centerPlate[3], centerPlate[0], centerPlate[1], dsi.scallopRadius, 4));
+
+  result["centerPlate"] = {
+    points: centerPoints,
+    Thickness: dsi.centerThickness,
+    z: -dsi.centerThickness / 2,
+    rotationX: Math.PI / 2,
+    rotationY: rotationY,
+    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+
 
   return result
 }
