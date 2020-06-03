@@ -301,7 +301,10 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
-  let stiffnerPoint = [[bl, lowerPlate[0],br], [lowerPlate[3],tl, upperPlate[0]],[tl, upperPlate[0]],[tr, upperPlate[3]]  ]
+  let stiffnerPoint = [[bl, lowerPlate[0]], 
+                      [br, lowerPlate[3]],
+                      [tl, upperPlate[0]],
+                      [tr, upperPlate[3]]  ]
   for (let i = 0; i < 4; i++) {
     let stiffWidth = i%2===0? dsi.stiffWidth : -dsi.stiffWidth;
     let tan1 = i<2? 0: gradient;
