@@ -553,7 +553,7 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
   let stiffnerPoints = [];
   stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
   stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-  addedPoint = [{x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y},
+  let addedPoint = [{x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y},
   {x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y+50},
   {x:upperPlate[1].x, y:upperPlate[1].y +50 + dsi.stiffWidth2 - dsi.stiffWidth}];
   stiffnerPoints.push(...Fillet2D(addedPoint[1],addedPoint[2],stiffner[3],dsi.filletR,4))
@@ -570,7 +570,7 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
-
+  return result
 }
 
 export function DYdia1(webPoints, skew, uflangePoint, ds) {
