@@ -256,11 +256,11 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     webJointWidth: 330,
     webJointHeight: 440,
     webJointThickness: 10,
-    upperJointWidth : 480,
-    upperJointWidth2 : 80,
+    upperJointLength : 480,
+    upperJointWidth : 80, 
     upperJointThickness : 10,
-    lowerJointWidth : 480,
-    lowerJointWidth2 : 80,
+    lowerJointLength : 480,
+    lowerJointWidth : 80,
     lowerJointThickness : 10,
   } //  임시 입력변수
 
@@ -398,58 +398,58 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
                     { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y - dsi.upperThickness },
                     { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y }]
   result["upperflange"] = {points: upperflange,Thickness: dsi.upperWidth , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  let upperJoint1 = [{x:upperflange[0].x - dsi.upperJointWidth/2, y:upperflange[0].y},
-                    {x:upperflange[0].x + dsi.upperJointWidth/2, y:upperflange[0].y},
-                    {x:upperflange[0].x + dsi.upperJointWidth/2, y:upperflange[0].y + dsi.upperJointThickness},
-                    {x:upperflange[0].x - dsi.upperJointWidth/2, y:upperflange[0].y + dsi.upperJointThickness}]
-  let upperJoint2 = [{x:upperflange[1].x - dsi.upperJointWidth/2, y:upperflange[1].y},
-                    {x:upperflange[1].x + dsi.upperJointWidth/2, y:upperflange[1].y},
-                    {x:upperflange[1].x + dsi.upperJointWidth/2, y:upperflange[1].y - dsi.upperJointThickness},
-                    {x:upperflange[1].x - dsi.upperJointWidth/2, y:upperflange[1].y - dsi.upperJointThickness}]
-  let upperJoint11 = [{x:upperflange[3].x - dsi.upperJointWidth/2, y:upperflange[3].y},
-                    {x:upperflange[3].x + dsi.upperJointWidth/2, y:upperflange[3].y},
-                    {x:upperflange[3].x + dsi.upperJointWidth/2, y:upperflange[3].y + dsi.upperJointThickness},
-                    {x:upperflange[3].x - dsi.upperJointWidth/2, y:upperflange[3].y + dsi.upperJointThickness}]
-  let upperJoint22 = [{x:upperflange[2].x - dsi.upperJointWidth/2, y:upperflange[2].y},
-                    {x:upperflange[2].x + dsi.upperJointWidth/2, y:upperflange[2].y},
-                    {x:upperflange[2].x + dsi.upperJointWidth/2, y:upperflange[2].y - dsi.upperJointThickness},
-                    {x:upperflange[2].x - dsi.upperJointWidth/2, y:upperflange[2].y - dsi.upperJointThickness}]
+  let upperJoint1 = [{x:upperflange[0].x - dsi.upperJointLength/2, y:upperflange[0].y},
+                    {x:upperflange[0].x + dsi.upperJointLength/2, y:upperflange[0].y},
+                    {x:upperflange[0].x + dsi.upperJointLength/2, y:upperflange[0].y + dsi.upperJointThickness},
+                    {x:upperflange[0].x - dsi.upperJointLength/2, y:upperflange[0].y + dsi.upperJointThickness}]
+  let upperJoint2 = [{x:upperflange[1].x - dsi.upperJointLength/2, y:upperflange[1].y},
+                    {x:upperflange[1].x + dsi.upperJointLength/2, y:upperflange[1].y},
+                    {x:upperflange[1].x + dsi.upperJointLength/2, y:upperflange[1].y - dsi.upperJointThickness},
+                    {x:upperflange[1].x - dsi.upperJointLength/2, y:upperflange[1].y - dsi.upperJointThickness}]
+  let upperJoint11 = [{x:upperflange[3].x - dsi.upperJointLength/2, y:upperflange[3].y},
+                    {x:upperflange[3].x + dsi.upperJointLength/2, y:upperflange[3].y},
+                    {x:upperflange[3].x + dsi.upperJointLength/2, y:upperflange[3].y + dsi.upperJointThickness},
+                    {x:upperflange[3].x - dsi.upperJointLength/2, y:upperflange[3].y + dsi.upperJointThickness}]
+  let upperJoint22 = [{x:upperflange[2].x - dsi.upperJointLength/2, y:upperflange[2].y},
+                    {x:upperflange[2].x + dsi.upperJointLength/2, y:upperflange[2].y},
+                    {x:upperflange[2].x + dsi.upperJointLength/2, y:upperflange[2].y - dsi.upperJointThickness},
+                    {x:upperflange[2].x - dsi.upperJointLength/2, y:upperflange[2].y - dsi.upperJointThickness}]
 
   result["upperJoint1"] = {points: upperJoint1,Thickness: dsi.upperWidth , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  result["upperJoint2"] = {points: upperJoint2,Thickness: dsi.upperJointWidth2 , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  result["upperJoint3"] = {points: upperJoint2,Thickness: dsi.upperJointWidth2 , z: dsi.upperWidth / 2 - dsi.upperJointWidth2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["upperJoint2"] = {points: upperJoint2,Thickness: dsi.upperJointWidth , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["upperJoint3"] = {points: upperJoint2,Thickness: dsi.upperJointWidth , z: dsi.upperWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
   result["upperJoint11"] = {points: upperJoint11,Thickness: dsi.upperWidth , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  result["upperJoint22"] = {points: upperJoint22,Thickness: dsi.upperJointWidth2 , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  result["upperJoint33"] = {points: upperJoint22,Thickness: dsi.upperJointWidth2 , z: dsi.upperWidth / 2 - dsi.upperJointWidth2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["upperJoint22"] = {points: upperJoint22,Thickness: dsi.upperJointWidth , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["upperJoint33"] = {points: upperJoint22,Thickness: dsi.upperJointWidth , z: dsi.upperWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
 
   let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
                     { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.lowerThickness },
                     { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y + dsi.lowerThickness },
                     { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y }]
   result["lowerflange"] = {points: lowerflange,Thickness: dsi.lowerWidth , z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  let lowerJoint1 = [{x:lowerflange[0].x - dsi.lowerJointWidth/2, y:lowerflange[0].y},
-                    {x:lowerflange[0].x + dsi.lowerJointWidth/2, y:lowerflange[0].y},
-                    {x:lowerflange[0].x + dsi.lowerJointWidth/2, y:lowerflange[0].y - dsi.lowerJointThickness},
-                    {x:lowerflange[0].x - dsi.lowerJointWidth/2, y:lowerflange[0].y - dsi.lowerJointThickness}];
-  let lowerJoint2 = [{x:lowerflange[1].x - dsi.lowerJointWidth/2, y:lowerflange[1].y},
-                    {x:lowerflange[1].x + dsi.lowerJointWidth/2, y:lowerflange[1].y},
-                    {x:lowerflange[1].x + dsi.lowerJointWidth/2, y:lowerflange[1].y + dsi.lowerJointThickness},
-                    {x:lowerflange[1].x - dsi.lowerJointWidth/2, y:lowerflange[1].y + dsi.lowerJointThickness}]
-  let lowerJoint11 = [{x:lowerflange[3].x - dsi.lowerJointWidth/2, y:lowerflange[3].y},
-                    {x:lowerflange[3].x + dsi.lowerJointWidth/2, y:lowerflange[3].y},
-                    {x:lowerflange[3].x + dsi.lowerJointWidth/2, y:lowerflange[3].y - dsi.lowerJointThickness},
-                    {x:lowerflange[3].x - dsi.lowerJointWidth/2, y:lowerflange[3].y - dsi.lowerJointThickness}];
-  let lowerJoint22 = [{x:lowerflange[2].x - dsi.lowerJointWidth/2, y:lowerflange[2].y},
-                    {x:lowerflange[2].x + dsi.lowerJointWidth/2, y:lowerflange[2].y},
-                    {x:lowerflange[2].x + dsi.lowerJointWidth/2, y:lowerflange[2].y + dsi.lowerJointThickness},
-                    {x:lowerflange[2].x - dsi.lowerJointWidth/2, y:lowerflange[2].y + dsi.lowerJointThickness}]
+  let lowerJoint1 = [{x:lowerflange[0].x - dsi.lowerJointLength/2, y:lowerflange[0].y},
+                    {x:lowerflange[0].x + dsi.lowerJointLength/2, y:lowerflange[0].y},
+                    {x:lowerflange[0].x + dsi.lowerJointLength/2, y:lowerflange[0].y - dsi.lowerJointThickness},
+                    {x:lowerflange[0].x - dsi.lowerJointLength/2, y:lowerflange[0].y - dsi.lowerJointThickness}];
+  let lowerJoint2 = [{x:lowerflange[1].x - dsi.lowerJointLength/2, y:lowerflange[1].y},
+                    {x:lowerflange[1].x + dsi.lowerJointLength/2, y:lowerflange[1].y},
+                    {x:lowerflange[1].x + dsi.lowerJointLength/2, y:lowerflange[1].y + dsi.lowerJointThickness},
+                    {x:lowerflange[1].x - dsi.lowerJointLength/2, y:lowerflange[1].y + dsi.lowerJointThickness}]
+  let lowerJoint11 = [{x:lowerflange[3].x - dsi.lowerJointLength/2, y:lowerflange[3].y},
+                    {x:lowerflange[3].x + dsi.lowerJointLength/2, y:lowerflange[3].y},
+                    {x:lowerflange[3].x + dsi.lowerJointLength/2, y:lowerflange[3].y - dsi.lowerJointThickness},
+                    {x:lowerflange[3].x - dsi.lowerJointLength/2, y:lowerflange[3].y - dsi.lowerJointThickness}];
+  let lowerJoint22 = [{x:lowerflange[2].x - dsi.lowerJointLength/2, y:lowerflange[2].y},
+                    {x:lowerflange[2].x + dsi.lowerJointLength/2, y:lowerflange[2].y},
+                    {x:lowerflange[2].x + dsi.lowerJointLength/2, y:lowerflange[2].y + dsi.lowerJointThickness},
+                    {x:lowerflange[2].x - dsi.lowerJointLength/2, y:lowerflange[2].y + dsi.lowerJointThickness}]
 
   result["lowerJoint1"] = {points: lowerJoint1,Thickness: dsi.lowerWidth , z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  result["lowerJoint2"] = {points: lowerJoint2,Thickness: dsi.lowerJointWidth2 , z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  result["lowerJoint3"] = {points: lowerJoint2,Thickness: dsi.lowerJointWidth2 , z: dsi.lowerWidth / 2 - dsi.upperJointWidth2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["lowerJoint2"] = {points: lowerJoint2,Thickness: dsi.lowerJointWidth , z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["lowerJoint3"] = {points: lowerJoint2,Thickness: dsi.lowerJointWidth , z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
   result["lowerJoint11"] = {points: lowerJoint11,Thickness: dsi.lowerWidth , z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  result["lowerJoint22"] = {points: lowerJoint22,Thickness: dsi.lowerJointWidth2 , z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
-  result["lowerJoint33"] = {points: lowerJoint22,Thickness: dsi.lowerJointWidth2 , z: dsi.lowerWidth / 2 - dsi.upperJointWidth2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["lowerJoint22"] = {points: lowerJoint22,Thickness: dsi.lowerJointWidth , z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
+  result["lowerJoint33"] = {points: lowerJoint22,Thickness: dsi.lowerJointWidth , z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
 
   return result
 }
@@ -532,69 +532,91 @@ export function DYdia1(webPoints, skew, uflangePoint, ds) {
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
+  let stiffnerPoint = [[bl, lowerPlate[0]],
+  [br, lowerPlate[3]],
+  [tl, upperPlate[0]],
+  [tr, upperPlate[3]]]
+  for (let i = 0; i < 4; i++) {
+    let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
+    let tan1 = i < 2 ? 0 : gradient;
+    let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], tan1, 0, stiffWidth)
+    let stiffnerPoints = [];
+    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    stiffnerPoints.push(stiffner[2], stiffner[3])
+    result["stiffner" + i.toFixed(0)] = {
+      points: stiffnerPoints,
+      Thickness: dsi.centerThickness,
+      z: -dsi.centerThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: rotationY,
+      hole: [],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
+  }
+  // let leftLower = PlateRestPoint(bl, lowerPlate[0], 0, 0, dsi.stiffWidth)
+  // let leftLowerPoints = [];
+  // leftLowerPoints.push(...scallop(leftLower[3], leftLower[0], leftLower[1], dsi.scallopRadius, 4));
+  // leftLowerPoints.push(...scallop(leftLower[0], leftLower[1], leftLower[2], dsi.scallopRadius, 4));
+  // leftLowerPoints.push(leftLower[2], leftLower[3])
+  // result["leftLower"] = {
+  //   points: leftLowerPoints,
+  //   Thickness: dsi.stiffThickness,
+  //   z: -dsi.stiffThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
+  // let rightLower = PlateRestPoint(br, lowerPlate[3], 0, 0, -dsi.stiffWidth)
+  // let rightLowerPoints = [];
+  // rightLowerPoints.push(...scallop(rightLower[3], rightLower[0], rightLower[1], dsi.scallopRadius, 4));
+  // rightLowerPoints.push(...scallop(rightLower[0], rightLower[1], rightLower[2], dsi.scallopRadius, 4));
+  // rightLowerPoints.push(rightLower[2], rightLower[3])
+  // result["rightLower"] = {
+  //   points: rightLowerPoints,
+  //   Thickness: dsi.stiffThickness,
+  //   z: -dsi.stiffThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
 
-  let leftLower = PlateRestPoint(bl, lowerPlate[0], 0, 0, dsi.stiffWidth)
-  let leftLowerPoints = [];
-  leftLowerPoints.push(...scallop(leftLower[3], leftLower[0], leftLower[1], dsi.scallopRadius, 4));
-  leftLowerPoints.push(...scallop(leftLower[0], leftLower[1], leftLower[2], dsi.scallopRadius, 4));
-  leftLowerPoints.push(leftLower[2], leftLower[3])
-  result["leftLower"] = {
-    points: leftLowerPoints,
-    Thickness: dsi.stiffThickness,
-    z: -dsi.stiffThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
-  let rightLower = PlateRestPoint(br, lowerPlate[3], 0, 0, -dsi.stiffWidth)
-  let rightLowerPoints = [];
-  rightLowerPoints.push(...scallop(rightLower[3], rightLower[0], rightLower[1], dsi.scallopRadius, 4));
-  rightLowerPoints.push(...scallop(rightLower[0], rightLower[1], rightLower[2], dsi.scallopRadius, 4));
-  rightLowerPoints.push(rightLower[2], rightLower[3])
-  result["rightLower"] = {
-    points: rightLowerPoints,
-    Thickness: dsi.stiffThickness,
-    z: -dsi.stiffThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  // let leftupper = PlateRestPoint(tl, upperPlate[0], gradient, 0, dsi.stiffWidth)
+  // let leftupperPoints = [];
+  // leftupperPoints.push(...scallop(leftupper[3], leftupper[0], leftupper[1], dsi.scallopRadius, 4));
+  // leftupperPoints.push(...scallop(leftupper[0], leftupper[1], leftupper[2], dsi.scallopRadius, 4));
+  // leftupperPoints.push(leftupper[2], leftupper[3])
+  // result["leftupper"] = {
+  //   points: leftupperPoints,
+  //   Thickness: dsi.stiffThickness,
+  //   z: -dsi.stiffThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
 
-  let leftupper = PlateRestPoint(tl, upperPlate[0], gradient, 0, dsi.stiffWidth)
-  let leftupperPoints = [];
-  leftupperPoints.push(...scallop(leftupper[3], leftupper[0], leftupper[1], dsi.scallopRadius, 4));
-  leftupperPoints.push(...scallop(leftupper[0], leftupper[1], leftupper[2], dsi.scallopRadius, 4));
-  leftupperPoints.push(leftupper[2], leftupper[3])
-  result["leftupper"] = {
-    points: leftupperPoints,
-    Thickness: dsi.stiffThickness,
-    z: -dsi.stiffThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
-
-  let rightupper = PlateRestPoint(tr, upperPlate[3], gradient, 0, -dsi.stiffWidth)
-  let rightupperPoints = [];
-  rightupperPoints.push(...scallop(rightupper[3], rightupper[0], rightupper[1], dsi.scallopRadius, 4));
-  rightupperPoints.push(...scallop(rightupper[0], rightupper[1], rightupper[2], dsi.scallopRadius, 4));
-  rightupperPoints.push(rightupper[2], rightupper[3])
-  result["rightupper"] = {
-    points: rightupperPoints,
-    Thickness: dsi.stiffThickness,
-    z: -dsi.stiffThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  // let rightupper = PlateRestPoint(tr, upperPlate[3], gradient, 0, -dsi.stiffWidth)
+  // let rightupperPoints = [];
+  // rightupperPoints.push(...scallop(rightupper[3], rightupper[0], rightupper[1], dsi.scallopRadius, 4));
+  // rightupperPoints.push(...scallop(rightupper[0], rightupper[1], rightupper[2], dsi.scallopRadius, 4));
+  // rightupperPoints.push(rightupper[2], rightupper[3])
+  // result["rightupper"] = {
+  //   points: rightupperPoints,
+  //   Thickness: dsi.stiffThickness,
+  //   z: -dsi.stiffThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
 
 
 
