@@ -278,8 +278,8 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds){
 
   let lowerbracket1 = [{x:0,y:dsi.bracketWidth/2}, {x:100,y:dsi.bracketWidth/2}, {x:100,y:dsi.lowerWidth/2},{x:dsi.bracketLength,y:dsi.lowerWidth/2},
     {x:dsi.bracketLength,y:-dsi.lowerWidth/2},{x:100,y:-dsi.lowerWidth/2}, {x:100,y:-dsi.bracketWidth/2}, {x:0,y:-dsi.bracketWidth/2}];
-  let bracketPoint = [lowerbracket1[0], lowerbracket1[1], Fillet2D(lowerbracket1[0],lowerbracket1[1], lowerbracket1[2], bracketScallopR,4),
-  lowerbracket1[3],lowerbracket1[4], Fillet2D(lowerbracket1[4],lowerbracket1[5], lowerbracket1[6], bracketScallopR,4),
+  let bracketPoint = [lowerbracket1[0], lowerbracket1[1], Fillet2D(lowerbracket1[0],lowerbracket1[1], lowerbracket1[2], dsi.bracketScallopR,4),
+  lowerbracket1[3],lowerbracket1[4], Fillet2D(lowerbracket1[4],lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR,4),
   lowerbracket1[6], lowerbracket1[7]];
 
   result["bracket1"] = {
