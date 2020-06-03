@@ -370,8 +370,23 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   result["webJoint1"] = {points: webJoint1,Thickness: dsi.webJointThickness, z: dsi.centerThickness / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+  result["webJoint2"] = {points: webJoint1,Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }  
-
+  let webJoint3 = [{ x: (webPlate[1].x + webPlate[2].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 - dsi.webJointHeight / 2 },
+  { x: (webPlate[1].x + webPlate[2].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 - dsi.webJointHeight / 2 },
+  { x: (webPlate[1].x + webPlate[2].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 },
+  { x: (webPlate[1].x + webPlate[2].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 }];
+  result["webJoint3"] = {points: webJoint3,Thickness: dsi.webJointThickness, z: dsi.centerThickness / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+  result["webJoint3"] = {points: webJoint3,Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
 
   return result
 }
