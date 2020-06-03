@@ -397,6 +397,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
                     { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y - dsi.upperThickness },
                     { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y - dsi.upperThickness },
                     { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y }]
+  result["upperflange"] = {points: upperflange,Thickness: dsi.upperWidth , z: - dsi.upperWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
   let upperJoint1 = [{x:upperflange[0].x - dsi.upperJointWidth/2, y:upperflange[0].y},
                     {x:upperflange[0].x + dsi.upperJointWidth/2, y:upperflange[0].y},
                     {x:upperflange[0].x + dsi.upperJointWidth/2, y:upperflange[0].y + dsi.upperJointThickness},
@@ -425,7 +426,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
                     { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.lowerThickness },
                     { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y + dsi.lowerThickness },
                     { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y }]
-
+  result["lowerflage"] = {points: lowerflage,Thickness: dsi.lowerWidth , z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2,   rotationY: rotationY,    hole: [],}
   let lowerJoint1 = [{x:lowerflange[0].x - dsi.lowerJointWidth/2, y:lowerflange[0].y},
                     {x:lowerflange[0].x + dsi.lowerJointWidth/2, y:lowerflange[0].y},
                     {x:lowerflange[0].x + dsi.lowerJointWidth/2, y:lowerflange[0].y - dsi.lowerJointThickness},
