@@ -259,6 +259,9 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     upperJointWidth : 480,
     upperJointWidth2 : 80,
     upperJointThickness : 10,
+    lowerJointWidth : 480,
+    lowerJointWidth2 : 80,
+    lowerJointThickness : 10,
   } //  임시 입력변수
 
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
