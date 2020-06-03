@@ -529,7 +529,7 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
 
-  let centerPlate = [lowerPlate[0], lowerPlate[3], upperPlate[3], upperPlate[0]]
+  let centerPlate = [bl, br, upperPlate[3], upperPlate[0]]
   let centerPoints = [];
   centerPoints.push(...scallop(centerPlate[0], centerPlate[1], centerPlate[2], dsi.scallopRadius, 4));
   centerPoints.push(...scallop(centerPlate[1], centerPlate[2], centerPlate[3], dsi.scallopRadius, 4));
@@ -550,12 +550,14 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
     let stiffWidth = dsi.stiffWidth ;
   let tan1 = gradient;
   let stiffner = PlateRestPoint(stiffnerPoint[0], stiffnerPoint[1], tan1, 0, stiffWidth)
+  let addedPoint = [{x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y},
+  {x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y+50},
+  {x:upperPlate[1].x + dsi.stiffWidth, y:upperPlate[1].y +50 + dsi.stiffWidth2 - dsi.stiffWidth}];
+
   let stiffnerPoints = [];
   stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
   stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-  let addedPoint = [{x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y},
-  {x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y+50},
-  {x:upperPlate[1].x, y:upperPlate[1].y +50 + dsi.stiffWidth2 - dsi.stiffWidth}];
+  stiffnerPoints.push(addedPoint[0],addedPoint[1])
   stiffnerPoints.push(...Fillet2D(addedPoint[1],addedPoint[2],stiffner[3],dsi.filletR,4))
   stiffnerPoints.push(stiffner[3])
   
