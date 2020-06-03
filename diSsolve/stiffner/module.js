@@ -253,6 +253,9 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     bracketWidth: 450,
     bracketLength: 529,
     bracketScallopR: 100,
+    webJointWidth: 330,
+    webJointHeight: 440,
+    webJointThickness: 10,
   } //  임시 입력변수
 
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
@@ -283,7 +286,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   ToGlobalPoint(point, upperPlate[1]),
   ToGlobalPoint(point, upperPlate[2])];
   for (let i = 0; i < 4; i++) {
-    let sign = i % 2===0 ? 1 : -1;
+    let sign = i % 2 === 0 ? 1 : -1;
     let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.lowerWidth / 2 }, { x: sign * dsi.bracketLength, y: dsi.lowerWidth / 2 },
     { x: sign * dsi.bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
@@ -325,15 +328,15 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     }
   }
 
-  let centerBracketPoint = [[lowerPlate[1], upperPlate[1]], [lowerPlate[2], upperPlate[2]]];
+  let webBracketPoint = [[lowerPlate[1], upperPlate[1]], [lowerPlate[2], upperPlate[2]]];
   for (let i = 0; i < 2; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
-    let stiffner = PlateRestPoint(centerBracketPoint[i][0], centerBracketPoint[i][1], 0, 0, stiffWidth)
+    let stiffner = PlateRestPoint(webBracketPoint[i][0], webBracketPoint[i][1], 0, 0, stiffWidth)
     let stiffnerPoints = [];
     stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
     stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
     stiffnerPoints.push(stiffner[2], stiffner[3])
-    result["CenterBracket" + i.toFixed(0)] = {
+    result["webBracket" + i.toFixed(0)] = {
       points: stiffnerPoints,
       Thickness: dsi.stiffThickness,
       z: -dsi.stiffThickness / 2,
@@ -344,6 +347,24 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
+
+  let webPlate = [{ x: lowerPlate[1].x + dsi.bracketLength, y: lowerPlate[1].y },
+  { x: lowerPlate[2].x - dsi.bracketLength, y: lowerPlate[2].y },
+  { x: upperPlate[2].x - dsi.bracketLength, y: upperPlate[2].y },
+  { x: upperPlate[1].x + dsi.bracketLength, y: upperPlate[1].y }];
+
+  result["webPlate"] = {
+    points: webPlate,
+    Thickness: dsi.centerThickness,
+    z: -dsi.centerThickness / 2,
+    rotationX: Math.PI / 2,
+    rotationY: rotationY,
+    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+
   return result
 }
 
