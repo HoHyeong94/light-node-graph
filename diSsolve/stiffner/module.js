@@ -237,7 +237,7 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
 
 
 
-export function DYdia2(webPoints, point, skew, uflangePoint, ds){
+export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   let result = {};
   let dsi = {
     lowerHeight: 300,
@@ -250,9 +250,9 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds){
     stiffWidth: 150,
     stiffThickness: 12,
     scallopRadius: 35,
-    bracketWidth : 450,
-    bracketLength : 529,
-    bracketScallopR : 100,
+    bracketWidth: 450,
+    bracketLength: 529,
+    bracketScallopR: 100,
   } //  임시 입력변수
 
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
@@ -272,28 +272,35 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds){
     { x: br.x + rwCot * (dsi.lowerHeight + dsi.lowerThickness), y: br.y + dsi.lowerHeight + dsi.lowerThickness },
     { x: br.x + rwCot * dsi.lowerHeight, y: br.y + dsi.lowerHeight }
   ];
-
-  let point1 = ToGlobalPoint(point,lowerPlate[0]);
-
-
-  let lowerbracket1 = [{x:0,y:dsi.bracketWidth/2}, {x:100,y:dsi.bracketWidth/2}, {x:100,y:dsi.lowerWidth/2},{x:dsi.bracketLength,y:dsi.lowerWidth/2},
-    {x:dsi.bracketLength,y:-dsi.lowerWidth/2},{x:100,y:-dsi.lowerWidth/2}, {x:100,y:-dsi.bracketWidth/2}, {x:0,y:-dsi.bracketWidth/2}];
-  let bracketPoint = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1],lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR,4),
-  lowerbracket1[3],lowerbracket1[4], ...Fillet2D(lowerbracket1[4],lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR,4),
+  let upperPlate = [
+    { x: bl.x + lwCot * dsi.upperHeight, y: bl.y + dsi.upperHeight },
+    { x: bl.x + lwCot * (dsi.upperHeight - dsi.upperThickness), y: bl.y + dsi.upperHeight - dsi.upperThickness },
+    { x: br.x + rwCot * (dsi.upperHeight - dsi.upperThickness), y: br.y + dsi.upperHeight - dsi.upperThickness },
+    { x: br.x + rwCot * dsi.upperHeight, y: br.y + dsi.upperHeight }
+  ]
+  let bracketPoint = [ToGlobalPoint(point, lowerPlate[0]),
+  ToGlobalPoint(point, lowerPlate[3]),
+  ToGlobalPoint(point, upperPlate[1]),
+  ToGlobalPoint(point, upperPlate[2])];
+  let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: 100, y: dsi.bracketWidth / 2 }, { x: 100, y: dsi.lowerWidth / 2 }, { x: dsi.bracketLength, y: dsi.lowerWidth / 2 },
+  { x: dsi.bracketLength, y: -dsi.lowerWidth / 2 }, { x: 100, y: -dsi.lowerWidth / 2 }, { x: 100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
+  let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
+  lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
   lowerbracket1[6], lowerbracket1[7]];
-
-  result["bracket1"] = {
-    points: bracketPoint,
-    Thickness: dsi.lowerThickness,
-    z: 0,
-    rotationX: 0,
-    rotationY: 0,
-    hole: [],
-    point : point1,
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  
+  for (let i = 0; i < 4; i++) {
+    result["bracket1"] = {
+      points: bracketShape,
+      Thickness: i<2? dsi.lowerThickness:dsi.upperThickness ,
+      z: 0,
+      rotationX: 0,
+      rotationY: i%2===0? 0: Math.PI,
+      hole: [],
+      point: bracketPoint[i],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
   }
-
   return result
 }
 

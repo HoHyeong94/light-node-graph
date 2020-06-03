@@ -1765,7 +1765,8 @@
       newPoint.y = Point.y + X * sin + Y*cos;
       newPoint.z = Point.z + Z;
       newPoint.s = Point.masterStationNumber;
-      
+      newPoint.normalCos = cos;
+      newPoint.normalSin = sin;
       return newPoint
   }
 
@@ -3132,8 +3133,11 @@
         result[gridkey] = DYdia1(
           webPoints,
           skew);
+      } else if (diaphragmLayout[i][section] == "DYdia2") {
+        result[gridkey] = DYdia2(
+          webPoints,
+          gridPoint[gridkey]);
       }
-
 
       result[gridkey].point = gridPoint[gridkey];
     }
@@ -3171,7 +3175,7 @@
         result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection, sectionDB);
       }
       else if (vStiffLayout[i][section] === "DYvStiff1") {
-        result[gridkey] = DYVstiff1(webPoints, skew, uflangePoint);
+        result[gridkey] = DYVstiff1(webPoints, skew);
       }
       result[gridkey].point = gridPoint[gridkey];
     }
@@ -3275,7 +3279,7 @@
     leftPoints.push(left[0]);
     leftPoints.push(...scallop(left[0], left[1], left[2], dsi.scallopRadius, 4));
     leftPoints.push(left[2]);
-    leftPoints.push(...scallop(left[2], left[3], left[0], dsi.scallopRadius, 1));
+    leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
     result["left"] = {
       points: leftPoints,
@@ -3292,7 +3296,7 @@
     rightPoints.push(right[0]);
     rightPoints.push(...scallop(right[0], right[1], right[2], dsi.scallopRadius, 4));
     rightPoints.push(right[2]);
-    rightPoints.push(...scallop(right[2], right[3], right[0], dsi.scallopRadius, 1));
+    rightPoints.push(...scallop(right[2], right[3], right[0], dsi.chamfer, 1));
 
     result["rightLower"] = {
       points: rightPoints,
@@ -3308,6 +3312,64 @@
   }
 
 
+
+  function DYdia2(webPoints, point, skew, uflangePoint, ds){
+    let result = {};
+    let dsi = {
+      lowerHeight: 300,
+      lowerThickness: 12,
+      lowerWidth: 250,
+      upperHeight: 900,
+      upperThickness: 12,
+      upperWidth: 250,
+      centerThickness: 12,
+      stiffWidth: 150,
+      stiffThickness: 12,
+      scallopRadius: 35,
+      bracketWidth : 450,
+      bracketLength : 529,
+      bracketScallopR : 100,
+    }; //  임시 입력변수
+    const bl = webPoints[0];
+    const tl = webPoints[1];
+    const br = webPoints[2];
+    const tr = webPoints[3];
+    const rotationY = (point.skew - 90) * Math.PI / 180;
+    const lwCot = (tl.x - bl.x) / (tl.y - bl.y);
+    const rwCot = (tr.x - br.x) / (tr.y - br.y);
+    const gradient = (tr.y - tl.y) / (tr.x - tl.x);
+
+    ///lower stiffener
+    let lowerPlate = [
+      { x: bl.x + lwCot * dsi.lowerHeight, y: bl.y + dsi.lowerHeight },
+      { x: bl.x + lwCot * (dsi.lowerHeight + dsi.lowerThickness), y: bl.y + dsi.lowerHeight + dsi.lowerThickness },
+      { x: br.x + rwCot * (dsi.lowerHeight + dsi.lowerThickness), y: br.y + dsi.lowerHeight + dsi.lowerThickness },
+      { x: br.x + rwCot * dsi.lowerHeight, y: br.y + dsi.lowerHeight }
+    ];
+
+    let point1 = ToGlobalPoint(point,lowerPlate[0]);
+
+
+    let lowerbracket1 = [{x:0,y:dsi.bracketWidth/2}, {x:100,y:dsi.bracketWidth/2}, {x:100,y:dsi.lowerWidth/2},{x:dsi.bracketLength,y:dsi.lowerWidth/2},
+      {x:dsi.bracketLength,y:-dsi.lowerWidth/2},{x:100,y:-dsi.lowerWidth/2}, {x:100,y:-dsi.bracketWidth/2}, {x:0,y:-dsi.bracketWidth/2}];
+    let bracketPoint = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1],lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR,4),
+    lowerbracket1[3],lowerbracket1[4], ...Fillet2D(lowerbracket1[4],lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR,4),
+    lowerbracket1[6], lowerbracket1[7]];
+
+    result["bracket1"] = {
+      points: bracketPoint,
+      Thickness: dsi.lowerThickness,
+      z: 0,
+      rotationX: 0,
+      rotationY: 0,
+      hole: [],
+      point : point1,
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    };
+
+    return result
+  }
 
   function DYdia1(webPoints, skew, uflangePoint, ds) {
     //ds 입력변수
@@ -4810,14 +4872,14 @@
       var meshMaterial = new global.THREE.MeshNormalMaterial();
       for (let diakey in diaDict) {
           for (let partkey in diaDict[diakey]) {
+              if (partkey !== "point") {
               let shapeNode = diaDict[diakey][partkey].points;
               let Thickness = diaDict[diakey][partkey].Thickness;
               let zPosition = diaDict[diakey][partkey].z;
               let rotationY = diaDict[diakey][partkey].rotationY;
               let rotationX = diaDict[diakey][partkey].rotationX;
               let hole = diaDict[diakey][partkey].hole;
-              let point = diaDict[diakey].point ? diaDict[diakey].point : diaDict[diakey][partkey].point;
-              if (partkey !== "point") {
+              let point = diaDict[diakey][partkey].point? diaDict[diakey][partkey].point : diaDict[diakey].point;
                   group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
               }
           }
