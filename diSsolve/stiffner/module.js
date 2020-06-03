@@ -547,7 +547,7 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
   let stiffnerPoint = [tl, upperPlate[1]]
-    let stiffWidth = dsi.stiffWidth ;
+  let stiffWidth = dsi.stiffWidth ;
   let tan1 = gradient;
   let stiffner = PlateRestPoint(stiffnerPoint[0], stiffnerPoint[1], tan1, 0, stiffWidth)
   let addedPoint = [{x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y},
@@ -560,12 +560,33 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
   stiffnerPoints.push(addedPoint[0],addedPoint[1])
   stiffnerPoints.push(...Fillet2D(addedPoint[1],addedPoint[2],stiffner[3],dsi.filletR,4))
   stiffnerPoints.push(stiffner[3])
-  
-  
-  result["stiffner"] = {
+  result["stiffner1"] = {
     points: stiffnerPoints,
-    Thickness: dsi.centerThickness,
-    z: -dsi.centerThickness / 2,
+    Thickness: dsi.stiffThickness,
+    z: -dsi.stiffThickness / 2,
+    rotationX: Math.PI / 2,
+    rotationY: rotationY,
+    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+  stiffnerPoint = [tr, upperPlate[2]]
+  tan1 = gradient;
+  stiffner = PlateRestPoint(stiffnerPoint[0], stiffnerPoint[1], tan1, 0, -stiffWidth)
+  addedPoint = [{x:upperPlate[2].x - dsi.stiffWidth2, y:upperPlate[2].y},
+  {x:upperPlate[2].x - dsi.stiffWidth2, y:upperPlate[2].y+50},
+  {x:upperPlate[2].x - dsi.stiffWidth, y:upperPlate[2].y +50 + dsi.stiffWidth2 - dsi.stiffWidth}];
+  stiffnerPoints = [];
+  stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+  stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+  stiffnerPoints.push(addedPoint[0],addedPoint[1])
+  stiffnerPoints.push(...Fillet2D(addedPoint[1],addedPoint[2],stiffner[3],dsi.filletR,4))
+  stiffnerPoints.push(stiffner[3])
+  result["stiffner2"] = {
+    points: stiffnerPoints,
+    Thickness: dsi.stiffThickness,
+    z: -dsi.stiffThickness / 2,
     rotationX: Math.PI / 2,
     rotationY: rotationY,
     hole: [],
