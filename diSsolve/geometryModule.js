@@ -19,7 +19,8 @@ export function ToGlobalPoint(Point, node2D){
     newPoint.y = Point.y + X * sin + Y*cos
     newPoint.z = Point.z + Z
     newPoint.s = Point.masterStationNumber
-    
+    newPoint.normalCos = cos;
+    newPoint.normalSin = sin;
     return newPoint
 }
 

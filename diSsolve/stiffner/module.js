@@ -230,6 +230,66 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
 
 
 
+export function DYdia2(webPoints, point, skew, uflangePoint, ds){
+  let result = {};
+  let dsi = {
+    lowerHeight: 300,
+    lowerThickness: 12,
+    lowerWidth: 250,
+    upperHeight: 900,
+    upperThickness: 12,
+    upperWidth: 250,
+    centerThickness: 12,
+    stiffWidth: 150,
+    stiffThickness: 12,
+    scallopRadius: 35,
+    bracketWidth : 450,
+    bracketLength : 529,
+    bracketScallopR : 100,
+  } //  임시 입력변수
+
+  const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
+  const bl = webPoints[0];
+  const tl = webPoints[1];
+  const br = webPoints[2];
+  const tr = webPoints[3];
+  const rotationY = (point.skew - 90) * Math.PI / 180
+  const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
+  const rwCot = (tr.x - br.x) / (tr.y - br.y)
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+
+  ///lower stiffener
+  let lowerPlate = [
+    { x: bl.x + lwCot * dsi.lowerHeight, y: bl.y + dsi.lowerHeight },
+    { x: bl.x + lwCot * (dsi.lowerHeight + dsi.lowerThickness), y: bl.y + dsi.lowerHeight + dsi.lowerThickness },
+    { x: br.x + rwCot * (dsi.lowerHeight + dsi.lowerThickness), y: br.y + dsi.lowerHeight + dsi.lowerThickness },
+    { x: br.x + rwCot * dsi.lowerHeight, y: br.y + dsi.lowerHeight }
+  ];
+
+  point1 = ToGlobalPoint(point,lowerPlate[0]);
+
+
+  let lowerbracket1 = [{x:0,y:bracketWidth/2}, {x:100,y:bracketWidth/2}, {x:100,y:lowerWidth/2},{x:bracketLength,y:lowerWidth/2},
+    {x:bracketLength,y:-lowerWidth/2},{x:100,y:-lowerWidth/2}, {x:100,y:-bracketWidth/2}, {x:0,y:-bracketWidth/2}];
+  let bracketPoint = [lowerbracket1[0], lowerbracket1[1], Fillet2D(lowerbracket1[0],lowerbracket1[1], lowerbracket1[2], bracketScallopR,4),
+  lowerbracket1[3],lowerbracket1[4], Fillet2D(lowerbracket1[4],lowerbracket1[5], lowerbracket1[6], bracketScallopR,4),
+  lowerbracket1[6], lowerbracket1[7]];
+
+  result["bracket1"] = {
+    points: bracketPoint,
+    Thickness: dsi.lowerThickness,
+    z: 0,
+    rotationX: 0,
+    rotationY: 0,
+    hole: [],
+    point : point1,
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+
+}
+
 export function DYdia1(webPoints, skew, uflangePoint, ds) {
   //ds 입력변수
   let result = {};
