@@ -195,14 +195,14 @@ export function DiaView(diaDict, initPoint) {
     var meshMaterial = new THREE.MeshNormalMaterial()
     for (let diakey in diaDict) {
         for (let partkey in diaDict[diakey]) {
+            if (partkey !== "point") {
             let shapeNode = diaDict[diakey][partkey].points
             let Thickness = diaDict[diakey][partkey].Thickness
             let zPosition = diaDict[diakey][partkey].z
             let rotationY = diaDict[diakey][partkey].rotationY
             let rotationX = diaDict[diakey][partkey].rotationX
             let hole = diaDict[diakey][partkey].hole
-            let point = diaDict[diakey].point ? diaDict[diakey].point : diaDict[diakey][partkey].point
-            if (partkey !== "point") {
+            let point = diaDict[diakey][partkey].point? diaDict[diakey][partkey].point : diaDict[diakey].point;
                 group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
             }
         }
