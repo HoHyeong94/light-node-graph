@@ -358,8 +358,8 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     stiffnerPoints.push(stiffner[2], stiffner[3])
     result["webBracket" + i.toFixed(0)] = {
       points: stiffnerPoints,
-      Thickness: dsi.stiffThickness,
-      z: -dsi.stiffThickness / 2,
+      Thickness: dsi.centerThickness,
+      z: -dsi.centerThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: rotationY,
       hole: [],
@@ -367,6 +367,52 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
+
+  let webPlate = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient},
+  { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y  - dsi.bracketLength * gradient},
+  { x: tr.x - dsi.bracketLength, y: tr.y  - dsi.bracketLength * gradient},
+  { x: tl.x + dsi.bracketLength, y: tl.y  + dsi.bracketLength * gradient}];
+
+  result["webPlate"] = {
+    points: webPlate,
+    Thickness: dsi.centerThickness,
+    z: -dsi.centerThickness / 2,
+    rotationX: Math.PI / 2,
+    rotationY: rotationY,
+    hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
+  let webJoint1 = [{ x: (webPlate[0].x + webPlate[3].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 - dsi.webJointHeight / 2 },
+  { x: (webPlate[0].x + webPlate[3].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 - dsi.webJointHeight / 2 },
+  { x: (webPlate[0].x + webPlate[3].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 + dsi.webJointHeight / 2 },
+  { x: (webPlate[0].x + webPlate[3].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 + dsi.webJointHeight / 2 }];
+  result["webJoint1"] = {
+    points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+  result["webJoint2"] = {
+    points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+  let webJoint3 = [{ x: (webPlate[1].x + webPlate[2].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 - dsi.webJointHeight / 2 },
+  { x: (webPlate[1].x + webPlate[2].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 - dsi.webJointHeight / 2 },
+  { x: (webPlate[1].x + webPlate[2].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 },
+  { x: (webPlate[1].x + webPlate[2].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 }];
+  result["webJoint3"] = {
+    points: webJoint3, Thickness: dsi.webJointThickness, z: dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+  result["webJoint4"] = {
+    points: webJoint3, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  }
+
 
 
   return result
