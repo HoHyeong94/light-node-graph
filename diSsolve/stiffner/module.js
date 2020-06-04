@@ -311,7 +311,7 @@ export function DYdia4(webPoints, point, skew, urib, ds){
   upperPoints.push(upperPlate[2], upperPlate[3]);
   // let lowerweldingLine = [upperPlate[0], upperPlate[1], upperPlate[2], upperPlate[3]]
   result["upperPlate"] = {
-    points: upperPoints, Thickness: dsi.webThickness, z: -ds.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: upperPoints, Thickness: dsi.webThickness, z: -dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size: PlateSize(upperPlate, 1, ds.lowerThickness),
     // anchor: [[upperPlate[0].x, upperPlate[0].y - 50], [upperPlate[3].x, upperPlate[3].y - 50]],
     // welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
