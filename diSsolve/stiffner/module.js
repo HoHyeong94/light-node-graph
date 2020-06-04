@@ -306,8 +306,8 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   
   let bracketPoint = [ToGlobalPoint(point, lowerPlate[0]),
   ToGlobalPoint(point, lowerPlate[3]),
-  ToGlobalPoint(point, upperPlate[1]),
-  ToGlobalPoint(point, upperPlate[2])];
+  ToGlobalPoint(point, upperPlate[0]),
+  ToGlobalPoint(point, upperPlate[3])];
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
     let bracketLength = i < 2? dsi.bracketLength : dsi.bracketLength - (uflange[0][1].x - tl.x);
@@ -321,7 +321,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
       Thickness: i < 2 ? dsi.lowerThickness : dsi.upperThickness,
       z: 0,
       rotationX: 0,
-      rotationY: Math.atan(gradient),
+      rotationY: -Math.atan(gradient),
       hole: [],
       point: bracketPoint[i],
       // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
