@@ -323,7 +323,7 @@ export function DYdia4(webPoints, point, skew, urib, ds){
  { x: tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness), y: tr.y - dsi.webHeight - dsi.upperTopThickness },
  { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness }];
   result["upperTopPlate"] = {
-    points: upperTopPoints, Thickness: dsi.upperTopwidth, z: -dsi.upperTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: upperTopPoints, Thickness: dsi.upperTopWidth, z: -dsi.upperTopWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size: PlateSize2(upperPlate, 1, ds.lowerTopThickness, ds.lowerTopwidth),
     // anchor: [[upperTopPoints[1].x, upperTopPoints[1].y + 50], [upperTopPoints[2].x, upperTopPoints[2].y + 50]]
   }
