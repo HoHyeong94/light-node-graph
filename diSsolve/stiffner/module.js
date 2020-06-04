@@ -255,10 +255,10 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
 export function DYdia3(webPoints, point, skew, uflange, ds) {
   let result = {};
   let dsi = {
-    lowerHeight: 300,
+    lowerHeight: 576,//상부플렌지를 기준으로 보강재의 높이를 의미함, 명칭변경필요
     lowerThickness: 12,
     lowerWidth: 250,
-    upperHeight: 900,
+    // upperHeight: 900,
     upperThickness: 12,
     upperWidth: 250,
     centerThickness: 12,
@@ -328,6 +328,27 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
+
+  let stiffnerPoint = [[bl, lowerPlate[0]],[br, lowerPlate[3]]];
+  for (let i = 0; i < stiffnerPoint.length; i++) {
+    let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
+    let tan1 = i < 2 ? 0 : gradient;
+    let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], tan1, 0, stiffWidth)
+    let stiffnerPoints = [];
+    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    stiffnerPoints.push(stiffner[2], stiffner[3])
+    result["stiffner" + i.toFixed(0)] = {
+      points: stiffnerPoints,
+      Thickness: dsi.centerThickness,
+      z: -dsi.centerThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: rotationY,
+      hole: [],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
+  }
   return result
 }
 
@@ -335,7 +356,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
 export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   let result = {};
   let dsi = {
-    lowerHeight: 300,
+    lowerHeight: 300, 
     lowerThickness: 12,
     lowerWidth: 250,
     upperHeight: 900,
