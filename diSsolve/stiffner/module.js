@@ -54,7 +54,7 @@ export function DiaShapeDict(
         lflange,
         diaSection
       );
-    }else if (diaphragmLayout[i][section] == "DYdia1") {
+    } else if (diaphragmLayout[i][section] == "DYdia1") {
       result[gridkey] = DYdia1(
         webPoints,
         skew,
@@ -288,7 +288,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
   const rwCot = (tr.x - br.x) / (tr.y - br.y)
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
-  const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x)**2 + (tr.y - tl.y)**2)
+  const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x) ** 2 + (tr.y - tl.y) ** 2)
   const gradSin = gradient * gradCos
 
   let upperPlate = [
@@ -303,14 +303,14 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     { x: tr.x - rwCot * (dsi.lowerHeight + dsi.lowerThickness), y: tr.y - dsi.lowerHeight - dsi.lowerThickness },
     { x: tr.x - rwCot * dsi.lowerHeight, y: tr.y - dsi.lowerHeight }
   ];
-  
+
   let bracketPoint = [ToGlobalPoint(point, lowerPlate[1]),
   ToGlobalPoint(point, lowerPlate[2]),
   ToGlobalPoint(point, upperPlate[0]),
   ToGlobalPoint(point, upperPlate[3])];
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
-    let bracketLength = i < 2? dsi.bracketLength : dsi.bracketLength - (uflange[0][1].x - tl.x);
+    let bracketLength = i < 2 ? dsi.bracketLength : dsi.bracketLength - (uflange[0][1].x - tl.x);
     let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.lowerWidth / 2 }, { x: sign * bracketLength, y: dsi.lowerWidth / 2 },
     { x: sign * bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
@@ -329,7 +329,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     }
   }
 
-  let stiffnerPoint = [[bl, lowerPlate[0]],[br, lowerPlate[3]]];
+  let stiffnerPoint = [[bl, lowerPlate[0]], [br, lowerPlate[3]]];
   for (let i = 0; i < stiffnerPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], 0, gradient, stiffWidth)
@@ -368,10 +368,10 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     }
   }
 
-  let webPlate = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient},
-  { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y  - dsi.bracketLength * gradient},
-  { x: tr.x - dsi.bracketLength, y: tr.y  - dsi.bracketLength * gradient},
-  { x: tl.x + dsi.bracketLength, y: tl.y  + dsi.bracketLength * gradient}];
+  let webPlate = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient },
+  { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient },
+  { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient },
+  { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient }];
 
   result["webPlate"] = {
     points: webPlate,
@@ -414,28 +414,28 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   }
 
   let upperflange = [
-    { x: tl.x + dsi.bracketLength, y: tl.y  + dsi.bracketLength * gradient + dsi.upperThickness},
-    { x: tl.x + dsi.bracketLength, y: tl.y  + dsi.bracketLength * gradient},
-  { x: tr.x - dsi.bracketLength, y: tr.y  - dsi.bracketLength * gradient},
-  { x: tr.x - dsi.bracketLength, y: tr.y  - dsi.bracketLength * gradient + dsi.upperThickness}];
-  
+    { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient + dsi.upperThickness },
+    { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient },
+    { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient },
+    { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient + dsi.upperThickness }];
+
   result["upperflange"] = { points: upperflange, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  let upperJoint1 = [{ x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y },
-  { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y },
-  { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointThickness },
-  { x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointThickness }]
-  let upperJoint2 = [{ x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y },
-  { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y },
-  { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointThickness },
-  { x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointThickness }]
-  let upperJoint11 = [{ x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y },
-  { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y },
-  { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointThickness },
-  { x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointThickness }]
-  let upperJoint22 = [{ x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y },
-  { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y },
-  { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointThickness },
-  { x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointThickness }]
+  let upperJoint1 = [{ x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y - dsi.upperJointLength / 2 * gradient },
+  { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointLength / 2 * gradient },
+  { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness },
+  { x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness }]
+  let upperJoint2 = [{ x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointLength / 2 * gradient },
+  { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y + dsi.upperJointLength / 2 * gradient },
+  { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y + dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness },
+  { x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y + dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness }]
+  let upperJoint11 = [{ x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y - dsi.upperJointLength / 2 * gradient },
+  { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointLength / 2 * gradient },
+  { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness },
+  { x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y - dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness }]
+  let upperJoint22 = [{ x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointLength / 2 * gradient },
+  { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y + dsi.upperJointLength / 2 * gradient },
+  { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y + dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness },
+  { x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness }]
 
   result["upperJoint1"] = { points: upperJoint1, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   result["upperJoint2"] = { points: upperJoint2, Thickness: dsi.upperJointWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
@@ -453,7 +453,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
 export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   let result = {};
   let dsi = {
-    lowerHeight: 300, 
+    lowerHeight: 300,
     lowerThickness: 12,
     lowerWidth: 250,
     upperHeight: 900,
@@ -751,18 +751,18 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
   let stiffnerPoint = [tl, upperPlate[1]]
-  let stiffWidth = dsi.stiffWidth ;
+  let stiffWidth = dsi.stiffWidth;
   let tan1 = gradient;
   let stiffner = PlateRestPoint(stiffnerPoint[0], stiffnerPoint[1], tan1, 0, stiffWidth)
-  let addedPoint = [{x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y},
-  {x:upperPlate[1].x + dsi.stiffWidth2, y:upperPlate[1].y+50},
-  {x:upperPlate[1].x + dsi.stiffWidth, y:upperPlate[1].y +50 + dsi.stiffWidth2 - dsi.stiffWidth}];
+  let addedPoint = [{ x: upperPlate[1].x + dsi.stiffWidth2, y: upperPlate[1].y },
+  { x: upperPlate[1].x + dsi.stiffWidth2, y: upperPlate[1].y + 50 },
+  { x: upperPlate[1].x + dsi.stiffWidth, y: upperPlate[1].y + 50 + dsi.stiffWidth2 - dsi.stiffWidth }];
 
   let stiffnerPoints = [];
   stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
   stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-  stiffnerPoints.push(addedPoint[0],addedPoint[1])
-  stiffnerPoints.push(...Fillet2D(addedPoint[1],addedPoint[2],stiffner[3],dsi.filletR,4))
+  stiffnerPoints.push(addedPoint[0], addedPoint[1])
+  stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4))
   stiffnerPoints.push(stiffner[3])
   result["stiffner1"] = {
     points: stiffnerPoints,
@@ -778,14 +778,14 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
   stiffnerPoint = [tr, upperPlate[2]]
   tan1 = gradient;
   stiffner = PlateRestPoint(stiffnerPoint[0], stiffnerPoint[1], tan1, 0, -stiffWidth)
-  addedPoint = [{x:upperPlate[2].x - dsi.stiffWidth2, y:upperPlate[2].y},
-  {x:upperPlate[2].x - dsi.stiffWidth2, y:upperPlate[2].y+50},
-  {x:upperPlate[2].x - dsi.stiffWidth, y:upperPlate[2].y +50 + dsi.stiffWidth2 - dsi.stiffWidth}];
+  addedPoint = [{ x: upperPlate[2].x - dsi.stiffWidth2, y: upperPlate[2].y },
+  { x: upperPlate[2].x - dsi.stiffWidth2, y: upperPlate[2].y + 50 },
+  { x: upperPlate[2].x - dsi.stiffWidth, y: upperPlate[2].y + 50 + dsi.stiffWidth2 - dsi.stiffWidth }];
   stiffnerPoints = [];
   stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
   stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-  stiffnerPoints.push(addedPoint[0],addedPoint[1])
-  stiffnerPoints.push(...Fillet2D(addedPoint[1],addedPoint[2],stiffner[3],dsi.filletR,4))
+  stiffnerPoints.push(addedPoint[0], addedPoint[1])
+  stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4))
   stiffnerPoints.push(stiffner[3])
   result["stiffner2"] = {
     points: stiffnerPoints,
