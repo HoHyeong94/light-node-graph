@@ -310,7 +310,9 @@ export function DYdia4(webPoints, point, skew, urib, ds){
     upperPoints.push({ x: urib.layout[i] + dsi.ribHoleD, y: tl.y + gradient * (urib.layout[i] + dsi.ribHoleD - tl.x) });
   }
   upperPoints = upperPoints.concat(scallop(upperPlate[0], upperPlate[1], upperPlate[2], dsi.scallopRadius, 4));
-  upperPoints.push(upperPlate[2], upperPlate[3]);
+  upperPoints = upperPoints.concat(scallop(upperPlate[1], upperPlate[2], upperPlate[3], dsi.scallopRadius, 4));
+  upperPoints = upperPoints.concat(scallop(upperPlate[2], upperPlate[3], upperPlate[0], dsi.scallopRadius, 4));
+
   // let lowerweldingLine = [upperPlate[0], upperPlate[1], upperPlate[2], upperPlate[3]]
   result["upperPlate"] = {
     points: upperPoints, Thickness: dsi.webThickness, z: -dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
