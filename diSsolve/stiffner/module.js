@@ -300,7 +300,7 @@ export function DYdia4(webPoints, point, skew, urib, ds){
   //// longitudinal stiffner holes
   for (let i = 0; i < urib.layout.length; i++) {
     upperPoints.push({ x: urib.layout[i] - dsi.ribHoleD, y: tl.y + gradient * (urib.layout[i] - dsi.ribHoleD - tl.x) });
-    let curve = new THREE.ArcCurve(urib.layout[i], tl.y + gradient * (urib.layout[i] - tl.x) - urib.height, dsi.ribHoleR, 0, Math.PI, true);
+    let curve = new THREE.ArcCurve(urib.layout[i], tl.y + gradient * (urib.layout[i] - tl.x) - urib.height, dsi.ribHoleR, Math.PI,0, false);
     let dummyVectors = curve.getPoints(8)
     for (let i = 0; i < dummyVectors.length; i++) {
       upperPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
