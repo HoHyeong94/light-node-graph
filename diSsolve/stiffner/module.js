@@ -28,7 +28,8 @@ export function DiaShapeDict(
       sectionPointDict[gridkey].forward.rightTopPlate[1],
       sectionPointDict[gridkey].forward.rightTopPlate[2]
     ];
-    let lflangePoints = sectionPointDict[gridkey].forward.lflange
+    let lflange = sectionPointDict[gridkey].forward.lflange
+    let uflange = sectionPointDict[gridkey].forward.uflange
 
     let skew = sectionPointDict[gridkey].forward.skew;
     if (diaphragmLayout[i][section] == "diaType1") {
@@ -50,7 +51,7 @@ export function DiaShapeDict(
       result[gridkey] = DYdia0(
         webPoints,
         skew,
-        lflangePoints,
+        lflange,
         diaSection
       );
     }else if (diaphragmLayout[i][section] == "DYdia1") {
@@ -66,6 +67,14 @@ export function DiaShapeDict(
         gridPoint[gridkey],
         skew,
         uflangePoints,
+        diaSection
+      );
+    } else if (diaphragmLayout[i][section] == "DYdia3") {
+      result[gridkey] = DYdia3(
+        webPoints,
+        gridPoint[gridkey],
+        skew,
+        uflange,
         diaSection
       );
     }
@@ -243,7 +252,84 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
   }
   return result
 }
+export function DYdia3(webPoints, point, skew, uflange, ds) {
+  let result = {};
+  let dsi = {
+    lowerHeight: 300,
+    lowerThickness: 12,
+    lowerWidth: 250,
+    upperHeight: 900,
+    upperThickness: 12,
+    upperWidth: 250,
+    centerThickness: 12,
+    stiffWidth: 150,
+    stiffThickness: 12,
+    scallopRadius: 35,
+    bracketWidth: 450,
+    bracketLength: 529,
+    bracketScallopR: 100,
+    webJointWidth: 330,
+    webJointHeight: 440,
+    webJointThickness: 10,
+    upperJointLength: 480,
+    upperJointWidth: 80,
+    upperJointThickness: 10,
+    lowerJointLength: 480,
+    lowerJointWidth: 80,
+    lowerJointThickness: 10,
+  } //  임시 입력변수
 
+  const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
+  const bl = webPoints[0];
+  const tl = webPoints[1];
+  const br = webPoints[2];
+  const tr = webPoints[3];
+  const rotationY = (point.skew - 90) * Math.PI / 180
+  const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
+  const rwCot = (tr.x - br.x) / (tr.y - br.y)
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+  const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x)**2 + (tr.y - tl.y)**2)
+  const gradSin = gradient * gradCos
+
+  let upperPlate = [
+    uflange[0][1],
+    { x: uflange[0][1].x - gradSin * dsi.upperThickness, y: uflange[0][1].y + gradCos * dsi.upperThickness },
+    { x: uflange[0][1].x - gradSin * dsi.upperThickness, y: uflange[0][1].y + gradCos * dsi.upperThickness },
+    uflange[1][1]
+  ]
+  let lowerPlate = [
+    { x: tl.x - lwCot * dsi.lowerHeight, y: tl.y - dsi.lowerHeight },
+    { x: tl.x - lwCot * (dsi.lowerHeight + dsi.lowerThickness), y: tl.y - dsi.lowerHeight - dsi.lowerThickness },
+    { x: tr.x - rwCot * (dsi.lowerHeight + dsi.lowerThickness), y: tr.y - dsi.lowerHeight - dsi.lowerThickness },
+    { x: tr.x - rwCot * dsi.lowerHeight, y: tr.y - dsi.lowerHeight }
+  ];
+  
+  let bracketPoint = [ToGlobalPoint(point, lowerPlate[0]),
+  ToGlobalPoint(point, lowerPlate[3]),
+  ToGlobalPoint(point, upperPlate[1]),
+  ToGlobalPoint(point, upperPlate[2])];
+  for (let i = 0; i < 4; i++) {
+    let sign = i % 2 === 0 ? 1 : -1;
+    let bracketLength = i < 2? dsi.bracketLength : dsi.bracketLength - (uflange[0][1].x - tl.x);
+    let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.lowerWidth / 2 }, { x: sign * bracketLength, y: dsi.lowerWidth / 2 },
+    { x: sign * bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
+    let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
+    lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
+    lowerbracket1[6], lowerbracket1[7]];
+    result["bracket" + i.toFixed(0)] = {
+      points: bracketShape,
+      Thickness: i < 2 ? dsi.lowerThickness : dsi.upperThickness,
+      z: 0,
+      rotationX: 0,
+      rotationY: Math.atan(gradient),
+      hole: [],
+      point: bracketPoint[i],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
+  }
+  return result
+}
 
 
 export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
