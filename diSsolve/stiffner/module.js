@@ -274,7 +274,7 @@ export function DYdia4(webPoints, point, skew, urib, ds){
     upperTopThickness: 10,
     upperTopWidth: 200,
     webThickness: 12,
-    stiffWidth: 150,
+    stiffWidth: 160,
     stiffThickness: 12,
     scallopRadius: 35,
     ribHoleD : 42,
@@ -326,6 +326,26 @@ export function DYdia4(webPoints, point, skew, urib, ds){
     points: upperTopPoints, Thickness: dsi.upperTopWidth, z: -dsi.upperTopWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size: PlateSize2(upperPlate, 1, ds.lowerTopThickness, ds.lowerTopwidth),
     // anchor: [[upperTopPoints[1].x, upperTopPoints[1].y + 50], [upperTopPoints[2].x, upperTopPoints[2].y + 50]]
+  }
+
+  let stiffnerPoint = [[bl, upperTopPoints[3]], [br, upperTopPoints[2]]];
+  for (let i = 0; i < stiffnerPoint.length; i++) {
+    let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
+    let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], 0, gradient, stiffWidth)
+    let stiffnerPoints = [];
+    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    stiffnerPoints.push(stiffner[2], stiffner[3])
+    result["stiffner" + i.toFixed(0)] = {
+      points: stiffnerPoints,
+      Thickness: dsi.webThickness,
+      z: -dsi.webThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: rotationY,
+      hole: [],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
   }
 
   return result
