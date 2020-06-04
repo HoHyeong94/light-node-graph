@@ -348,6 +348,27 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
+  let webBracketPoint = [[lowerPlate[0], upperPlate[0]], [lowerPlate[3], upperPlate[3]]];
+  for (let i = 0; i < webBracketPoint.length; i++) {
+    let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
+    let stiffner = PlateRestPoint(webBracketPoint[i][0], webBracketPoint[i][1], gradient, gradient, stiffWidth)
+    let stiffnerPoints = [];
+    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    stiffnerPoints.push(stiffner[2], stiffner[3])
+    result["webBracket" + i.toFixed(0)] = {
+      points: stiffnerPoints,
+      Thickness: dsi.stiffThickness,
+      z: -dsi.stiffThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: rotationY,
+      hole: [],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
+  }
+
+
   return result
 }
 
