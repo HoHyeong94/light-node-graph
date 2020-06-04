@@ -423,11 +423,11 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   let upperJoint1 = [{ x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y - dsi.upperJointLength / 2 * gradient },
   { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointLength / 2 * gradient },
   { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness },
-  { x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness }]
+  { x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y - dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness }]
   let upperJoint2 = [{ x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointLength / 2 * gradient },
   { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y + dsi.upperJointLength / 2 * gradient },
   { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y + dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness },
-  { x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y + dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness }]
+  { x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness }]
   let upperJoint11 = [{ x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y - dsi.upperJointLength / 2 * gradient },
   { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointLength / 2 * gradient },
   { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness },
