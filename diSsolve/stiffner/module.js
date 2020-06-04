@@ -348,7 +348,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
-  let webBracketPoint = [[lowerPlate[0], upperPlate[0]], [lowerPlate[3], upperPlate[3]]];
+  let webBracketPoint = [[lowerPlate[0], tl], [lowerPlate[3], tr]];
   for (let i = 0; i < webBracketPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
     let stiffner = PlateRestPoint(webBracketPoint[i][0], webBracketPoint[i][1], gradient, gradient, stiffWidth)
