@@ -271,6 +271,8 @@ export function DYdia4(webPoints, point, skew, urib, ds){
     lowerWidth: 250,
     upperThickness: 12,
     upperWidth: 250,
+    upperTopThickness: 10,
+    upperTopWidth: 200,
     webThickness: 12,
     stiffWidth: 150,
     stiffThickness: 12,
@@ -317,17 +319,14 @@ export function DYdia4(webPoints, point, skew, urib, ds){
     // welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
   }
 
-//  let lowerTopPoints = [upperPlate[0],
-//   { x: bl.x + lwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
-//   { x: br.x + rwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
-//   upperPlate[3]];
-//   result["lowerTopShape"] = {
-//     points: lowerTopPoints, Thickness: ds.lowerTopwidth, z: -ds.lowerTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-//     size: PlateSize2(upperPlate, 1, ds.lowerTopThickness, ds.lowerTopwidth),
-//     anchor: [[lowerTopPoints[1].x, lowerTopPoints[1].y + 50], [lowerTopPoints[2].x, lowerTopPoints[2].y + 50]]
-//   }
-
-
+ let upperTopPoints = [upperPlate[3],upperPlate[2],
+ { x: tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness), y: tr.y - dsi.webHeight - dsi.upperTopThickness },
+ { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness }];
+  result["upperTopPlate"] = {
+    points: upperTopPoints, Thickness: dsi.upperTopwidth, z: -dsi.upperTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    // size: PlateSize2(upperPlate, 1, ds.lowerTopThickness, ds.lowerTopwidth),
+    // anchor: [[upperTopPoints[1].x, upperTopPoints[1].y + 50], [upperTopPoints[2].x, upperTopPoints[2].y + 50]]
+  }
 
   return result
 }
