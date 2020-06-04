@@ -30,8 +30,9 @@ export function DiaShapeDict(
     ];
     let lflange = sectionPointDict[gridkey].forward.lflange
     let uflange = sectionPointDict[gridkey].forward.uflange
-
     let skew = sectionPointDict[gridkey].forward.skew;
+    let urib = sectionPointDict[gridkey].forward.input.Urib;
+    let lrib = sectionPointDict[gridkey].forward.input.Lrib;
     if (diaphragmLayout[i][section] == "diaType1") {
       result[gridkey] = diaphragmSection(
         webPoints,
@@ -75,6 +76,14 @@ export function DiaShapeDict(
         gridPoint[gridkey],
         skew,
         uflange,
+        diaSection
+      );
+    } else if (diaphragmLayout[i][section] == "DYdia4") {
+      result[gridkey] = DYdia4(
+        webPoints,
+        gridPoint[gridkey],
+        skew,
+        urib,
         diaSection
       );
     }
@@ -252,16 +261,88 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
   }
   return result
 }
+
+export function DYdia4(webPoints, point, skew, urib, ds){
+
+  let result = {};
+  let dsi = {
+    webHeight: 576,//상부플렌지를 기준으로 보강재의 높이를 의미함, 명칭변경필요
+    lowerThickness: 12,
+    lowerWidth: 250,
+    upperThickness: 12,
+    upperWidth: 250,
+    webThickness: 12,
+    stiffWidth: 150,
+    stiffThickness: 12,
+    scallopRadius: 35,
+    ribHoleD : 42,
+    ribHoleR : 25,
+  } //  임시 입력변수
+
+  const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
+  const bl = webPoints[0];
+  const tl = webPoints[1];
+  const br = webPoints[2];
+  const tr = webPoints[3];
+  const rotationY = (point.skew - 90) * Math.PI / 180
+  const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
+  const rwCot = (tr.x - br.x) / (tr.y - br.y)
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+  const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x) ** 2 + (tr.y - tl.y) ** 2)
+  const gradSin = gradient * gradCos
+  
+  let upperPlate = [ tl,  tr, { x: tr.x - rwCot * dsi.webHeight, y: tr.y - dsi.webHeight },
+       { x: tl.x - lwCot * dsi.webHeight, y: tl.y - dsi.webHeight }, 
+  ]; // 첫번째 면이 rib에 해당되도록
+  let upperPoints = [];
+  
+  upperPoints.push(...scallop(upperPlate[3], upperPlate[0], upperPlate[1], dsi.scallopRadius, 4));
+  //// longitudinal stiffner holes
+  for (let i = 0; i < urib.layout.length; i++) {
+    upperPoints.push({ x: urib.layout[i] - dsi.ribHoleD, y: tl.y + gradient * (urib.layout[i] - dsi.ribHoleD - tl.x) });
+    let curve = new THREE.ArcCurve(urib.layout[i], upperPlate[1].y + urib.height, dsi.ribHoleR, 0, Math.PI, true);
+    let dummyVectors = curve.getPoints(8)
+    for (let i = 0; i < dummyVectors.length; i++) {
+      upperPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
+    }
+    upperPoints.push({ x: urib.layout[i] + dsi.ribHoleD, y: tl.y + gradient * (urib.layout[i] + dsi.ribHoleD - tl.x) });
+  }
+  upperPoints = upperPoints.concat(scallop(upperPlate[0], upperPlate[1], upperPlate[2], ds.scallopRadius, 4));
+  upperPoints.push(upperPlate[2], upperPlate[3]);
+  // let lowerweldingLine = [upperPlate[0], upperPlate[1], upperPlate[2], upperPlate[3]]
+  result["upperPlate"] = {
+    points: upperPoints, Thickness: ds.lowerThickness, z: -ds.lowerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    // size: PlateSize(upperPlate, 1, ds.lowerThickness),
+    // anchor: [[upperPlate[0].x, upperPlate[0].y - 50], [upperPlate[3].x, upperPlate[3].y - 50]],
+    // welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
+  }
+
+//  let lowerTopPoints = [upperPlate[0],
+//   { x: bl.x + lwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
+//   { x: br.x + rwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
+//   upperPlate[3]];
+//   result["lowerTopShape"] = {
+//     points: lowerTopPoints, Thickness: ds.lowerTopwidth, z: -ds.lowerTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+//     size: PlateSize2(upperPlate, 1, ds.lowerTopThickness, ds.lowerTopwidth),
+//     anchor: [[lowerTopPoints[1].x, lowerTopPoints[1].y + 50], [lowerTopPoints[2].x, lowerTopPoints[2].y + 50]]
+//   }
+
+
+
+  return result
+}
+
+
 export function DYdia3(webPoints, point, skew, uflange, ds) {
   let result = {};
   let dsi = {
-    lowerHeight: 576,//상부플렌지를 기준으로 보강재의 높이를 의미함, 명칭변경필요
+    webHeight: 576,//상부플렌지를 기준으로 보강재의 높이를 의미함, 명칭변경필요
     lowerThickness: 12,
     lowerWidth: 250,
     // upperHeight: 900,
     upperThickness: 12,
     upperWidth: 250,
-    centerThickness: 12,
+    webThickness: 12,
     stiffWidth: 150,
     stiffThickness: 12,
     scallopRadius: 35,
@@ -298,10 +379,10 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     uflange[1][1]
   ]
   let lowerPlate = [
-    { x: tl.x - lwCot * dsi.lowerHeight, y: tl.y - dsi.lowerHeight },
-    { x: tl.x - lwCot * (dsi.lowerHeight + dsi.lowerThickness), y: tl.y - dsi.lowerHeight - dsi.lowerThickness },
-    { x: tr.x - rwCot * (dsi.lowerHeight + dsi.lowerThickness), y: tr.y - dsi.lowerHeight - dsi.lowerThickness },
-    { x: tr.x - rwCot * dsi.lowerHeight, y: tr.y - dsi.lowerHeight }
+    { x: tl.x - lwCot * dsi.webHeight, y: tl.y - dsi.webHeight },
+    { x: tl.x - lwCot * (dsi.webHeight + dsi.lowerThickness), y: tl.y - dsi.webHeight - dsi.lowerThickness },
+    { x: tr.x - rwCot * (dsi.webHeight + dsi.lowerThickness), y: tr.y - dsi.webHeight - dsi.lowerThickness },
+    { x: tr.x - rwCot * dsi.webHeight, y: tr.y - dsi.webHeight }
   ];
 
   let bracketPoint = [ToGlobalPoint(point, lowerPlate[1]),
@@ -339,8 +420,8 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     stiffnerPoints.push(stiffner[2], stiffner[3])
     result["stiffner" + i.toFixed(0)] = {
       points: stiffnerPoints,
-      Thickness: dsi.centerThickness,
-      z: -dsi.centerThickness / 2,
+      Thickness: dsi.webThickness,
+      z: -dsi.webThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: rotationY,
       hole: [],
@@ -358,8 +439,8 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     stiffnerPoints.push(stiffner[2], stiffner[3])
     result["webBracket" + i.toFixed(0)] = {
       points: stiffnerPoints,
-      Thickness: dsi.centerThickness,
-      z: -dsi.centerThickness / 2,
+      Thickness: dsi.webThickness,
+      z: -dsi.webThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: rotationY,
       hole: [],
@@ -375,8 +456,8 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
 
   result["webPlate"] = {
     points: webPlate,
-    Thickness: dsi.centerThickness,
-    z: -dsi.centerThickness / 2,
+    Thickness: dsi.webThickness,
+    z: -dsi.webThickness / 2,
     rotationX: Math.PI / 2,
     rotationY: rotationY,
     hole: [],
@@ -389,12 +470,12 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   { x: (webPlate[0].x + webPlate[3].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 + dsi.webJointHeight / 2 },
   { x: (webPlate[0].x + webPlate[3].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 + dsi.webJointHeight / 2 }];
   result["webJoint1"] = {
-    points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
   result["webJoint2"] = {
-    points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
@@ -403,12 +484,12 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   { x: (webPlate[1].x + webPlate[2].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 },
   { x: (webPlate[1].x + webPlate[2].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 }];
   result["webJoint3"] = {
-    points: webJoint3, Thickness: dsi.webJointThickness, z: dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: webJoint3, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
   result["webJoint4"] = {
-    points: webJoint3, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: webJoint3, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
