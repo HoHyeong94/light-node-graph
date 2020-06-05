@@ -283,6 +283,11 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
     holeWidth : 700,
     holeHeight : 700, 
     holeFilletR : 100,
+    holeStiffThickness : 10,
+    holeStiffhl : 860,
+    holeStiffvl : 860,
+    holeStiffmargin : 20,
+    holeStiffHeight : 100,
   } //  임시 입력변수
   const bl = webPoints[0];
   const tl = webPoints[1];
@@ -302,6 +307,11 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
   holePoints.push(...Fillet2D(holeRect[2],holeRect[3],holeRect[0],dsi.holeFilletR,4));
   holePoints.push(...Fillet2D(holeRect[3],holeRect[0],holeRect[1],dsi.holeFilletR,4));
   result["mainPlate"] = vPlateGen([bl,br,tr,tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints);
+
+  let holeCenter1 = {x: dsi.holeWidth/2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness}
+  let hstiff1 = [{x:-dsi.holeStiffhl/2, y: dsi.webThickness/2}, {x: dsi.holeStiffhl/2, y: dsi.webThickness/2},
+  {x:dsi.holeStiffhl/2, y: dsi.webThickness/2+holeStiffHeight},{x:-dsi.holeStiffhl/2, y: dsi.webThickness/2+holeStiffHeight}];
+  result["hstiff1"] = hPlateGen(hstiff1, ToGlobalPoint(point,holeCenter1),dsi.holeStiffThickness, point.skew, 0,0)
   return result 
 }
 
