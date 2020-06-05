@@ -1708,6 +1708,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
 export function hPlateGen(points, centerPoint, Thickness, skew, rotationX, rotationY){
   const cosec = 1 / Math.sin(skew * Math.PI / 180);
   const cot = - 1 / Math.tan(skew * Math.PI / 180);
+  let resultPoints = [];
   points.forEach(pt => resultPoints.push({x : pt.x, y : pt.x*cot + pt.y * cosec}))
   
   let result = { points: resultPoints, Thickness: Thickness, z: 0, rotationX: rotationX, rotationY: rotationY, hole: [], point : centerPoint }
