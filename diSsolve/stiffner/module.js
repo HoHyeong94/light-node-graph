@@ -303,7 +303,7 @@ export function DYdia4(webPoints, point, skew, urib, ds) {
   let l = (tr.x - rwCot *  (dsi.webHeight + dsi.upperTopThickness) - (tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness)))/gradCos
   let upperTopPoints = [{x:0, y: - dsi.upperTopWidth / 2}, {x:0, y: dsi.upperTopWidth / 2},
     {x : l, y: dsi.upperTopWidth / 2},{x : l, y: -dsi.upperTopWidth / 2}]
-    result["upperTopPlate"] = hPlateGen(upperTopPoints, centerPoint, dsi,upperTopPoints, 0, 0)
+    result["upperTopPlate"] = hPlateGen(upperTopPoints, centerPoint, dsi.upperTopPoints, point.skew, 0, 0)
   
   // {
   //   points: upperTopPoints, Thickness: dsi.upperTopWidth, z: -dsi.upperTopWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
