@@ -1735,7 +1735,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
       resultPoints.push(mainPlate[i])
     }
     if (i === 0){
-      resultPoints.push(...lowerPoints);
+      resultPoints.push(...upperPoints);
     } else if (i === 2){
       resultPoints.push(...lowerPoints);
     }
