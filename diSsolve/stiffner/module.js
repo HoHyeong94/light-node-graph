@@ -301,7 +301,7 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
   holePoints.push(...Fillet2D(holeRect[1],holeRect[2],holeRect[3],dsi.holeFilletR,4));
   holePoints.push(...Fillet2D(holeRect[2],holeRect[3],holeRect[0],dsi.holeFilletR,4));
   holePoints.push(...Fillet2D(holeRect[3],holeRect[0],holeRect[1],dsi.holeFilletR,4));
-  result["mainPlate"] = vPlateGen([bl,br,tr,tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints);
+  result["mainPlate"] = vPlateGen([bl,br,tr,tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints.reverse());
   return result 
 }
 
