@@ -339,20 +339,21 @@ export function DYdia4(webPoints, point, skew, urib, ds) {
   for (let i = 0; i < stiffnerPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], 0, gradient, stiffWidth)
-    let stiffnerPoints = [];
-    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
-    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-    stiffnerPoints.push(stiffner[2], stiffner[3])
-    result["stiffner" + i.toFixed(0)] = {
-      points: stiffnerPoints,
-      Thickness: dsi.webThickness,
-      z: -dsi.webThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: rotationY,
-      hole: [],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    }
+    // let stiffnerPoints = [];
+    // stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    // stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    // stiffnerPoints.push(stiffner[2], stiffner[3])
+    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0,3], dsi.scallopRadius, null,null,[]);
+    // {
+    //   points: stiffnerPoints,
+    //   Thickness: dsi.webThickness,
+    //   z: -dsi.webThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: rotationY,
+    //   hole: [],
+    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    // }
   }
 
   return result
