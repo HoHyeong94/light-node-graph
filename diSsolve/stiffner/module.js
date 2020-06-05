@@ -343,7 +343,7 @@ export function DYdia4(webPoints, point, skew, urib, ds) {
     // stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
     // stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
     // stiffnerPoints.push(stiffner[2], stiffner[3])
-    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0,3], dsi.scallopRadius, null,null,[]);
+    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null,null,[]);
     // {
     //   points: stiffnerPoints,
     //   Thickness: dsi.webThickness,
