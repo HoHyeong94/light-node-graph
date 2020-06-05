@@ -262,7 +262,7 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
   return result
 }
 
-export function DYdia4(webPoints, point, skew, urib, ds){
+export function DYdia4(webPoints, point, skew, urib, ds) {
 
   let result = {};
   let dsi = {
@@ -277,8 +277,8 @@ export function DYdia4(webPoints, point, skew, urib, ds){
     stiffWidth: 160,
     stiffThickness: 12,
     scallopRadius: 35,
-    ribHoleD : 42,
-    ribHoleR : 25,
+    ribHoleD: 42,
+    ribHoleR: 25,
   } //  임시 입력변수
 
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
@@ -292,38 +292,43 @@ export function DYdia4(webPoints, point, skew, urib, ds){
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
   const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x) ** 2 + (tr.y - tl.y) ** 2)
   const gradSin = gradient * gradCos
-  
-  let upperPlate = [ tl,  tr, { x: tr.x - rwCot * dsi.webHeight, y: tr.y - dsi.webHeight },
-       { x: tl.x - lwCot * dsi.webHeight, y: tl.y - dsi.webHeight }, 
+
+  let upperPlate = [tl, tr, { x: tr.x - rwCot * dsi.webHeight, y: tr.y - dsi.webHeight },
+    { x: tl.x - lwCot * dsi.webHeight, y: tl.y - dsi.webHeight },
   ]; // 첫번째 면이 rib에 해당되도록
-  let upperPoints = [];
-  
-  upperPoints.push(...scallop(upperPlate[3], upperPlate[0], upperPlate[1], dsi.scallopRadius, 4));
-  //// longitudinal stiffner holes
-  for (let i = 0; i < urib.layout.length; i++) {
-    upperPoints.push({ x: urib.layout[i] - dsi.ribHoleD, y: tl.y + gradient * (urib.layout[i] - dsi.ribHoleD - tl.x) });
-    let curve = new THREE.ArcCurve(urib.layout[i], tl.y + gradient * (urib.layout[i] - tl.x) - urib.height, dsi.ribHoleR, Math.PI,0, false);
-    let dummyVectors = curve.getPoints(8)
-    for (let i = 0; i < dummyVectors.length; i++) {
-      upperPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
-    }
-    upperPoints.push({ x: urib.layout[i] + dsi.ribHoleD, y: tl.y + gradient * (urib.layout[i] + dsi.ribHoleD - tl.x) });
-  }
-  upperPoints = upperPoints.concat(scallop(upperPlate[0], upperPlate[1], upperPlate[2], dsi.scallopRadius, 4));
-  upperPoints = upperPoints.concat(scallop(upperPlate[1], upperPlate[2], upperPlate[3], dsi.scallopRadius, 4));
-  upperPoints = upperPoints.concat(scallop(upperPlate[2], upperPlate[3], upperPlate[0], dsi.scallopRadius, 4));
+  // let upperPoints = [];
+
+  // upperPoints.push(...scallop(upperPlate[3], upperPlate[0], upperPlate[1], dsi.scallopRadius, 4));
+  // //// longitudinal stiffner holes
+  // for (let i = 0; i < urib.layout.length; i++) {
+  //   upperPoints.push({ x: urib.layout[i] - dsi.ribHoleD, y: tl.y + gradient * (urib.layout[i] - dsi.ribHoleD - tl.x) });
+  //   let curve = new THREE.ArcCurve(urib.layout[i], tl.y + gradient * (urib.layout[i] - tl.x) - urib.height, dsi.ribHoleR, Math.PI, 0, false);
+  //   let dummyVectors = curve.getPoints(8)
+  //   for (let i = 0; i < dummyVectors.length; i++) {
+  //     upperPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
+  //   }
+  //   upperPoints.push({ x: urib.layout[i] + dsi.ribHoleD, y: tl.y + gradient * (urib.layout[i] + dsi.ribHoleD - tl.x) });
+  // }
+  // upperPoints = upperPoints.concat(scallop(upperPlate[0], upperPlate[1], upperPlate[2], dsi.scallopRadius, 4));
+  // upperPoints = upperPoints.concat(scallop(upperPlate[1], upperPlate[2], upperPlate[3], dsi.scallopRadius, 4));
+  // upperPoints = upperPoints.concat(scallop(upperPlate[2], upperPlate[3], upperPlate[0], dsi.scallopRadius, 4));
 
   // let lowerweldingLine = [upperPlate[0], upperPlate[1], upperPlate[2], upperPlate[3]]
-  result["upperPlate"] = {
-    points: upperPoints, Thickness: dsi.webThickness, z: -dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    // size: PlateSize(upperPlate, 1, ds.lowerThickness),
-    // anchor: [[upperPlate[0].x, upperPlate[0].y - 50], [upperPlate[3].x, upperPlate[3].y - 50]],
-    // welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
-  }
 
- let upperTopPoints = [upperPlate[3],upperPlate[2],
- { x: tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness), y: tr.y - dsi.webHeight - dsi.upperTopThickness },
- { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness }];
+  let urib2 = urib
+  urib2.ribHoleD = dsi.ribHoleD
+  urib2.ribHoleR = dsi.ribHoleR
+  result["upperPlate"] = vPlateGen([upperPlate[3],upperPlate[2],upperPlate[1],upperPlate[0]], point, dsi.webThickness, [0,1,2,3],dsi.scallopRadius, urib2,null,[]);
+  // {
+  //   points: upperPoints, Thickness: dsi.webThickness, z: -dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+  //   // size: PlateSize(upperPlate, 1, ds.lowerThickness),
+  //   // anchor: [[upperPlate[0].x, upperPlate[0].y - 50], [upperPlate[3].x, upperPlate[3].y - 50]],
+  //   // welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
+  // }
+
+  let upperTopPoints = [upperPlate[3], upperPlate[2],
+  { x: tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness), y: tr.y - dsi.webHeight - dsi.upperTopThickness },
+  { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness }];
   result["upperTopPlate"] = {
     points: upperTopPoints, Thickness: dsi.upperTopWidth, z: -dsi.upperTopWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size: PlateSize2(upperPlate, 1, ds.lowerTopThickness, ds.lowerTopwidth),
@@ -1675,4 +1680,67 @@ export function hBracingPlate(point, right, webPoints, hBSection) {
   }
 
   return { point: point, plate: { points: plateShape, Thickness: sideTopThickness, z: position.y, rotationX: 0, rotationY: rotationY, hole: [] } }
+}
+
+// 판요소 생성시 기준점은 좌측하단을 기준으로 반드시 시계반대방향으로 회전할 것
+export function vPlateGen(points, centerPoint, Thickness, scallop, scallopR, urib, lrib, holePoints) {
+  let skew = centerPoint.skew;
+
+  const bl = points[0];
+  const br = points[1];
+  const tl = points[3];
+  const tr = points[2];
+
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+  const gradient2 = (br.y - bl.y) / (br.x - bl.x)
+
+  const cosec = Math.abs(1 / Math.sin(skew * Math.PI / 180));
+  const rotationY = (skew - 90) * Math.PI / 180
+
+  let mainPlate = [];
+  points.forEach(pt => mainPlate.push({ x: pt.x * cosec, y: pt.y }));
+
+  let upperPoints = [];
+  if (urib) {
+    for (let i = 0; i < urib.layout.length; i++) {
+      upperPoints.push({ x: urib.layout[i] * cosec - urib.ribHoleD, y: tl.y + gradient * (urib.layout[i] - urib.ribHoleD - tl.x) });
+      let curve = new THREE.ArcCurve(urib.layout[i] * cosec, tl.y + gradient * (urib.layout[i] - tl.x) - urib.height, urib.ribHoleR, Math.PI, 0, false);
+      let dummyVectors = curve.getPoints(8)
+      for (let i = 0; i < dummyVectors.length; i++) {
+        upperPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
+      }
+      upperPoints.push({ x: urib.layout[i] * cosec + urib.ribHoleD, y: tl.y + gradient * (urib.layout[i] + urib.ribHoleD - tl.x) });
+    }
+  }
+  let lowerPoints = [];
+  if (lrib) {
+    for (let i = 0; i < lrib.layout.length; i++) {
+      lowerPoints.push({ x: lrib.layout[i] * cosec - lrib.ribHoleD, y: bl.y + gradient2 * (lrib.layout[i] - lrib.ribHoleD - bl.x) });
+      let curve = new THREE.ArcCurve(lrib.layout[i] * cosec, bl.y + gradient2 * (lrib.layout[i] - bl.x) - lrib.height, lrib.ribHoleR, Math.PI, 0, true);
+      let dummyVectors = curve.getPoints(8)
+      for (let i = 0; i < dummyVectors.length; i++) {
+        lowerPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
+      }
+      lowerPoints.push({ x: lrib.layout[i] * cosec + lrib.ribHoleD, y: bl.y + gradient2 * (lrib.layout[i] + lrib.ribHoleD - bl.x) });
+    }
+  }
+  let resultPoints = [];
+  for (let i = 0; i < points.length; i++) {
+    if (scallop.includes(i)) {
+      let former = i === 0 ? mainPlate.length - 1 : i - 1;
+      let latter = i === mainPlate.length - 1 ? 0 : i + 1;
+      resultPoints.push(...scallop(mainPlate[former], mainPlate[i], mainPlate[latter], scallopR, 4));
+    } else {
+      resultPoints.push(mainPlate[i])
+    }
+    if (i === 0){
+      resultPoints.push(...lowerPoints);
+    } else if (i === 2){
+      resultPoints.push(...lowerPoints);
+    }
+  }
+
+  let result = { points: resultPoints, Thickness: Thickness, z: - Thickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints?holePoints:[] }
+
+  return result
 }
