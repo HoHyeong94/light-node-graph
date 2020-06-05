@@ -290,7 +290,7 @@ export function DYdia4(webPoints, point, skew, urib, ds) {
   const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
   const rwCot = (tr.x - br.x) / (tr.y - br.y)
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
-  // const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x) ** 2 + (tr.y - tl.y) ** 2)
+  const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x) ** 2 + (tr.y - tl.y) ** 2)
   // const gradSin = gradient * gradCos
 
   let upperPlate = [{ x: tl.x - lwCot * dsi.webHeight, y: tl.y - dsi.webHeight },
@@ -299,13 +299,15 @@ export function DYdia4(webPoints, point, skew, urib, ds) {
   urib2.ribHoleD = dsi.ribHoleD
   urib2.ribHoleR = dsi.ribHoleR
   result["upperPlate"] = vPlateGen(upperPlate, point, dsi.webThickness, [0,1,2,3],dsi.scallopRadius, urib2,null,[]);
-
-  let upperTopPoints = [upperPlate[0], upperPlate[1],
-  { x: tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness), y: tr.y - dsi.webHeight - dsi.upperTopThickness },
-  { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness }];
-  result["upperTopPlate"] = {
-    points: upperTopPoints, Thickness: dsi.upperTopWidth, z: -dsi.upperTopWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-  }
+  let centerPoint = ToGlobalPoint(point, { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness });
+  let l = (tr.x - rwCot *  (dsi.webHeight + dsi.upperTopThickness) - (tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness)))/gradCos
+  let upperTopPoints = [{x:0, y: - dsi.upperTopWidth / 2}, {x:0, y: dsi.upperTopWidth / 2},
+    {x : l, y: dsi.upperTopWidth / 2},{x : l, y: -dsi.upperTopWidth / 2}]
+    result["upperTopPlate"] = hPlateGen(upperTopPoints, centerPoint, dsi,upperTopPoints, 0, 0)
+  
+  // {
+  //   points: upperTopPoints, Thickness: dsi.upperTopWidth, z: -dsi.upperTopWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+  // }
   let stiffnerPoint = [[bl, upperTopPoints[3]], [br, upperTopPoints[2]]];
   for (let i = 0; i < stiffnerPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
@@ -1652,7 +1654,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
   const gradient2 = (br.y - bl.y) / (br.x - bl.x)
 
-  const cosec = Math.abs(1 / Math.sin(skew * Math.PI / 180));
+  const cosec = 1 / Math.sin(skew * Math.PI / 180);
   const rotationY = (skew - 90) * Math.PI / 180
 
   let mainPlate = [];
@@ -1704,7 +1706,10 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
 }
 
 export function hPlateGen(points, centerPoint, Thickness, skew, rotationX, rotationY){
-
-  let result = { points: points, Thickness: Thickness, z: 0, rotationX: rotationX, rotationY: rotationY, hole: [], point : centerPoint }
+  const cosec = 1 / Math.sin(skew * Math.PI / 180);
+  const cot = - 1 / Math.tan(skew * Math.PI / 180);
+  points.forEach(pt => resultPoints.push({x : pt.x, y : pt.x*cot + pt.y * cosec}))
+  
+  let result = { points: resultPoints, Thickness: Thickness, z: 0, rotationX: rotationX, rotationY: rotationY, hole: [], point : centerPoint }
   return result
 }
