@@ -1716,7 +1716,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
   if (lrib) {
     for (let i = 0; i < lrib.layout.length; i++) {
       lowerPoints.push({ x: lrib.layout[i] * cosec - lrib.ribHoleD, y: bl.y + gradient2 * (lrib.layout[i] - lrib.ribHoleD - bl.x) });
-      let curve = new THREE.ArcCurve(lrib.layout[i] * cosec, bl.y + gradient2 * (lrib.layout[i] - bl.x) - lrib.height, lrib.ribHoleR, Math.PI, 0, true);
+      let curve = new THREE.ArcCurve(lrib.layout[i] * cosec, bl.y + gradient2 * (lrib.layout[i] - bl.x) + lrib.height, lrib.ribHoleR, Math.PI, 0, true);
       let dummyVectors = curve.getPoints(8)
       for (let i = 0; i < dummyVectors.length; i++) {
         lowerPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
