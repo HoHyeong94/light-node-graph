@@ -50,8 +50,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                 let URib = {}
                 for (let j in ps.lRibLO) {
                     let uRib = [{ x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY +(ps.uRibLO[j] - ps.uRibThk / 2)*gradient}, 
-                                { x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY + ps.uRibH + ps.uRibLO[j]*gradient },
-                                { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY + ps.uRibH + ps.uRibLO[j]*gradient}, 
+                                { x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j]*gradient },
+                                { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j]*gradient}, 
                                 { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY +(ps.uRibLO[j] + ps.uRibThk / 2)*gradient }]
                     let keyname = "uRib" + j
                     URib[keyname] = uRib
