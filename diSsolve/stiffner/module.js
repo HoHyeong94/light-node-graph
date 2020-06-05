@@ -1684,7 +1684,7 @@ export function hBracingPlate(point, right, webPoints, hBSection) {
 }
 
 // 판요소 생성시 기준점은 좌측하단을 기준으로 반드시 시계반대방향으로 회전할 것
-export function vPlateGen(points, centerPoint, Thickness, scallop, scallopR, urib, lrib, holePoints) {
+export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallopR, urib, lrib, holePoints) {
   let skew = centerPoint.skew;
 
   const bl = points[0];
@@ -1727,7 +1727,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallop, scallopR, uri
   }
   let resultPoints = [];
   for (let i = 0; i < points.length; i++) {
-    if (scallop.includes(i)) {
+    if (scallopVertex.includes(i)) {
       let former = i === 0 ? mainPlate.length - 1 : i - 1;
       let latter = i === mainPlate.length - 1 ? 0 : i + 1;
       resultPoints.push(...scallop(mainPlate[former], mainPlate[i], mainPlate[latter], scallopR, 4));
