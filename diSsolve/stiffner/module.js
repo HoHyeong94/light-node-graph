@@ -294,8 +294,8 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
   let lrib2 = lrib
   lrib2.ribHoleD = dsi.ribHoleD
   lrib2.ribHoleR = dsi.ribHoleR
-  let holeRect = [{x: dsi.holeWidth/2, y: bl.y + dsi.holeBottmY},{x: -dsi.holeWidth/2, y: bl.y + dsi.holeBottmY},
-    {x: -dsi.holeWidth/2, y: bl.y + dsi.holeBottmY + dsi.holeHeight},    {x: dsi.holeWidth/2, y: bl.y + dsi.holeBottmY + dsi.holeHeight}  ];
+  let holeRect = [{x: dsi.holeWidth/2, y: bl.y + dsi.holeBottomY},{x: -dsi.holeWidth/2, y: bl.y + dsi.holeBottomY},
+    {x: -dsi.holeWidth/2, y: bl.y + dsi.holeBottomY + dsi.holeHeight},    {x: dsi.holeWidth/2, y: bl.y + dsi.holeBottomY + dsi.holeHeight}  ];
   let holePoints = [];
   holePoints.push(...Fillet2D(holeRect[0],holeRect[1],holeRect[2],dsi.holeFilletR,4));
   holePoints.push(...Fillet2D(holeRect[1],holeRect[2],holeRect[3],dsi.holeFilletR,4));
