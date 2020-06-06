@@ -329,8 +329,8 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
   let holeCenter4 = {x: dsi.holeWidth/2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY +dsi.holeHeight/2 }
    result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point,holeCenter4),dsi.holeStiffThickness, point.skew, 0,Math.PI/2)
 
-   let hStiffCenter = {x : 0, y : dsi.hstiffHeight};
-   let h1 = [{x : bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness/2}, {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: - -dsi.holeStiffHeight - dsi.webThickness/2},
+   let hStiffCenter = {x : 0, y : bl.y + dsi.hstiffHeight};
+   let h1 = [{x : bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness/2}, {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness/2},
   {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y:  - dsi.webThickness/2},{x : bl.x + lwCot * dsi.hstiffHeight, y: - dsi.webThickness/2}
  ];
  result["h1"] = hPlateGen(h1, ToGlobalPoint(point,hStiffCenter),dsi.hstiffThickness, point.skew, 0, 0)
