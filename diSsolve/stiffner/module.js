@@ -314,14 +314,15 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
   result["hstiff1"] = hPlateGen(hstiff1, ToGlobalPoint(point,holeCenter1),dsi.holeStiffThickness, point.skew, 0,0)
   
   let holeCenter2 = {x:0, y: bl.y + dsi.holeBottomY +dsi.holeHeight + dsi.holeStiffmargin}
-  let hstiff2 = [{x:-dsi.holeStiffhl/2, y: dsi.webThickness/2}, {x: dsi.holeStiffhl/2, y: dsi.webThickness/2},
-  {x:dsi.holeStiffhl/2, y: dsi.webThickness/2+dsi.holeStiffHeight},{x:-dsi.holeStiffhl/2, y: dsi.webThickness/2+dsi.holeStiffHeight}];
-  result["hstiff2"] = hPlateGen(hstiff2, ToGlobalPoint(point,holeCenter2),dsi.holeStiffThickness, point.skew, 0,0)
+    result["hstiff2"] = hPlateGen(hstiff1, ToGlobalPoint(point,holeCenter2),dsi.holeStiffThickness, point.skew, 0,0)
 
-  let holeCenter3 = {x:- dsi.holeWidth - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY +dsi.holeHeight/2 }
+  let holeCenter3 = {x:- dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY +dsi.holeHeight/2 }
   let vstiff1 = [{x:-dsi.holeStiffvl/2, y: -dsi.webThickness/2}, {x: dsi.holeStiffhl/2, y: -dsi.webThickness/2},
   {x:dsi.holeStiffhl/2, y: -dsi.webThickness/2-dsi.holeStiffHeight},{x:-dsi.holeStiffhl/2, y: -dsi.webThickness/2-dsi.holeStiffHeight}];
   result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point,holeCenter3),dsi.holeStiffThickness, point.skew, 0,Math.PI/2)
+
+  let holeCenter4 = {x: dsi.holeWidth/2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY +dsi.holeHeight/2 }
+   result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point,holeCenter4),dsi.holeStiffThickness, point.skew, 0,Math.PI/2)
   return result 
 }
 
