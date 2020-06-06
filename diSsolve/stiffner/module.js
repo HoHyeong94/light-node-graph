@@ -333,7 +333,21 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
    let h1 = [{x : bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness/2}, {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness/2},
   {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y:  - dsi.webThickness/2},{x : bl.x + lwCot * dsi.hstiffHeight, y: - dsi.webThickness/2}
  ];
- result["h1"] = hPlateGen(h1, ToGlobalPoint(point,hStiffCenter),dsi.hstiffThickness, point.skew, 0, 0)
+ result["h1"] = hPlateGen(h1, ToGlobalPoint(point,hStiffCenter),dsi.hstiffThickness, point.skew, 0, 0);
+
+ let h2 = [{x : br.x + rwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness/2}, {x : dsi.holeWidth/2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness/2},
+  {x : dsi.holeWidth/2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y:  - dsi.webThickness/2},{x : br.x + rwCot * dsi.hstiffHeight, y: - dsi.webThickness/2}
+ ];
+ result["h2"] = hPlateGen(h2, ToGlobalPoint(point,hStiffCenter),dsi.hstiffThickness, point.skew, 0, 0);
+
+ let h3 = [{x : bl.x + lwCot * dsi.hstiffHeight, y:  dsi.hstiffWidth + dsi.webThickness/2}, {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.holeStiffHeight + dsi.webThickness/2},
+  {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y:   dsi.webThickness/2},{x : bl.x + lwCot * dsi.hstiffHeight, y:  dsi.webThickness/2}
+ ];
+ result["h3"] = hPlateGen(h3, ToGlobalPoint(point,hStiffCenter),dsi.hstiffThickness, point.skew, 0, 0);
+ let h4 = [{x : br.x + rwCot * dsi.hstiffHeight, y:  dsi.hstiffWidth + dsi.webThickness/2}, {x : dsi.holeWidth/2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: dsi.holeStiffHeight + dsi.webThickness/2},
+  {x : dsi.holeWidth/2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y:   dsi.webThickness/2},{x : br.x + rwCot * dsi.hstiffHeight, y:  dsi.webThickness/2}
+ ];
+ result["h4"] = hPlateGen(h4, ToGlobalPoint(point,hStiffCenter),dsi.hstiffThickness, point.skew, 0, 0);
   return result 
 }
 
