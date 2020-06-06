@@ -274,8 +274,9 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
   let result = {};
   let dsi = {
     webThickness: 12,
-    stiffWidth: 160,
-    stiffThickness: 12,
+    hstiffWidth: 270,
+    hstiffThickness: 12,
+    hstiffHeight : 362,
     scallopRadius: 35,
     ribHoleD: 42,
     ribHoleR: 25,
@@ -288,11 +289,15 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
     holeStiffvl : 860,
     holeStiffmargin : 20,
     holeStiffHeight : 100,
+
   } //  임시 입력변수
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
   const tr = webPoints[3];
+  const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
+  const rwCot = (tr.x - br.x) / (tr.y - br.y)
+
   let urib2 = urib
   urib2.ribHoleD = dsi.ribHoleD
   urib2.ribHoleR = dsi.ribHoleR
@@ -323,6 +328,12 @@ export function DYdia5(webPoints, point, urib, lrib, ds){
 
   let holeCenter4 = {x: dsi.holeWidth/2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY +dsi.holeHeight/2 }
    result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point,holeCenter4),dsi.holeStiffThickness, point.skew, 0,Math.PI/2)
+
+   let hStiffCenter = {x : 0, y : dsi.hstiffHeight};
+   let h1 = [{x : bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness/2}, {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: - -dsi.holeStiffHeight - dsi.webThickness/2},
+  {x : - dsi.holeWidth/2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y:  - dsi.webThickness/2},{x : bl.x + lwCot * dsi.hstiffHeight, y: - dsi.webThickness/2}
+ ];
+ result["h1"] = hPlateGen(h1, ToGlobalPoint(point,hStiffCenter),dsi.hstiffThickness, point.skew, 0, 0)
   return result 
 }
 
