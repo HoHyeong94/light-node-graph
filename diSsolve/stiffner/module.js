@@ -340,11 +340,16 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
   let holeCenter4 = { x: + dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
   result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, point.skew, 0, Math.PI / 2)
 
-  let supportStiffCenter1 = {x : dsi.supportStiffLayout[0] - dsi.supportStiffThickness/2, y:tl.y + gradient*(dsi.supportStiffLayout[0] - dsi.supportStiffThickness/2 - tl.x)};
-  let supportStiff1 = [{x : 0, y : 0},{x : supportStiffCenter1.y - bl.y, y : 0},
-    {x : supportStiffCenter1.y - bl.y, y : dsi.supportStiffWidth }, {x : 0, y : dsi.supportStiffWidth}];
-  result["supportStiff1"] = hPlateGen(supportStiff1, ToGlobalPoint(point, supportStiffCenter1),dsi.supportStiffThickness, point.skew, 0, Math.PI/2);
 
+  for (let i in dsi. supportStiffLayout){
+  let supportStiffCenter1 = {x : dsi.supportStiffLayout[i] - dsi.supportStiffThickness/2, y:tl.y + gradient*(dsi.supportStiffLayout[i] - dsi.supportStiffThickness/2 - tl.x)};
+  let supportStiff1 = [{x : 0, y : dsi.supportStiffThickness/2},{x : supportStiffCenter1.y - bl.y, y : dsi.supportStiffThickness/2},
+    {x : supportStiffCenter1.y - bl.y, y : dsi.supportStiffWidth + dsi.supportStiffThickness/2 }, {x : 0, y : dsi.supportStiffWidth + dsi.supportStiffThickness/2}];
+  let supportStiff2 = [{x : 0, y : -dsi.supportStiffThickness/2},{x : supportStiffCenter1.y - bl.y, y : -dsi.supportStiffThickness/2},
+      {x : supportStiffCenter1.y - bl.y, y : - dsi.supportStiffWidth - dsi.supportStiffThickness/2 }, {x : 0, y : - dsi.supportStiffWidth - dsi.supportStiffThickness/2}];
+  result["supportStiff1"+i] = hPlateGen(supportStiff1, ToGlobalPoint(point, supportStiffCenter1),dsi.supportStiffThickness, point.skew, 0, Math.PI/2);
+  result["supportStiff2"+i] = hPlateGen(supportStiff2, ToGlobalPoint(point, supportStiffCenter1),dsi.supportStiffThickness, point.skew, 0, Math.PI/2);
+  }
 
   let hStiffCenter = { x: 0, y: bl.y + dsi.hstiffHeight };
   let h1 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 }, { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
