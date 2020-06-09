@@ -343,10 +343,10 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
 
   for (let i in dsi. supportStiffLayout){
   let supportStiffCenter1 = {x : dsi.supportStiffLayout[i] - dsi.supportStiffThickness/2, y:tl.y + gradient*(dsi.supportStiffLayout[i] - dsi.supportStiffThickness/2 - tl.x)};
-  let supportStiff1 = [{x : 0, y : dsi.supportStiffThickness/2},{x : supportStiffCenter1.y - bl.y, y : dsi.supportStiffThickness/2},
-    {x : supportStiffCenter1.y - bl.y, y : dsi.supportStiffWidth + dsi.supportStiffThickness/2 }, {x : 0, y : dsi.supportStiffWidth + dsi.supportStiffThickness/2}];
-  let supportStiff2 = [{x : 0, y : -dsi.supportStiffThickness/2},{x : supportStiffCenter1.y - bl.y, y : -dsi.supportStiffThickness/2},
-      {x : supportStiffCenter1.y - bl.y, y : - dsi.supportStiffWidth - dsi.supportStiffThickness/2 }, {x : 0, y : - dsi.supportStiffWidth - dsi.supportStiffThickness/2}];
+  let supportStiff1 = [{x : 0, y : dsi.webThickness/2},{x : supportStiffCenter1.y - bl.y, y : dsi.webThickness/2},
+    {x : supportStiffCenter1.y - bl.y, y : dsi.supportStiffWidth + dsi.webThickness/2 }, {x : 0, y : dsi.supportStiffWidth + dsi.webThickness/2}];
+  let supportStiff2 = [{x : 0, y : -dsi.webThickness/2},{x : supportStiffCenter1.y - bl.y, y : -dsi.webThickness/2},
+      {x : supportStiffCenter1.y - bl.y, y : - dsi.supportStiffWidth - dsi.webThickness/2 }, {x : 0, y : - dsi.supportStiffWidth - dsi.webThickness/2}];
   result["supportStiff1"+i] = hPlateGen(supportStiff1, ToGlobalPoint(point, supportStiffCenter1),dsi.supportStiffThickness, point.skew, 0, Math.PI/2);
   result["supportStiff2"+i] = hPlateGen(supportStiff2, ToGlobalPoint(point, supportStiffCenter1),dsi.supportStiffThickness, point.skew, 0, Math.PI/2);
   }
