@@ -94,6 +94,14 @@ export function DiaShapeDict(
         lrib,
         diaSection
       );
+    } else if (diaphragmLayout[i][section] == "DYdia6") {
+      result[gridkey] = DYdia6(
+        webPoints,
+        gridPoint[gridkey],
+        urib,
+        lrib,
+        diaSection
+      );
     }
 
     result[gridkey].point = gridPoint[gridkey];
@@ -270,6 +278,87 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
   return result
 }
 
+export function DYdia6(webPoints, point, urib, lrib, ds) {
+  let result = {};
+  let dsi = {
+    webThickness: 12,
+    hstiffWidth: 270,
+    hstiffThickness: 12,
+    hstiffHeight: 362,
+    scallopRadius: 35,
+    ribHoleD: 42,
+    ribHoleR: 25,
+    holeBottomY: 550, //y축은 중앙이 기준
+    holeCenterOffset : -679,
+    holeWidth: 450,
+    holeHeight: 700,
+    holeFilletR: 100,
+    holeStiffThickness: 10,
+    holeStiffhl: 610,
+    holeStiffvl: 860,
+    holeStiffmargin: 20,
+    holeStiffHeight: 100,
+
+  } //  임시 입력변수
+  const bl = webPoints[0];
+  const tl = webPoints[1];
+  const br = webPoints[2];
+  const tr = webPoints[3];
+  const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
+  const rwCot = (tr.x - br.x) / (tr.y - br.y)
+
+  let urib2 = urib
+  urib2.ribHoleD = dsi.ribHoleD
+  urib2.ribHoleR = dsi.ribHoleR
+  let lrib2 = lrib
+  lrib2.ribHoleD = dsi.ribHoleD
+  lrib2.ribHoleR = dsi.ribHoleR
+  lrib.type = 1; //하부리브 스캘럽
+
+  let holeRect = [{ x: dsi.holeWidth / 2 + holeCenterOffset, y: bl.y + dsi.holeBottomY }, { x: -dsi.holeWidth / 2 + holeCenterOffset, y: bl.y + dsi.holeBottomY },
+  { x: -dsi.holeWidth / 2 + holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight }, { x: dsi.holeWidth / 2 + holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight }];
+  let holePoints = [];
+  holePoints.push(...Fillet2D(holeRect[0], holeRect[1], holeRect[2], dsi.holeFilletR, 4));
+  holePoints.push(...Fillet2D(holeRect[1], holeRect[2], holeRect[3], dsi.holeFilletR, 4));
+  holePoints.push(...Fillet2D(holeRect[2], holeRect[3], holeRect[0], dsi.holeFilletR, 4));
+  holePoints.push(...Fillet2D(holeRect[3], holeRect[0], holeRect[1], dsi.holeFilletR, 4));
+  result["mainPlate"] = vPlateGen([bl, br, tr, tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints);
+
+  let holeCenter1 = { x: holeCenterOffset, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness }
+  let hstiff1 = [{ x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 },
+  { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }, { x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }];
+  result["hstiff1"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter1), dsi.holeStiffThickness, point.skew, 0, 0)
+  let holeCenter2 = { x: holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }
+  result["hstiff2"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter2), dsi.holeStiffThickness, point.skew, 0, 0)
+  let holeCenter3 = { x: holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: -dsi.webThickness / 2 },
+  { x: dsi.holeStiffhl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }, { x: -dsi.holeStiffhl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }];
+  result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, point.skew, 0, Math.PI / 2)
+  let holeCenter4 = { x: + holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, point.skew, 0, Math.PI / 2)
+
+  let hStiffCenter = { x: 0, y: bl.y + dsi.hstiffHeight };
+  let h1 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 }, { x: holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
+  { x: holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: - dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.webThickness / 2 }
+  ];
+  result["h1"] = hPlateGen(h1, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, point.skew, 0, 0);
+
+  let h2 = [{ x: br.x + rwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 }, { x: holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
+  { x: holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: - dsi.webThickness / 2 }, { x: br.x + rwCot * dsi.hstiffHeight, y: - dsi.webThickness / 2 }
+  ];
+  result["h2"] = hPlateGen(h2, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, point.skew, 0, 0);
+
+  let h3 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.hstiffWidth + dsi.webThickness / 2 }, { x: holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.holeStiffHeight + dsi.webThickness / 2 },
+  { x: holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.webThickness / 2 }
+  ];
+  result["h3"] = hPlateGen(h3, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, point.skew, 0, 0);
+  let h4 = [{ x: br.x + rwCot * dsi.hstiffHeight, y: dsi.hstiffWidth + dsi.webThickness / 2 }, { x: holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: dsi.holeStiffHeight + dsi.webThickness / 2 },
+  { x: holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: dsi.webThickness / 2 }, { x: br.x + rwCot * dsi.hstiffHeight, y: dsi.webThickness / 2 }
+  ];
+  result["h4"] = hPlateGen(h4, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, point.skew, 0, 0);
+  return result
+}
+
 export function DYdia5(webPoints, point, urib, lrib, ds) {
   let result = {};
   let dsi = {
@@ -304,7 +393,7 @@ export function DYdia5(webPoints, point, urib, lrib, ds) {
   let lrib2 = lrib
   lrib2.ribHoleD = dsi.ribHoleD
   lrib2.ribHoleR = dsi.ribHoleR
-  lrib.type = 1;
+  lrib.type = 0; //하부리브 스캘럽
   let holeRect = [{ x: dsi.holeWidth / 2, y: bl.y + dsi.holeBottomY }, { x: -dsi.holeWidth / 2, y: bl.y + dsi.holeBottomY },
   { x: -dsi.holeWidth / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight }, { x: dsi.holeWidth / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight }];
   let holePoints = [];
@@ -1761,7 +1850,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
   }
   let lowerPoints = [];
   if (lrib) {
-    if (lrib.type == false) {
+    if (lrib.type == 0) {
       for (let i = 0; i < lrib.layout.length; i++) {
         lowerPoints.push({ x: lrib.layout[i] * cosec - lrib.ribHoleD, y: bl.y + gradient2 * (lrib.layout[i] - lrib.ribHoleD - bl.x) });
         let curve = new THREE.ArcCurve(lrib.layout[i] * cosec, bl.y + gradient2 * (lrib.layout[i] - bl.x) + lrib.height, lrib.ribHoleR, Math.PI, 0, true);
