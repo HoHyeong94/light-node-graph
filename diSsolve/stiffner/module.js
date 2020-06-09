@@ -341,7 +341,7 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
   result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, point.skew, 0, Math.PI / 2)
 
   let supportStiffCenter1 = {x : dsi.supportStiffLayout[0] - dsi.supportStiffThickness/2, y:tl.y + gradient*(dsi.supportStiffLayout[0] - dsi.supportStiffThickness/2 - tl.x)};
-  let supportStiff1 = [{x : 0, y : 0},{x : 0, y : supportStiffCenter1.y - bl.y}, {x : supportStiffCenter1.y - bl.y, y : 0 },
+  let supportStiff1 = [{x : 0, y : 0},{x : supportStiffCenter1.y - bl.y, y : 0},
     {x : supportStiffCenter1.y - bl.y, y : dsi.supportStiffWidth }, {x : 0, y : dsi.supportStiffWidth}];
   result["supportStiff1"] = hPlateGen(supportStiff1, ToGlobalPoint(point, supportStiffCenter1),dsi.supportStiffThickness, point.skew, 0, Math.PI/2);
 
