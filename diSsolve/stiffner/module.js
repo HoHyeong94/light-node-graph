@@ -1775,8 +1775,8 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
       for (let i = 0; i < lrib.layout.length; i++) {
         let dummyPoints = [];
         dummyPoints.push({ x: lrib.layout[i] * cosec -lrib.thickness/2 - 1, y: bl.y + gradient2 * (lrib.layout[i] - lrib.thickness/2 - 1 - bl.x) }, 
-        { x: lrib.layout[i] * cosec -lrib.thickness/2 - 1, y: bl.y + gradient2 * (lrib.layout[i] - bl.x) + 1 },
-        { x: lrib.layout[i] * cosec +lrib.thickness/2 + 1, y: bl.y + gradient2 * (lrib.layout[i] - bl.x) + 1 },
+        { x: lrib.layout[i] * cosec -lrib.thickness/2 - 1, y: bl.y + gradient2 * (lrib.layout[i] - bl.x) + lrib.height + 1 },
+        { x: lrib.layout[i] * cosec +lrib.thickness/2 + 1, y: bl.y + gradient2 * (lrib.layout[i] - bl.x) + lrib.height + 1 },
         { x: lrib.layout[i] * cosec +lrib.thickness/2 + 1, y: bl.y + gradient2 * (lrib.layout[i] + lrib.thickness/2 + 1 - bl.x) })
         lowerPoints.push(...scallop(bl,dummyPoints[0],dummyPoints[1],10,1));
         lowerPoints.push(dummyPoints[1], dummyPoints[2]);
