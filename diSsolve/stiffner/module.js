@@ -298,7 +298,9 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
     holeStiffvl: 860,
     holeStiffmargin: 20,
     holeStiffHeight: 100,
-
+    supportStiffLayout : [-200,0,200],
+    supportStiffWidth : 265,
+    supportStiffThickness : 26,
   } //  임시 입력변수
   const bl = webPoints[0];
   const tl = webPoints[1];
@@ -306,6 +308,7 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
   const tr = webPoints[3];
   const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
   const rwCot = (tr.x - br.x) / (tr.y - br.y)
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
 
   let urib2 = urib
   urib2.ribHoleD = dsi.ribHoleD
@@ -336,6 +339,12 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
   result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, point.skew, 0, Math.PI / 2)
   let holeCenter4 = { x: + dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
   result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, point.skew, 0, Math.PI / 2)
+
+  let supportStiffCenter1 = {x : dsi.supportStiffLayout[0] - dsi.supportStiffThickness/2, y:tl.y + gradient*(dsi.supportStiffLayout[0] - dsi.supportStiffThickness/2 - tl.x)};
+  let supportStiff1 = [{x : 0, y : 0},{x : 0, y : supportStiffCenter1.y - bl.y}, {x : supportStiffCenter1.y - bl.y, y : 0 },
+    {x : supportStiffCenter1.y - bl.y, y : dsi.supportStiffWidth }, {x : 0, y : dsi.supportStiffWidth}];
+  result["supportStiff1"] = hPlateGen(supportStiff1, ToGlobalPoint(point, supportStiffCenter1),dsi.supportStiffThickness, point.skew, 0, Math.PI/2);
+
 
   let hStiffCenter = { x: 0, y: bl.y + dsi.hstiffHeight };
   let h1 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 }, { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
