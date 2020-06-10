@@ -808,8 +808,8 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   ToGlobalPoint(point, upperPlate[2])];
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
-    let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.bracketWidth / 2 }, { x: sign * 100, y: dsi.lowerWidth / 2 }, { x: sign * dsi.bracketLength, y: dsi.lowerWidth / 2 },
-    { x: sign * dsi.bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.lowerWidth / 2 }, { x: sign * 100, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
+    let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.lowerWidth / 2 }, { x: sign * dsi.bracketLength, y: dsi.lowerWidth / 2 },
+    { x: sign * dsi.bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign * 20, y: -dsi.lowerWidth / 2 }, { x: sign * 20, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
     lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
     lowerbracket1[6], lowerbracket1[7]];
@@ -971,32 +971,6 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   result["lowerJoint22"] = hPlateGen(joint2, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
   result["lowerJoint22"].bolt = flangeBolt
   result["lowerJoint33"] = hPlateGen(joint3, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
-
-
-
-  // let lowerJoint1 = [{ x: lowerflange[0].x - dsi.lowerJointLength / 2, y: lowerflange[0].y },
-  // { x: lowerflange[0].x + dsi.lowerJointLength / 2, y: lowerflange[0].y },
-  // { x: lowerflange[0].x + dsi.lowerJointLength / 2, y: lowerflange[0].y - dsi.lowerJointThickness },
-  // { x: lowerflange[0].x - dsi.lowerJointLength / 2, y: lowerflange[0].y - dsi.lowerJointThickness }];
-  // let lowerJoint2 = [{ x: lowerflange[1].x - dsi.lowerJointLength / 2, y: lowerflange[1].y },
-  // { x: lowerflange[1].x + dsi.lowerJointLength / 2, y: lowerflange[1].y },
-  // { x: lowerflange[1].x + dsi.lowerJointLength / 2, y: lowerflange[1].y + dsi.lowerJointThickness },
-  // { x: lowerflange[1].x - dsi.lowerJointLength / 2, y: lowerflange[1].y + dsi.lowerJointThickness }]
-  // let lowerJoint11 = [{ x: lowerflange[3].x - dsi.lowerJointLength / 2, y: lowerflange[3].y },
-  // { x: lowerflange[3].x + dsi.lowerJointLength / 2, y: lowerflange[3].y },
-  // { x: lowerflange[3].x + dsi.lowerJointLength / 2, y: lowerflange[3].y - dsi.lowerJointThickness },
-  // { x: lowerflange[3].x - dsi.lowerJointLength / 2, y: lowerflange[3].y - dsi.lowerJointThickness }];
-  // let lowerJoint22 = [{ x: lowerflange[2].x - dsi.lowerJointLength / 2, y: lowerflange[2].y },
-  // { x: lowerflange[2].x + dsi.lowerJointLength / 2, y: lowerflange[2].y },
-  // { x: lowerflange[2].x + dsi.lowerJointLength / 2, y: lowerflange[2].y + dsi.lowerJointThickness },
-  // { x: lowerflange[2].x - dsi.lowerJointLength / 2, y: lowerflange[2].y + dsi.lowerJointThickness }]
-
-  // result["lowerJoint1"] = { points: lowerJoint1, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["lowerJoint2"] = { points: lowerJoint2, Thickness: dsi.lowerJointWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["lowerJoint3"] = { points: lowerJoint2, Thickness: dsi.lowerJointWidth, z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["lowerJoint11"] = { points: lowerJoint11, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["lowerJoint22"] = { points: lowerJoint22, Thickness: dsi.lowerJointWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["lowerJoint33"] = { points: lowerJoint22, Thickness: dsi.lowerJointWidth, z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
   return result
 }
