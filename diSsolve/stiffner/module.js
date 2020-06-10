@@ -563,6 +563,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
   const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x) ** 2 + (tr.y - tl.y) ** 2)
   const gradSin = gradient * gradCos
+  const gradRadian = -Math.atan(gradient)
 
   let upperPlate = [
     uflange[0][1],
@@ -594,7 +595,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
       Thickness: i < 2 ? dsi.lowerThickness : dsi.upperThickness,
       z: 0,
       rotationX: 0,
-      rotationY: -Math.atan(gradient),
+      rotationY: gradRadian,
       hole: [],
       point: bracketPoint[i],
       // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
@@ -713,14 +714,14 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   let uPoint1 = ToGlobalPoint(point, upperflange[0])
   let uPoint2 = ToGlobalPoint(point, upperflange[3])
 
-  result["upperJoint1"] = hPlateGen(joint1, uPoint1, dsi.upperJointThickness, 0, point.skew, 0, 0);
+  result["upperJoint1"] = hPlateGen(joint1, uPoint1, dsi.upperJointThickness, 0, point.skew, 0, gradRadian);
   result["upperJoint1"].bolt = flangeBolt
-  result["upperJoint2"] = hPlateGen(joint2, uPoint1, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, 0);
-  result["upperJoint3"] = hPlateGen(joint3, uPoint1, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, 0);
+  result["upperJoint2"] = hPlateGen(joint2, uPoint1, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
+  result["upperJoint3"] = hPlateGen(joint3, uPoint1, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
   result["upperJoint11"] = hPlateGen(joint1, uPoint2, dsi.upperJointThickness, 0, point.skew, 0, 0);
   result["upperJoint11"].bolt = flangeBolt
-  result["upperJoint22"] = hPlateGen(joint2, uPoint2, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, 0);
-  result["upperJoint33"] = hPlateGen(joint3, uPoint2, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, 0);
+  result["upperJoint22"] = hPlateGen(joint2, uPoint2, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
+  result["upperJoint33"] = hPlateGen(joint3, uPoint2, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
 
   // let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
   // { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.lowerThickness },
@@ -738,14 +739,14 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   let lPoint1 = ToGlobalPoint(point, lowerflange[0])
   let lPoint2 = ToGlobalPoint(point, lowerflange[3])
 
-  result["lowerJoint1"] = hPlateGen(joint1, lPoint1, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, 0);
-  result["lowerJoint2"] = hPlateGen(joint2, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
+  result["lowerJoint1"] = hPlateGen(joint1, lPoint1, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, gradRadian);
+  result["lowerJoint2"] = hPlateGen(joint2, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, gradRadian);
   result["lowerJoint2"].bolt = flangeBolt
-  result["lowerJoint3"] = hPlateGen(joint3, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
-  result["lowerJoint11"] = hPlateGen(joint1, lPoint2, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, 0);
-  result["lowerJoint22"] = hPlateGen(joint2, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
+  result["lowerJoint3"] = hPlateGen(joint3, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, gradRadian);
+  result["lowerJoint11"] = hPlateGen(joint1, lPoint2, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, gradRadian);
+  result["lowerJoint22"] = hPlateGen(joint2, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, gradRadian);
   result["lowerJoint22"].bolt = flangeBolt
-  result["lowerJoint33"] = hPlateGen(joint3, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
+  result["lowerJoint33"] = hPlateGen(joint3, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, gradRadian);
 
 
 
