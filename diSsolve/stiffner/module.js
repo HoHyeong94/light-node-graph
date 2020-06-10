@@ -941,7 +941,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointThickness }]
 
   let uPoint1 = ToGlobalPoint(point, upperflange[0])
-  let uPoint2 = ToGlobalPoint(point, upperflange[1])
+  let uPoint2 = ToGlobalPoint(point, upperflange[3])
   let joint1 = [{ x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
   { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
   { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
