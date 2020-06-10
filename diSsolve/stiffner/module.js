@@ -718,7 +718,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   result["upperJoint1"].bolt = flangeBolt
   result["upperJoint2"] = hPlateGen(joint2, uPoint1, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
   result["upperJoint3"] = hPlateGen(joint3, uPoint1, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
-  result["upperJoint11"] = hPlateGen(joint1, uPoint2, dsi.upperJointThickness, 0, point.skew, 0, 0);
+  result["upperJoint11"] = hPlateGen(joint1, uPoint2, dsi.upperJointThickness, 0, point.skew, 0, gradRadian);
   result["upperJoint11"].bolt = flangeBolt
   result["upperJoint22"] = hPlateGen(joint2, uPoint2, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
   result["upperJoint33"] = hPlateGen(joint3, uPoint2, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
