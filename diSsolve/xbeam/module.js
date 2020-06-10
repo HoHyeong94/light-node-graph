@@ -120,7 +120,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   result["web"] = vPlateGen([tl,tr,br,bl], centerPoint, xs.webThickness, [],0,null,null,[])
 
 
-  data = []; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
+  let data = []; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
   // let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2
   let section = [];// [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ]
   return {result, data, section}
