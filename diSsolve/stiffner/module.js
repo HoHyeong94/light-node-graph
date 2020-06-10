@@ -361,12 +361,12 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
   result["h11"] = hPlateGen(h11, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, 0, point.skew, 0, 0);
 
   let x1 = dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness;
-  let x2 = dsi.supportStiffThickness[0] - dsi.supportStiffThickness/2;
-  let x3 = dsi.supportStiffThickness[0] + dsi.supportStiffThickness/2;
-  let x4 = dsi.supportStiffThickness[1] - dsi.supportStiffThickness/2;
-  let x5 = dsi.supportStiffThickness[1] + dsi.supportStiffThickness/2;
-  let x6 = dsi.supportStiffThickness[2] - dsi.supportStiffThickness/2;
-  let x7 = dsi.supportStiffThickness[2] + dsi.supportStiffThickness/2;
+  let x2 = dsi.supportStiffLayout[0] - dsi.supportStiffThickness/2;
+  let x3 = dsi.supportStiffLayout[0] + dsi.supportStiffThickness/2;
+  let x4 = dsi.supportStiffLayout[1] - dsi.supportStiffThickness/2;
+  let x5 = dsi.supportStiffLayout[1] + dsi.supportStiffThickness/2;
+  let x6 = dsi.supportStiffLayout[2] - dsi.supportStiffThickness/2;
+  let x7 = dsi.supportStiffLayout[2] + dsi.supportStiffThickness/2;
   let x8 = br.x + rwCot * dsi.hstiffHeight;
   let w0 = dsi.webThickness / 2;
   let w1 = dsi.holeStiffHeight + dsi.webThickness / 2;
