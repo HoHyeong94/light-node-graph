@@ -85,7 +85,7 @@ export function HorBracingView(){
     // },"bolt"); 
     for (let key in this.getInputData(0)){
       sceneAdder({ layer: 0, 
-          mesh: BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2))
+          mesh: BarrierPointView(this.getInputData(0)[key],this.getInputData(1),this.getInputData(2))
       },"bolt"+key);
     }
   }
