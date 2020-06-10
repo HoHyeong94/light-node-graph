@@ -115,7 +115,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let tl = {x : iSectionPoint.uflange[1][0].x - dOffset, y : iSectionPoint.uflange[1][0].y - dz}
   let tr = {x : jSectionPoint.uflange[0][0].x + dOffset, y : jSectionPoint.uflange[0][0].y + dz}
   let bl = {x : iSectionPoint.web[1][0].x - dOffset, y : iSectionPoint.web[1][0].y - dz}
-  let br = {x : jSectionPoint.web[0][0].x + dOffset, y : iSectionPoint.web[0][0].y + dz}
+  let br = {x : jSectionPoint.web[0][0].x + dOffset, y : jSectionPoint.web[0][0].y + dz}
 
   result["web"] = vPlateGen([tl,tr,br,bl], centerPoint, xs.webThickness, [],0,null,null,[])
 
