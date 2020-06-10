@@ -366,14 +366,14 @@ export function boltView(spliceDict, initPoint) {
     // let dummyList = [];
     // for (let key in spliceDict) {
         //    let point = nameToPointDict[diakey]
-        for (let partkey in spliceDict[key]) {
-            if (spliceDict[key][partkey].bolt) {
-                let Thickness = spliceDict[key][partkey].Thickness
-                let zPosition = spliceDict[key][partkey].z
-                let rotationY = spliceDict[key][partkey].rotationY + Math.PI / 2
-                let rotationX = spliceDict[key][partkey].rotationX
-                let point = spliceDict[key][partkey].point
-                let bolt = spliceDict[key][partkey].bolt
+        for (let partkey in spliceDict) {
+            if (spliceDict[partkey].bolt) {
+                let Thickness = spliceDict[partkey].Thickness
+                let zPosition = spliceDict[partkey].z
+                let rotationY = spliceDict[partkey].rotationY + Math.PI / 2
+                let rotationX = spliceDict[partkey].rotationX
+                let point = spliceDict[partkey].point
+                let bolt = spliceDict[partkey].bolt
                 for (let k in bolt) {
                     for (let i = 0; i < bolt[k].gNum; i++) {
                         for (let j = 0; j < bolt[k].pNum; j++) {
@@ -395,7 +395,7 @@ export function boltView(spliceDict, initPoint) {
     // }
     // mesh.instanceMatrix.needsUpdate = true;
     // group.add(mesh)
-    return { group, key }
+    return group
 }
 
 export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint, meshMaterial) {
