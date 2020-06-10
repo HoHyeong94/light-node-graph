@@ -80,9 +80,14 @@ export function HorBracingView(){
   }
   
   SpliceBoltView.prototype.onExecute = function() {
-    sceneAdder({ layer: 0, 
-        mesh: boltView(this.getInputData(0),this.getInputData(1))
-    },"bolt"); 
+    // sceneAdder({ layer: 0, 
+    //     mesh: boltView(this.getInputData(0),this.getInputData(1))
+    // },"bolt"); 
+    for (let key in this.getInputData(0)){
+      sceneAdder({ layer: 0, 
+          mesh: BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2))
+      },"bolt"+key);
+    }
   }
 
   export function StudView(){

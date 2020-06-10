@@ -364,7 +364,7 @@ export function boltView(spliceDict, initPoint) {
     // var radius = bolt0.size/2
     // var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
     // let dummyList = [];
-    for (let key in spliceDict) {
+    // for (let key in spliceDict) {
         //    let point = nameToPointDict[diakey]
         for (let partkey in spliceDict[key]) {
             if (spliceDict[key][partkey].bolt) {
@@ -386,7 +386,7 @@ export function boltView(spliceDict, initPoint) {
                 }
             }
         }
-    }
+    // }
     // console.log("dummyList",dummyList)
     // let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
     // mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
@@ -395,7 +395,7 @@ export function boltView(spliceDict, initPoint) {
     // }
     // mesh.instanceMatrix.needsUpdate = true;
     // group.add(mesh)
-    return group
+    return { group, key }
 }
 
 export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint, meshMaterial) {
