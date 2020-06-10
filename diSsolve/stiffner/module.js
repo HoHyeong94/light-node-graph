@@ -946,7 +946,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
                 {x : dsi.upperJointLength/2, y: dsi.upperWidth},
                 {x : - dsi.upperJointLength/2, y: dsi.upperWidth}]
 
-  result["upperJoint1"] = hPlateGen(joint1, uPoint1, dsi.upperJointThickness,0,point,skew,0,0);
+  result["upperJoint1"] = hPlateGen(joint1, uPoint1, dsi.upperJointThickness,0,point.skew,0,0);
   result["upperJoint1"].bolt = [{ startPoint: { x: joint1[2].x -40, y: joint1[2].y - 40 }, P: 170, G: 75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.upperJointThickness * 2 + dsi.upperThickness  },
     { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P: 170, G: -75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.upperJointThickness * 2 + dsi.upperThickness }]
 
