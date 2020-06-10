@@ -964,12 +964,12 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   let lPoint2 = ToGlobalPoint(point, lowerflange[3])
 
   result["lowerJoint1"] = hPlateGen(joint1, lPoint1, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, 0);
-  result["lowerJoint1"].bolt = flangeBolt
   result["lowerJoint2"] = hPlateGen(joint2, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
+  result["lowerJoint2"].bolt = flangeBolt
   result["lowerJoint3"] = hPlateGen(joint3, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness , point.skew, 0, 0);
   result["lowerJoint11"] = hPlateGen(joint1, lPoint2, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, 0);
-  result["lowerJoint11"].bolt = flangeBolt
   result["lowerJoint22"] = hPlateGen(joint2, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
+  result["lowerJoint22"].bolt = flangeBolt
   result["lowerJoint33"] = hPlateGen(joint3, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
 
 
