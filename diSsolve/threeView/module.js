@@ -196,13 +196,13 @@ export function DiaView(diaDict, initPoint) {
     for (let diakey in diaDict) {
         for (let partkey in diaDict[diakey]) {
             if (partkey !== "point") {
-            let shapeNode = diaDict[diakey][partkey].points
-            let Thickness = diaDict[diakey][partkey].Thickness
-            let zPosition = diaDict[diakey][partkey].z
-            let rotationY = diaDict[diakey][partkey].rotationY
-            let rotationX = diaDict[diakey][partkey].rotationX
-            let hole = diaDict[diakey][partkey].hole
-            let point = diaDict[diakey][partkey].point? diaDict[diakey][partkey].point : diaDict[diakey].point;
+                let shapeNode = diaDict[diakey][partkey].points
+                let Thickness = diaDict[diakey][partkey].Thickness
+                let zPosition = diaDict[diakey][partkey].z
+                let rotationY = diaDict[diakey][partkey].rotationY
+                let rotationX = diaDict[diakey][partkey].rotationX
+                let hole = diaDict[diakey][partkey].hole
+                let point = diaDict[diakey][partkey].point ? diaDict[diakey][partkey].point : diaDict[diakey].point;
                 group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
             }
         }
@@ -367,12 +367,12 @@ export function boltView(spliceDict, initPoint) {
     for (let key in spliceDict) {
         //    let point = nameToPointDict[diakey]
         for (let partkey in spliceDict[key]) {
-            let Thickness = spliceDict[key][partkey].Thickness
-            let zPosition = spliceDict[key][partkey].z
-            let rotationY = spliceDict[key][partkey].rotationY + Math.PI / 2
-            let rotationX = spliceDict[key][partkey].rotationX
-            let point = spliceDict[key][partkey].point
             if (spliceDict[key][partkey].bolt) {
+                let Thickness = spliceDict[key][partkey].Thickness
+                let zPosition = spliceDict[key][partkey].z
+                let rotationY = spliceDict[key][partkey].rotationY + Math.PI / 2
+                let rotationX = spliceDict[key][partkey].rotationX
+                let point = spliceDict[key][partkey].point
                 let bolt = spliceDict[key][partkey].bolt
                 for (let k in bolt) {
                     for (let i = 0; i < bolt[k].gNum; i++) {
