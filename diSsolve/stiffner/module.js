@@ -939,8 +939,15 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y },
   { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointThickness },
   { x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointThickness }]
+  
+  let uPoint1 = ToGlobalPoint(point, upperflange[0])
+  let joint1 = [{x : - dsi.upperJointLength/2, y: - dsi.upperWidth},
+                {x : dsi.upperJointLength/2, y: - dsi.upperWidth},
+                {x : dsi.upperJointLength/2, y: dsi.upperWidth},
+                {x : - dsi.upperJointLength/2, y: dsi.upperWidth}]
 
-  result["upperJoint1"] = { points: upperJoint1, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+  result["upperJoint1"] = hPlateGen(joint1, uPoint1, dsi.upperJointThickness,0,point,skew,0,0)
+  //{ points: upperJoint1, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   result["upperJoint2"] = { points: upperJoint2, Thickness: dsi.upperJointWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   result["upperJoint3"] = { points: upperJoint2, Thickness: dsi.upperJointWidth, z: dsi.upperWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   result["upperJoint11"] = { points: upperJoint11, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
