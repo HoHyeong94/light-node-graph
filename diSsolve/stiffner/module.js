@@ -918,44 +918,30 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
+
+  let joint1 = [{ x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
+    { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
+    { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
+    { x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 }]
+    let joint2 = [{ x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
+    { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
+    { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 + dsi.upperJointWidth },
+    { x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 + dsi.upperJointWidth }]
+    let joint3 = [{ x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
+      { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
+      { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 - dsi.upperJointWidth },
+      { x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 - dsi.upperJointWidth }]
+    let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: 170, G: 75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.upperJointThickness * 2 + dsi.upperThickness },
+    { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P: 170, G: -75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.upperJointThickness * 2 + dsi.upperThickness }]
+  
   let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
   { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y - dsi.upperThickness },
   { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y - dsi.upperThickness },
   { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y }]
   result["upperflange"] = { points: upperflange, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  let upperJoint1 = [{ x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y },
-  { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y },
-  { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointThickness },
-  { x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointThickness }]
-  let upperJoint2 = [{ x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y },
-  { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y },
-  { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointThickness },
-  { x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointThickness }]
-  let upperJoint11 = [{ x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y },
-  { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y },
-  { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointThickness },
-  { x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointThickness }]
-  let upperJoint22 = [{ x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y },
-  { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y },
-  { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointThickness },
-  { x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointThickness }]
 
   let uPoint1 = ToGlobalPoint(point, upperflange[0])
   let uPoint2 = ToGlobalPoint(point, upperflange[3])
-  let joint1 = [{ x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
-  { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
-  { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
-  { x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 }]
-  let joint2 = [{ x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
-  { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
-  { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 + dsi.upperJointWidth },
-  { x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 + dsi.upperJointWidth }]
-  let joint3 = [{ x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
-    { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
-    { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 - dsi.upperJointWidth },
-    { x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 - dsi.upperJointWidth }]
-  let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: 170, G: 75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.upperJointThickness * 2 + dsi.upperThickness },
-  { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P: 170, G: -75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.upperJointThickness * 2 + dsi.upperThickness }]
 
   result["upperJoint1"] = hPlateGen(joint1, uPoint1, dsi.upperJointThickness, 0, point.skew, 0, 0);
   result["upperJoint1"].bolt = flangeBolt
@@ -967,41 +953,50 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   result["upperJoint33"] = hPlateGen(joint3, uPoint2, dsi.upperJointThickness, -dsi.upperThickness -dsi.upperJointThickness, point.skew, 0, 0);
   
   
-  //{ points: upperJoint1, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["upperJoint2"] = { points: upperJoint2, Thickness: dsi.upperJointWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["upperJoint3"] = { points: upperJoint2, Thickness: dsi.upperJointWidth, z: dsi.upperWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["upperJoint11"] = { points: upperJoint11, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["upperJoint22"] = { points: upperJoint22, Thickness: dsi.upperJointWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  // result["upperJoint33"] = { points: upperJoint22, Thickness: dsi.upperJointWidth, z: dsi.upperWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
   let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
   { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.lowerThickness },
   { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y + dsi.lowerThickness },
   { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y }]
   result["lowerflange"] = { points: lowerflange, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  let lowerJoint1 = [{ x: lowerflange[0].x - dsi.lowerJointLength / 2, y: lowerflange[0].y },
-  { x: lowerflange[0].x + dsi.lowerJointLength / 2, y: lowerflange[0].y },
-  { x: lowerflange[0].x + dsi.lowerJointLength / 2, y: lowerflange[0].y - dsi.lowerJointThickness },
-  { x: lowerflange[0].x - dsi.lowerJointLength / 2, y: lowerflange[0].y - dsi.lowerJointThickness }];
-  let lowerJoint2 = [{ x: lowerflange[1].x - dsi.lowerJointLength / 2, y: lowerflange[1].y },
-  { x: lowerflange[1].x + dsi.lowerJointLength / 2, y: lowerflange[1].y },
-  { x: lowerflange[1].x + dsi.lowerJointLength / 2, y: lowerflange[1].y + dsi.lowerJointThickness },
-  { x: lowerflange[1].x - dsi.lowerJointLength / 2, y: lowerflange[1].y + dsi.lowerJointThickness }]
-  let lowerJoint11 = [{ x: lowerflange[3].x - dsi.lowerJointLength / 2, y: lowerflange[3].y },
-  { x: lowerflange[3].x + dsi.lowerJointLength / 2, y: lowerflange[3].y },
-  { x: lowerflange[3].x + dsi.lowerJointLength / 2, y: lowerflange[3].y - dsi.lowerJointThickness },
-  { x: lowerflange[3].x - dsi.lowerJointLength / 2, y: lowerflange[3].y - dsi.lowerJointThickness }];
-  let lowerJoint22 = [{ x: lowerflange[2].x - dsi.lowerJointLength / 2, y: lowerflange[2].y },
-  { x: lowerflange[2].x + dsi.lowerJointLength / 2, y: lowerflange[2].y },
-  { x: lowerflange[2].x + dsi.lowerJointLength / 2, y: lowerflange[2].y + dsi.lowerJointThickness },
-  { x: lowerflange[2].x - dsi.lowerJointLength / 2, y: lowerflange[2].y + dsi.lowerJointThickness }]
+  
+  let lPoint1 = ToGlobalPoint(point, lowerflange[0])
+  let lPoint2 = ToGlobalPoint(point, lowerflange[3])
 
-  result["lowerJoint1"] = { points: lowerJoint1, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  result["lowerJoint2"] = { points: lowerJoint2, Thickness: dsi.lowerJointWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  result["lowerJoint3"] = { points: lowerJoint2, Thickness: dsi.lowerJointWidth, z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  result["lowerJoint11"] = { points: lowerJoint11, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  result["lowerJoint22"] = { points: lowerJoint22, Thickness: dsi.lowerJointWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  result["lowerJoint33"] = { points: lowerJoint22, Thickness: dsi.lowerJointWidth, z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+  result["lowerJoint1"] = hPlateGen(joint1, lPoint1, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, 0);
+  result["lowerJoint1"].bolt = flangeBolt
+  result["lowerJoint2"] = hPlateGen(joint2, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
+  result["lowerJoint3"] = hPlateGen(joint3, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness , point.skew, 0, 0);
+  result["lowerJoint11"] = hPlateGen(joint1, lPoint2, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, 0);
+  result["lowerJoint11"].bolt = flangeBolt
+  result["lowerJoint22"] = hPlateGen(joint2, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
+  result["lowerJoint33"] = hPlateGen(joint3, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, 0);
+
+
+
+  // let lowerJoint1 = [{ x: lowerflange[0].x - dsi.lowerJointLength / 2, y: lowerflange[0].y },
+  // { x: lowerflange[0].x + dsi.lowerJointLength / 2, y: lowerflange[0].y },
+  // { x: lowerflange[0].x + dsi.lowerJointLength / 2, y: lowerflange[0].y - dsi.lowerJointThickness },
+  // { x: lowerflange[0].x - dsi.lowerJointLength / 2, y: lowerflange[0].y - dsi.lowerJointThickness }];
+  // let lowerJoint2 = [{ x: lowerflange[1].x - dsi.lowerJointLength / 2, y: lowerflange[1].y },
+  // { x: lowerflange[1].x + dsi.lowerJointLength / 2, y: lowerflange[1].y },
+  // { x: lowerflange[1].x + dsi.lowerJointLength / 2, y: lowerflange[1].y + dsi.lowerJointThickness },
+  // { x: lowerflange[1].x - dsi.lowerJointLength / 2, y: lowerflange[1].y + dsi.lowerJointThickness }]
+  // let lowerJoint11 = [{ x: lowerflange[3].x - dsi.lowerJointLength / 2, y: lowerflange[3].y },
+  // { x: lowerflange[3].x + dsi.lowerJointLength / 2, y: lowerflange[3].y },
+  // { x: lowerflange[3].x + dsi.lowerJointLength / 2, y: lowerflange[3].y - dsi.lowerJointThickness },
+  // { x: lowerflange[3].x - dsi.lowerJointLength / 2, y: lowerflange[3].y - dsi.lowerJointThickness }];
+  // let lowerJoint22 = [{ x: lowerflange[2].x - dsi.lowerJointLength / 2, y: lowerflange[2].y },
+  // { x: lowerflange[2].x + dsi.lowerJointLength / 2, y: lowerflange[2].y },
+  // { x: lowerflange[2].x + dsi.lowerJointLength / 2, y: lowerflange[2].y + dsi.lowerJointThickness },
+  // { x: lowerflange[2].x - dsi.lowerJointLength / 2, y: lowerflange[2].y + dsi.lowerJointThickness }]
+
+  // result["lowerJoint1"] = { points: lowerJoint1, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+  // result["lowerJoint2"] = { points: lowerJoint2, Thickness: dsi.lowerJointWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+  // result["lowerJoint3"] = { points: lowerJoint2, Thickness: dsi.lowerJointWidth, z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+  // result["lowerJoint11"] = { points: lowerJoint11, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+  // result["lowerJoint22"] = { points: lowerJoint22, Thickness: dsi.lowerJointWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+  // result["lowerJoint33"] = { points: lowerJoint22, Thickness: dsi.lowerJointWidth, z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
   return result
 }
