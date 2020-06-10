@@ -377,7 +377,7 @@ export function boltView(spliceDict, initPoint) {
                 for (let k in bolt) {
                     for (let i = 0; i < bolt[k].gNum; i++) {
                         for (let j = 0; j < bolt[k].pNum; j++) {
-                            let xtranslate = bolt[k].startPoint.x - i * bolt[k].G
+                            let xtranslate = bolt[k].startPoint.x - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
                             let ytranslate = bolt[k].startPoint.y - j * bolt[k].P
                             group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
                             // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))

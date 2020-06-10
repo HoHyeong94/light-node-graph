@@ -761,7 +761,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     upperHeight: 900,
     upperThickness: 12,
     upperWidth: 250,
-    centerThickness: 12,
+    webThickness: 12,
     stiffWidth: 150,
     stiffThickness: 12,
     scallopRadius: 35,
@@ -839,8 +839,8 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     stiffnerPoints.push(stiffner[2], stiffner[3])
     result["stiffner" + i.toFixed(0)] = {
       points: stiffnerPoints,
-      Thickness: dsi.centerThickness,
-      z: -dsi.centerThickness / 2,
+      Thickness: dsi.webThickness,
+      z: -dsi.webThickness / 2,
       rotationX: Math.PI / 2,
       rotationY: rotationY,
       hole: [],
@@ -876,8 +876,8 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
 
   result["webPlate"] = {
     points: webPlate,
-    Thickness: dsi.centerThickness,
-    z: -dsi.centerThickness / 2,
+    Thickness: dsi.webThickness,
+    z: -dsi.webThickness / 2,
     rotationX: Math.PI / 2,
     rotationY: rotationY,
     hole: [],
@@ -885,8 +885,8 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
   let webPoint = ToGlobalPoint( point, {x: (webPlate[0].x + webPlate[3].x) / 2, y: (webPlate[0].y + webPlate[3].y) / 2})
-  let WebBolt = [{ startPoint: { x: dsi.webJointWidth/2 -40, y: dsi.webJointHeight / 2 -40 }, P: 75, G: 90, pNum: 2, gNum: 5, size: 37, t: 14, l: 54 },
-                 { startPoint: { x: -(dsi.webJointWidth/2 -40), y: dsi.webJointHeight / 2 -40 }, P: -75, G: 90, pNum: 2, gNum: 5, size: 37, t: 14, l: 54 }]
+  let WebBolt = [{ startPoint: { x: dsi.webJointWidth/2 -40, y: dsi.webJointHeight / 2 - 40 }, P: 90, G: 75, pNum: 5, gNum: 2, size: 37, t: 14, l: dsi.webJointThickness * 2 + dsi.webThickness  },
+                 { startPoint: { x: -(dsi.webJointWidth/2 -40), y: dsi.webJointHeight / 2 -40 }, P: 90, G: -75, pNum: 5, gNum: 2, size: 37, t: 14, l: dsi.webJointThickness * 2 + dsi.webThickness }]
 
   let webJoint1 = [{ x: - dsi.webJointWidth / 2, y: - dsi.webJointHeight / 2 },
   { x: dsi.webJointWidth / 2, y: - dsi.webJointHeight / 2 },
@@ -894,13 +894,13 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: - dsi.webJointWidth / 2, y: dsi.webJointHeight / 2 }];
 
   result["webJoint1"] = {
-    points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     point : webPoint, bolt : WebBolt,
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
   result["webJoint2"] = {
-    points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     point : webPoint,
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
@@ -910,12 +910,12 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: (webPlate[1].x + webPlate[2].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 },
   { x: (webPlate[1].x + webPlate[2].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 }];
   result["webJoint3"] = {
-    points: webJoint3, Thickness: dsi.webJointThickness, z: dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: webJoint3, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
   result["webJoint4"] = {
-    points: webJoint3, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.centerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    points: webJoint3, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   }
