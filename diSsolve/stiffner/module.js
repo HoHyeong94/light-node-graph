@@ -824,42 +824,14 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let tan1 = i < 2 ? 0 : gradient;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], tan1, 0, stiffWidth)
-    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point,dsi.webThickness, [0,1],dsi.scallopRadius,null,null,[])
-
-    // let stiffnerPoints = [];
-    // stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
-    // stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-    // stiffnerPoints.push(stiffner[2], stiffner[3])
-    // result["stiffner" + i.toFixed(0)] = {
-    //   points: stiffnerPoints,
-    //   Thickness: dsi.webThickness,
-    //   z: -dsi.webThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: rotationY,
-    //   hole: [],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    // }
+    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point,dsi.stiffThickness, [0,1],dsi.scallopRadius,null,null,[])
   }
 
   let webBracketPoint = [[lowerPlate[1], upperPlate[1]], [lowerPlate[2], upperPlate[2]]];
   for (let i = 0; i < 2; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
     let stiffner = PlateRestPoint(webBracketPoint[i][0], webBracketPoint[i][1], 0, 0, stiffWidth)
-    let stiffnerPoints = [];
-    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
-    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-    stiffnerPoints.push(stiffner[2], stiffner[3])
-    result["webBracket" + i.toFixed(0)] = {
-      points: stiffnerPoints,
-      Thickness: dsi.stiffThickness,
-      z: -dsi.stiffThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: rotationY,
-      hole: [],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    }
+    result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point,dsi.webThickness, [0,1],dsi.scallopRadius,null,null,[])
   }
 
   let webPlate = [{ x: lowerPlate[1].x + dsi.bracketLength, y: lowerPlate[1].y },
@@ -867,17 +839,10 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: upperPlate[2].x - dsi.bracketLength, y: upperPlate[2].y },
   { x: upperPlate[1].x + dsi.bracketLength, y: upperPlate[1].y }];
 
-  result["webPlate"] = {
-    points: webPlate,
-    Thickness: dsi.webThickness,
-    z: -dsi.webThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  result["webPlate"] = vPlateGen(webPlate,point,dsi.webThickness,[],0,null,null,[])
+  
   let webPoint = ToGlobalPoint(point, { x: (webPlate[0].x + webPlate[3].x) / 2, y: (webPlate[0].y + webPlate[3].y) / 2 })
+  
   let WebBolt = [{ startPoint: { x: dsi.webJointWidth / 2 - 40, y: dsi.webJointHeight / 2 - 40 }, P: 90, G: 75, pNum: 5, gNum: 2, size: 37, t: 14, l: dsi.webJointThickness * 2 + dsi.webThickness },
   { startPoint: { x: -(dsi.webJointWidth / 2 - 40), y: dsi.webJointHeight / 2 - 40 }, P: 90, G: -75, pNum: 5, gNum: 2, size: 37, t: 14, l: dsi.webJointThickness * 2 + dsi.webThickness }]
 
@@ -1914,7 +1879,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
     }
   }
 
-  let result = { points: resultPoints, Thickness: Thickness, z: - Thickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints }
+  let result = { points: resultPoints, Thickness: Thickness, z: - Thickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point : centerPoint }
 
   return result
 }
