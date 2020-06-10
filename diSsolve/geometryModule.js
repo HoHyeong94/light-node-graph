@@ -15,10 +15,11 @@ export function ToGlobalPoint(Point, node2D){
     let Y = X * skewCot; 
     let Z = node2D.y
 
-    newPoint.x = Point.x + X * cos - Y*sin 
-    newPoint.y = Point.y + X * sin + Y*cos
-    newPoint.z = Point.z + Z
-    newPoint.s = Point.masterStationNumber
+    newPoint.x = Point.x + X * cos - Y*sin;
+    newPoint.y = Point.y + X * sin + Y*cos;
+    newPoint.z = Point.z + Z;
+    newPoint.s = Point.masterStationNumber;
+    newPoint.skew = skew;
     newPoint.normalCos = cos;
     newPoint.normalSin = sin;
     return newPoint

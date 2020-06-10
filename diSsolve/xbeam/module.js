@@ -1,5 +1,6 @@
 import { ToGlobalPoint, Kframe, XYOffset, Vector, scallop } from "../geometryModule"
 import { PTS } from "../DB/module"
+import { vPlateGen, hPlateGen} from "../stiffner/module"
 
 export function XbeamDict(
     nameToPointDict,
@@ -48,7 +49,19 @@ export function XbeamDict(
         xbeamSectionDict[iNodekey] = xbeam.result
         xbData = xbeam.data
         xbSection = xbeam.section
-      }
+      } else if (xbeamLayout[i][section] == "DYXbeam1") {
+        let xbeam  = DYXbeam1(
+        iPoint,
+        jPoint,
+        iSectionPoint,
+        jSectionPoint,
+        xbeamSection,
+      );
+      xbeamSectionDict[iNodekey] = xbeam.result
+      xbData = xbeam.data
+      xbSection = xbeam.section
+    }
+
       // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
       // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
     //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
@@ -61,6 +74,57 @@ export function XbeamDict(
     
     return {xbeamSectionDict, xbeamData};
   }
+
+export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
+  let xs = {
+    bracketLength : 541,
+    bracketWidth : 450,
+    bracketFilletR : 200,
+    webHeight : 578,
+    webThickness : 12,
+    flangeWidth : 250,
+    flangeThickness : 12,
+    stiffThickness : 12,
+    scallopRadius : 25,
+    webJointThickness : 10,
+    webJointWidth : 330,
+    webJointHeight : 440,
+    flangeJointThickness : 10,
+    flangeJointLength : 480,
+    flangeJointWidth : 80,
+  }
+  let result = {};
+  let tlength = Math.sqrt((iPoint.x - jPoint.x)**2 + (iPoint.y - jPoint.y)**2)
+  let vec = { x: (jPoint.x - iPoint.x) / tlength, y: (jPoint.y - iPoint.y) / tlength }
+
+
+  let dOffset = (jPoint.offset - iPoint.offset) / 2;
+  let dz = (jPoint.z - iPoint.z)/2
+  
+  
+  let centerPoint = {
+    x: (iPoint.x + jPoint.x) / 2,
+    y: (iPoint.y + jPoint.y) / 2,
+    z: (iPoint.z + jPoint.z) / 2,
+    normalCos: iPoint.normalCos,
+    normalSin: iPoint.normalSin,
+  }
+  let cw = (centerPoint.normalCos * vec.y - centerPoint.normalSin * vec.x)>0? 1 : -1; // 반시계방향의 경우 1
+  centerPoint.skew = 90 + cw * Math.acos(centerPoint.normalCos * vec.x + centerPoint.normalSin * vec.y) * 180/Math.PI;
+
+  let tl = {x : iSectionPoint.uflange[1][0].x - dOffset, y : iSectionPoint.uflange[1][0].y - dz}
+  let tr = {x : jSectionPoint.uflange[0][0].x + dOffset, y : jSectionPoint.uflange[0][0].y + dz}
+  let bl = {x : iSectionPoint.web[1][0].x - dOffset, y : iSectionPoint.web[1][0].y - dz}
+  let br = {x : jSectionPoint.web[1][0].x + dOffset, y : iSectionPoint.web[1][0].y + dz}
+
+  result["web"] = vPlateGen([tl,tr,br,bl], centerPoint, xs.webThickness, [],0,null,null,[])
+
+
+  data = []; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
+  // let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2
+  let section = [];// [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ]
+  return {result, data, section}
+}
 
 export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
     const result = {}
@@ -83,7 +147,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     const cos = cot / cosec
   
     // 기준점은 iTopNode라고 가정, 가로보는 반드시 skew각도와 일치해야함.
-    let iNode = ToGlobalPoint(iPoint, iSectionPoint.rightTopPlate[0])
+    let iNode = ToGlobalPoint(iPoint, iSectionPoint.rightTopPlate[0]) //순서가 바뀌었을때도 예외처리 필요
     let jNode = ToGlobalPoint(jPoint, jSectionPoint.leftTopPlate[0])
     let length = Math.sqrt((jNode.x - iNode.x) ** 2 + (jNode.y - iNode.y) ** 2)
     let vec = { x: (jNode.x - iNode.x) / length, y: (jNode.y - iNode.y) / length }
