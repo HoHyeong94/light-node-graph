@@ -219,7 +219,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let joint2 = [{ x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 +  xs.flangeJointWidth },
-  { x: - xs.flangeJointLength / 2, y: - dsi.upperWidth / 2 + xs.flangeJointWidth }]
+  { x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 + xs.flangeJointWidth }]
   let joint3 = [{ x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth },
