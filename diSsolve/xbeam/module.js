@@ -142,6 +142,40 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let rstiff = PlateRestPoint({x: tr.x, y:tr.y - xs.webHeight - xs.flangeThickness}, br, lGradient, 0, -xs.stiffWidth);
   result["rstiff"] = vPlateGen(rstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
 
+  let bracketPoint = [ToGlobalPoint(centerPoint, lstiff[0]),
+  ToGlobalPoint(centerPoint, rstiff[0]),
+  ToGlobalPoint(centerPoint, ufl),
+  ToGlobalPoint(centerPoint, ufr)];
+  for (let i = 0; i < 4; i++) {
+    let sign = i % 2 === 0 ? 1 : -1;
+    let grad = i < 2? -Math.atan(lGradient):-Math.atan(uGradient);
+    let bracketLength = i < 2 ? xs.bracketLength : xs.bracketLength - (ufl.x - tl.x);
+    let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
+    { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
+    let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
+    lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
+    lowerbracket1[6], lowerbracket1[7]];
+    result["bracket" + i.toFixed(0)] = {
+      points: bracketShape,
+      Thickness: xs.flangeThickness,
+      z: 0,
+      rotationX: 0,
+      rotationY: grad,
+      hole: [],
+      point: bracketPoint[i],
+      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    }
+  }
+  
+
+
+
+
+
+
+
+
   let data = []; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
   // let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2
   let section = [];// [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ]
