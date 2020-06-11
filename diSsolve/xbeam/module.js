@@ -159,13 +159,17 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lwebPlate = [tl, {x: tl.x, y:tl.y - xs.webHeight}, {x:tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength},
     {x:tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x))}, ufl]
   result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
-  let lstiff = [{x: tl.x, y:tl.y - xs.webHeight - xs.flangeThickness}, bl, {x:bl.x +xs.stiffWidth, y:bl.y}, {x: tl.x + xs.bracketLength , y:tl.y - xs.webHeight - xs.flangeThickness + lGradient*xs.bracketLength -30},{x: tl.x + xs.bracketLength , y:tl.y - xs.webHeight - xs.flangeThickness + lGradient*xs.bracketLength}];
+  let lstiff = [{x: tl.x, y:tl.y - xs.webHeight - xs.flangeThickness}, bl, {x:bl.x +xs.stiffWidth, y:bl.y}, 
+    {x: tl.x + xs.bracketLength , y:tl.y - xs.webHeight - xs.flangeThickness + lGradient*xs.bracketLength -30},{x: tl.x + xs.bracketLength , y:tl.y - xs.webHeight - xs.flangeThickness + lGradient*xs.bracketLength}];
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
 
   let rwebPlate = [tr, {x: tr.x, y:tr.y - xs.webHeight}, {x:tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength},
     {x:tr.x - xs.bracketLength, y: ufr.y - uGradient * (xs.bracketLength - (tr.x - ufr.x))},ufr]
   result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
-  let rstiff = PlateRestPoint({x: tr.x, y:tr.y - xs.webHeight - xs.flangeThickness}, br, lGradient, 0, -xs.stiffWidth);
+  let rstiff = [{x: tr.x, y:tr.y - xs.webHeight - xs.flangeThickness}, br, {x:br.x - xs.stiffWidth, y:br.y}, 
+    {x: tr.x - xs.bracketLength , y:tr.y - xs.webHeight - xs.flangeThickness - lGradient*xs.bracketLength -30},{x: tr.x - xs.bracketLength , y:tr.y - xs.webHeight - xs.flangeThickness - lGradient*xs.bracketLength}];
+  
+  PlateRestPoint({x: tr.x, y:tr.y - xs.webHeight - xs.flangeThickness}, br, lGradient, 0, -xs.stiffWidth);
   result["rstiff"] = vPlateGen(rstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
 
   let bracketPoint = [ToGlobalPoint(centerPoint, lstiff[0]),
