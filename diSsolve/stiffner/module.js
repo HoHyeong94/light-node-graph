@@ -673,7 +673,7 @@ let fBolt = {
 
   result["webPlate"] = {
     points: webPlate,
-    Thickness: dsi.webThickness,W
+    Thickness: dsi.webThickness,
     z: -dsi.webThickness / 2,
     rotationX: Math.PI / 2,
     rotationY: rotationY,
