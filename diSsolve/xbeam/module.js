@@ -135,7 +135,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
 
   let rwebPlate = [tr, {x: tr.x, y:tr.y - xs.webHeight}, 
-    {x:tr.x - xs.bracketLength, y: tl.y - xs.webHeight - lGradient * xs.bracketLength},
+    {x:tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength},
     {x:tr.x - xs.bracketLength, y: ufr.y - uGradient * (xs.bracketLength - (tr.x - ufr.x))},
     ufr]
   result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
