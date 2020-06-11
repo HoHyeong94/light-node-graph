@@ -118,15 +118,17 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lfl = { x: iSectionPoint.lflange[1][0].x - dOffset, y: iSectionPoint.lflange[1][0].y - dz };
   let lfr = { x: jSectionPoint.lflange[0][0].x + dOffset, y: jSectionPoint.lflange[0][0].y + dz };
 
-  let tl = { x: iSectionPoint.web[1][1].x - dOffset, y: iSectionPoint.web[1][1].y - dz };
-  let tr = { x: jSectionPoint.web[0][1].x + dOffset, y: jSectionPoint.web[0][1].y + dz };
-  let bl = { x: iSectionPoint.web[1][0].x - dOffset, y: iSectionPoint.web[1][0].y - dz };
-  let br = { x: jSectionPoint.web[0][0].x + dOffset, y: jSectionPoint.web[0][0].y + dz };
+  let tl = { x: iSectionPoint.web[1][2].x - dOffset, y: iSectionPoint.web[1][2].y - dz };
+  let tr = { x: jSectionPoint.web[0][2].x + dOffset, y: jSectionPoint.web[0][2].y + dz };
+  let bl = { x: iSectionPoint.web[1][3].x - dOffset, y: iSectionPoint.web[1][3].y - dz };
+  let br = { x: jSectionPoint.web[0][3].x + dOffset, y: jSectionPoint.web[0][3].y + dz };
 
-  let uGradient = (ufr.y-ufl.y)/(ufr.x -ufr.x);
+  let uGradient = (ufr.y-ufl.y)/(ufr.x -ufl.x);
   let lGradient = (tr.y-tl.y)/(tr.x -tl.x);
-  let lwebPlate = [tl, {x: tl.x, y:tl.y - xs.webHeight}, {x:tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength},
-    {x:tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x))},ufl]
+  let lwebPlate = [tl, {x: tl.x, y:tl.y - xs.webHeight}, 
+    {x:tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength},
+    {x:tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x))},
+    ufl]
   result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
 
 
