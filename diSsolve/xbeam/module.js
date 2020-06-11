@@ -181,8 +181,8 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let rL = Math.sqrt((rstiff[2].x - rstiff[3].x)**2 + (rstiff[2].y - rstiff[3].y)**2);
   let rrot = -Math.atan((rstiff[2].y - rstiff[3].y)/(rstiff[2].x - rstiff[3].x))
   let rPlate = [{x:-rL/2 +30, y:30},{x:-rL/2 + 120, y:60},{x:rL/2 - 120, y:60},{x:rL/2 - 30, y:30},{x:rL/2 - 30, y:-30},{x:rL/2 - 120, y:-60},{x:-rL/2 + 120, y:-60}, {x:-rL/2 +30, y:-30}]
-  let cp = {x : (rstiff[2].x + rstiff[3].x)/2,y:(rstiff[2].y + rstiff[3].y)/2 }
-  result["rstiffPlate"] = hPlateGen(rPlate,ToGlobalPoint(centerPoint, cp ),12,-12,centerPoint.skew,0,rrot)
+  let rcp = {x : (rstiff[2].x + rstiff[3].x)/2,y:(rstiff[2].y + rstiff[3].y)/2 }
+  result["rstiffPlate"] = hPlateGen(rPlate,ToGlobalPoint(centerPoint, rcp ),12,-12,centerPoint.skew,0,rrot)
 
 
 
