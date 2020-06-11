@@ -79,7 +79,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let xs = {
     bracketLength: 541,
     bracketWidth: 450,
-    bracketFilletR: 200,
+    bracketFilletR: 100,
     webHeight: 578,
     webThickness: 12,
     flangeWidth: 250,
