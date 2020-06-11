@@ -112,7 +112,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   }
   let cw = (centerPoint.normalCos * vec.y - centerPoint.normalSin * vec.x) > 0 ? 1 : -1; // 반시계방향의 경우 1
   centerPoint.skew = 90 + cw * Math.acos(centerPoint.normalCos * vec.x + centerPoint.normalSin * vec.y) * 180 / Math.PI;
-  const rotationY = (cenTerPoint.skew - 90) * Math.PI / 180
+  const rotationY = (centerPoint.skew - 90) * Math.PI / 180
 
 
   //폐합시를 고려하여 예외처리 필요
