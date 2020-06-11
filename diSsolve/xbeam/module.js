@@ -113,17 +113,21 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   centerPoint.skew = 90 + cw * Math.acos(centerPoint.normalCos * vec.x + centerPoint.normalSin * vec.y) * 180 / Math.PI;
 
   //폐합시를 고려하여 예외처리 필요
-  let ufl = { x: iSectionPoint.uflange[1][0].x - dOffset, y: iSectionPoint.uflange[1][0].y - dz }
-  let ufr = { x: jSectionPoint.uflange[0][0].x + dOffset, y: jSectionPoint.uflange[0][0].y + dz }
-  let lfl = { x: iSectionPoint.lflange[1][0].x - dOffset, y: iSectionPoint.lflange[1][0].y - dz }
-  let lfr = { x: jSectionPoint.lflange[0][0].x + dOffset, y: jSectionPoint.lflange[0][0].y + dz }
+  let ufl = { x: iSectionPoint.uflange[1][0].x - dOffset, y: iSectionPoint.uflange[1][0].y - dz };
+  let ufr = { x: jSectionPoint.uflange[0][0].x + dOffset, y: jSectionPoint.uflange[0][0].y + dz };
+  let lfl = { x: iSectionPoint.lflange[1][0].x - dOffset, y: iSectionPoint.lflange[1][0].y - dz };
+  let lfr = { x: jSectionPoint.lflange[0][0].x + dOffset, y: jSectionPoint.lflange[0][0].y + dz };
 
-  let tl = { x: iSectionPoint.web[1][1].x - dOffset, y: iSectionPoint.web[1][1].y - dz }
-  let tr = { x: jSectionPoint.web[0][1].x + dOffset, y: jSectionPoint.web[0][1].y + dz }
-  let bl = { x: iSectionPoint.web[1][0].x - dOffset, y: iSectionPoint.web[1][0].y - dz }
-  let br = { x: jSectionPoint.web[0][0].x + dOffset, y: jSectionPoint.web[0][0].y + dz }
+  let tl = { x: iSectionPoint.web[1][1].x - dOffset, y: iSectionPoint.web[1][1].y - dz };
+  let tr = { x: jSectionPoint.web[0][1].x + dOffset, y: jSectionPoint.web[0][1].y + dz };
+  let bl = { x: iSectionPoint.web[1][0].x - dOffset, y: iSectionPoint.web[1][0].y - dz };
+  let br = { x: jSectionPoint.web[0][0].x + dOffset, y: jSectionPoint.web[0][0].y + dz };
 
-  result["web"] = vPlateGen([tl, ufl, ufr, tr, br, lfr, lfl, bl], centerPoint, xs.webThickness, [], 0, null, null, [])
+  let uGradient = (ufr.y-ufl.y)/(ufr.x -ufr.x);
+  let lGradient = (tr.y-tl.y)/(tr.x -tl.x);
+  let lwebPlate = [tl, {x: tl.x, y:tl.y - xs.webHeight}, {x:tl.x + xs.bracketLength, y: tl.y + lGradient * xs.bracketLength},
+    {x:tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x))},ufl]
+  result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
 
 
   let data = []; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
