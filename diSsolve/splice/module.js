@@ -122,7 +122,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
   export function IbeamJoint(webPoints, centerPoint,xs){
     // webPoint는 반드시 좌측하단을 시작으로 시계반대방향순이어야함
     let result = {}
-    const rotationY = (point.skew - 90) * Math.PI / 180
+    const rotationY = (centerPoint.skew - 90) * Math.PI / 180
     let uGradient = (webPoints[3].y-webPoints[2].y)/(webPoints[3].x -webPoints[2].x);
     let lGradient = (webPoints[1].y-webPoints[0].y)/(webPoints[1].x -webPoints[0].x);
     let uRad = -Math.atan(uGradient)
