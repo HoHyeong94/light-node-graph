@@ -167,7 +167,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
-  
+  result["web"] = vPlateGen([lwebPlate[2],lwebPlate[3],rwebPlate[3],rwebPlate[2]],centerPoint, xs.webThickness, [],0,null,null,[]);
 
 
 
