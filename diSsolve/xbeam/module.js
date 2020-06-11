@@ -125,7 +125,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
 
   let uGradient = (ufr.y-ufl.y)/(ufr.x -ufr.x);
   let lGradient = (tr.y-tl.y)/(tr.x -tl.x);
-  let lwebPlate = [tl, {x: tl.x, y:tl.y - xs.webHeight}, {x:tl.x + xs.bracketLength, y: tl.y + lGradient * xs.bracketLength},
+  let lwebPlate = [tl, {x: tl.x, y:tl.y - xs.webHeight}, {x:tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength},
     {x:tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x))},ufl]
   result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
 
