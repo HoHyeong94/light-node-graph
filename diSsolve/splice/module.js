@@ -164,8 +164,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
     /////////////////////////////////// to the Joint function //////////////////////////////////////////
   let webPoint1 = ToGlobalPoint(centerPoint, { x: (webPoints[0].x + webPoints[3].x) / 2, y: (webPoints[0].y +webPoints[3].y) / 2 })
   let webPoint2 = ToGlobalPoint(centerPoint, { x: (webPoints[1].x + webPoints[2].x) / 2, y: (webPoints[1].y +webPoints[2].y) / 2 })
-  let WebBolt = [{ startPoint: { x: xs.webJointWidth / 2 - 40, y: xs.webJointHeight / 2 - 40 }, P: wBolt.P , G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.Size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness },
-  { startPoint: { x: -(xs.webJointWidth / 2 - 40), y: xs.webJointHeight / 2 - 40 }, P: wBolt.P, G: -wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.Size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness }]
+  let WebBolt = [{ startPoint: { x: xs.webJointWidth / 2 - 40, y: xs.webJointHeight / 2 - 40 }, P: wBolt.P , G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness },
+  { startPoint: { x: -(xs.webJointWidth / 2 - 40), y: xs.webJointHeight / 2 - 40 }, P: wBolt.P, G: -wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness }]
   let webJoint1 = [{ x: - xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
   { x: xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
   { x: xs.webJointWidth / 2, y: xs.webJointHeight / 2 },

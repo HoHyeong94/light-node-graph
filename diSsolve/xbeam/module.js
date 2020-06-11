@@ -193,7 +193,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lflangePlate = [{x:0, y:xs.flangeWidth/2},{x:0, y: -xs.flangeWidth/2}, {x:ll, y: -xs.flangeWidth/2}, {x:ll, y: xs.flangeWidth/2}];
   result["lflange"] = hPlateGen(lflangePlate,lPoint, xs.flangeThickness, -xs.flangeThickness, uPoint.skew, 0, lRad );
 
-  let joint = IbeamJoint(webPlate,centerPoint,xs,wBolt, fBolt)
+  let joint = IbeamJoint(webPlate, centerPoint,xs, wBolt, fBolt)
   for (let i in joint){ result[i] = joint[i] }
 
   let data = []; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
