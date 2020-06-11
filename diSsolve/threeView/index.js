@@ -84,9 +84,10 @@ export function HorBracingView(){
     //     mesh: boltView(this.getInputData(0),this.getInputData(1))
     // },"bolt"); 
     for (let key in this.getInputData(0)){
-      sceneAdder({ layer: 0, 
-          mesh: boltView(this.getInputData(0)[key],this.getInputData(1))
-      },"bolt"+key);
+      let boltMesh = boltView(this.getInputData(0)[key],this.getInputData(1))
+      if (boltMesh){
+      sceneAdder({ layer: 0, mesh: boltMesh },"bolt"+key);
+      }
     }
   }
 

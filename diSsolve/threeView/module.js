@@ -359,7 +359,7 @@ export function boltView(spliceDict, initPoint) {
         transparent: false,
         wireframe: false
     });
-
+    let boltIs = false
     // let bolt0 = { startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 }
     // var radius = bolt0.size/2
     // var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
@@ -381,6 +381,7 @@ export function boltView(spliceDict, initPoint) {
                             let ytranslate = bolt[k].startPoint.y - j * bolt[k].P
                             group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
                             // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
+                            boltIs = true
                         }
                     }
                 }
@@ -395,7 +396,8 @@ export function boltView(spliceDict, initPoint) {
     // }
     // mesh.instanceMatrix.needsUpdate = true;
     // group.add(mesh)
-    return group
+    let result = boltIs? group:null;
+    return result
 }
 
 export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint, meshMaterial) {
