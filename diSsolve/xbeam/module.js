@@ -1,4 +1,4 @@
-import { ToGlobalPoint, Kframe, XYOffset, Vector, scallop } from "../geometryModule"
+import { ToGlobalPoint, PlateRestPoint Kframe, XYOffset, Vector, scallop } from "../geometryModule"
 import { PTS } from "../DB/module"
 import { vPlateGen, hPlateGen } from "../stiffner/module"
 
@@ -85,6 +85,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     flangeWidth: 250,
     flangeThickness: 12,
     stiffThickness: 12,
+    stiffWidth : 150,
     scallopRadius: 25,
     webJointThickness: 10,
     webJointWidth: 330,
@@ -130,7 +131,8 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     {x:tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x))},
     ufl]
   result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
-
+  let lstiff = PlateRestPoint({x: tl.x, y:tl.y - xs.webHeight - xs.flangeThickness}, bl, lGradient, 0, xs.stiffWidth);
+  result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
 
   let data = []; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
   // let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2
