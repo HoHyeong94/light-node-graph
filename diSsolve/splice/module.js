@@ -1,4 +1,6 @@
 import { ToGlobalPoint } from "../geometryModule"
+import { vPlateGen, hPlateGen } from "../stiffner/module"
+
 export function SplicePlate(iPoint, iSectionPoint) {
     let result = {}
     let iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[0])
