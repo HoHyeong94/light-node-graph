@@ -121,8 +121,39 @@ export function SplicePlate(iPoint, iSectionPoint) {
     return result
   }
  
-  export function IbeamJoint(webPoints, centerPoint,xs){
+  export function IbeamJoint(webPoints, centerPoint,xs, wBolt, fBolt){
     // webPoint는 반드시 좌측하단을 시작으로 시계반대방향순이어야함
+    // let xs = {
+    //   webThickness: 12,
+    //   flangeWidth: 250,
+    //   flangeThickness: 12,
+    //   webJointThickness: 10,
+    //   webJointWidth: 330,
+    //   webJointHeight: 440,
+    //   flangeJointThickness: 10,
+    //   flangeJointLength: 480,
+    //   flangeJointWidth: 80,
+    // }
+    // 볼트 배치에 대한 인풋고려필요
+
+    // let wBolt = {
+    //   P:90,
+    //   G:75,
+    //   pNum:5,
+    //   gNum:2,
+    //   size:37,
+    //   t:14,
+    // }
+  // let fBolt = {
+    //   P:170,
+    //   G:75,
+    //   pNum:2,
+    //   gNum:3,
+    //   size:37,
+    //   t:14,
+    // }
+
+
     let result = {}
     const rotationY = (centerPoint.skew - 90) * Math.PI / 180
     let uGradient = (webPoints[3].y-webPoints[2].y)/(webPoints[3].x -webPoints[2].x);
@@ -130,12 +161,11 @@ export function SplicePlate(iPoint, iSectionPoint) {
     let uRad = -Math.atan(uGradient)
     let lRad = -Math.atan(lGradient)
 
-
-  /////////////////////////////////// to the Joint function //////////////////////////////////////////
+    /////////////////////////////////// to the Joint function //////////////////////////////////////////
   let webPoint1 = ToGlobalPoint(centerPoint, { x: (webPoints[0].x + webPoints[3].x) / 2, y: (webPoints[0].y +webPoints[3].y) / 2 })
   let webPoint2 = ToGlobalPoint(centerPoint, { x: (webPoints[1].x + webPoints[2].x) / 2, y: (webPoints[1].y +webPoints[2].y) / 2 })
-  let WebBolt = [{ startPoint: { x: xs.webJointWidth / 2 - 40, y: xs.webJointHeight / 2 - 40 }, P: 90, G: 75, pNum: 5, gNum: 2, size: 37, t: 14, l: xs.webJointThickness * 2 + xs.webThickness },
-  { startPoint: { x: -(xs.webJointWidth / 2 - 40), y: xs.webJointHeight / 2 - 40 }, P: 90, G: -75, pNum: 5, gNum: 2, size: 37, t: 14, l: xs.webJointThickness * 2 + xs.webThickness }]
+  let WebBolt = [{ startPoint: { x: xs.webJointWidth / 2 - 40, y: xs.webJointHeight / 2 - 40 }, P: wBolt.P , G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.Size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness },
+  { startPoint: { x: -(xs.webJointWidth / 2 - 40), y: xs.webJointHeight / 2 - 40 }, P: wBolt.P, G: -wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.Size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness }]
   let webJoint1 = [{ x: - xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
   { x: xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
   { x: xs.webJointWidth / 2, y: xs.webJointHeight / 2 },
@@ -170,8 +200,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
   { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth },
   { x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth }]
-  let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: 170, G: 75, pNum: 2, gNum: 3, size: 37, t: 14, l: xs.flangeJointThickness * 2 + xs.flangeThickness },
-  { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P: 170, G: -75, pNum: 2, gNum: 3, size: 37, t: 14, l: xs.flangeJointThickness * 2 + xs.flangeThickness }]
+  let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness },
+  { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P:  fBolt.P, G: -fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness }]
 
   let uPoint1 = ToGlobalPoint(centerPoint, webPoints[3])
   let uPoint2 = ToGlobalPoint(centerPoint, webPoints[2])
