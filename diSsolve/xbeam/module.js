@@ -1,4 +1,4 @@
-import { ToGlobalPoint, PlateRestPoint, Kframe, XYOffset, Vector, scallop } from "../geometryModule"
+import { ToGlobalPoint, PlateRestPoint, Kframe, XYOffset, Vector, scallop, Fillet2D } from "../geometryModule"
 import { PTS } from "../DB/module"
 import { vPlateGen, hPlateGen } from "../stiffner/module"
 
