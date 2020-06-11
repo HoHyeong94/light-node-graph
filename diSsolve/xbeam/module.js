@@ -159,7 +159,7 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lwebPlate = [tl, {x: tl.x, y:tl.y - xs.webHeight}, {x:tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength},
     {x:tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x))}, ufl]
   result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
-  let lstiff = PlateRestPoint({x: tl.x, y:tl.y - xs.webHeight - xs.flangeThickness}, bl, lGradient, 0, xs.stiffWidth);
+  let lstiff = [{x: tl.x, y:tl.y - xs.webHeight - xs.flangeThickness}, bl, {x:bl.x +xs.stiffWidth, y:bl.y}, {x: tl.x + xs.bracketLength , y:tl.y - xs.webHeight - xs.flangeThickness + lGradient*xs.bracketLength -30},{x: tl.x + xs.bracketLength , y:tl.y - xs.webHeight - xs.flangeThickness + lGradient*xs.bracketLength}];
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
 
   let rwebPlate = [tr, {x: tr.x, y:tr.y - xs.webHeight}, {x:tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength},
