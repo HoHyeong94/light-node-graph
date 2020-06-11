@@ -174,7 +174,7 @@ export function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
   }
-  let webPlate = [lwebPlate[1],rwebPlate[1],rwebPlate[2],lwebPlate[2]]
+  let webPlate = [lwebPlate[2],rwebPlate[2],rwebPlate[3],lwebPlate[3]]
   result["web"] = vPlateGen(webPlate,centerPoint, xs.webThickness, [],0,null,null,[]);
   let uPoint = ToGlobalPoint(centerPoint,lwebPlate[3])
   let l = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x)**2 + (lwebPlate[3].y - rwebPlate[3].y)**2)
