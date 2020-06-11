@@ -164,10 +164,10 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
   
   let lL = Math.sqrt((lstiff[2].x - lstiff[3].x)**2 + (lstiff[2].y - lstiff[3].y)**2);
-  let xrot = -Math.atan((lstiff[2].y - lstiff[3].y)/(lstiff[2].x - lstiff[3].x))
+  let lrot = -Math.atan((lstiff[2].y - lstiff[3].y)/(lstiff[2].x - lstiff[3].x))
   let lPlate = [{x:-lL/2 +30, y:30},{x:-lL/2 + 120, y:60},{x:lL/2 - 120, y:60},{x:lL/2 - 30, y:30},{x:lL/2 - 30, y:-30},{x:lL/2 - 120, y:-60},{x:-lL/2 + 120, y:-60}, {x:-lL/2 +30, y:-30}]
   let cp = {x : (lstiff[2].x + lstiff[3].x)/2,y:(lstiff[2].y + lstiff[3].y)/2 }
-  result["lstiffPlate"] = hPlateGen(lPlate,ToGlobalPoint(centerPoint, cp ),12,0,centerPoint.skew,0,xrot)
+  result["lstiffPlate"] = hPlateGen(lPlate,ToGlobalPoint(centerPoint, cp ),12,-12,centerPoint.skew,0,lrot)
 
   let rwebPlate = [tr, {x: tr.x, y:tr.y - xs.webHeight}, {x:tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength},
     {x:tr.x - xs.bracketLength, y: ufr.y - uGradient * (xs.bracketLength - (tr.x - ufr.x))},ufr]
@@ -177,6 +177,14 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   
   PlateRestPoint({x: tr.x, y:tr.y - xs.webHeight - xs.flangeThickness}, br, lGradient, 0, -xs.stiffWidth);
   result["rstiff"] = vPlateGen(rstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
+
+  let rL = Math.sqrt((rstiff[2].x - rstiff[3].x)**2 + (rstiff[2].y - rstiff[3].y)**2);
+  let rrot = -Math.atan((rstiff[2].y - rstiff[3].y)/(rstiff[2].x - rstiff[3].x))
+  let rPlate = [{x:-rL/2 +30, y:30},{x:-rL/2 + 120, y:60},{x:rL/2 - 120, y:60},{x:rL/2 - 30, y:30},{x:rL/2 - 30, y:-30},{x:rL/2 - 120, y:-60},{x:-rL/2 + 120, y:-60}, {x:-rL/2 +30, y:-30}]
+  let cp = {x : (rstiff[2].x + rstiff[3].x)/2,y:(rstiff[2].y + rstiff[3].y)/2 }
+  result["rstiffPlate"] = hPlateGen(rPlate,ToGlobalPoint(centerPoint, cp ),12,-12,centerPoint.skew,0,rrot)
+
+
 
   let bracketPoint = [ToGlobalPoint(centerPoint, lstiff[0]),
   ToGlobalPoint(centerPoint, rstiff[0]),
