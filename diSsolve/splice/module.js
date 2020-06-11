@@ -119,3 +119,81 @@ export function SplicePlate(iPoint, iSectionPoint) {
     return result
   }
  
+  export function IbeamJoint(webPoints, centerPoint,xs){
+    // webPoint는 반드시 좌측하단을 시작으로 시계반대방향순이어야함
+    let result = {}
+    const rotationY = (point.skew - 90) * Math.PI / 180
+    let uGradient = (webPoints[3].y-webPoints[2].y)/(webPoints[3].x -webPoints[2].x);
+    let lGradient = (webPoints[1].y-webPoints[0].y)/(webPoints[1].x -webPoints[0].x);
+    let uRad = -Math.atan(uGradient)
+    let lRad = -Math.atan(lGradient)
+
+
+  /////////////////////////////////// to the Joint function //////////////////////////////////////////
+  let webPoint1 = ToGlobalPoint(centerPoint, { x: (webPoints[0].x + webPoints[3].x) / 2, y: (webPoints[0].y +webPoints[3].y) / 2 })
+  let webPoint2 = ToGlobalPoint(centerPoint, { x: (webPoints[1].x + webPoints[2].x) / 2, y: (webPoints[1].y +webPoints[2].y) / 2 })
+  let WebBolt = [{ startPoint: { x: xs.webJointWidth / 2 - 40, y: xs.webJointHeight / 2 - 40 }, P: 90, G: 75, pNum: 5, gNum: 2, size: 37, t: 14, l: xs.webJointThickness * 2 + xs.webThickness },
+  { startPoint: { x: -(xs.webJointWidth / 2 - 40), y: xs.webJointHeight / 2 - 40 }, P: 90, G: -75, pNum: 5, gNum: 2, size: 37, t: 14, l: xs.webJointThickness * 2 + xs.webThickness }]
+  let webJoint1 = [{ x: - xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
+  { x: xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
+  { x: xs.webJointWidth / 2, y: xs.webJointHeight / 2 },
+  { x: - xs.webJointWidth / 2, y: xs.webJointHeight / 2 }];
+
+  result["webJoint1"] = {
+    points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    point: webPoint1, bolt: WebBolt,
+  }
+  result["webJoint2"] = {
+    points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    point: webPoint1,
+  }
+  result["webJoint3"] = {
+    points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    point: webPoint2, bolt: WebBolt,
+  }
+  result["webJoint4"] = {
+    points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    point: webPoint2,
+  }
+  // flange Joint
+  let joint1 = [{ x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
+  { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
+  { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
+  { x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 }]
+  let joint2 = [{ x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
+  { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
+  { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 +  xs.flangeJointWidth },
+  { x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 + xs.flangeJointWidth }]
+  let joint3 = [{ x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
+  { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
+  { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth },
+  { x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth }]
+  let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: 170, G: 75, pNum: 2, gNum: 3, size: 37, t: 14, l: xs.flangeJointThickness * 2 + xs.flangeThickness },
+  { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P: 170, G: -75, pNum: 2, gNum: 3, size: 37, t: 14, l: xs.flangeJointThickness * 2 + xs.flangeThickness }]
+
+  let uPoint1 = ToGlobalPoint(centerPoint, lwebPlate[3])
+  let uPoint2 = ToGlobalPoint(centerPoint, rwebPlate[3])
+
+  result["upperJoint1"] = hPlateGen(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint1"].bolt = flangeBolt
+  result["upperJoint2"] = hPlateGen(joint2, uPoint1, xs.flangeJointThickness,  - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint3"] = hPlateGen(joint3, uPoint1, xs.flangeJointThickness,  - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint11"] = hPlateGen(joint1, uPoint2, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint11"].bolt = flangeBolt
+  result["upperJoint22"] = hPlateGen(joint2, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint33"] = hPlateGen(joint3, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+
+  let lPoint1 = ToGlobalPoint(centerPoint, lwebPlate[2])
+  let lPoint2 = ToGlobalPoint(centerPoint, rwebPlate[2])
+
+  result["lowerJoint1"] = hPlateGen(joint1, lPoint1, xs.flangeJointThickness, - xs.flangeThickness- xs.flangeJointThickness, centerPoint.skew, 0, lRad);
+  result["lowerJoint2"] = hPlateGen(joint2, lPoint1, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+  result["lowerJoint2"].bolt = flangeBolt
+  result["lowerJoint3"] = hPlateGen(joint3, lPoint1, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+  result["lowerJoint11"] = hPlateGen(joint1, lPoint2, xs.flangeJointThickness, -xs.flangeThickness - xs.flangeJointThickness, centerPoint.skew, 0, lRad);
+  result["lowerJoint22"] = hPlateGen(joint2, lPoint2, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+  result["lowerJoint22"].bolt = flangeBolt
+  result["lowerJoint33"] = hPlateGen(joint3, lPoint2, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+/////////////////////////////////// to the function //////////////////////////////////////////
+    return result
+}
