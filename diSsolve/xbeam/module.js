@@ -162,6 +162,12 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lstiff = [{x: tl.x, y:tl.y - xs.webHeight - xs.flangeThickness}, bl, {x:bl.x +xs.stiffWidth, y:bl.y}, 
     {x: tl.x + xs.bracketLength , y:tl.y - xs.webHeight - xs.flangeThickness + lGradient*xs.bracketLength -30},{x: tl.x + xs.bracketLength , y:tl.y - xs.webHeight - xs.flangeThickness + lGradient*xs.bracketLength}];
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
+  
+  let lL = Math.sqrt((lstiff[2].x - lstiff[3].x)**2 + (lstiff[2].y - lstiff[3].y)**2);
+  let xrot = -Math.atan((lstiff[2].y - lstiff[3].y)/(lstiff[2].x - lstiff[3].x))
+  let lPlate = [{x:-lL/2 +30, y:30},{x:-lL/2 + 120, y:60},{x:lL/2 - 120, y:60},{x:lL/2 - 30, y:30},{x:lL/2 - 30, y:-30},{x:lL/2 - 120, y:-60},{x:-lL/2 + 120, y:-60}, {x:-lL/2 +30, y:-30}]
+  let cp = {x : (lstiff[2].x + lstiff[3].x)/2,y:(lstiff[2].y + lstiff[3].y)/2 }
+  result["lstiffPlate"] = hPlateGen(lPlate,ToGlobalPoint(centerPoint, cp ),12,0,centerPoint.skew,0,xrot)
 
   let rwebPlate = [tr, {x: tr.x, y:tr.y - xs.webHeight}, {x:tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength},
     {x:tr.x - xs.bracketLength, y: ufr.y - uGradient * (xs.bracketLength - (tr.x - ufr.x))},ufr]
