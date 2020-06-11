@@ -171,8 +171,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
   let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: 170, G: 75, pNum: 2, gNum: 3, size: 37, t: 14, l: xs.flangeJointThickness * 2 + xs.flangeThickness },
   { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P: 170, G: -75, pNum: 2, gNum: 3, size: 37, t: 14, l: xs.flangeJointThickness * 2 + xs.flangeThickness }]
 
-  let uPoint1 = ToGlobalPoint(centerPoint, lwebPlate[3])
-  let uPoint2 = ToGlobalPoint(centerPoint, rwebPlate[3])
+  let uPoint1 = ToGlobalPoint(centerPoint, webPoints[3])
+  let uPoint2 = ToGlobalPoint(centerPoint, webPoints[2])
 
   result["upperJoint1"] = hPlateGen(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad);
   result["upperJoint1"].bolt = flangeBolt
@@ -183,8 +183,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
   result["upperJoint22"] = hPlateGen(joint2, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
   result["upperJoint33"] = hPlateGen(joint3, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
 
-  let lPoint1 = ToGlobalPoint(centerPoint, lwebPlate[2])
-  let lPoint2 = ToGlobalPoint(centerPoint, rwebPlate[2])
+  let lPoint1 = ToGlobalPoint(centerPoint, webPoints[0])
+  let lPoint2 = ToGlobalPoint(centerPoint, webPoints[1])
 
   result["lowerJoint1"] = hPlateGen(joint1, lPoint1, xs.flangeJointThickness, - xs.flangeThickness- xs.flangeJointThickness, centerPoint.skew, 0, lRad);
   result["lowerJoint2"] = hPlateGen(joint2, lPoint1, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
