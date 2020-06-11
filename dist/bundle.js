@@ -1761,10 +1761,11 @@
       let Y = X * skewCot; 
       let Z = node2D.y;
 
-      newPoint.x = Point.x + X * cos - Y*sin; 
+      newPoint.x = Point.x + X * cos - Y*sin;
       newPoint.y = Point.y + X * sin + Y*cos;
       newPoint.z = Point.z + Z;
       newPoint.s = Point.masterStationNumber;
+      newPoint.skew = skew;
       newPoint.normalCos = cos;
       newPoint.normalSin = sin;
       return newPoint
@@ -3098,6 +3099,235 @@
       return pts
   }
 
+  function SplicePlate(iPoint, iSectionPoint) {
+      let result = {};
+      let iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[0]);
+      let jNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1]);
+      let centerPoint = {
+        x: (iNode.x + jNode.x) / 2,
+        y: (iNode.y + jNode.y) / 2,
+        z: (iNode.z + jNode.z) / 2,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+      let Web = [{ x: -900, y: -250 }, { x: -900, y: 250 }, { x: 900, y: 250 }, { x: 900, y: -250 }];
+      let WebBolt = [{ startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 },];
+      let lWebAngle = Math.PI - Math.atan((iSectionPoint.lWeb[1].y - iSectionPoint.lWeb[0].y) / (iSectionPoint.lWeb[1].x - iSectionPoint.lWeb[0].x));
+      let rWebAngle = Math.PI - Math.atan((iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y) / (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x));
+      result["lWeb"] = {
+        points: Web, point: centerPoint,
+        Thickness: 20, z: 14, rotationX: 0, rotationY: lWebAngle, hole: [], bolt: WebBolt
+      };
+      result["lWeb2"] = {
+        points: Web, point: centerPoint,
+        Thickness: 20, z: -20, rotationX: 0, rotationY: lWebAngle, hole: []
+      };
+    
+      iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[0]);
+      jNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
+      centerPoint = {
+        x: (iNode.x + jNode.x) / 2,
+        y: (iNode.y + jNode.y) / 2,
+        z: (iNode.z + jNode.z) / 2,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+      result["rWeb"] = {
+        points: Web, point: centerPoint,
+        Thickness: 20, z: 14, rotationX: 0, rotationY: rWebAngle, hole: [], bolt: WebBolt
+      };
+      result["rWeb2"] = {
+        points: Web, point: centerPoint,
+        Thickness: 20, z: -20, rotationX: 0, rotationY: rWebAngle, hole: []
+      };
+    
+      iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1]);
+      centerPoint = {
+        ...iNode,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+      let TopFlange = [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }];
+      let TopFlangeBolt = [{ startPoint: { x: 160, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 2, size: 37, t: 14, l: 54 },
+      { startPoint: { x: -80, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 2, size: 37, t: 14, l: 54 }];
+    
+      result["lTop"] = { points: TopFlange, point: centerPoint, Thickness: 20, z: 14, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: [], bolt: TopFlangeBolt };
+      result["lTop2"] = {
+        points: [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: -40, y: 250 }, { x: -40, y: -250 }],
+        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      };
+      result["lTop3"] = {
+        points: [{ x: 40, y: -250 }, { x: 40, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }],
+        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      };
+    
+      iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
+      centerPoint = {
+        ...iNode,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+    
+      result["rTop"] = { points: TopFlange, point: centerPoint, Thickness: 20, z: 14, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: [], bolt: TopFlangeBolt };
+      result["rTop2"] = {
+        points: [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: -40, y: 250 }, { x: -40, y: -250 }],
+        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      };
+      result["rTop3"] = {
+        points: [{ x: 40, y: -250 }, { x: 40, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }],
+        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
+      };
+    
+    
+      let BP = iSectionPoint.bottomPlate;
+      iNode = ToGlobalPoint(iPoint, BP[0]);
+      jNode = ToGlobalPoint(iPoint, BP[1]);
+      centerPoint = {
+        x: (iNode.x + jNode.x) / 2,
+        y: (iNode.y + jNode.y) / 2,
+        z: (iNode.z + jNode.z) / 2,
+        normalCos: iPoint.normalCos,
+        normalSin: iPoint.normalSin,
+      };
+      let bottomFlange = [{ x: BP[0].x, y: -250 }, { x: BP[0].x, y: 250 }, { x: BP[1].x, y: 250 }, { x: BP[1].x, y: -250 }];
+      let bottomFlangeBolt = [{ startPoint: { x: BP[0].x + 40, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 1, size: 37, t: 14, l: 54 },
+      { startPoint: { x: BP[1].x - 40, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 1, size: 37, t: 14, l: 54 },
+      { startPoint: { x: BP[1].x - 172, y: 150 }, P: 100, G: 140, pNum: 4, gNum: 6, size: 37, t: 14, l: 54 },
+      { startPoint: { x: BP[0].x + 172, y: 150 }, P: 100, G: -140, pNum: 4, gNum: 6, size: 37, t: 14, l: 54 }];
+    
+      result["bottom1"] = {
+        points: [{ x: BP[0].x, y: -250 }, { x: BP[0].x, y: 250 }, { x: BP[0].x + 80, y: 250 }, { x: BP[0].x + 80, y: -250 }],
+        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: [], bolt: bottomFlangeBolt
+      };
+      result["bottom2"] = {
+        points: [{ x: BP[1].x, y: -250 }, { x: BP[1].x, y: 250 }, { x: BP[1].x - 80, y: 250 }, { x: BP[1].x - 80, y: -250 }],
+        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
+      };
+      result["bottom3"] = {
+        points: [{ x: BP[0].x + 132, y: -250 }, { x: BP[0].x + 132, y: 250 }, { x: BP[1].x - 132, y: 250 }, { x: BP[1].x - 132, y: -250 }],
+        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
+      };
+      result["bottom4"] = {
+        points: bottomFlange,
+        point: centerPoint, Thickness: 20, z: -20 - 14, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
+      };
+      // result["bottom2"]={points:[{x:-200, y:-250},{x:-200, y:250},{x:-40, y:250},{x:-40, y:-250}],
+      //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+      // result["bottom3"]={points:[{x:40, y:-250},{x:40, y:250},{x:200, y:250},{x:200, y:-250}],
+      //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
+    
+      return result
+    }
+   
+    function IbeamJoint(webPoints, centerPoint,xs, wBolt, fBolt){
+      // webPoint는 반드시 좌측하단을 시작으로 시계반대방향순이어야함
+      // let xs = {
+      //   webThickness: 12,
+      //   flangeWidth: 250,
+      //   flangeThickness: 12,
+      //   webJointThickness: 10,
+      //   webJointWidth: 330,
+      //   webJointHeight: 440,
+      //   flangeJointThickness: 10,
+      //   flangeJointLength: 480,
+      //   flangeJointWidth: 80,
+      // }
+      // 볼트 배치에 대한 인풋고려필요
+
+      // let wBolt = {
+      //   P:90,
+      //   G:75,
+      //   pNum:5,
+      //   gNum:2,
+      //   size:37,
+      //   t:14,
+      // }
+    // let fBolt = {
+      //   P:170,
+      //   G:75,
+      //   pNum:2,
+      //   gNum:3,
+      //   size:37,
+      //   t:14,
+      // }
+
+
+      let result = {};
+      const rotationY = (centerPoint.skew - 90) * Math.PI / 180;
+      let uGradient = (webPoints[3].y-webPoints[2].y)/(webPoints[3].x -webPoints[2].x);
+      let lGradient = (webPoints[1].y-webPoints[0].y)/(webPoints[1].x -webPoints[0].x);
+      let uRad = -Math.atan(uGradient);
+      let lRad = -Math.atan(lGradient);
+
+      /////////////////////////////////// to the Joint function //////////////////////////////////////////
+    let webPoint1 = ToGlobalPoint(centerPoint, { x: (webPoints[0].x + webPoints[3].x) / 2, y: (webPoints[0].y +webPoints[3].y) / 2 });
+    let webPoint2 = ToGlobalPoint(centerPoint, { x: (webPoints[1].x + webPoints[2].x) / 2, y: (webPoints[1].y +webPoints[2].y) / 2 });
+    let WebBolt = [{ startPoint: { x: xs.webJointWidth / 2 - 40, y: xs.webJointHeight / 2 - 40 }, P: wBolt.P , G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness },
+    { startPoint: { x: -(xs.webJointWidth / 2 - 40), y: xs.webJointHeight / 2 - 40 }, P: wBolt.P, G: -wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness }];
+    let webJoint1 = [{ x: - xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
+    { x: xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
+    { x: xs.webJointWidth / 2, y: xs.webJointHeight / 2 },
+    { x: - xs.webJointWidth / 2, y: xs.webJointHeight / 2 }];
+
+    result["webJoint1"] = {
+      points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+      point: webPoint1, bolt: WebBolt,
+    };
+    result["webJoint2"] = {
+      points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+      point: webPoint1,
+    };
+    result["webJoint3"] = {
+      points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+      point: webPoint2, bolt: WebBolt,
+    };
+    result["webJoint4"] = {
+      points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+      point: webPoint2,
+    };
+    // flange Joint
+    let joint1 = [{ x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
+    { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
+    { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
+    { x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 }];
+    let joint2 = [{ x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
+    { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
+    { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 +  xs.flangeJointWidth },
+    { x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 + xs.flangeJointWidth }];
+    let joint3 = [{ x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
+    { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
+    { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth },
+    { x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth }];
+    let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness },
+    { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P:  fBolt.P, G: -fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness }];
+
+    let uPoint1 = ToGlobalPoint(centerPoint, webPoints[3]);
+    let uPoint2 = ToGlobalPoint(centerPoint, webPoints[2]);
+
+    result["upperJoint1"] = hPlateGen(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad);
+    result["upperJoint1"].bolt = flangeBolt;
+    result["upperJoint2"] = hPlateGen(joint2, uPoint1, xs.flangeJointThickness,  - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+    result["upperJoint3"] = hPlateGen(joint3, uPoint1, xs.flangeJointThickness,  - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+    result["upperJoint11"] = hPlateGen(joint1, uPoint2, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad);
+    result["upperJoint11"].bolt = flangeBolt;
+    result["upperJoint22"] = hPlateGen(joint2, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+    result["upperJoint33"] = hPlateGen(joint3, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+
+    let lPoint1 = ToGlobalPoint(centerPoint, webPoints[0]);
+    let lPoint2 = ToGlobalPoint(centerPoint, webPoints[1]);
+
+    result["lowerJoint1"] = hPlateGen(joint1, lPoint1, xs.flangeJointThickness, - xs.flangeThickness- xs.flangeJointThickness, centerPoint.skew, 0, lRad);
+    result["lowerJoint2"] = hPlateGen(joint2, lPoint1, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+    result["lowerJoint2"].bolt = flangeBolt;
+    result["lowerJoint3"] = hPlateGen(joint3, lPoint1, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+    result["lowerJoint11"] = hPlateGen(joint1, lPoint2, xs.flangeJointThickness, -xs.flangeThickness - xs.flangeJointThickness, centerPoint.skew, 0, lRad);
+    result["lowerJoint22"] = hPlateGen(joint2, lPoint2, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+    result["lowerJoint22"].bolt = flangeBolt;
+    result["lowerJoint33"] = hPlateGen(joint3, lPoint2, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+  /////////////////////////////////// to the function //////////////////////////////////////////
+      return result
+  }
+
   function DiaShapeDict(
     gridPoint,
     sectionPointDict,
@@ -3603,11 +3833,9 @@
     let result = {};
     let dsi = {
       webHeight: 576,//상부플렌지를 기준으로 보강재의 높이를 의미함, 명칭변경필요
-      lowerThickness: 12,
-      lowerWidth: 250,
+      flangeThickness: 12,
+      flangeWidth: 250,
       // upperHeight: 900,
-      upperThickness: 12,
-      upperWidth: 250,
       webThickness: 12,
       stiffWidth: 150,
       stiffThickness: 12,
@@ -3618,13 +3846,38 @@
       webJointWidth: 330,
       webJointHeight: 440,
       webJointThickness: 10,
-      upperJointLength: 480,
-      upperJointWidth: 80,
-      upperJointThickness: 10,
-      lowerJointLength: 480,
-      lowerJointWidth: 80,
-      lowerJointThickness: 10,
+      flangeJointLength: 480,
+      flangeJointWidth: 80,
+      flangeJointThickness: 10,
     }; //  임시 입력변수
+      // let xs = {
+      //   webThickness: 12,
+      //   flangeWidth: 250,
+      //   flangeThickness: 12,
+      //   webJointThickness: 10,
+      //   webJointWidth: 330,
+      //   webJointHeight: 440,
+      //   flangeJointThickness: 10,
+      //   flangeJointLength: 480,
+      //   flangeJointWidth: 80,
+      // }
+
+    let wBolt = {
+      P:90,
+      G:75,
+      pNum:5,
+      gNum:2,
+      size:37,
+      t:14,
+    };
+  let fBolt = {
+      P:170,
+      G:75,
+      pNum:2,
+      gNum:3,
+      size:37,
+      t:14,
+    };
     const bl = webPoints[0];
     const tl = webPoints[1];
     const br = webPoints[2];
@@ -3639,14 +3892,14 @@
 
     let upperPlate = [
       uflange[0][1],
-      { x: uflange[0][1].x - gradSin * dsi.upperThickness, y: uflange[0][1].y + gradCos * dsi.upperThickness },
-      { x: uflange[0][1].x - gradSin * dsi.upperThickness, y: uflange[0][1].y + gradCos * dsi.upperThickness },
+      { x: uflange[0][1].x - gradSin * dsi.flangeThickness, y: uflange[0][1].y + gradCos * dsi.flangeThickness },
+      { x: uflange[0][1].x - gradSin * dsi.flangeThickness, y: uflange[0][1].y + gradCos * dsi.flangeThickness },
       uflange[1][1]
     ];
     let lowerPlate = [
       { x: tl.x - lwCot * dsi.webHeight, y: tl.y - dsi.webHeight },
-      { x: tl.x - lwCot * (dsi.webHeight + dsi.lowerThickness), y: tl.y - dsi.webHeight - dsi.lowerThickness },
-      { x: tr.x - rwCot * (dsi.webHeight + dsi.lowerThickness), y: tr.y - dsi.webHeight - dsi.lowerThickness },
+      { x: tl.x - lwCot * (dsi.webHeight + dsi.flangeThickness), y: tl.y - dsi.webHeight - dsi.flangeThickness },
+      { x: tr.x - rwCot * (dsi.webHeight + dsi.flangeThickness), y: tr.y - dsi.webHeight - dsi.flangeThickness },
       { x: tr.x - rwCot * dsi.webHeight, y: tr.y - dsi.webHeight }
     ];
 
@@ -3657,14 +3910,14 @@
     for (let i = 0; i < 4; i++) {
       let sign = i % 2 === 0 ? 1 : -1;
       let bracketLength = i < 2 ? dsi.bracketLength : dsi.bracketLength - (uflange[0][1].x - tl.x);
-      let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.lowerWidth / 2 }, { x: sign * bracketLength, y: dsi.lowerWidth / 2 },
-      { x: sign * bracketLength, y: -dsi.lowerWidth / 2 }, { x: sign * 20, y: -dsi.lowerWidth / 2 }, { x: sign * 20, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
+      let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.flangeWidth / 2 }, { x: sign * bracketLength, y: dsi.flangeWidth / 2 },
+      { x: sign * bracketLength, y: -dsi.flangeWidth / 2 }, { x: sign * 20, y: -dsi.flangeWidth / 2 }, { x: sign * 20, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
       let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
       lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
       lowerbracket1[6], lowerbracket1[7]];
       result["bracket" + i.toFixed(0)] = {
         points: bracketShape,
-        Thickness: i < 2 ? dsi.lowerThickness : dsi.upperThickness,
+        Thickness: i < 2 ? dsi.flangeThickness : dsi.flangeThickness,
         z: 0,
         rotationX: 0,
         rotationY: gradRadian,
@@ -3730,190 +3983,102 @@
       // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     };
 
-    let webPoint = ToGlobalPoint(point, { x: (webPlate[0].x + webPlate[3].x) / 2, y: (webPlate[0].y + webPlate[3].y) / 2 });
-    let webPoint2 = ToGlobalPoint(point, { x: (webPlate[1].x + webPlate[2].x) / 2, y: (webPlate[1].y + webPlate[2].y) / 2 });
-    let WebBolt = [{ startPoint: { x: dsi.webJointWidth / 2 - 40, y: dsi.webJointHeight / 2 - 40 }, P: 90, G: 75, pNum: 5, gNum: 2, size: 37, t: 14, l: dsi.webJointThickness * 2 + dsi.webThickness },
-    { startPoint: { x: -(dsi.webJointWidth / 2 - 40), y: dsi.webJointHeight / 2 - 40 }, P: 90, G: -75, pNum: 5, gNum: 2, size: 37, t: 14, l: dsi.webJointThickness * 2 + dsi.webThickness }];
-    let webJoint1 = [{ x: - dsi.webJointWidth / 2, y: - dsi.webJointHeight / 2 },
-    { x: dsi.webJointWidth / 2, y: - dsi.webJointHeight / 2 },
-    { x: dsi.webJointWidth / 2, y: dsi.webJointHeight / 2 },
-    { x: - dsi.webJointWidth / 2, y: dsi.webJointHeight / 2 }];
-
-    result["webJoint1"] = {
-      points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      point: webPoint, bolt: WebBolt,
-    };
-    result["webJoint2"] = {
-      points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      point: webPoint,
-    };
-    result["webJoint3"] = {
-      points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      point: webPoint2, bolt: WebBolt,
-    };
-    result["webJoint4"] = {
-      points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      point: webPoint2,
-    };
-    // flange Joint
-    let joint1 = [{ x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
-    { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
-    { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
-    { x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 }];
-    let joint2 = [{ x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
-    { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 },
-    { x: dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 + dsi.upperJointWidth },
-    { x: - dsi.upperJointLength / 2, y: - dsi.upperWidth / 2 + dsi.upperJointWidth }];
-    let joint3 = [{ x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
-    { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 },
-    { x: dsi.upperJointLength / 2, y: dsi.upperWidth / 2 - dsi.upperJointWidth },
-    { x: - dsi.upperJointLength / 2, y: dsi.upperWidth / 2 - dsi.upperJointWidth }];
-    let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: 170, G: 75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.upperJointThickness * 2 + dsi.upperThickness },
-    { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P: 170, G: -75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.upperJointThickness * 2 + dsi.upperThickness }];
-
-    // let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
-    // { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y - dsi.upperThickness },
-    // { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y - dsi.upperThickness },
-    // { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y }]
-    // result["upperflange"] = { points: upperflange, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
     let upperflange = [
-      { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient + dsi.upperThickness },
+      { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient + dsi.flangeThickness },
       { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient },
       { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient },
-      { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient + dsi.upperThickness }];
-    result["upperflange"] = { points: upperflange, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], };
-
-    let uPoint1 = ToGlobalPoint(point, upperflange[0]);
-    let uPoint2 = ToGlobalPoint(point, upperflange[3]);
-
-    result["upperJoint1"] = hPlateGen(joint1, uPoint1, dsi.upperJointThickness, 0, point.skew, 0, gradRadian);
-    result["upperJoint1"].bolt = flangeBolt;
-    result["upperJoint2"] = hPlateGen(joint2, uPoint1, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
-    result["upperJoint3"] = hPlateGen(joint3, uPoint1, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
-    result["upperJoint11"] = hPlateGen(joint1, uPoint2, dsi.upperJointThickness, 0, point.skew, 0, 0);
-    result["upperJoint11"].bolt = flangeBolt;
-    result["upperJoint22"] = hPlateGen(joint2, uPoint2, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
-    result["upperJoint33"] = hPlateGen(joint3, uPoint2, dsi.upperJointThickness, -dsi.upperThickness - dsi.upperJointThickness, point.skew, 0, gradRadian);
-
-    // let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
-    // { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.lowerThickness },
-    // { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y + dsi.lowerThickness },
-    // { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y }]
-    // result["lowerflange"] = { points: lowerflange, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-
+      { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient + dsi.flangeThickness }];
+    result["upperflange"] = { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], };
+    
     let lowerflange = [
-      { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient - dsi.lowerThickness },
+      { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient - dsi.flangeThickness },
       { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient },
       { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient },
-      { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient - dsi.lowerThickness }];
-    result["lowerflange"] = { points: lowerflange, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], };
+      { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient - dsi.flangeThickness }];
+    result["lowerflange"] = { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], };
 
-    let lPoint1 = ToGlobalPoint(point, lowerflange[0]);
-    let lPoint2 = ToGlobalPoint(point, lowerflange[3]);
+    let joint = IbeamJoint(webPlate, point, dsi,wBolt,fBolt);
+    for (let i in joint){ result[i] = joint[i]; }
 
-    result["lowerJoint1"] = hPlateGen(joint1, lPoint1, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, gradRadian);
-    result["lowerJoint2"] = hPlateGen(joint2, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, gradRadian);
-    result["lowerJoint2"].bolt = flangeBolt;
-    result["lowerJoint3"] = hPlateGen(joint3, lPoint1, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, gradRadian);
-    result["lowerJoint11"] = hPlateGen(joint1, lPoint2, dsi.lowerJointThickness, - dsi.lowerJointThickness, point.skew, 0, gradRadian);
-    result["lowerJoint22"] = hPlateGen(joint2, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, gradRadian);
-    result["lowerJoint22"].bolt = flangeBolt;
-    result["lowerJoint33"] = hPlateGen(joint3, lPoint2, dsi.lowerJointThickness, dsi.lowerThickness, point.skew, 0, gradRadian);
+    // let webPoint = ToGlobalPoint(point, { x: (webPlate[0].x + webPlate[3].x) / 2, y: (webPlate[0].y + webPlate[3].y) / 2 })
+    // let webPoint2 = ToGlobalPoint(point, { x: (webPlate[1].x + webPlate[2].x) / 2, y: (webPlate[1].y + webPlate[2].y) / 2 })
+    // let WebBolt = [{ startPoint: { x: dsi.webJointWidth / 2 - 40, y: dsi.webJointHeight / 2 - 40 }, P: 90, G: 75, pNum: 5, gNum: 2, size: 37, t: 14, l: dsi.webJointThickness * 2 + dsi.webThickness },
+    // { startPoint: { x: -(dsi.webJointWidth / 2 - 40), y: dsi.webJointHeight / 2 - 40 }, P: 90, G: -75, pNum: 5, gNum: 2, size: 37, t: 14, l: dsi.webJointThickness * 2 + dsi.webThickness }]
+    // let webJoint1 = [{ x: - dsi.webJointWidth / 2, y: - dsi.webJointHeight / 2 },
+    // { x: dsi.webJointWidth / 2, y: - dsi.webJointHeight / 2 },
+    // { x: dsi.webJointWidth / 2, y: dsi.webJointHeight / 2 },
+    // { x: - dsi.webJointWidth / 2, y: dsi.webJointHeight / 2 }];
 
-
-
-
-
-    // let webJoint1 = [{ x: (webPlate[0].x + webPlate[3].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 - dsi.webJointHeight / 2 },
-    // { x: (webPlate[0].x + webPlate[3].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 - dsi.webJointHeight / 2 },
-    // { x: (webPlate[0].x + webPlate[3].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 + dsi.webJointHeight / 2 },
-    // { x: (webPlate[0].x + webPlate[3].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[0].y + webPlate[3].y) / 2 + dsi.webJointHeight / 2 }];
     // result["webJoint1"] = {
     //   points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    //   point: webPoint, bolt: WebBolt,
     // }
     // result["webJoint2"] = {
     //   points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    //   point: webPoint,
     // }
-    // let webJoint3 = [{ x: (webPlate[1].x + webPlate[2].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 - dsi.webJointHeight / 2 },
-    // { x: (webPlate[1].x + webPlate[2].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 - dsi.webJointHeight / 2 },
-    // { x: (webPlate[1].x + webPlate[2].x) / 2 + dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 },
-    // { x: (webPlate[1].x + webPlate[2].x) / 2 - dsi.webJointWidth / 2, y: (webPlate[1].y + webPlate[2].y) / 2 + dsi.webJointHeight / 2 }];
     // result["webJoint3"] = {
-    //   points: webJoint3, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    //   points: webJoint1, Thickness: dsi.webJointThickness, z: dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   point: webPoint2, bolt: WebBolt,
     // }
     // result["webJoint4"] = {
-    //   points: webJoint3, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    //   points: webJoint1, Thickness: dsi.webJointThickness, z: -dsi.webJointThickness - dsi.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   point: webPoint2,
     // }
+    // // flange Joint
+    // let joint1 = [{ x: - dsi.flangeJointLength / 2, y: - dsi.flangeWidth / 2 },
+    // { x: dsi.flangeJointLength / 2, y: - dsi.flangeWidth / 2 },
+    // { x: dsi.flangeJointLength / 2, y: dsi.flangeWidth / 2 },
+    // { x: - dsi.flangeJointLength / 2, y: dsi.flangeWidth / 2 }]
+    // let joint2 = [{ x: - dsi.flangeJointLength / 2, y: - dsi.flangeWidth / 2 },
+    // { x: dsi.flangeJointLength / 2, y: - dsi.flangeWidth / 2 },
+    // { x: dsi.flangeJointLength / 2, y: - dsi.flangeWidth / 2 + dsi.flangeJointWidth },
+    // { x: - dsi.flangeJointLength / 2, y: - dsi.flangeWidth / 2 + dsi.flangeJointWidth }]
+    // let joint3 = [{ x: - dsi.flangeJointLength / 2, y: dsi.flangeWidth / 2 },
+    // { x: dsi.flangeJointLength / 2, y: dsi.flangeWidth / 2 },
+    // { x: dsi.flangeJointLength / 2, y: dsi.flangeWidth / 2 - dsi.flangeJointWidth },
+    // { x: - dsi.flangeJointLength / 2, y: dsi.flangeWidth / 2 - dsi.flangeJointWidth }]
+    // let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: 170, G: 75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.flangeJointThickness * 2 + dsi.flangeThickness },
+    // { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P: 170, G: -75, pNum: 2, gNum: 3, size: 37, t: 14, l: dsi.flangeJointThickness * 2 + dsi.flangeThickness }]
 
-    // let upperflange = [
-    //   { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient + dsi.upperThickness },
-    //   { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient },
-    //   { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient },
-    //   { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient + dsi.upperThickness }];
+    // // let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
+    // // { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y - dsi.upperThickness },
+    // // { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y - dsi.upperThickness },
+    // // { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y }]
+    // // result["upperflange"] = { points: upperflange, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+    
 
-    // result["upperflange"] = { points: upperflange, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // let upperJoint1 = [{ x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y - dsi.upperJointLength / 2 * gradient },
-    // { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointLength / 2 * gradient },
-    // { x: upperflange[0].x + dsi.upperJointLength / 2, y: upperflange[0].y + dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness },
-    // { x: upperflange[0].x - dsi.upperJointLength / 2, y: upperflange[0].y - dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness }]
-    // let upperJoint2 = [{ x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointLength / 2 * gradient },
-    // { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y + dsi.upperJointLength / 2 * gradient },
-    // { x: upperflange[1].x + dsi.upperJointLength / 2, y: upperflange[1].y + dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness },
-    // { x: upperflange[1].x - dsi.upperJointLength / 2, y: upperflange[1].y - dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness }]
-    // let upperJoint11 = [{ x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y - dsi.upperJointLength / 2 * gradient },
-    // { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointLength / 2 * gradient },
-    // { x: upperflange[3].x + dsi.upperJointLength / 2, y: upperflange[3].y + dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness },
-    // { x: upperflange[3].x - dsi.upperJointLength / 2, y: upperflange[3].y - dsi.upperJointLength / 2 * gradient + dsi.upperJointThickness }]
-    // let upperJoint22 = [{ x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointLength / 2 * gradient },
-    // { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y + dsi.upperJointLength / 2 * gradient },
-    // { x: upperflange[2].x + dsi.upperJointLength / 2, y: upperflange[2].y + dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness },
-    // { x: upperflange[2].x - dsi.upperJointLength / 2, y: upperflange[2].y - dsi.upperJointLength / 2 * gradient - dsi.upperJointThickness }]
+    // let uPoint1 = ToGlobalPoint(point, upperflange[0])
+    // let uPoint2 = ToGlobalPoint(point, upperflange[3])
 
-    // result["upperJoint1"] = { points: upperJoint1, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["upperJoint2"] = { points: upperJoint2, Thickness: dsi.upperJointWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["upperJoint3"] = { points: upperJoint2, Thickness: dsi.upperJointWidth, z: dsi.upperWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["upperJoint11"] = { points: upperJoint11, Thickness: dsi.upperWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["upperJoint22"] = { points: upperJoint22, Thickness: dsi.upperJointWidth, z: - dsi.upperWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["upperJoint33"] = { points: upperJoint22, Thickness: dsi.upperJointWidth, z: dsi.upperWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+    // result["upperJoint1"] = hPlateGen(joint1, uPoint1, dsi.flangeJointThickness, 0, point.skew, 0, gradRadian);
+    // result["upperJoint1"].bolt = flangeBolt
+    // result["upperJoint2"] = hPlateGen(joint2, uPoint1, dsi.flangeJointThickness, -dsi.flangeThickness - dsi.flangeJointThickness, point.skew, 0, gradRadian);
+    // result["upperJoint3"] = hPlateGen(joint3, uPoint1, dsi.flangeJointThickness, -dsi.flangeThickness - dsi.flangeJointThickness, point.skew, 0, gradRadian);
+    // result["upperJoint11"] = hPlateGen(joint1, uPoint2, dsi.flangeJointThickness, 0, point.skew, 0, gradRadian);
+    // result["upperJoint11"].bolt = flangeBolt
+    // result["upperJoint22"] = hPlateGen(joint2, uPoint2, dsi.flangeJointThickness, -dsi.flangeThickness - dsi.flangeJointThickness, point.skew, 0, gradRadian);
+    // result["upperJoint33"] = hPlateGen(joint3, uPoint2, dsi.flangeJointThickness, -dsi.flangeThickness - dsi.flangeJointThickness, point.skew, 0, gradRadian);
 
-    // let lowerflange = [
-    //   { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient - dsi.lowerThickness },
-    //   { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient },
-    //   { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient },
-    //   { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient - dsi.lowerThickness }];
+    // // let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
+    // // { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.lowerThickness },
+    // // { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y + dsi.lowerThickness },
+    // // { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y }]
+    // // result["lowerflange"] = { points: lowerflange, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
-    // result["lowerflange"] = { points: lowerflange, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // let lowerJoint1 = [{ x: lowerflange[0].x - dsi.lowerJointLength / 2, y: lowerflange[0].y - dsi.lowerJointLength / 2 * gradient },
-    // { x: lowerflange[0].x + dsi.lowerJointLength / 2, y: lowerflange[0].y + dsi.lowerJointLength / 2 * gradient },
-    // { x: lowerflange[0].x + dsi.lowerJointLength / 2, y: lowerflange[0].y + dsi.lowerJointLength / 2 * gradient - dsi.lowerJointThickness },
-    // { x: lowerflange[0].x - dsi.lowerJointLength / 2, y: lowerflange[0].y - dsi.lowerJointLength / 2 * gradient - dsi.lowerJointThickness }]
-    // let lowerJoint2 = [{ x: lowerflange[1].x - dsi.lowerJointLength / 2, y: lowerflange[1].y - dsi.lowerJointLength / 2 * gradient },
-    // { x: lowerflange[1].x + dsi.lowerJointLength / 2, y: lowerflange[1].y + dsi.lowerJointLength / 2 * gradient },
-    // { x: lowerflange[1].x + dsi.lowerJointLength / 2, y: lowerflange[1].y + dsi.lowerJointLength / 2 * gradient + dsi.lowerJointThickness },
-    // { x: lowerflange[1].x - dsi.lowerJointLength / 2, y: lowerflange[1].y - dsi.lowerJointLength / 2 * gradient + dsi.lowerJointThickness }]
-    // let lowerJoint11 = [{ x: lowerflange[3].x - dsi.lowerJointLength / 2, y: lowerflange[3].y - dsi.lowerJointLength / 2 * gradient },
-    // { x: lowerflange[3].x + dsi.lowerJointLength / 2, y: lowerflange[3].y + dsi.lowerJointLength / 2 * gradient },
-    // { x: lowerflange[3].x + dsi.lowerJointLength / 2, y: lowerflange[3].y + dsi.lowerJointLength / 2 * gradient - dsi.lowerJointThickness },
-    // { x: lowerflange[3].x - dsi.lowerJointLength / 2, y: lowerflange[3].y - dsi.lowerJointLength / 2 * gradient - dsi.lowerJointThickness }]
-    // let lowerJoint22 = [{ x: lowerflange[2].x - dsi.lowerJointLength / 2, y: lowerflange[2].y - dsi.lowerJointLength / 2 * gradient },
-    // { x: lowerflange[2].x + dsi.lowerJointLength / 2, y: lowerflange[2].y + dsi.lowerJointLength / 2 * gradient },
-    // { x: lowerflange[2].x + dsi.lowerJointLength / 2, y: lowerflange[2].y + dsi.lowerJointLength / 2 * gradient + dsi.lowerJointThickness },
-    // { x: lowerflange[2].x - dsi.lowerJointLength / 2, y: lowerflange[2].y - dsi.lowerJointLength / 2 * gradient + dsi.lowerJointThickness }]
+    
 
-    // result["lowerJoint1"] = { points: lowerJoint1, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["lowerJoint2"] = { points: lowerJoint2, Thickness: dsi.lowerJointWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["lowerJoint3"] = { points: lowerJoint2, Thickness: dsi.lowerJointWidth, z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["lowerJoint11"] = { points: lowerJoint11, Thickness: dsi.lowerWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["lowerJoint22"] = { points: lowerJoint22, Thickness: dsi.lowerJointWidth, z: - dsi.lowerWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-    // result["lowerJoint33"] = { points: lowerJoint22, Thickness: dsi.lowerJointWidth, z: dsi.lowerWidth / 2 - dsi.upperJointWidth, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+    // let lPoint1 = ToGlobalPoint(point, lowerflange[0])
+    // let lPoint2 = ToGlobalPoint(point, lowerflange[3])
+
+    // result["lowerJoint1"] = hPlateGen(joint1, lPoint1, dsi.flangeJointThickness, - dsi.flangeJointThickness, point.skew, 0, gradRadian);
+    // result["lowerJoint2"] = hPlateGen(joint2, lPoint1, dsi.flangeJointThickness, dsi.flangeThickness, point.skew, 0, gradRadian);
+    // result["lowerJoint2"].bolt = flangeBolt
+    // result["lowerJoint3"] = hPlateGen(joint3, lPoint1, dsi.flangeJointThickness, dsi.flangeThickness, point.skew, 0, gradRadian);
+    // result["lowerJoint11"] = hPlateGen(joint1, lPoint2, dsi.flangeJointThickness, - dsi.flangeJointThickness, point.skew, 0, gradRadian);
+    // result["lowerJoint22"] = hPlateGen(joint2, lPoint2, dsi.flangeJointThickness, dsi.flangeThickness, point.skew, 0, gradRadian);
+    // result["lowerJoint22"].bolt = flangeBolt
+    // result["lowerJoint33"] = hPlateGen(joint3, lPoint2, dsi.flangeJointThickness, dsi.flangeThickness, point.skew, 0, gradRadian);
 
     return result
   }
@@ -5100,513 +5265,648 @@
     };
 
   function XbeamDict(
-      nameToPointDict,
-      sectionPointDict,
-      xbeamLayout,
-      xbeamSectionList,
-      sectionDB
-    ) {
-        const iNode = 0;
-        const jNode =1;
-        const section =2;
+    nameToPointDict,
+    sectionPointDict,
+    xbeamLayout,
+    xbeamSectionList,
+    sectionDB
+  ) {
+    const iNode = 0;
+    const jNode = 1;
+    const section = 2;
 
-      let xbeamSectionDict = {};
-      let xbeamData = [];
-      for (let i = 0; i < xbeamLayout.length; i++) {
-        let iNodekey = xbeamLayout[i][iNode];
-        let jNodekey = xbeamLayout[i][jNode];
-        let xbeamSection = xbeamSectionList[xbeamLayout[i][section]];
-        let iSectionPoint = sectionPointDict[iNodekey].forward;
-        let jSectionPoint = sectionPointDict[jNodekey].forward;
-        let iPoint = nameToPointDict[iNodekey];
-        let jPoint = nameToPointDict[jNodekey];
-        let xbData = [];
-        let xbSection = [];
-        // let cbkey = 'CB' + iNodekey + 'To' + jNodekey
-        if (xbeamLayout[i][section] == "xbeamI") {
-           let xbeam = XbeamSection(
-            iPoint,
-            jPoint,
-            iSectionPoint,
-            jSectionPoint,
-            xbeamSection
-          );
-          xbeamSectionDict[iNodekey] = xbeam.result;
-          xbData = xbeam.data;
-          xbSection = xbeam.section;
-        } else if (xbeamLayout[i][section] == "xbeamK") {
-            let xbeam  = XbeamSectionK(
-            iPoint,
-            jPoint,
-            iSectionPoint,
-            jSectionPoint,
-            xbeamSection,
-            sectionDB
-          );
-          xbeamSectionDict[iNodekey] = xbeam.result;
-          xbData = xbeam.data;
-          xbSection = xbeam.section;
-        }
-        // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
-        // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
-      //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
-      let key = i<10? "X0" + i: "X"+i;
-      let isKframe = xbeamLayout[i][section] == "xbeamK"? true: false;
-      xbeamData.push({
-            inode : iNodekey, jnode : jNodekey, key : key, isKframe:isKframe, data:xbData, section : xbSection
-        });
+    let xbeamSectionDict = {};
+    let xbeamData = [];
+    for (let i = 0; i < xbeamLayout.length; i++) {
+      let iNodekey = xbeamLayout[i][iNode];
+      let jNodekey = xbeamLayout[i][jNode];
+      let xbeamSection = xbeamSectionList[xbeamLayout[i][section]];
+      let iSectionPoint = sectionPointDict[iNodekey].forward;
+      let jSectionPoint = sectionPointDict[jNodekey].forward;
+      let iPoint = nameToPointDict[iNodekey];
+      let jPoint = nameToPointDict[jNodekey];
+      let xbData = [];
+      let xbSection = [];
+      // let cbkey = 'CB' + iNodekey + 'To' + jNodekey
+      if (xbeamLayout[i][section] == "xbeamI") {
+        let xbeam = XbeamSection(
+          iPoint,
+          jPoint,
+          iSectionPoint,
+          jSectionPoint,
+          xbeamSection
+        );
+        xbeamSectionDict[iNodekey] = xbeam.result;
+        xbData = xbeam.data;
+        xbSection = xbeam.section;
+      } else if (xbeamLayout[i][section] == "xbeamK") {
+        let xbeam = XbeamSectionK(
+          iPoint,
+          jPoint,
+          iSectionPoint,
+          jSectionPoint,
+          xbeamSection,
+          sectionDB
+        );
+        xbeamSectionDict[iNodekey] = xbeam.result;
+        xbData = xbeam.data;
+        xbSection = xbeam.section;
+      } else if (xbeamLayout[i][section] == "DYXbeam1") {
+        let xbeam = DYXbeam1(
+          iPoint,
+          jPoint,
+          iSectionPoint,
+          jSectionPoint);
+        xbeamSectionDict[iNodekey] = xbeam.result;
+        xbData = xbeam.data;
+        xbSection = xbeam.section;
       }
-      
-      return {xbeamSectionDict, xbeamData};
+
+      // xbeamSectionDict[iNodekey] = XbeamSection(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamSection)
+      // xbeamPointDict[cbkey] = XbeamPoint(iPoint,jPoint,iSectionPoint,jSectionPoint,xbeamLayout)
+      //xbeamData = [{inode:"key1", jnode:"key2",key : "X01", isKframe : true, data:[]}];
+      let key = i < 10 ? "X0" + i : "X" + i;
+      let isKframe = xbeamLayout[i][section] == "xbeamK" ? true : false;
+      xbeamData.push({
+        inode: iNodekey, jnode: jNodekey, key: key, isKframe: isKframe, data: xbData, section: xbSection
+      });
     }
+
+    return { xbeamSectionDict, xbeamData };
+  }
+
+  function DYXbeam1(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
+    let xs = {
+      bracketLength: 541,
+      bracketWidth: 450,
+      bracketFilletR: 100,
+      webHeight: 578,
+      webThickness: 12,
+      flangeWidth: 250,
+      flangeThickness: 12,
+      stiffThickness: 12,
+      stiffWidth : 150,
+      scallopRadius: 25,
+      webJointThickness: 10,
+      webJointWidth: 330,
+      webJointHeight: 440,
+      flangeJointThickness: 10,
+      flangeJointLength: 480,
+      flangeJointWidth: 80,
+    };
+    let wBolt = {
+        P:90,
+        G:75,
+        pNum:5,
+        gNum:2,
+        size:37,
+        t:14,
+      };
+    let fBolt = {
+        P:170,
+        G:75,
+        pNum:2,
+        gNum:3,
+        size:37,
+        t:14,
+      };
+
+    let result = {};
+    let tlength = Math.sqrt((iPoint.x - jPoint.x) ** 2 + (iPoint.y - jPoint.y) ** 2);
+    let vec = { x: (jPoint.x - iPoint.x) / tlength, y: (jPoint.y - iPoint.y) / tlength };
+    let dOffset = (jPoint.offset - iPoint.offset) / 2;
+    let dz = (jPoint.z - iPoint.z) / 2;
+
+    let centerPoint = {
+      x: (iPoint.x + jPoint.x) / 2,
+      y: (iPoint.y + jPoint.y) / 2,
+      z: (iPoint.z + jPoint.z) / 2,
+      normalCos: iPoint.normalCos,
+      normalSin: iPoint.normalSin,
+    };
+    let cw = (centerPoint.normalCos * vec.y - centerPoint.normalSin * vec.x) > 0 ? 1 : -1; // 반시계방향의 경우 1
+    centerPoint.skew = 90 + cw * Math.acos(centerPoint.normalCos * vec.x + centerPoint.normalSin * vec.y) * 180 / Math.PI;
+
+    //폐합시를 고려하여 예외처리 필요
+    let ufl = { x: iSectionPoint.uflange[1][0].x - dOffset, y: iSectionPoint.uflange[1][0].y - dz };
+    let ufr = { x: jSectionPoint.uflange[0][0].x + dOffset, y: jSectionPoint.uflange[0][0].y + dz };
+    // let lfl = { x: iSectionPoint.lflange[1][0].x - dOffset, y: iSectionPoint.lflange[1][0].y - dz };
+    // let lfr = { x: jSectionPoint.lflange[0][0].x + dOffset, y: jSectionPoint.lflange[0][0].y + dz };
+
+    let tl = { x: iSectionPoint.web[1][2].x - dOffset, y: iSectionPoint.web[1][2].y - dz };
+    let tr = { x: jSectionPoint.web[0][2].x + dOffset, y: jSectionPoint.web[0][2].y + dz };
+    let bl = { x: iSectionPoint.web[1][3].x - dOffset, y: iSectionPoint.web[1][3].y - dz };
+    let br = { x: jSectionPoint.web[0][3].x + dOffset, y: jSectionPoint.web[0][3].y + dz };
+
+    let uGradient = (ufr.y-ufl.y)/(ufr.x -ufl.x);
+    let lGradient = (tr.y-tl.y)/(tr.x -tl.x);
+    let uRad = -Math.atan(uGradient);
+    let lRad = -Math.atan(lGradient);
+
+    let lwebPlate = [tl, {x: tl.x, y:tl.y - xs.webHeight}, {x:tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength},
+      {x:tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x))}, ufl];
+    result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
+    let lstiff = PlateRestPoint({x: tl.x, y:tl.y - xs.webHeight - xs.flangeThickness}, bl, lGradient, 0, xs.stiffWidth);
+    result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
+
+    let rwebPlate = [tr, {x: tr.x, y:tr.y - xs.webHeight}, {x:tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength},
+      {x:tr.x - xs.bracketLength, y: ufr.y - uGradient * (xs.bracketLength - (tr.x - ufr.x))},ufr];
+    result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
+    let rstiff = PlateRestPoint({x: tr.x, y:tr.y - xs.webHeight - xs.flangeThickness}, br, lGradient, 0, -xs.stiffWidth);
+    result["rstiff"] = vPlateGen(rstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
+
+    let bracketPoint = [ToGlobalPoint(centerPoint, lstiff[0]),
+    ToGlobalPoint(centerPoint, rstiff[0]),
+    ToGlobalPoint(centerPoint, ufl),
+    ToGlobalPoint(centerPoint, ufr)];
+    for (let i = 0; i < 4; i++) {
+      let sign = i % 2 === 0 ? 1 : -1;
+      let grad = i < 2? lRad:uRad;
+      let bracketLength = i < 2 ? xs.bracketLength : i === 2? xs.bracketLength - (ufl.x - tl.x) : xs.bracketLength - (tr.x - ufr.x);
+      let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
+      { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
+      let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
+      lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], xs.bracketFilletR, 4),
+      lowerbracket1[6], lowerbracket1[7]];
+      result["bracket" + i.toFixed(0)] = {
+        points: bracketShape,
+        Thickness: xs.flangeThickness,
+        z: 0,
+        rotationX: 0,
+        rotationY: grad,
+        hole: [],
+        point: bracketPoint[i],
+        // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+        // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+      };
+    }
+    let webPlate = [lwebPlate[2],rwebPlate[2],rwebPlate[3],lwebPlate[3]];
+    result["web"] = vPlateGen(webPlate,centerPoint, xs.webThickness, [],0,null,null,[]);
+    let uPoint = ToGlobalPoint(centerPoint,lwebPlate[3]);
+    let l = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x)**2 + (lwebPlate[3].y - rwebPlate[3].y)**2);
+    let uflangePlate = [{x:0, y:xs.flangeWidth/2},{x:0, y: -xs.flangeWidth/2}, {x:l, y: -xs.flangeWidth/2}, {x:l, y: xs.flangeWidth/2}];
+    result["uflange"] = hPlateGen(uflangePlate,uPoint, xs.flangeThickness, 0, uPoint.skew, 0, uRad );
+    let lPoint = ToGlobalPoint(centerPoint,lwebPlate[2]);
+    let ll = Math.sqrt((lwebPlate[2].x - rwebPlate[2].x)**2 + (lwebPlate[2].y - rwebPlate[2].y)**2);
+    let lflangePlate = [{x:0, y:xs.flangeWidth/2},{x:0, y: -xs.flangeWidth/2}, {x:ll, y: -xs.flangeWidth/2}, {x:ll, y: xs.flangeWidth/2}];
+    result["lflange"] = hPlateGen(lflangePlate,lPoint, xs.flangeThickness, -xs.flangeThickness, uPoint.skew, 0, lRad );
+
+    let joint = IbeamJoint(webPlate, centerPoint,xs, wBolt, fBolt);
+    for (let i in joint){ result[i] = joint[i]; }
+
+    let data = []; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
+    // let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2
+    let section = [];// [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ]
+    return { result, data, section }
+  }
 
   function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection) {
-      const result = {};
-      let data = [];
-      const connectorLength = xbeamSection.connectorLength;
-      const connectorWidth = xbeamSection.connectorWidth;
-      const upperFlangeThickness = xbeamSection.upperFlangeThickness;
-      const upperFlangeWidth = xbeamSection.upperFlangeWidth;
-      const lowerFlangeThickness = xbeamSection.lowerFlangeThickness;
-      const lowerFlangeWidth = xbeamSection.lowerFlangeWidth;
-      const vStiffThickness = xbeamSection.vStiffThickness;
-      const vStiffBottomOffset = xbeamSection.vStiffBottomOffset;
-      const vStiffWidth = xbeamSection.vStiffWidth;
-      const webThickness = xbeamSection.webThickness;
-      const vStiffendFillet = xbeamSection.vStiffendFillet;
-      const scallopRadius = xbeamSection.scallopRadius;
-    
-      const cosec = Math.abs(1 / Math.sin(iPoint.skew * Math.PI / 180));
-      const cot = Math.abs(1 / Math.tan(iPoint.skew * Math.PI / 180));
-    
-      // 기준점은 iTopNode라고 가정, 가로보는 반드시 skew각도와 일치해야함.
-      let iNode = ToGlobalPoint(iPoint, iSectionPoint.rightTopPlate[0]);
-      let jNode = ToGlobalPoint(jPoint, jSectionPoint.leftTopPlate[0]);
-      let length = Math.sqrt((jNode.x - iNode.x) ** 2 + (jNode.y - iNode.y) ** 2);
-      let vec = { x: (jNode.x - iNode.x) / length, y: (jNode.y - iNode.y) / length };
-      let grd = (jNode.z - iNode.z) / length;
-      let grdSec = Math.sqrt(1 + grd ** 2);
-      let centerPoint = {
-        x: (iNode.x + jNode.x) / 2,
-        y: (iNode.y + jNode.y) / 2,
-        z: (iNode.z + jNode.z) / 2,
-        normalCos: vec.x,
-        normalSin: vec.y,
-      };
-      let lFlangeL = (iSectionPoint.rWeb[2].x - iSectionPoint.rightTopPlate[0].x) * cosec;
-      let rFlangeL = (jSectionPoint.lWeb[2].x - jSectionPoint.leftTopPlate[0].x) * cosec;
-    
-      let iBottom = ToGlobalPoint(iPoint, iSectionPoint.bottomPlate[1]);
-      let jBottom = ToGlobalPoint(jPoint, jSectionPoint.bottomPlate[0]);
-      let lengthB = Math.sqrt((jBottom.x - iBottom.x) ** 2 + (jBottom.y - iBottom.y) ** 2);
-      let vecB = { x: (jBottom.x - iBottom.x) / lengthB, y: (jBottom.y - iBottom.y) / lengthB };
-      let grdB = (jBottom.z - iBottom.z) / lengthB;
-      let grdSecB = Math.sqrt(1 + grdB ** 2);
-      let bottomPoint = {
-        x: (iBottom.x + jBottom.x) / 2,
-        y: (iBottom.y + jBottom.y) / 2,
-        z: (iBottom.z + jBottom.z) / 2,
-        normalCos: vecB.x,
-        normalSin: vecB.y,
-      };
-      let lFlangeB = (iSectionPoint.rWeb[3].x - iSectionPoint.bottomPlate[1].x) * cosec;
-      let rFlangeB = (jSectionPoint.lWeb[3].x - jSectionPoint.bottomPlate[0].x) * cosec;
-      let gradientX = (iPoint.gradientX + jPoint.gradientX) / 2;
-      let vStiffLength = centerPoint.z - bottomPoint.z - vStiffBottomOffset;
-      let vStiffPlate = [{ x: webThickness / 2, y: -webThickness / 2 * gradientX },
-      { x: webThickness / 2, y: -vStiffLength - webThickness / 2 * gradientX },
-      { x: webThickness / 2 + vStiffWidth, y: -vStiffLength - webThickness / 2 * gradientX },
-      { x: webThickness / 2 + vStiffWidth, y: -(webThickness / 2 + vStiffWidth) * gradientX }];
-      let vStiffTopFillet = Math.max(vStiffWidth - (upperFlangeWidth - webThickness) / 2, 0);
-      let vStiffPoint = [];
-      vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[1], vStiffPlate[0], vStiffPlate[3], scallopRadius, 4));
-      vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[0], vStiffPlate[3], vStiffPlate[2], vStiffTopFillet, 1));
-      vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[3], vStiffPlate[2], vStiffPlate[1], vStiffendFillet, 1));
-      vStiffPoint.push(vStiffPlate[1]);
-      result['vStiffner'] = {
-        points: vStiffPoint,
-        Thickness: vStiffThickness,
-        z: -vStiffThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: Math.PI / 2 * 3,
-        hole: [],
-        point: centerPoint
-      };
-    
-      result['cbUpperFlange'] = {
-        points: [{ x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
-        { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: upperFlangeWidth / 2 },
-        { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: upperFlangeWidth / 2 },
-        { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: -upperFlangeWidth / 2 },],
-        Thickness: upperFlangeThickness,
-        z: 0,
-        rotationX: Math.atan(gradientX),
-        rotationY: -Math.atan(grd),
-        hole: [],
-        point: centerPoint
-      };
-      result['connectorLeftTop'] = {
-        points: [{ x: (- length / 2 - connectorWidth / 2 * cot) * grdSec, y: connectorWidth / 2 },
-        { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: upperFlangeWidth / 2 },
-        { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
-        { x: (- length / 2 + connectorWidth / 2 * cot) * grdSec, y: -connectorWidth / 2 }],
-    
-        Thickness: upperFlangeThickness,
-        z: 0,
-        rotationX: Math.atan(gradientX),
-        rotationY: -Math.atan(grd),
-        hole: [],
-        point: centerPoint
-      };
-      result['connectorRightTop'] = {
-        points: [{ x: (length / 2 - connectorWidth / 2 * cot) * grdSec, y: connectorWidth / 2 },
-        { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: upperFlangeWidth / 2 },
-        { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
-        { x: (length / 2 + connectorWidth / 2 * cot) * grdSec, y: -connectorWidth / 2 }],
-        Thickness: upperFlangeThickness,
-        z: 0,
-        rotationX: Math.atan((iPoint.gradientX + jPoint.gradientX) / 2),
-        rotationY: -Math.atan(grd),
-        hole: [],
-        point: centerPoint
-      };
-    
-      result['cblowerFlange'] = {
-        points: [{ x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
-        { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
-        { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
-        { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },],
-        Thickness: lowerFlangeThickness,
-        z: -lowerFlangeThickness,
-        rotationX: 0,
-        rotationY: -Math.atan(grdB),
-        hole: [],
-        point: bottomPoint
-      };
-      result['connectorLeftBottom'] = {
-        points: [{ x: (- lengthB / 2 - connectorWidth / 2 * cot) * grdSecB, y: connectorWidth / 2 },
-        { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
-        { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
-        { x: (- lengthB / 2 + connectorWidth / 2 * cot) * grdSecB, y: -connectorWidth / 2 }],
-        Thickness: lowerFlangeThickness,
-        z: -lowerFlangeThickness,
-        rotationX: 0,
-        rotationY: -Math.atan(grdB),
-        hole: [],
-        point: bottomPoint
-      };
-      result['connectorRightBottom'] = {
-        points: [{ x: (lengthB / 2 - connectorWidth / 2 * cot) * grdSecB, y: connectorWidth / 2 },
-        { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
-        { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
-        { x: (lengthB / 2 + connectorWidth / 2 * cot) * grdSecB, y: -connectorWidth / 2 }],
-        Thickness: lowerFlangeThickness,
-        z: -lowerFlangeThickness,
-        rotationX: 0,
-        rotationY: -Math.atan(grdB),
-        hole: [],
-        point: bottomPoint
-      };
-    
-      let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[2]);
-      let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[2]);
-      let cblength = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
-      let cbVec = { x: (jTopNode.x - iTopNode.x) / cblength, y: (jTopNode.y - iTopNode.y) / cblength };
-      let gradient = (jTopNode.z - iTopNode.z) / cblength;
-      let iCos = (iPoint.normalCos * cbVec.x + iPoint.normalSin * cbVec.y).toFixed(6) * 1;
-      let jCos = jPoint.normalCos * cbVec.x + jPoint.normalSin * cbVec.y;
-    
-      let ibaseNode = { x: iSectionPoint.rWeb[2].x * cosec, y: iSectionPoint.rWeb[2].y };
-      let iTopNode1 = { x: iSectionPoint.rightTopPlate[0].x * cosec, y: iSectionPoint.rightTopPlate[0].y };
-      let jbaseNode = { x: ibaseNode.x + cblength, y: ibaseNode.y + jTopNode.z - iTopNode.z };
-      let jTopNode1 = { x: jbaseNode.x + (jSectionPoint.leftTopPlate[0].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.leftTopPlate[0].y - jSectionPoint.lWeb[2].y };
-    
-    
-      let jBottomNode = { x: jbaseNode.x + (jSectionPoint.lWeb[3].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.lWeb[3].y - jSectionPoint.lWeb[2].y };
-      let jBottomNode1 = { x: jbaseNode.x + (jSectionPoint.bottomPlate[0].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.bottomPlate[0].y - jSectionPoint.lWeb[2].y };
-      let iBottomNode1 = { x: iSectionPoint.bottomPlate[1].x * cosec, y: iSectionPoint.bottomPlate[1].y };
-      let iBottomNode = { x: iSectionPoint.rWeb[3].x * cosec, y: iSectionPoint.rWeb[3].y };
-    
-      let a = (jBottomNode1.y - iBottomNode1.y) / (jBottomNode1.x - iBottomNode1.x);
-    
-      let iTopNode2 = { x: ibaseNode.x + connectorLength, y: ibaseNode.y + connectorLength * gradient };
-      let iBottomNode2 = { x: iTopNode2.x, y: iBottomNode1.y + a * (iTopNode2.x - iBottomNode1.x) };
-      let jTopNode2 = { x: jbaseNode.x - connectorLength, y: jbaseNode.y - connectorLength * gradient };
-      let jBottomNode2 = { x: jTopNode2.x, y: iBottomNode1.y + a * (jTopNode2.x - iBottomNode1.x) };
-    
-      let leftConnectorWeb = [
-        ibaseNode,
-        iTopNode1,
-        iTopNode2,
-        iBottomNode2,
-        iBottomNode1,
-        iBottomNode,
-      ];
-      result['leftConnectorWeb'] = {
-        points: leftConnectorWeb,
-        Thickness: xbeamSection.webThickness,
-        z: -xbeamSection.webThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: Math.acos(iCos),
-        hole: [],
-        point: iPoint
-      };
-      let rightConnectorWeb = [
-        jbaseNode,
-        jTopNode1,
-        jTopNode2,
-        jBottomNode2,
-        jBottomNode1,
-        jBottomNode,
-      ];
-      result['rightConnectorWeb'] = {
-        points: rightConnectorWeb,
-        Thickness: xbeamSection.webThickness,
-        z: -xbeamSection.webThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: Math.acos(iCos),
-        hole: [],
-        point: iPoint
-      };
-      let cbWeb = [
-        iTopNode2,
-        iBottomNode2,
-        jBottomNode2,
-        jTopNode2
-      ];
-      result['cbWeb'] = {
-        points: cbWeb,
-        Thickness: xbeamSection.webThickness,
-        z: -xbeamSection.webThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: Math.acos(iCos),
-        hole: [],
-        point: iPoint
-      };
-      // console.log('icos:', iCos) 
-      let tlength = Math.sqrt((iPoint.x - jPoint.x)**2 + (iPoint.y - jPoint.y)**2);
-      data = [cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
-      let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2;
-      let section = [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ];
-      return {result, data, section}
-    }
-    
-    function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection, sectionDB) {
-      const result = {};
-      let data = [];
-      //K형가로보는 skew를 허용하지 않고 생성됨.
-      const topOffset = xbeamSection.topOffset;
-      const bottomOffset = xbeamSection.bottomOffset;
-      const gussetThickness = xbeamSection.gussetThickness;
-      const gussetBondingLength = xbeamSection.gussetBondingLength;
-      const gussetWeldingOffset = xbeamSection.gussetWeldingOffset;
-      const gussetTopWidth = xbeamSection.gussetTopWidth;
-      const gussetBottomWidth = xbeamSection.gussetBottomWidth;
-      const gussetCenterWidth = xbeamSection.gussetCenterWidth;
-      let hFrameEndOffset = xbeamSection.hFrameEndOffset;
-      let diaFrameEndOffset = xbeamSection.diaFrameEndOffset;
-      let tFrame = xbeamSection.tFrameName;
-      let bFrame = xbeamSection.bFrameName;
-      let dFrame = xbeamSection.dFrameName;
-      const pts1 = PTS(tFrame,true,1,sectionDB); 
-      const pts2 = PTS(bFrame,true,1,sectionDB); 
-      const pts3 = PTS(dFrame,true,1,sectionDB); 
+    const result = {};
+    let data = [];
+    const connectorLength = xbeamSection.connectorLength;
+    const connectorWidth = xbeamSection.connectorWidth;
+    const upperFlangeThickness = xbeamSection.upperFlangeThickness;
+    const upperFlangeWidth = xbeamSection.upperFlangeWidth;
+    const lowerFlangeThickness = xbeamSection.lowerFlangeThickness;
+    const lowerFlangeWidth = xbeamSection.lowerFlangeWidth;
+    const vStiffThickness = xbeamSection.vStiffThickness;
+    const vStiffBottomOffset = xbeamSection.vStiffBottomOffset;
+    const vStiffWidth = xbeamSection.vStiffWidth;
+    const webThickness = xbeamSection.webThickness;
+    const vStiffendFillet = xbeamSection.vStiffendFillet;
+    const scallopRadius = xbeamSection.scallopRadius;
 
-    
-      let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
-      let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1]);
-    
-      let length = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
-      let xlength = Math.abs(jTopNode.x - iTopNode.x);
-      let vec = { x: (jTopNode.x - iTopNode.x) / length, y: (jTopNode.y - iTopNode.y) / length };
-      let grd = (jTopNode.z - iTopNode.z) / length;
-    
-      let centerPoint = {
-        x: (iTopNode.x + jTopNode.x) / 2,
-        y: (iTopNode.y + jTopNode.y) / 2,
-        z: (iTopNode.z + jTopNode.z) / 2,
-        normalCos: vec.x,
-        normalSin: vec.y,
-      };
-    
-      const iCot = (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x) / (iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y);
-      const jCot = (jSectionPoint.lWeb[1].x - jSectionPoint.lWeb[0].x) / (jSectionPoint.lWeb[1].y - jSectionPoint.lWeb[0].y);
-      let iheight = iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y;
-      let jheight = jSectionPoint.rWeb[1].y - jSectionPoint.rWeb[0].y;
-      let points = [
-        { x: -xlength / 2 - topOffset * iCot, y: -xlength / 2 * grd - topOffset },
-        { x: xlength / 2 - topOffset * jCot, y: xlength / 2 * grd - topOffset },
-        { x: xlength / 2 - (jheight - bottomOffset) * jCot, y: xlength / 2 * grd - (jheight - bottomOffset) },
-        { x: -xlength / 2 - (iheight - bottomOffset) * iCot, y: -xlength / 2 * grd - (iheight - bottomOffset) },
-      ];
-      let bottomCenter = { x: (points[2].x + points[3].x) / 2, y: (points[2].y + points[3].y) / 2 };
-      let topFrame = Kframe(points[0], points[1], hFrameEndOffset, hFrameEndOffset, pts1);
-      let bottomFrame = Kframe(points[3], points[2], hFrameEndOffset, hFrameEndOffset, pts2);
-      let leftFrame = Kframe(points[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts3);
-      let rightFrame = Kframe(bottomCenter, points[1], diaFrameEndOffset, diaFrameEndOffset, pts3);
-    
-      let topVec = Vector(points[0], points[1]);
-      let leftVec = Vector(points[0], bottomCenter);
-      let rightVec = Vector(bottomCenter, points[1]);
-      let bottomVec = Vector(points[3], points[2]);
-    
-      let leftTopGussetPlate = [
-        { x: -xlength / 2 - gussetWeldingOffset * iCot, y: -xlength / 2 * grd - gussetWeldingOffset },
-        XYOffset(points[0], topVec, hFrameEndOffset + gussetBondingLength, pts1[0] + gussetWeldingOffset),
-        XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[0] + gussetWeldingOffset),
-        XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[3] - gussetWeldingOffset),
-        { x: -xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * iCot, y: -xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
-      ];
-      result['centerGusset'] = {
-        points: [
-          XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
-          XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
-          XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-          XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-          XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-          XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-        ],
-        Thickness: gussetThickness,
-        z: -gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      result['leftTopGusset'] = {
-        points: leftTopGussetPlate,
-        Thickness: gussetThickness,
-        z: -gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      result['rightTopGusset'] = {
-        points: [
-          { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
-          XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
-          XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-          XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-          { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
-        ],
-        Thickness: gussetThickness,
-        z: -gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      result['leftBottomGusset'] = {
-        points: [
-          { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
-          XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
-          XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
-          { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
-        ],
-        Thickness: gussetThickness,
-        z: -gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-    
-      result['rightBottomGusset'] = {
-        points: [
-          { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
-          XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
-          XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
-          { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
-        ],
-        Thickness: gussetThickness,
-        z: -gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-    
-      result['topFrame1'] = {
-        points: topFrame[0],
-        Thickness: pts1[4],
-        z: gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      result['topFrame2'] = {
-        points: topFrame[1],
-        Thickness: pts1[5],
-        z: gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      // console.log(result)
-    
-      result['bottomFrame1'] = {
-        points: bottomFrame[0],
-        Thickness: pts2[4],
-        z: gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      result['bottomFrame2'] = {
-        points: bottomFrame[1],
-        Thickness: pts2[5],
-        z: gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-    
-      result['leftFrame1'] = {
-        points: leftFrame[0],
-        Thickness: pts3[4],
-        z: gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      result['leftFrame2'] = {
-        points: leftFrame[1],
-        Thickness: pts3[5],
-        z: gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      result['righttFrame1'] = {
-        points: rightFrame[0],
-        Thickness: pts3[4],
-        z: gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      result['rightFrame2'] = {
-        points: rightFrame[1],
-        Thickness: pts3[5],
-        z: gussetThickness / 2,
-        rotationX: Math.PI / 2,
-        rotationY: 0,
-        hole: [],
-        point: centerPoint
-      };
-      let dummyPoints = [...points, bottomCenter];
-      dummyPoints.forEach(function(elem){data.push(ToGlobalPoint(centerPoint,elem));});
-      let section = [tFrame,bFrame, dFrame];   //사용자로부터 받은 단면요소의 값을 객체로 저장
-      return {result, data, section}
-    }
+    const cosec = Math.abs(1 / Math.sin(iPoint.skew * Math.PI / 180));
+    const cot = Math.abs(1 / Math.tan(iPoint.skew * Math.PI / 180));
+
+    // 기준점은 iTopNode라고 가정, 가로보는 반드시 skew각도와 일치해야함.
+    let iNode = ToGlobalPoint(iPoint, iSectionPoint.rightTopPlate[0]); //순서가 바뀌었을때도 예외처리 필요
+    let jNode = ToGlobalPoint(jPoint, jSectionPoint.leftTopPlate[0]);
+    let length = Math.sqrt((jNode.x - iNode.x) ** 2 + (jNode.y - iNode.y) ** 2);
+    let vec = { x: (jNode.x - iNode.x) / length, y: (jNode.y - iNode.y) / length };
+    let grd = (jNode.z - iNode.z) / length;
+    let grdSec = Math.sqrt(1 + grd ** 2);
+    let centerPoint = {
+      x: (iNode.x + jNode.x) / 2,
+      y: (iNode.y + jNode.y) / 2,
+      z: (iNode.z + jNode.z) / 2,
+      normalCos: vec.x,
+      normalSin: vec.y,
+    };
+    let lFlangeL = (iSectionPoint.rWeb[2].x - iSectionPoint.rightTopPlate[0].x) * cosec;
+    let rFlangeL = (jSectionPoint.lWeb[2].x - jSectionPoint.leftTopPlate[0].x) * cosec;
+
+    let iBottom = ToGlobalPoint(iPoint, iSectionPoint.bottomPlate[1]);
+    let jBottom = ToGlobalPoint(jPoint, jSectionPoint.bottomPlate[0]);
+    let lengthB = Math.sqrt((jBottom.x - iBottom.x) ** 2 + (jBottom.y - iBottom.y) ** 2);
+    let vecB = { x: (jBottom.x - iBottom.x) / lengthB, y: (jBottom.y - iBottom.y) / lengthB };
+    let grdB = (jBottom.z - iBottom.z) / lengthB;
+    let grdSecB = Math.sqrt(1 + grdB ** 2);
+    let bottomPoint = {
+      x: (iBottom.x + jBottom.x) / 2,
+      y: (iBottom.y + jBottom.y) / 2,
+      z: (iBottom.z + jBottom.z) / 2,
+      normalCos: vecB.x,
+      normalSin: vecB.y,
+    };
+    let lFlangeB = (iSectionPoint.rWeb[3].x - iSectionPoint.bottomPlate[1].x) * cosec;
+    let rFlangeB = (jSectionPoint.lWeb[3].x - jSectionPoint.bottomPlate[0].x) * cosec;
+    let gradientX = (iPoint.gradientX + jPoint.gradientX) / 2;
+    let vStiffLength = centerPoint.z - bottomPoint.z - vStiffBottomOffset;
+    let vStiffPlate = [{ x: webThickness / 2, y: -webThickness / 2 * gradientX },
+    { x: webThickness / 2, y: -vStiffLength - webThickness / 2 * gradientX },
+    { x: webThickness / 2 + vStiffWidth, y: -vStiffLength - webThickness / 2 * gradientX },
+    { x: webThickness / 2 + vStiffWidth, y: -(webThickness / 2 + vStiffWidth) * gradientX }];
+    let vStiffTopFillet = Math.max(vStiffWidth - (upperFlangeWidth - webThickness) / 2, 0);
+    let vStiffPoint = [];
+    vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[1], vStiffPlate[0], vStiffPlate[3], scallopRadius, 4));
+    vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[0], vStiffPlate[3], vStiffPlate[2], vStiffTopFillet, 1));
+    vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[3], vStiffPlate[2], vStiffPlate[1], vStiffendFillet, 1));
+    vStiffPoint.push(vStiffPlate[1]);
+    result['vStiffner'] = {
+      points: vStiffPoint,
+      Thickness: vStiffThickness,
+      z: -vStiffThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: Math.PI / 2 * 3,
+      hole: [],
+      point: centerPoint
+    };
+
+    result['cbUpperFlange'] = {
+      points: [{ x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
+      { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: upperFlangeWidth / 2 },
+      { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: upperFlangeWidth / 2 },
+      { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: -upperFlangeWidth / 2 },],
+      Thickness: upperFlangeThickness,
+      z: 0,
+      rotationX: Math.atan(gradientX),
+      rotationY: -Math.atan(grd),
+      hole: [],
+      point: centerPoint
+    };
+    result['connectorLeftTop'] = {
+      points: [{ x: (- length / 2 - connectorWidth / 2 * cot) * grdSec, y: connectorWidth / 2 },
+      { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: upperFlangeWidth / 2 },
+      { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
+      { x: (- length / 2 + connectorWidth / 2 * cot) * grdSec, y: -connectorWidth / 2 }],
+
+      Thickness: upperFlangeThickness,
+      z: 0,
+      rotationX: Math.atan(gradientX),
+      rotationY: -Math.atan(grd),
+      hole: [],
+      point: centerPoint
+    };
+    result['connectorRightTop'] = {
+      points: [{ x: (length / 2 - connectorWidth / 2 * cot) * grdSec, y: connectorWidth / 2 },
+      { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: upperFlangeWidth / 2 },
+      { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
+      { x: (length / 2 + connectorWidth / 2 * cot) * grdSec, y: -connectorWidth / 2 }],
+      Thickness: upperFlangeThickness,
+      z: 0,
+      rotationX: Math.atan((iPoint.gradientX + jPoint.gradientX) / 2),
+      rotationY: -Math.atan(grd),
+      hole: [],
+      point: centerPoint
+    };
+
+    result['cblowerFlange'] = {
+      points: [{ x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
+      { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
+      { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
+      { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },],
+      Thickness: lowerFlangeThickness,
+      z: -lowerFlangeThickness,
+      rotationX: 0,
+      rotationY: -Math.atan(grdB),
+      hole: [],
+      point: bottomPoint
+    };
+    result['connectorLeftBottom'] = {
+      points: [{ x: (- lengthB / 2 - connectorWidth / 2 * cot) * grdSecB, y: connectorWidth / 2 },
+      { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
+      { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
+      { x: (- lengthB / 2 + connectorWidth / 2 * cot) * grdSecB, y: -connectorWidth / 2 }],
+      Thickness: lowerFlangeThickness,
+      z: -lowerFlangeThickness,
+      rotationX: 0,
+      rotationY: -Math.atan(grdB),
+      hole: [],
+      point: bottomPoint
+    };
+    result['connectorRightBottom'] = {
+      points: [{ x: (lengthB / 2 - connectorWidth / 2 * cot) * grdSecB, y: connectorWidth / 2 },
+      { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
+      { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
+      { x: (lengthB / 2 + connectorWidth / 2 * cot) * grdSecB, y: -connectorWidth / 2 }],
+      Thickness: lowerFlangeThickness,
+      z: -lowerFlangeThickness,
+      rotationX: 0,
+      rotationY: -Math.atan(grdB),
+      hole: [],
+      point: bottomPoint
+    };
+
+    let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[2]);
+    let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[2]);
+    let cblength = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
+    let cbVec = { x: (jTopNode.x - iTopNode.x) / cblength, y: (jTopNode.y - iTopNode.y) / cblength };
+    let gradient = (jTopNode.z - iTopNode.z) / cblength;
+    let iCos = (iPoint.normalCos * cbVec.x + iPoint.normalSin * cbVec.y).toFixed(6) * 1;
+    let jCos = jPoint.normalCos * cbVec.x + jPoint.normalSin * cbVec.y;
+
+    let ibaseNode = { x: iSectionPoint.rWeb[2].x * cosec, y: iSectionPoint.rWeb[2].y };
+    let iTopNode1 = { x: iSectionPoint.rightTopPlate[0].x * cosec, y: iSectionPoint.rightTopPlate[0].y };
+    let jbaseNode = { x: ibaseNode.x + cblength, y: ibaseNode.y + jTopNode.z - iTopNode.z };
+    let jTopNode1 = { x: jbaseNode.x + (jSectionPoint.leftTopPlate[0].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.leftTopPlate[0].y - jSectionPoint.lWeb[2].y };
+
+
+    let jBottomNode = { x: jbaseNode.x + (jSectionPoint.lWeb[3].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.lWeb[3].y - jSectionPoint.lWeb[2].y };
+    let jBottomNode1 = { x: jbaseNode.x + (jSectionPoint.bottomPlate[0].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.bottomPlate[0].y - jSectionPoint.lWeb[2].y };
+    let iBottomNode1 = { x: iSectionPoint.bottomPlate[1].x * cosec, y: iSectionPoint.bottomPlate[1].y };
+    let iBottomNode = { x: iSectionPoint.rWeb[3].x * cosec, y: iSectionPoint.rWeb[3].y };
+
+    let a = (jBottomNode1.y - iBottomNode1.y) / (jBottomNode1.x - iBottomNode1.x);
+
+    let iTopNode2 = { x: ibaseNode.x + connectorLength, y: ibaseNode.y + connectorLength * gradient };
+    let iBottomNode2 = { x: iTopNode2.x, y: iBottomNode1.y + a * (iTopNode2.x - iBottomNode1.x) };
+    let jTopNode2 = { x: jbaseNode.x - connectorLength, y: jbaseNode.y - connectorLength * gradient };
+    let jBottomNode2 = { x: jTopNode2.x, y: iBottomNode1.y + a * (jTopNode2.x - iBottomNode1.x) };
+
+    let leftConnectorWeb = [
+      ibaseNode,
+      iTopNode1,
+      iTopNode2,
+      iBottomNode2,
+      iBottomNode1,
+      iBottomNode,
+    ];
+    result['leftConnectorWeb'] = {
+      points: leftConnectorWeb,
+      Thickness: xbeamSection.webThickness,
+      z: -xbeamSection.webThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: Math.acos(iCos),
+      hole: [],
+      point: iPoint
+    };
+    let rightConnectorWeb = [
+      jbaseNode,
+      jTopNode1,
+      jTopNode2,
+      jBottomNode2,
+      jBottomNode1,
+      jBottomNode,
+    ];
+    result['rightConnectorWeb'] = {
+      points: rightConnectorWeb,
+      Thickness: xbeamSection.webThickness,
+      z: -xbeamSection.webThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: Math.acos(iCos),
+      hole: [],
+      point: iPoint
+    };
+    let cbWeb = [
+      iTopNode2,
+      iBottomNode2,
+      jBottomNode2,
+      jTopNode2
+    ];
+    result['cbWeb'] = {
+      points: cbWeb,
+      Thickness: xbeamSection.webThickness,
+      z: -xbeamSection.webThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: Math.acos(iCos),
+      hole: [],
+      point: iPoint
+    };
+    // console.log('icos:', iCos) 
+    let tlength = Math.sqrt((iPoint.x - jPoint.x) ** 2 + (iPoint.y - jPoint.y) ** 2);
+    data = [cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
+    let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y)) / 2;
+    let section = [upperFlangeWidth, upperFlangeThickness, lowerFlangeWidth, lowerFlangeThickness, webHeight, webThickness];
+    return { result, data, section }
+  }
+
+  function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection, sectionDB) {
+    const result = {};
+    let data = [];
+    //K형가로보는 skew를 허용하지 않고 생성됨.
+    const topOffset = xbeamSection.topOffset;
+    const bottomOffset = xbeamSection.bottomOffset;
+    const gussetThickness = xbeamSection.gussetThickness;
+    const gussetBondingLength = xbeamSection.gussetBondingLength;
+    const gussetWeldingOffset = xbeamSection.gussetWeldingOffset;
+    const gussetTopWidth = xbeamSection.gussetTopWidth;
+    const gussetBottomWidth = xbeamSection.gussetBottomWidth;
+    const gussetCenterWidth = xbeamSection.gussetCenterWidth;
+    let hFrameEndOffset = xbeamSection.hFrameEndOffset;
+    let diaFrameEndOffset = xbeamSection.diaFrameEndOffset;
+    let tFrame = xbeamSection.tFrameName;
+    let bFrame = xbeamSection.bFrameName;
+    let dFrame = xbeamSection.dFrameName;
+    const pts1 = PTS(tFrame, true, 1, sectionDB);
+    const pts2 = PTS(bFrame, true, 1, sectionDB);
+    const pts3 = PTS(dFrame, true, 1, sectionDB);
+
+
+    let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
+    let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1]);
+
+    let length = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
+    let xlength = Math.abs(jTopNode.x - iTopNode.x);
+    let vec = { x: (jTopNode.x - iTopNode.x) / length, y: (jTopNode.y - iTopNode.y) / length };
+    let grd = (jTopNode.z - iTopNode.z) / length;
+
+    let centerPoint = {
+      x: (iTopNode.x + jTopNode.x) / 2,
+      y: (iTopNode.y + jTopNode.y) / 2,
+      z: (iTopNode.z + jTopNode.z) / 2,
+      normalCos: vec.x,
+      normalSin: vec.y,
+    };
+
+    const iCot = (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x) / (iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y);
+    const jCot = (jSectionPoint.lWeb[1].x - jSectionPoint.lWeb[0].x) / (jSectionPoint.lWeb[1].y - jSectionPoint.lWeb[0].y);
+    let iheight = iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y;
+    let jheight = jSectionPoint.rWeb[1].y - jSectionPoint.rWeb[0].y;
+    let points = [
+      { x: -xlength / 2 - topOffset * iCot, y: -xlength / 2 * grd - topOffset },
+      { x: xlength / 2 - topOffset * jCot, y: xlength / 2 * grd - topOffset },
+      { x: xlength / 2 - (jheight - bottomOffset) * jCot, y: xlength / 2 * grd - (jheight - bottomOffset) },
+      { x: -xlength / 2 - (iheight - bottomOffset) * iCot, y: -xlength / 2 * grd - (iheight - bottomOffset) },
+    ];
+    let bottomCenter = { x: (points[2].x + points[3].x) / 2, y: (points[2].y + points[3].y) / 2 };
+    let topFrame = Kframe(points[0], points[1], hFrameEndOffset, hFrameEndOffset, pts1);
+    let bottomFrame = Kframe(points[3], points[2], hFrameEndOffset, hFrameEndOffset, pts2);
+    let leftFrame = Kframe(points[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts3);
+    let rightFrame = Kframe(bottomCenter, points[1], diaFrameEndOffset, diaFrameEndOffset, pts3);
+
+    let topVec = Vector(points[0], points[1]);
+    let leftVec = Vector(points[0], bottomCenter);
+    let rightVec = Vector(bottomCenter, points[1]);
+    let bottomVec = Vector(points[3], points[2]);
+
+    let leftTopGussetPlate = [
+      { x: -xlength / 2 - gussetWeldingOffset * iCot, y: -xlength / 2 * grd - gussetWeldingOffset },
+      XYOffset(points[0], topVec, hFrameEndOffset + gussetBondingLength, pts1[0] + gussetWeldingOffset),
+      XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[0] + gussetWeldingOffset),
+      XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[3] - gussetWeldingOffset),
+      { x: -xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * iCot, y: -xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
+    ];
+    result['centerGusset'] = {
+      points: [
+        XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
+        XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
+        XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+        XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+        XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+        XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+      ],
+      Thickness: gussetThickness,
+      z: -gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    result['leftTopGusset'] = {
+      points: leftTopGussetPlate,
+      Thickness: gussetThickness,
+      z: -gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    result['rightTopGusset'] = {
+      points: [
+        { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
+        XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
+        XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+        XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+        { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
+      ],
+      Thickness: gussetThickness,
+      z: -gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    result['leftBottomGusset'] = {
+      points: [
+        { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
+        XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
+        XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
+        { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
+      ],
+      Thickness: gussetThickness,
+      z: -gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+
+    result['rightBottomGusset'] = {
+      points: [
+        { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
+        XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
+        XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
+        { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
+      ],
+      Thickness: gussetThickness,
+      z: -gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+
+    result['topFrame1'] = {
+      points: topFrame[0],
+      Thickness: pts1[4],
+      z: gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    result['topFrame2'] = {
+      points: topFrame[1],
+      Thickness: pts1[5],
+      z: gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    // console.log(result)
+
+    result['bottomFrame1'] = {
+      points: bottomFrame[0],
+      Thickness: pts2[4],
+      z: gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    result['bottomFrame2'] = {
+      points: bottomFrame[1],
+      Thickness: pts2[5],
+      z: gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+
+    result['leftFrame1'] = {
+      points: leftFrame[0],
+      Thickness: pts3[4],
+      z: gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    result['leftFrame2'] = {
+      points: leftFrame[1],
+      Thickness: pts3[5],
+      z: gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    result['righttFrame1'] = {
+      points: rightFrame[0],
+      Thickness: pts3[4],
+      z: gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    result['rightFrame2'] = {
+      points: rightFrame[1],
+      Thickness: pts3[5],
+      z: gussetThickness / 2,
+      rotationX: Math.PI / 2,
+      rotationY: 0,
+      hole: [],
+      point: centerPoint
+    };
+    let dummyPoints = [...points, bottomCenter];
+    dummyPoints.forEach(function (elem) { data.push(ToGlobalPoint(centerPoint, elem)); });
+    let section = [tFrame, bFrame, dFrame];   //사용자로부터 받은 단면요소의 값을 객체로 저장
+    return { result, data, section }
+  }
 
   function Xbeam(){
       this.addInput("gridPoint","gridPoint");
@@ -8379,126 +8679,6 @@
       };
       this.setOutputData(0, result);
   };
-
-  function SplicePlate(iPoint, iSectionPoint) {
-      let result = {};
-      let iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[0]);
-      let jNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1]);
-      let centerPoint = {
-        x: (iNode.x + jNode.x) / 2,
-        y: (iNode.y + jNode.y) / 2,
-        z: (iNode.z + jNode.z) / 2,
-        normalCos: iPoint.normalCos,
-        normalSin: iPoint.normalSin,
-      };
-      let Web = [{ x: -900, y: -250 }, { x: -900, y: 250 }, { x: 900, y: 250 }, { x: 900, y: -250 }];
-      let WebBolt = [{ startPoint: { x: 800, y: 150 }, P: 100, G: 100, pNum: 4, gNum: 17, size: 37, t: 14, l: 54 },];
-      let lWebAngle = Math.PI - Math.atan((iSectionPoint.lWeb[1].y - iSectionPoint.lWeb[0].y) / (iSectionPoint.lWeb[1].x - iSectionPoint.lWeb[0].x));
-      let rWebAngle = Math.PI - Math.atan((iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y) / (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x));
-      result["lWeb"] = {
-        points: Web, point: centerPoint,
-        Thickness: 20, z: 14, rotationX: 0, rotationY: lWebAngle, hole: [], bolt: WebBolt
-      };
-      result["lWeb2"] = {
-        points: Web, point: centerPoint,
-        Thickness: 20, z: -20, rotationX: 0, rotationY: lWebAngle, hole: []
-      };
-    
-      iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[0]);
-      jNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
-      centerPoint = {
-        x: (iNode.x + jNode.x) / 2,
-        y: (iNode.y + jNode.y) / 2,
-        z: (iNode.z + jNode.z) / 2,
-        normalCos: iPoint.normalCos,
-        normalSin: iPoint.normalSin,
-      };
-      result["rWeb"] = {
-        points: Web, point: centerPoint,
-        Thickness: 20, z: 14, rotationX: 0, rotationY: rWebAngle, hole: [], bolt: WebBolt
-      };
-      result["rWeb2"] = {
-        points: Web, point: centerPoint,
-        Thickness: 20, z: -20, rotationX: 0, rotationY: rWebAngle, hole: []
-      };
-    
-      iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1]);
-      centerPoint = {
-        ...iNode,
-        normalCos: iPoint.normalCos,
-        normalSin: iPoint.normalSin,
-      };
-      let TopFlange = [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }];
-      let TopFlangeBolt = [{ startPoint: { x: 160, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 2, size: 37, t: 14, l: 54 },
-      { startPoint: { x: -80, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 2, size: 37, t: 14, l: 54 }];
-    
-      result["lTop"] = { points: TopFlange, point: centerPoint, Thickness: 20, z: 14, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: [], bolt: TopFlangeBolt };
-      result["lTop2"] = {
-        points: [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: -40, y: 250 }, { x: -40, y: -250 }],
-        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
-      };
-      result["lTop3"] = {
-        points: [{ x: 40, y: -250 }, { x: 40, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }],
-        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
-      };
-    
-      iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
-      centerPoint = {
-        ...iNode,
-        normalCos: iPoint.normalCos,
-        normalSin: iPoint.normalSin,
-      };
-    
-      result["rTop"] = { points: TopFlange, point: centerPoint, Thickness: 20, z: 14, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: [], bolt: TopFlangeBolt };
-      result["rTop2"] = {
-        points: [{ x: -200, y: -250 }, { x: -200, y: 250 }, { x: -40, y: 250 }, { x: -40, y: -250 }],
-        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
-      };
-      result["rTop3"] = {
-        points: [{ x: 40, y: -250 }, { x: 40, y: 250 }, { x: 200, y: 250 }, { x: 200, y: -250 }],
-        point: centerPoint, Thickness: 20, z: -20, rotationX: Math.atan(iPoint.gradientX), rotationY: Math.atan(-iPoint.gradientY), hole: []
-      };
-    
-    
-      let BP = iSectionPoint.bottomPlate;
-      iNode = ToGlobalPoint(iPoint, BP[0]);
-      jNode = ToGlobalPoint(iPoint, BP[1]);
-      centerPoint = {
-        x: (iNode.x + jNode.x) / 2,
-        y: (iNode.y + jNode.y) / 2,
-        z: (iNode.z + jNode.z) / 2,
-        normalCos: iPoint.normalCos,
-        normalSin: iPoint.normalSin,
-      };
-      let bottomFlange = [{ x: BP[0].x, y: -250 }, { x: BP[0].x, y: 250 }, { x: BP[1].x, y: 250 }, { x: BP[1].x, y: -250 }];
-      let bottomFlangeBolt = [{ startPoint: { x: BP[0].x + 40, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 1, size: 37, t: 14, l: 54 },
-      { startPoint: { x: BP[1].x - 40, y: 150 }, P: 100, G: 80, pNum: 4, gNum: 1, size: 37, t: 14, l: 54 },
-      { startPoint: { x: BP[1].x - 172, y: 150 }, P: 100, G: 140, pNum: 4, gNum: 6, size: 37, t: 14, l: 54 },
-      { startPoint: { x: BP[0].x + 172, y: 150 }, P: 100, G: -140, pNum: 4, gNum: 6, size: 37, t: 14, l: 54 }];
-    
-      result["bottom1"] = {
-        points: [{ x: BP[0].x, y: -250 }, { x: BP[0].x, y: 250 }, { x: BP[0].x + 80, y: 250 }, { x: BP[0].x + 80, y: -250 }],
-        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: [], bolt: bottomFlangeBolt
-      };
-      result["bottom2"] = {
-        points: [{ x: BP[1].x, y: -250 }, { x: BP[1].x, y: 250 }, { x: BP[1].x - 80, y: 250 }, { x: BP[1].x - 80, y: -250 }],
-        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
-      };
-      result["bottom3"] = {
-        points: [{ x: BP[0].x + 132, y: -250 }, { x: BP[0].x + 132, y: 250 }, { x: BP[1].x - 132, y: 250 }, { x: BP[1].x - 132, y: -250 }],
-        point: centerPoint, Thickness: 20, z: 0, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
-      };
-      result["bottom4"] = {
-        points: bottomFlange,
-        point: centerPoint, Thickness: 20, z: -20 - 14, rotationX: Math.atan(iPoint.gradientX), rotationY: 0, hole: []
-      };
-      // result["bottom2"]={points:[{x:-200, y:-250},{x:-200, y:250},{x:-40, y:250},{x:-40, y:-250}],
-      //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
-      // result["bottom3"]={points:[{x:40, y:-250},{x:40, y:250},{x:200, y:250},{x:200, y:-250}],
-      //   point:centerPoint,  Thickness:-20,z:0, rotationX:Math.atan(iPoint.gradientX), rotationY:Math.atan(-iPoint.gradientY),hole:[]}
-    
-      return result
-    }
 
   function SplicePart() {
       this.addInput("spliceLayout","spliceLayout");

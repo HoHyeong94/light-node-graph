@@ -35,7 +35,7 @@ export function XbeamDict(
         jSectionPoint,
         xbeamSection
       );
-      xbeamSectionDict[iNodekey] = xbeam.result
+      xbeamSectionDict[iNodekey+jNodeKey] = xbeam.result
       xbData = xbeam.data
       xbSection = xbeam.section
     } else if (xbeamLayout[i][section] == "xbeamK") {
@@ -47,7 +47,7 @@ export function XbeamDict(
         xbeamSection,
         sectionDB
       );
-      xbeamSectionDict[iNodekey] = xbeam.result
+      xbeamSectionDict[iNodekey+jNodeKey] = xbeam.result
       xbData = xbeam.data
       xbSection = xbeam.section
     } else if (xbeamLayout[i][section] == "DYXbeam1") {
@@ -58,7 +58,7 @@ export function XbeamDict(
         jSectionPoint,
         xbeamSection,
       );
-      xbeamSectionDict[iNodekey] = xbeam.result
+      xbeamSectionDict[iNodekey+jNodeKey] = xbeam.result
       xbData = xbeam.data
       xbSection = xbeam.section
     }
