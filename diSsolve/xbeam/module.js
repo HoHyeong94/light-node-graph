@@ -109,6 +109,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     flangeThickness: 12,
     stiffThickness: 12,
     stiffWidth : 150,
+    stiffWidth2 : 300,
     stiffFilletR : 200,
     scallopRadius: 25,
     webJointThickness: 10,
