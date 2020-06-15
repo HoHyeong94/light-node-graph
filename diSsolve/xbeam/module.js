@@ -109,6 +109,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     flangeThickness: 12,
     stiffThickness: 12,
     stiffWidth : 150,
+    stiffFilletR : 200,
     scallopRadius: 25,
     webJointThickness: 10,
     webJointWidth: 330,
@@ -171,8 +172,17 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lwebPlate = [{x: bl.x, y: bl.y + xs.webHeight}, bl, lfl, {x:bl.x + xs.bracketLength, y: lfl.y + lGradient * (xs.bracketLength - (lfl.x - bl.x))},
     {x:bl.x + xs.bracketLength, y: bl.y + xs.webHeight + uGradient * xs.bracketLength}]
   result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
-  let lstiff = PlateRestPoint(tl, {x:bl.x, y:bl.y + xs.webHeight + xs.flangeThickness}, tGradient, uGradient, xs.stiffWidth);
-  result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
+  let lstiffPoint = [tl,{x:bl.x, y:bl.y + xs.webHeight + xs.flangeThickness}, {x:bl.x + xs.stiffWidth2, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2},
+    {x:bl.x + xs.stiffWidth2, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2 +50},
+    {x:bl.x + xs.stiffWidth, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * (xs.stiffWidth2 - xs.stiffWidth) + 50 },
+  {x: tl.x, y: tl.y+ uGradient*xs.stiffWidth} ]
+  let lstiff= [];
+  lstiff.push(...scallop(lstiffPoint[5],lstiffPoint[0],lstiffPoint[1],xs.scallopRadius,4))
+  lstiff.push(...scallop(lstiffPoint[0],lstiffPoint[1],lstiffPoint[2],xs.scallopRadius,4))
+  lstiff.push(lstiffPoint[3])
+  lstiff.push(...Fillet2D(stiffPoint[3],lstiffPoint[4],lstiffPoint[5],xs.stiffFilletR,4))
+  lstiff.push(lstiffPoint[5])
+  result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[],0,null,null,[]);
 
   let rwebPlate = [{x: br.x, y: br.y + xs.webHeight}, br, lfr, {x:br.x - xs.bracketLength, y: lfr.y - lGradient * (xs.bracketLength - (br.x - lfr.x))},
     {x:br.x - xs.bracketLength, y: br.y + xs.webHeight - uGradient * xs.bracketLength}]
