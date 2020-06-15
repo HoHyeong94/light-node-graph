@@ -208,12 +208,12 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   }
   let webPlate = [lwebPlate[3],rwebPlate[3],rwebPlate[4],lwebPlate[4]]
   result["web"] = vPlateGen(webPlate,centerPoint, xs.webThickness, [],0,null,null,[]);
-  let uPoint = ToGlobalPoint(centerPoint,lwebPlate[3])
-  let l = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x)**2 + (lwebPlate[3].y - rwebPlate[3].y)**2)
+  let uPoint = ToGlobalPoint(centerPoint,lwebPlate[4])
+  let l = Math.sqrt((lwebPlate[4].x - rwebPlate[4].x)**2 + (lwebPlate[4].y - rwebPlate[4].y)**2)
   let uflangePlate = [{x:0, y:xs.flangeWidth/2},{x:0, y: -xs.flangeWidth/2}, {x:l, y: -xs.flangeWidth/2}, {x:l, y: xs.flangeWidth/2}];
   result["uflange"] = hPlateGen(uflangePlate,uPoint, xs.flangeThickness, 0, uPoint.skew, 0, uRad );
-  let lPoint = ToGlobalPoint(centerPoint,lwebPlate[2])
-  let ll = Math.sqrt((lwebPlate[2].x - rwebPlate[2].x)**2 + (lwebPlate[2].y - rwebPlate[2].y)**2)
+  let lPoint = ToGlobalPoint(centerPoint,lwebPlate[3])
+  let ll = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x)**2 + (lwebPlate[3].y - rwebPlate[3].y)**2)
   let lflangePlate = [{x:0, y:xs.flangeWidth/2},{x:0, y: -xs.flangeWidth/2}, {x:ll, y: -xs.flangeWidth/2}, {x:ll, y: xs.flangeWidth/2}];
   result["lflange"] = hPlateGen(lflangePlate,lPoint, xs.flangeThickness, -xs.flangeThickness, uPoint.skew, 0, lRad );
 
