@@ -73,7 +73,7 @@ export function XbeamDict(
       xbData = xbeam.data
       xbSection = xbeam.section
     } else if (xbeamLayout[i][section] == "DYXbeam3") {
-      let xbeam = DYXbeam2(
+      let xbeam = DYXbeam3(
         iPoint,
         jPoint,
         iSectionPoint,
