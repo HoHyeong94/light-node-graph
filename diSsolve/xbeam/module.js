@@ -175,7 +175,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
   let lstiffPoint = [tl,{x:bl.x, y:bl.y + xs.webHeight + xs.flangeThickness}, {x:bl.x + xs.stiffWidth2, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2},
     {x:bl.x + xs.stiffWidth2, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2 +50},
-    {x:bl.x + xs.stiffWidth, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * (xs.stiffWidth2 - xs.stiffWidth) + 50 },
+    {x:bl.x + xs.stiffWidth, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2 + (xs.stiffWidth2 - xs.stiffWidth) + 50 },
   {x: tl.x + xs.stiffWidth, y: tl.y+ uGradient*xs.stiffWidth} ]
   let lstiff= [];
   lstiff.push(...scallop(lstiffPoint[5],lstiffPoint[0],lstiffPoint[1],xs.scallopRadius,4))
