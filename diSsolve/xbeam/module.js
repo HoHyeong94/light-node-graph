@@ -186,7 +186,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   ToGlobalPoint(centerPoint, lfr)];
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
-    let grad = i < 2? lRad:uRad;
+    let grad = i < 2? uRad:lRad;
     let z = i < 2? 0: -xs.flangeThickness;
     let bracketLength = i < 2 ? xs.bracketLength : i === 2? xs.bracketLength - (ufl.x - tl.x) : xs.bracketLength - (tr.x - ufr.x);
     let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
