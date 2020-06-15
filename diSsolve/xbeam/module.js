@@ -176,11 +176,11 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lstiffPoint = [tl,{x:bl.x, y:bl.y + xs.webHeight + xs.flangeThickness}, {x:bl.x + xs.stiffWidth2, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2},
     {x:bl.x + xs.stiffWidth2, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2 +50},
     {x:bl.x + xs.stiffWidth, y:bl.y + xs.webHeight + xs.flangeThickness + uGradient * (xs.stiffWidth2 - xs.stiffWidth) + 50 },
-  {x: tl.x, y: tl.y+ uGradient*xs.stiffWidth} ]
+  {x: tl.x + xs.stiffWidth, y: tl.y+ uGradient*xs.stiffWidth} ]
   let lstiff= [];
   lstiff.push(...scallop(lstiffPoint[5],lstiffPoint[0],lstiffPoint[1],xs.scallopRadius,4))
   lstiff.push(...scallop(lstiffPoint[0],lstiffPoint[1],lstiffPoint[2],xs.scallopRadius,4))
-  lstiff.push(lstiffPoint[3])
+  lstiff.push(lstiffPoint[2],lstiffPoint[3])
   lstiff.push(...Fillet2D(lstiffPoint[3],lstiffPoint[4],lstiffPoint[5],xs.stiffFilletR,4))
   lstiff.push(lstiffPoint[5])
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[],0,null,null,[]);
