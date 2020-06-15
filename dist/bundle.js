@@ -5242,10 +5242,7 @@
     let tr = { x: jSectionPoint.web[0][2].x + dOffset, y: jSectionPoint.web[0][2].y + dz };
     let bl = { x: iSectionPoint.web[1][3].x - dOffset, y: iSectionPoint.web[1][3].y - dz };
     let br = { x: jSectionPoint.web[0][3].x + dOffset, y: jSectionPoint.web[0][3].y + dz };
-
-    let uGradient = (ufr.y-ufl.y)/(ufr.x -ufl.x);
     let lGradient = (br.y-bl.y)/(br.x -bl.x);
-    let uRad = -Math.atan(uGradient);
     let lRad = -Math.atan(lGradient);
 
     let lwebPlate = PlateRestPoint({x: bl.x, y:bl.y + xs.lflangeHeight}, {x: bl.x, y:bl.y + xs.webHeight + xs.lflangeHeight},lGradient, lGradient, xs.bracketLength);
@@ -5271,6 +5268,7 @@
       let sign = i % 2 === 0 ? 1 : -1;
       let grad = lRad;
       let bracketLength = xs.bracketLength;
+      let z = i<2? - xs.flangeThickness : 0;
       let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
       { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
       let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
@@ -5279,7 +5277,7 @@
       result["bracket" + i.toFixed(0)] = {
         points: bracketShape,
         Thickness: xs.flangeThickness,
-        z: 0,
+        z: z,
         rotationX: 0,
         rotationY: grad,
         hole: [],
@@ -5290,11 +5288,11 @@
     }
     let webPlate = [lwebPlate[3],rwebPlate[3],rwebPlate[2],lwebPlate[2]];
     result["web"] = vPlateGen(webPlate,centerPoint, xs.webThickness, [],0,null,null,[]);
-    let uPoint = ToGlobalPoint(centerPoint,lwebPlate[3]);
+    let uPoint = ToGlobalPoint(centerPoint,lwebPlate[2]);
     let l = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x)**2 + (lwebPlate[3].y - rwebPlate[3].y)**2);
     let uflangePlate = [{x:0, y:xs.flangeWidth/2},{x:0, y: -xs.flangeWidth/2}, {x:l, y: -xs.flangeWidth/2}, {x:l, y: xs.flangeWidth/2}];
-    result["uflange"] = hPlateGen(uflangePlate,uPoint, xs.flangeThickness, 0, uPoint.skew, 0, uRad );
-    let lPoint = ToGlobalPoint(centerPoint,lwebPlate[2]);
+    result["uflange"] = hPlateGen(uflangePlate,uPoint, xs.flangeThickness, 0, uPoint.skew, 0, lRad );
+    let lPoint = ToGlobalPoint(centerPoint,lwebPlate[3]);
     let ll = Math.sqrt((lwebPlate[2].x - rwebPlate[2].x)**2 + (lwebPlate[2].y - rwebPlate[2].y)**2);
     let lflangePlate = [{x:0, y:xs.flangeWidth/2},{x:0, y: -xs.flangeWidth/2}, {x:ll, y: -xs.flangeWidth/2}, {x:ll, y: xs.flangeWidth/2}];
     result["lflange"] = hPlateGen(lflangePlate,lPoint, xs.flangeThickness, -xs.flangeThickness, uPoint.skew, 0, lRad );

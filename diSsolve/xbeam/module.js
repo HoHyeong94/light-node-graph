@@ -212,7 +212,7 @@ export function DYXbeam4(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     result["bracket" + i.toFixed(0)] = {
       points: bracketShape,
       Thickness: xs.flangeThickness,
-      z: 0,
+      z: z,
       rotationX: 0,
       rotationY: grad,
       hole: [],
