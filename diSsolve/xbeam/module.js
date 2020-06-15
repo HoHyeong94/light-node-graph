@@ -188,8 +188,17 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let rwebPlate = [{x: br.x, y: br.y + xs.webHeight}, br, lfr, {x:br.x - xs.bracketLength, y: lfr.y - lGradient * (xs.bracketLength - (br.x - lfr.x))},
     {x:br.x - xs.bracketLength, y: br.y + xs.webHeight - uGradient * xs.bracketLength}]
   result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
-  let rstiff = PlateRestPoint(tr, {x:br.x, y:br.y + xs.webHeight + xs.flangeThickness}, tGradient, uGradient, -xs.stiffWidth);
-  result["rstiff"] = vPlateGen(rstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
+  let rstiffPoint = [tr,{x:br.x, y:br.y + xs.webHeight + xs.flangeThickness}, {x:br.x - xs.stiffWidth2, y:br.y + xs.webHeight + xs.flangeThickness - uGradient * xs.stiffWidth2},
+    {x:br.x - xs.stiffWidth2, y:br.y + xs.webHeight + xs.flangeThickness - uGradient * xs.stiffWidth2 +50},
+    {x:br.x - xs.stiffWidth, y:br.y + xs.webHeight + xs.flangeThickness - uGradient * xs.stiffWidth2 + (xs.stiffWidth2 - xs.stiffWidth) + 50 },
+  {x: tr.x - xs.stiffWidth, y: tr.y - uGradient*xs.stiffWidth} ]
+  let rstiff= [];
+  rstiff.push(...scallop(rstiffPoint[5],rstiffPoint[0],rstiffPoint[1],xs.scallopRadius,4))
+  rstiff.push(...scallop(rstiffPoint[0],rstiffPoint[1],rstiffPoint[2],xs.scallopRadius,4))
+  rstiff.push(rstiffPoint[2],rstiffPoint[3])
+  rstiff.push(...Fillet2D(rstiffPoint[3],rstiffPoint[4],rstiffPoint[5],xs.stiffFilletR,4))
+  rstiff.push(rstiffPoint[5])
+  result["rstiff"] = vPlateGen(rstiff,centerPoint,xs.stiffThickness,[],0,null,null,[]);
 
   let bracketPoint = [ToGlobalPoint(centerPoint, lwebPlate[0]),
   ToGlobalPoint(centerPoint, rwebPlate[0]),
