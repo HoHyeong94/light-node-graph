@@ -168,13 +168,13 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let uRad = -Math.atan(uGradient)
   let lRad = -Math.atan(lGradient)
 
-  let lwebPlate = [{x: bl.x, y: bl.y + xs.webHeight}, bl, lfl, {x:bl.x + xs.bracketLength, y: lfl + lGradient * (xs.bracketLength - (lfl.x - bl.x))},
+  let lwebPlate = [{x: bl.x, y: bl.y + xs.webHeight}, bl, lfl, {x:bl.x + xs.bracketLength, y: lfl.y + lGradient * (xs.bracketLength - (lfl.x - bl.x))},
     {x:bl.x + xs.bracketLength, y: bl.y + xs.webHeight + uGradient * xs.bracketLength}]
   result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
   let lstiff = PlateRestPoint(tl, {x:bl.x, y:bl.y + xs.webHeight + xs.flangeThickness}, tGradient, uGradient, xs.stiffWidth);
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
 
-  let rwebPlate = [{x: br.x, y: br.y + xs.webHeight}, br, lfr, {x:br.x - xs.bracketLength, y: lfr - lGradient * (xs.bracketLength - (br.x - lfr.x))},
+  let rwebPlate = [{x: br.x, y: br.y + xs.webHeight}, br, lfr, {x:br.x - xs.bracketLength, y: lfr.y - lGradient * (xs.bracketLength - (br.x - lfr.x))},
     {x:br.x - xs.bracketLength, y: br.y + xs.webHeight - uGradient * xs.bracketLength}]
   result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
   let rstiff = PlateRestPoint(tr, {x:br.x, y:br.y + xs.webHeight + xs.flangeThickness}, tGradient, uGradient, -xs.stiffWidth);
