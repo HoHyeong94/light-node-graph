@@ -187,7 +187,7 @@ export function DYXbeam4(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
   result["lstiff2"] = vPlateGen(lstiff2,centerPoint,xs.stiffThickness,[0,1],xs.scallopRadius,null,null,[]);
 
-  let lwebPlate = PlateRestPoint({x: br.x, y:br.y + xs.lflangeHeight}, {x: br.x, y:br.y + xs.webHeight + xs.lflangeHeight},lGradient, lGradient, -xs.bracketLength)
+  let rwebPlate = PlateRestPoint({x: br.x, y:br.y + xs.lflangeHeight}, {x: br.x, y:br.y + xs.webHeight + xs.lflangeHeight},lGradient, lGradient, -xs.bracketLength)
   result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
   let rstiff = PlateRestPoint({x: br.x, y:br.y +xs.lflangeHeight - xs.flangeThickness}, br, lGradient, 0, -xs.stiffWidth);
   let rstiff2 = PlateRestPoint({x: br.x, y:br.y + xs.lflangeHeight + xs.webHeight + xs.flangeThickness}, tr, lGradient, 0, -xs.stiffWidth);
