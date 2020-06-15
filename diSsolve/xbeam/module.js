@@ -180,7 +180,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   lstiff.push(...scallop(lstiffPoint[5],lstiffPoint[0],lstiffPoint[1],xs.scallopRadius,4))
   lstiff.push(...scallop(lstiffPoint[0],lstiffPoint[1],lstiffPoint[2],xs.scallopRadius,4))
   lstiff.push(lstiffPoint[3])
-  lstiff.push(...Fillet2D(stiffPoint[3],lstiffPoint[4],lstiffPoint[5],xs.stiffFilletR,4))
+  lstiff.push(...Fillet2D(lstiffPoint[3],lstiffPoint[4],lstiffPoint[5],xs.stiffFilletR,4))
   lstiff.push(lstiffPoint[5])
   result["lstiff"] = vPlateGen(lstiff,centerPoint,xs.stiffThickness,[],0,null,null,[]);
 
