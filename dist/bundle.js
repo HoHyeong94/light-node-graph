@@ -2818,18 +2818,23 @@
         }
       }
       if ((!FisB && (Math.abs(former3 - latter3) > 100))){
-        let thickness = 20;
-        let plate4 = [[],[],[]];
         for (let k in uf2){
           if (uf2[k].length >0){
+            let thickness = Math.abs(uf2[k][0].y - uf2[k][3].y);
             let npt2 = DividingPoint(plate2[k][2],plate1[k][2],thickness);
             let npt3 = DividingPoint(plate2[k][3],plate1[k][3],thickness);
-            plate4[k] = [plate3[k][3],plate3[k][2],
-            {x:npt2.x, y:npt2.y, z : plate3[k][2].z}, 
-            {x:npt3.x, y:npt3.y, z : plate3[k][3].z}];
-
-            result[k].push(plate2[k][0],plate2[k][1],npt2, npt3);
-            plate4[k].forEach(element => result[k].push(element));
+            let nplate1 = [plate2[k][0],plate2[k][1],npt2, npt3];
+            let nplate2 = [plate3[k][3],plate3[k][2],{x:npt2.x, y:npt2.y, z : plate3[k][2].z},{x:npt3.x, y:npt3.y, z : plate3[k][3].z}];
+            let filletList = [[],[],[],[]];
+            for(let l = 0; l<4; l++){
+              let radius = l<2? 100: 100 - thickness;
+             filletList[l].push(...fillet3D(plate1[k][l],nplate1[l],nplate2[l],radius,8));
+            }
+            for (let l in filletList[0]){
+              result[k].push(filletList[0][l],filletList[1][l],filletList[2][l],filletList[3][l]);
+            }
+            // result[k].push(plate2[k][0],plate2[k][1],npt2, npt3)
+            result[k].push(nplate2);
           }
         }
       }
