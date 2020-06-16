@@ -336,18 +336,15 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
       }
     }
     if ((!FisB && (Math.abs(former3 - latter3) > 100))){
-      let thickness = 20
-      let plate4 = [[],[],[]];
       for (let k in uf2){
         if (uf2[k].length >0){
+          let thickness = Math.abs(uf2[k][0].y - uf2[k][3].y)
           let npt2 = DividingPoint(plate2[k][2],plate1[k][2],thickness);
           let npt3 = DividingPoint(plate2[k][3],plate1[k][3],thickness);
-          plate4[k] = [plate3[k][3],plate3[k][2],
-          {x:npt2.x, y:npt2.y, z : plate3[k][2].z}, 
-          {x:npt3.x, y:npt3.y, z : plate3[k][3].z}];
-
           result[k].push(plate2[k][0],plate2[k][1],npt2, npt3)
-          plate4[k].forEach(element => result[k].push(element));
+          result[k].push(plate3[k][3],plate3[k][2],
+            {x:npt2.x, y:npt2.y, z : plate3[k][2].z}, 
+            {x:npt3.x, y:npt3.y, z : plate3[k][3].z});
         }
       }
     }
