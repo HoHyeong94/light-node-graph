@@ -2834,7 +2834,7 @@
               result[k].push(filletList[0][l],filletList[1][l],filletList[2][l],filletList[3][l]);
             }
             // result[k].push(plate2[k][0],plate2[k][1],npt2, npt3)
-            result[k].push(nplate2);
+            result[k].push(...nplate2);
           }
         }
       }
@@ -2935,6 +2935,7 @@
         for (let k in webSide) {
           webSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
         }
+        
         for (let l = 0; l < 2; l++) {
           
           keyname = l===0? "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi : keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi;
@@ -2942,10 +2943,13 @@
           L1 = sectionPointDict[pk1].forward.web[l];
           L2 = sectionPointDict[pk2].backward.web[l];
           L3 = sectionPointDict[pk2].forward.web[l];
+          
           let wplate1 = [];
           let wplate2 = [];
+          let wplate3 = [];
           L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)));
           L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)));
+          L3.forEach(element => wplate3.push(ToGlobalPoint(point2, element)));
           if (pk1.substr(2, 2) === "K1") {
             let ent = webEntrance(wplate1, wplate2, true);
             for (let k in ent) {
@@ -2964,7 +2968,16 @@
               }
             }
             else {
-              L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)));
+              let indent = L2[0].y - L3[0].y; // bottom point of web
+              if (indent < 100){
+              wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
+              }else {
+                let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], 100,8);
+                let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], 100,8);
+                for (let l in fpt){
+                  steelBoxDict[keyname]["points"][2].push(fpt[l],wplate2[1],wplate2[2],fpt3[l]);
+                }
+              }
             }
           }
         }
@@ -2979,8 +2992,7 @@
 
         for (let Ribkey of RibList) {
           keyname = "G" + (i * 1 + 1).toString() + "lRib" + Ribi;
-          if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-          L1 = sectionPointDict[pk1].forward[Ribkey];
+          if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }        L1 = sectionPointDict[pk1].forward[Ribkey];
           L2 = sectionPointDict[pk2].backward[Ribkey];
           L3 = sectionPointDict[pk2].forward[Ribkey];
           L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
