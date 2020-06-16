@@ -284,6 +284,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
 
   let former3 = uf2[0][0] ? uf2[0][0].y : uf2[2][0].y
   let latter3 = uf3[0][0] ? uf3[0][0].y : uf3[2][0].y
+  
 
   for (let k in uf1) {
     uf0[k].forEach(element => plate0[k].push(ToGlobalPoint(point1, element)));
@@ -295,7 +296,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   if (!plateCompare(uf0, uf1)) {
     if (former1 < latter1) {
       if (uf1[2][0]) {
-        plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2)
+        plate1[2][0] = DividingPoint(plate1[2][0], plate2[2][0], (latter1 - former1) * 2) //숫자 2는 확폭시 경사도
         plate1[2][1] = DividingPoint(plate1[2][1], plate2[2][1], (latter1 - former1) * 2)
         plate1[2][2] = DividingPoint(plate1[2][2], plate2[2][2], (latter1 - former1) * 2)
         plate1[2][3] = DividingPoint(plate1[2][3], plate2[2][3], (latter1 - former1) * 2)
@@ -329,11 +330,28 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   } else {
     let spCheck = false
     splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
-    if (spCheck || (!FisB && (Math.abs(former3 - latter3) > 100))) {  //형고 높이가 100mm 이상인 경우에만 반영
+    if (spCheck ) {  //형고 높이가 100mm 이상인 경우에만 반영
       for (let k in uf2) {
         plate2[k].forEach(element => result[k].push(element));
       }
     }
+    if ((!FisB && (Math.abs(former3 - latter3) > 100))){
+      let thickness = 20
+      let plate4 = [[],[],[]];
+      for (let k in uf2){
+        if (uf2[k].length >0){
+          let npt2 = DividingPoint(plate2[k][2],plate1[k][2],thickness);
+          let npt3 = DividingPoint(plate2[k][3],plate1[k][3],thickness);
+          plate4[k] = [plate3[k][3],plate3[k][2],
+          {x:npt2.x, y:npt2.y, z : plate3[k][2].z}, 
+          {x:npt3.x, y:npt3.y, z : plate3[k][3].z}];
+
+          result[k].push(plate2[k][0],plate2[k][1],npt2, npt3)
+          plate4[k].forEach(element => result[k].push(element));
+        }
+      }
+    }
+
   }
   if (!FisB) {
     if (former2 > latter2) {
@@ -463,42 +481,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           }
         }
       }
-      // if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1 }
-
-      // keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
-      // if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-      // L1 = sectionPointDict[pk1].forward.rWeb
-      // L2 = sectionPointDict[pk2].backward.rWeb
-      // L3 = sectionPointDict[pk2].forward.rWeb
-      // wplate1 = [];
-      // wplate2 = [];
-      // L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
-      // L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
-      // if (pk1.substr(2, 2) === "K1") {
-      //   let ent = webEntrance(wplate1, wplate2, true)
-      //   for (let k in ent) {
-      //     ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-      //   }
-      // } else {
-      //   L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
-      // }
-      // FisB = true;
-      // for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
-      // if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-      //   if (pk2.substr(2, 2) === "K6") {
-      //     let ent = webEntrance(wplate2, wplate1, false)
-      //     for (let k in ent) {
-      //       ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
-      //     }
-      //   }
-      //   else {
-      //     L2.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point2, element)))
-      //   }
-      // }
       if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1 }
-
-
-
 
       let RibList = []
       for (let ii in sectionPointDict[pk1].forward) {
@@ -520,19 +503,15 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)))
           Ribi += 1
         }
-        // if(pk2.substr(2,2)==="RW" || pk2.substr(2,2)==="SP"){  }
       }
-
     }
   }
-  // }
-
   return steelBoxDict
 }
 
 
 function fillet3D(point1, point2, point3, radius, smoothness) {
-  let points = [point1, point2, point3]
+  // let points = [point1, point2, point3]
   let newPoints = [];
   let v1 = new THREE.Vector3();
   let v2 = new THREE.Vector3();
