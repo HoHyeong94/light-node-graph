@@ -888,7 +888,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
   }
   // console.log('icos:', iCos) 
   // let tlength = Math.sqrt((iPoint.x - jPoint.x) ** 2 + (iPoint.y - jPoint.y) ** 2)
-  data = [ToGlobalPoint(ipoint, { x: (ibaseNode.x + iTopNode1.x)/2, y: (ibaseNode.y + iTopNode1.y)/2, z: (ibaseNode.z + iTopNode1.z)/2 }),
+  data = [ToGlobalPoint(iPoint, { x: (ibaseNode.x + iTopNode1.x)/2, y: (ibaseNode.y + iTopNode1.y)/2, z: (ibaseNode.z + iTopNode1.z)/2 }),
   ToGlobalPoint(ipoint, { x: (jbaseNode.x + jTopNode1.x)/2, y: (jbaseNode.y + jTopNode1.y)/2, z: (jbaseNode.z + jTopNode1.z)/2 })];
   //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
 
