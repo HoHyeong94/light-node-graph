@@ -2742,7 +2742,7 @@
     return result
   }
 
-  function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey, splicer) {
+  function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey, splicer,endCutFilletR) {
     // 박스형 거더의 상하부플레이트 개구와 폐합에 대한 필렛을 위해 개발되었으며, 개구->폐합, 폐합->개구에 대해서만 가능하다, 
     // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
 
@@ -2827,7 +2827,7 @@
             let nplate2 = [plate3[k][3],plate3[k][2],{x:npt2.x, y:npt2.y, z : plate3[k][2].z},{x:npt3.x, y:npt3.y, z : plate3[k][3].z}];
             let filletList = [[],[],[],[]];
             for(let l = 0; l<4; l++){
-              let radius = l<2? 100: 100 - thickness;
+              let radius = l<2? endCutFilletR: endCutFilletR - thickness;
              filletList[l].push(...fillet3D(plate1[k][l],nplate1[l],nplate2[l],radius,8));
             }
             for (let l in filletList[0]){
@@ -2879,6 +2879,7 @@
     let keyname = "";
     let splicer = [];
     let sideKeyname = "";
+    let endCutFilletR = 200;
 
     for (let i in girderStationList) {
       for (let j = 0; j < girderStationList[i].length - 1; j++) {
@@ -2901,7 +2902,7 @@
         sideKeyname = "G" + (i * 1 + 1).toString() + "TopSide" + UFi;
         if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
         splicer = ["TF", "SP", "K6"];
-        let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer);
+        let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer,endCutFilletR);
         for (let k in uflangePoint) {
           uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
         }
@@ -2918,7 +2919,7 @@
         sideKeyname = "G" + (i * 1 + 1).toString() + "BottomSide" + Bi;
         if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
         splicer = ["BF", "SP", "K6"];
-        let lflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflange", splicer);
+        let lflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflange", splicer,endCutFilletR);
         for (let k in lflangePoint) {
           lflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
         }
@@ -2972,8 +2973,8 @@
               if (indent < 100){
               wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
               }else {
-                let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], 100,8);
-                let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], 100,8);
+                let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR,8);
+                let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR,8);
                 for (let l in fpt){
                   steelBoxDict[keyname]["points"][2].push(fpt[l],wplate2[1],wplate2[2],fpt3[l]);
                 }
@@ -5554,8 +5555,8 @@
       let sign = i % 2 === 0 ? 1 : -1;
       let grad = i < 2? lRad:uRad;
       let bracketLength = i < 2 ? xs.bracketLength : i === 2? xs.bracketLength - (ufl.x - tl.x) : xs.bracketLength - (tr.x - ufr.x);
-      let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 15, y: xs.bracketWidth / 2 }, { x: sign * 43, y: xs.bracketWidth / 2 - 81 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
-      { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 43, y: -xs.bracketWidth / 2 + 81 }, { x: sign * 15, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
+      let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 15, y: xs.bracketWidth / 2 }, { x: sign * 44, y: xs.bracketWidth / 2 - 82 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
+      { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 44, y: -xs.bracketWidth / 2 + 82 }, { x: sign * 15, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
       let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
       lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], xs.bracketFilletR, 4),
       lowerbracket1[6], lowerbracket1[7]];
