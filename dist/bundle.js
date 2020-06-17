@@ -5453,7 +5453,7 @@
     let xs = {
       bracketLength: 420,
       bracketWidth: 550,
-      bracketFilletR: 200,
+      bracketFilletR: 180,
       webHeight: 878,
       webThickness: 12,
       flangeWidth: 250,
