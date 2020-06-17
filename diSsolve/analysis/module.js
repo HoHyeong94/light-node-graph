@@ -81,7 +81,7 @@ const xbeamInput = {
 const slab = { T: 270, W: 2000, Th: 0 }    // 슬래브에 대한 변수는 추후 외부에서 받아와야 함!
 
 //I형 가로보의 시공단계별 단면계수 생성
-export function Isection(xi, materials, slab) {
+export function Isection(xi, materials) { //, slab
 
     let stage1 = {};
     let stage2 = {};
@@ -120,20 +120,22 @@ export function Isection(xi, materials, slab) {
     // 단일 합성후 가로보단면 변화 없음
     stage2 = stage1
     //이중합성후 합성단면의 단면계수 계산
-    let deckConc = partProperty(slab.W / n1, slab.T, wh / 2 + slab.T / 2 + slab.Th, 0, 0)
-    isteel.push(deckConc)
-    ADy += deckConc.area * deckConc.Dy
-    ADz += deckConc.area * deckConc.Dz
-    stage3.A = stage2.A + deckConc.area;
-    stage3.Cy = ADy / stage3.A
-    stage3.Cz = ADz / stage3.A
-    stage3.Iyy = 0;
-    stage3.Izz = 0;
-    stage3.Ixx = 0; // 추후 비틀림 강성에 대한 값을 계산하여야 함
-    for (let i in isteel) {
-        stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2
-        stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2
-    }
+    stage3 = stage1
+    
+    // let deckConc = partProperty(slab.W / n1, slab.T, wh / 2 + slab.T / 2 + slab.Th, 0, 0)
+    // isteel.push(deckConc)
+    // ADy += deckConc.area * deckConc.Dy
+    // ADz += deckConc.area * deckConc.Dz
+    // stage3.A = stage2.A + deckConc.area;
+    // stage3.Cy = ADy / stage3.A
+    // stage3.Cz = ADz / stage3.A
+    // stage3.Iyy = 0;
+    // stage3.Izz = 0;
+    // stage3.Ixx = 0; // 추후 비틀림 강성에 대한 값을 계산하여야 함
+    // for (let i in isteel) {
+    //     stage3.Iyy += isteel[i].Ioyy + isteel[i].area * (isteel[i].Dy - stage3.Cy) ** 2
+    //     stage3.Izz += isteel[i].Iozz + isteel[i].area * (isteel[i].Dz - stage3.Cz) ** 2
+    // }
 
     return [stage1, stage2, stage3]
 }
@@ -351,7 +353,18 @@ export function SapJointGenerator(girderStation, supportNode, xbeamData) {//gird
             }
             rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P3"]] })
             rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P2"]] })
+        } else { //i형 가로보
+            for (let j in xbeamData[i].data) {
+                node.data.push({ nodeNum: nodeNum, coord: [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z] });
+                nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum
+                nodeNum++
+            }
+            rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"]] })
+            rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"]] })
+
         }
+
+
     }
     // xbeam stringer에 대한 절점 추가 입력 필요
     // stringerLayout input 추가 필요
@@ -373,9 +386,9 @@ export function AllSectionGenerator(girderStation, sectionPointDict, materials, 
     }
     for (let i in xbeamData) {
         if (xbeamData[i].isKframe === false) {
-            let slab = { W: 2000, T: 270, Th: 0 } //추후 자동으로 계산되어야 함 20.04.01 by dr.lim
+            // let slab = { W: 2000, T: 270, Th: 0 } //추후 자동으로 계산되어야 함 20.04.01 by dr.lim
             let key = xbeamData[i].key
-            sectionPropDict[key] = Isection(xbeamData[i].section, materials, slab)
+            sectionPropDict[key] = Isection(xbeamData[i].section, materials) //, slab
         }
     }
     return sectionPropDict;
@@ -503,19 +516,19 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
                 allElement.push(elem)
                 elemNum++
             }
-        } else {
+        } else { //일반 I형 가로보
             let sectionName = xbeamData[i].key // 임시로 작성 추후 수정 바람.
             let section1 = sectionPropDict[xbeamData[i].key][step]
             generalSectionList.push({ NAME: sectionName, Mat: materials[2][0], A: section1.A, I: [section1.Iyy, section1.Izz], J: section1.Ixx })
             // sectionNameDict[sectionName] = [sectionPropDict[sectionName]]  //가로보는 변단면 반영하지 않음.
             let elem = {
-                iNode: nodeNumDict[xbeamData[i].inode],
-                jNode: nodeNumDict[xbeamData[i].jnode],
+                iNode: nodeNumDict[xbeamData[i].key + "P0"],
+                jNode: nodeNumDict[xbeamData[i].key + "P1"],
                 sectionName: sectionName, // node_group.Key & added_index,
-                endOffset: true,
+                endOffset: false, // 강역 고려하지 않고  rigidbody 로 계산
                 number: elemNum,
-                IOFF: xbeamData[i].data[0],
-                JOFF: xbeamData[i].data[1]
+                // IOFF: xbeamData[i].data[0],
+                // JOFF: xbeamData[i].data[1]
             }
             allElement.push(elem)
             elemNum++
