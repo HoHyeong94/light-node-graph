@@ -2341,10 +2341,10 @@
       let slabThickness = 0;
       for (let i = 0; i < girderStation.length; i += girderStation.length - 1) {
           for (let j in girderStation[i]) {
-              if (girderStation[i][j].key.subStr(2, 1) === "D") {
+              if (girderStation[i][j].key.substr(2, 1) === "D") {
                   let masterStation = girderStation[i][j].point.masterStationNumber;
                   let masterPoint = MasterPointGenerator(masterStation, masterLine, girderStation[i][j].point.skew);
-                  let key = girderStation[i][j].key.subStr(2);
+                  let key = girderStation[i][j].key.substr(2);
 
                   for (let i = 0; i < slabLayout.length - 1; i++) {
                       let ss = pointDict[slabLayout[i][position]].masterStationNumber;
@@ -2387,8 +2387,8 @@
           //deckSectionInfo로 분리예정
           let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
           let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
-          if (centerLineStations[i].key.subStr(0,3) !== "CRN"){
-              let key = centerLineStations[i].key.subStr(2);
+          if (centerLineStations[i].key.substr(0,3) !== "CRN"){
+              let key = centerLineStations[i].key.substr(2);
               deckLineDict["LD" + key] = leftPoint;
               deckLineDict["RD" + key] = rightPoint;
           }
