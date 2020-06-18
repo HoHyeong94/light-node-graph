@@ -43,3 +43,19 @@ SapFrame.prototype.onExecute = function () {
     this.setOutputData(0, result.sectionPropDict)
     this.setOutputData(1, result.input)
 }
+
+
+export function CompositeJoint() {
+    this.addInput("nodeInput", "nodeInput");
+    this.addInput("nodeNumDict", "nodeNumDict");
+    this.addInput("deckLineDict", "deckLineDict");
+    this.addOutput("nodeNumDict", "nodeNumDict");
+    this.addOutput("nodeInput", "nodeInput");
+}
+
+CompositeJoint.prototype.onExecute = function () {
+    const result = CompositeJointGen(this.getInputData(0), this.getInputData(1), this.getInputData(2))
+    this.setOutputData(0, result.nodeNumDict)
+    this.setOutputData(1, result.input)
+}
+

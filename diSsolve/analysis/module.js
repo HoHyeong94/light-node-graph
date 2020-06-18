@@ -311,7 +311,7 @@ export function SupportGenerator(supportFixed, supportData, gridPoint) {
 <param name="stringer_info"></param>
 <returns></returns>
 **/
-export function CompositeJointGen(nodeInput, nodeNumDict, girderStation) {
+export function CompositeJointGen(nodeInput, nodeNumDict, deckLineDict) {
     let node = nodeInput.node;
     let local = nodeInput.local;
     let boundary = nodeInput.boundary;
@@ -319,21 +319,33 @@ export function CompositeJointGen(nodeInput, nodeNumDict, girderStation) {
     let newDict = nodeNumDict;
     let nodeNum = node.data.length + 1;
     let dummycoord = [-1, -1, -1];
-    for (let i = 0; i < girderStation.length; i += girderStation.length - 1) {
-        for (let j in girderStation[j]) {
-            if (dummycoord[0] !== girderStation[i][j].point.x ||
-                dummycoord[1] !== girderStation[i][j].point.y ||
-                dummycoord[2] !== girderStation[i][j].point.z) {
-                let key = i === 0 ? "LD" + girderStation[i][j].key.subStr(2) : "RD" + girderStation[i][j].key.subStr(2) //girder개수가 10개 이상인 경우에는 처리못함
-                newDict[key] = nodeNum
-                node.data.push({ nodeNum: nodeNum, coord: [x,y,z] })
-                nodeNum++
-                dummycoord = [x,y,z]
-            }
+    let gridModelL = [
+        ["G1K1", "G2K1"],
+        ["G1S1", "G2S1"],
+        ["G1K2", "G2K2"],
+        ["G1K3", "G2K3"],
+        ["G1S2", "G2S2"],
+        ["G1K4", "G2K4"],
+        ["G1K5", "G2K5"],
+        ["G1S3", "G2S3"],
+        ["G1K6", "G2K6"]];
+
+    for (let key in deckLineDict) {
+        let x = deckLineDict[key].x
+        let y = deckLineDict[key].y
+        let z = deckLineDict[key].z
+        if (dummycoord[0] !== x ||
+            dummycoord[1] !== y ||
+            dummycoord[2] !== z) {
+            newDict[key] = nodeNum
+            node.data.push({ nodeNum: nodeNum, coord: [x, y, z] })
+            nodeNum++
+            dummycoord = [x, y, z]
         }
     }
     return { nodeNumDict: newDict, input: { node, local, boundary, rigid } }
 }
+
 export function SapJointGenerator(girderStation, supportNode, xbeamData) {//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
     let nodeNum = 1;
     let node = { command: "JOINT", data: [] };

@@ -8671,6 +8671,7 @@
       return support
 
   }
+
   function SapJointGenerator(girderStation, supportNode, xbeamData) {//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
       let nodeNum = 1;
       let node = { command: "JOINT", data: [] };
@@ -8970,6 +8971,21 @@
   SapFrame.prototype.onExecute = function () {
       const result = SapFrameGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3),this.getInputData(4),this.getInputData(5),this.getInputData(6));
       this.setOutputData(0, result.sectionPropDict);
+      this.setOutputData(1, result.input);
+  };
+
+
+  function CompositeJoint() {
+      this.addInput("nodeInput", "nodeInput");
+      this.addInput("nodeNumDict", "nodeNumDict");
+      this.addInput("deckLineDict", "deckLineDict");
+      this.addOutput("nodeNumDict", "nodeNumDict");
+      this.addOutput("nodeInput", "nodeInput");
+  }
+
+  CompositeJoint.prototype.onExecute = function () {
+      const result = CompositeJointGen(this.getInputData(0), this.getInputData(1), this.getInputData(2));
+      this.setOutputData(0, result.nodeNumDict);
       this.setOutputData(1, result.input);
   };
 
@@ -9506,6 +9522,7 @@
   global.LiteGraph.registerNodeType("nexivil/support",Support);
   global.LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
   global.LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
+  global.LiteGraph.registerNodeType("nexivil/CompositeJoint",CompositeJoint);
   global.LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
   global.LiteGraph.registerNodeType("HMECS/splice", SplicePart);
   global.LiteGraph.registerNodeType("HMECS/barrier", BarrierPoint);
