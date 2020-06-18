@@ -463,6 +463,9 @@ export function DeckSectionPoint(
         result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint, slabHeight: slabThickness + haunch });
 
     }
+    deckLineDict[0].sort(function (a, b) { return a.point.masterStationNumber < b.point.masterStationNumber ? -1 : 1; });
+    deckLineDict[1].sort(function (a, b) { return a.point.masterStationNumber < b.point.masterStationNumber ? -1 : 1; });
+    
     return { deckPointDict: result, deckLineDict } //{ slab1, slab2 }
 }
 //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
