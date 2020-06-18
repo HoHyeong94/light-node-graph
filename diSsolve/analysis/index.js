@@ -1,4 +1,4 @@
-import { SupportGenerator, SapJointGenerator, SapFrameGenerator } from "./module"
+import { SupportGenerator, SapJointGenerator, SapFrameGenerator, CompositeJointGen } from "./module"
 
 export function Support() {
     this.addInput("supportFixed", "boolean");

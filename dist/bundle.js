@@ -8671,6 +8671,39 @@
       return support
 
   }
+  /**
+  <summary>
+  각 요소별 포함하고 있는 노드의 리스트를 출력 및 sap.s2k 인풋결과 출력을 하며, 동시에 받침점에 대한 Local angle을 정의함
+  </summary>
+  <param name="girder_point_dict"></param>
+  <param name="xbeam_info"></param>
+  <param name="stringer_info"></param>
+  <returns></returns>
+  **/
+  function CompositeJointGen(nodeInput, nodeNumDict, deckLineDict) {
+      let node = nodeInput.node;
+      let local = nodeInput.local;
+      let boundary = nodeInput.boundary;
+      let rigid = nodeInput.rigid;
+      let newDict = nodeNumDict;
+      let nodeNum = node.data.length + 1;
+      let dummycoord = [-1, -1, -1];
+
+      for (let key in deckLineDict) {
+          let x = deckLineDict[key].x;
+          let y = deckLineDict[key].y;
+          let z = deckLineDict[key].z;
+          if (dummycoord[0] !== x ||
+              dummycoord[1] !== y ||
+              dummycoord[2] !== z) {
+              newDict[key] = nodeNum;
+              node.data.push({ nodeNum: nodeNum, coord: [x, y, z] });
+              nodeNum++;
+              dummycoord = [x, y, z];
+          }
+      }
+      return { nodeNumDict: newDict, input: { node, local, boundary, rigid } }
+  }
 
   function SapJointGenerator(girderStation, supportNode, xbeamData) {//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
       let nodeNum = 1;
