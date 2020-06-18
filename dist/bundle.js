@@ -2359,8 +2359,11 @@
                       }
                   }
                   //deckSectionInfo로 분리예정
+                  if (i ===0){
                   deckLineDict["LD" + key] = OffsetPoint(masterPoint, masterLine, leftOffset);
+                  }else {
                   deckLineDict["RD" + key] = OffsetPoint(masterPoint, masterLine, rightOffset);
+                  }
               }
           }
       }
