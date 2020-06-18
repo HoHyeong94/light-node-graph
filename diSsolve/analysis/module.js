@@ -330,17 +330,18 @@ export function CompositeJointGen(nodeInput, nodeNumDict, deckLineDict) {
         ["G1S3", "G2S3"],
         ["G1K6", "G2K6"]];
 
-    for (let key in deckLineDict) {
-        let x = deckLineDict[key].x
-        let y = deckLineDict[key].y
-        let z = deckLineDict[key].z
+    for (let i in deckLineDict)
+        for (let j in deckLineDict[i]) {
+        let x = deckLineDict[i][j].point.x
+        let y = deckLineDict[i][j].point.y
+        let z = deckLineDict[i][j].point.z
         if (dummycoord[0] !== x ||
             dummycoord[1] !== y ||
             dummycoord[2] !== z) {
-            newDict[key] = nodeNum
-            node.data.push({ nodeNum: nodeNum, coord: [x, y, z] })
-            nodeNum++
-            dummycoord = [x, y, z]
+            newDict[deckLineDict[i][j].key] = nodeNum;
+            node.data.push({ nodeNum: nodeNum, coord: [x, y, z] });
+            nodeNum++;
+            dummycoord = [x, y, z];
         }
     }
     return { nodeNumDict: newDict, input: { node, local, boundary, rigid } }

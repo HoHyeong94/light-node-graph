@@ -2324,7 +2324,7 @@
       pointDict,
   ) {
       let result = [];
-      let deckLineDict = {};
+      let deckLineDict = [[], []];
       // let slab1 = [];
       // let slab2 = [];
       const position = 0;
@@ -2359,10 +2359,10 @@
                       }
                   }
                   //deckSectionInfo로 분리예정
-                  if (i ===0){
-                  deckLineDict["LD" + key] = OffsetPoint(masterPoint, masterLine, leftOffset);
-                  }else {
-                  deckLineDict["RD" + key] = OffsetPoint(masterPoint, masterLine, rightOffset);
+                  if (i === 0) {
+                      deckLineDict[0].push({ key: ["LD" + key], point: OffsetPoint(masterPoint, masterLine, leftOffset) });
+                  } else {
+                      deckLineDict[1].push({ key: ["RD" + key], point: OffsetPoint(masterPoint, masterLine, rightOffset) });
                   }
               }
           }
@@ -2390,14 +2390,12 @@
           //deckSectionInfo로 분리예정
           let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
           let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
-          if (centerLineStations[i].key.substr(0,3) !== "CRN"){
+          if (centerLineStations[i].key.substr(0, 3) !== "CRN" && centerLineStations[i].key !== "CRK0" && centerLineStations[i].key !== "CRK7") {
               let key = centerLineStations[i].key.substr(2);
-              deckLineDict["LD" + key] = leftPoint;
-              deckLineDict["RD" + key] = rightPoint;
+              deckLineDict[0].push({ key: ["LD" + key], point: leftPoint });
+              deckLineDict[1].push({ key: ["RD" + key], point: rightPoint });
           }
-          let slabUpperPoints = [leftPoint,
-              masterPoint,
-              rightPoint];
+          let slabUpperPoints = [leftPoint, masterPoint, rightPoint];
 
           deckSectionPoint.push({ x: leftOffset, y: leftPoint.z - endT }, { x: leftOffset, y: leftPoint.z }, { x: 0, y: masterPoint.z }, { x: rightOffset, y: rightPoint.z }, { x: rightOffset, y: rightPoint.z - endT });
           let slabLowerPoints = [];
@@ -2426,7 +2424,7 @@
           result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint, slabHeight: slabThickness + haunch });
 
       }
-      return {deckPointDict : result, deckLineDict} //{ slab1, slab2 }
+      return { deckPointDict: result, deckLineDict } //{ slab1, slab2 }
   }
   //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
   function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
@@ -8689,14 +8687,15 @@
       let nodeNum = node.data.length + 1;
       let dummycoord = [-1, -1, -1];
 
-      for (let key in deckLineDict) {
-          let x = deckLineDict[key].x;
-          let y = deckLineDict[key].y;
-          let z = deckLineDict[key].z;
+      for (let i in deckLineDict)
+          for (let j in deckLineDict[i]) {
+          let x = deckLineDict[i][j].point.x;
+          let y = deckLineDict[i][j].point.y;
+          let z = deckLineDict[i][j].point.z;
           if (dummycoord[0] !== x ||
               dummycoord[1] !== y ||
               dummycoord[2] !== z) {
-              newDict[key] = nodeNum;
+              newDict[deckLineDict[i][j].key] = nodeNum;
               node.data.push({ nodeNum: nodeNum, coord: [x, y, z] });
               nodeNum++;
               dummycoord = [x, y, z];
