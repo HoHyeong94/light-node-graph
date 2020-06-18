@@ -38,37 +38,37 @@ const materials = {
     bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
     Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
     rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
-    input : 
-    [
+    input:
         [
-            "slabConc",
-            28825.3,
-            12318.5,
-            0.17,
-            25
-        ],
-        [
-            "lowerConc",
-            31209.5,
-            13337.4,
-            0.17,
-            25
-        ],
-        [
-            "steelBox",
-            210000,
-            81000,
-            0.3,
-            78.5
-        ],
-        [
-            "rebar",
-            200000,
-            80000,
-            0.3,
-            78.5
+            [
+                "slabConc",
+                28825.3,
+                12318.5,
+                0.17,
+                25
+            ],
+            [
+                "lowerConc",
+                31209.5,
+                13337.4,
+                0.17,
+                25
+            ],
+            [
+                "steelBox",
+                210000,
+                81000,
+                0.3,
+                78.5
+            ],
+            [
+                "rebar",
+                200000,
+                80000,
+                0.3,
+                78.5
+            ]
         ]
-    ]
 }
 const xbeamInput = {
     tfw: 0,
@@ -121,7 +121,7 @@ export function Isection(xi, materials) { //, slab
     stage2 = stage1
     //이중합성후 합성단면의 단면계수 계산
     stage3 = stage1
-    
+
     // let deckConc = partProperty(slab.W / n1, slab.T, wh / 2 + slab.T / 2 + slab.Th, 0, 0)
     // isteel.push(deckConc)
     // ADy += deckConc.area * deckConc.Dy
@@ -311,6 +311,29 @@ export function SupportGenerator(supportFixed, supportData, gridPoint) {
 <param name="stringer_info"></param>
 <returns></returns>
 **/
+export function CompositeJointGen(nodeInput, nodeNumDict, girderStation) {
+    let node = nodeInput.node;
+    let local = nodeInput.local;
+    let boundary = nodeInput.boundary;
+    let rigid = nodeInput.rigid;
+    let newDict = nodeNumDict;
+    let nodeNum = node.data.length + 1;
+    let dummycoord = [-1, -1, -1];
+    for (let i = 0; i < girderStation.length; i += girderStation.length - 1) {
+        for (let j in girderStation[j]) {
+            if (dummycoord[0] !== girderStation[i][j].point.x ||
+                dummycoord[1] !== girderStation[i][j].point.y ||
+                dummycoord[2] !== girderStation[i][j].point.z) {
+                let key = i === 0 ? "LD" + girderStation[i][j].key.subStr(2) : "RD" + girderStation[i][j].key.subStr(2) //girder개수가 10개 이상인 경우에는 처리못함
+                newDict[key] = nodeNum
+                node.data.push({ nodeNum: nodeNum, coord: [x,y,z] })
+                nodeNum++
+                dummycoord = [x,y,z]
+            }
+        }
+    }
+    return { nodeNumDict: newDict, input: { node, local, boundary, rigid } }
+}
 export function SapJointGenerator(girderStation, supportNode, xbeamData) {//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
     let nodeNum = 1;
     let node = { command: "JOINT", data: [] };

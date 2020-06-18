@@ -2015,10 +2015,10 @@
 
                   let URib = {};
                   for (let j in ps.lRibLO) {
-                      let uRib = [{ x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY +(ps.uRibLO[j] - ps.uRibThk / 2)*gradient}, 
-                                  { x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j]*gradient },
-                                  { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j]*gradient}, 
-                                  { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY +(ps.uRibLO[j] + ps.uRibThk / 2)*gradient }];
+                      let uRib = [{ x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY + (ps.uRibLO[j] - ps.uRibThk / 2) * gradient },
+                      { x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j] * gradient },
+                      { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j] * gradient },
+                      { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY + (ps.uRibLO[j] + ps.uRibThk / 2) * gradient }];
                       let keyname = "uRib" + j;
                       URib[keyname] = uRib;
                   }
@@ -2092,9 +2092,9 @@
                       horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
                   };
                   if (i === 0) {
-                      forward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...LRib,...URib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide };
+                      forward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...LRib, ...URib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide };
                   } else {
-                      backward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...LRib,...URib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide };
+                      backward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...LRib, ...URib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide };
                   }
               }
               result[k] = { forward, backward };
@@ -2316,6 +2316,7 @@
   function DeckSectionPoint(
       masterLine,
       centerLineStations,
+      girderStation,
       girderLayout,
       slabInfo,
       slabLayout,
@@ -2323,6 +2324,7 @@
       pointDict,
   ) {
       let result = [];
+      let deckLineDict = {};
       // let slab1 = [];
       // let slab2 = [];
       const position = 0;
@@ -2337,7 +2339,31 @@
       let leftOffset = 0;
       let rightOffset = 0;
       let slabThickness = 0;
-      
+      for (let i = 0; i < girderStation.length; i += girderStation.length - 1) {
+          for (let j in girderStation[i]) {
+              if (girderStation[i][j].key.subStr(2, 1) === "D") {
+                  let masterStation = girderStation[i][j].point.masterStationNumber;
+                  let masterPoint = MasterPointGenerator(masterStation, masterLine, girderStation[i][j].point.skew);
+                  let key = girderStation[i][j].key.subStr(2);
+
+                  for (let i = 0; i < slabLayout.length - 1; i++) {
+                      let ss = pointDict[slabLayout[i][position]].masterStationNumber;
+                      let es = pointDict[slabLayout[i + 1][position]].masterStationNumber;
+                      if (masterStation >= ss && masterStation <= es) {
+                          let x = masterStation - ss;
+                          let l = es - ss;
+                          leftOffset = slabLayout[i][3] * (l - x) / l + slabLayout[i + 1][3] * (x) / l;
+                          rightOffset = slabLayout[i][4] * (l - x) / l + slabLayout[i + 1][4] * (x) / l;
+                          slabThickness = slabLayout[i][H] * (l - x) / l + slabLayout[i + 1][H] * (x) / l;
+                          endT = slabLayout[i][T] * (l - x) / l + slabLayout[i + 1][T] * (x) / l;
+                      }
+                  }
+                  //deckSectionInfo로 분리예정
+                  deckLineDict["LD" + key] = OffsetPoint(masterPoint, masterLine, leftOffset);
+                  deckLineDict["RD" + key] = OffsetPoint(masterPoint, masterLine, rightOffset);
+              }
+          }
+      }
 
 
       for (let i = 1; i < centerLineStations.length - 1; i++) {
@@ -2361,7 +2387,11 @@
           //deckSectionInfo로 분리예정
           let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
           let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
-
+          if (centerLineStations[i].key.subStr(0,3) !== "CRN"){
+              let key = centerLineStations[i].key.subStr(2);
+              deckLineDict["LD" + key] = leftPoint;
+              deckLineDict["RD" + key] = rightPoint;
+          }
           let slabUpperPoints = [leftPoint,
               masterPoint,
               rightPoint];
@@ -2375,7 +2405,7 @@
               let girderLine = girderLayout.girderLine[j];
               let girderPoint = LineMatch2(masterPoint, masterLine, girderLine);
               let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
-              lw.forEach(elem => glw.push({x : elem.x + girderPoint.offset, y: elem.y + girderPoint.z}));
+              lw.forEach(elem => glw.push({ x: elem.x + girderPoint.offset, y: elem.y + girderPoint.z }));
               //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
               //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중
               lw.forEach(element => slabLowerPoints.push(ToGlobalPoint(girderPoint, element)));
@@ -2390,10 +2420,10 @@
           offsetPoint.push(rightOffset);
           slabLowerPoints.unshift({ x: leftPoint.x, y: leftPoint.y, z: leftPoint.z - endT });
           slabLowerPoints.push({ x: rightPoint.x, y: rightPoint.y, z: rightPoint.z - endT });
-          result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint, slabHeight : slabThickness + haunch});
+          result.push({ name: masterStation, key: centerLineStations[i].key, slabUpperPoints, slabLowerPoints, offsetPoint, deckSectionPoint, slabHeight: slabThickness + haunch });
 
       }
-      return result //{ slab1, slab2 }
+      return {deckPointDict : result, deckLineDict} //{ slab1, slab2 }
   }
   //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
   function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
@@ -2418,17 +2448,17 @@
       let rw2 = WebPoint(rwb, rwt, gradient, -topY); //{x:trwX,y:gradient*trwX - slabThickness}
       let w1 = slabInfo.w1; //헌치돌출길이
       let hh = slabInfo.haunchHeight; //헌치높이
-      let wx = [lw2.x - ps.uFlangeC - w1,lw2.x - ps.uFlangeC + ps.uFlangeW + w1, rw2.x + ps.uFlangeC + w1, rw2.x + ps.uFlangeC - ps.uFlangeW - w1];
+      let wx = [lw2.x - ps.uFlangeC - w1, lw2.x - ps.uFlangeC + ps.uFlangeW + w1, rw2.x + ps.uFlangeC + w1, rw2.x + ps.uFlangeC - ps.uFlangeW - w1];
       let hl = [];
       wx.forEach(x => hl.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)));
       let hpt = [];
       let wpt = [];
-      const constant = [-3,3,3,-3] ; //루프계산을 위한 계수 모음
-      for (let i=0; i<wx.length;i++){
-          hpt.push({ x: wx[i] + hl[i]*constant[i], y: - ps.slabThickness  + girderPoint.gradientY * (wx[i] + hl[i]*constant[i]) });
-          wpt.push({ x: wx[i], y: - topY  + gradient * (wx[i])});
+      const constant = [-3, 3, 3, -3]; //루프계산을 위한 계수 모음
+      for (let i = 0; i < wx.length; i++) {
+          hpt.push({ x: wx[i] + hl[i] * constant[i], y: - ps.slabThickness + girderPoint.gradientY * (wx[i] + hl[i] * constant[i]) });
+          wpt.push({ x: wx[i], y: - topY + gradient * (wx[i]) });
       }
-      if (wx[1]>wx[3]){   //임시로 작성한 내용, 개구 폐합에서는 잘못된 3차원 메쉬가 생성됨 200602 by drlim
+      if (wx[1] > wx[3]) {   //임시로 작성한 내용, 개구 폐합에서는 잘못된 3차원 메쉬가 생성됨 200602 by drlim
           wpt[1] = wpt[0];
           wpt[3] = wpt[2];
           hpt[1] = wpt[0];
@@ -2464,24 +2494,29 @@
   function DeckPoint(){
       this.addInput("masterLine","line");
       this.addInput("centerLineStation","centerLineStation");
+      this.addInput("girderStation","girderStation");
       this.addInput("girderLayout","girderLayout");
       this.addInput("slabInfo","slabInfo");
       this.addInput("slabLayout","arr");
       this.addInput("girderBaseInfo","arr");
       this.addInput("pointDict","pointDict");
       this.addOutput("DeckPointDict","DeckPointDict");
+      this.addOutput("DeckLinetDict","DeckLineDict");
     }
 
     DeckPoint.prototype.onExecute = function(){
-      this.setOutputData(0,DeckSectionPoint(
-          this.getInputData(0),
-          this.getInputData(1),
-          this.getInputData(2),
-          this.getInputData(3),
-          this.getInputData(4),
-          this.getInputData(5),
-          this.getInputData(6)
-        ));
+      let deck = DeckSectionPoint(
+        this.getInputData(0),
+        this.getInputData(1),
+        this.getInputData(2),
+        this.getInputData(3),
+        this.getInputData(4),
+        this.getInputData(5),
+        this.getInputData(6),
+        this.getInputData(7)
+      );
+      this.setOutputData(0,deck.deckPointDict);
+      this.setOutputData(1,deck.deckLineDict);
     };
 
   function FilletPoints(plate1, plate2, isForward, radius, smoothness) {
@@ -8452,7 +8487,7 @@
       stage2 = stage1;
       //이중합성후 합성단면의 단면계수 계산
       stage3 = stage1;
-      
+
       // let deckConc = partProperty(slab.W / n1, slab.T, wh / 2 + slab.T / 2 + slab.Th, 0, 0)
       // isteel.push(deckConc)
       // ADy += deckConc.area * deckConc.Dy
@@ -8633,15 +8668,6 @@
       return support
 
   }
-  /**
-  <summary>
-  각 요소별 포함하고 있는 노드의 리스트를 출력 및 sap.s2k 인풋결과 출력을 하며, 동시에 받침점에 대한 Local angle을 정의함
-  </summary>
-  <param name="girder_point_dict"></param>
-  <param name="xbeam_info"></param>
-  <param name="stringer_info"></param>
-  <returns></returns>
-  **/
   function SapJointGenerator(girderStation, supportNode, xbeamData) {//girder_layout, girder_point_dict, xbeam_info, stringer_info, support_data, all_beam_Section_info){
       let nodeNum = 1;
       let node = { command: "JOINT", data: [] };

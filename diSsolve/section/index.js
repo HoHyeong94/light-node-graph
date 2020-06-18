@@ -21,22 +21,27 @@ SectionPoint.prototype.onExecute = function() {
 export function DeckPoint(){
     this.addInput("masterLine","line");
     this.addInput("centerLineStation","centerLineStation");
+    this.addInput("girderStation","girderStation");
     this.addInput("girderLayout","girderLayout");
     this.addInput("slabInfo","slabInfo");
     this.addInput("slabLayout","arr");
     this.addInput("girderBaseInfo","arr");
     this.addInput("pointDict","pointDict");
     this.addOutput("DeckPointDict","DeckPointDict");
+    this.addOutput("DeckLinetDict","DeckLineDict");
   }
 
   DeckPoint.prototype.onExecute = function(){
-    this.setOutputData(0,DeckSectionPoint(
-        this.getInputData(0),
-        this.getInputData(1),
-        this.getInputData(2),
-        this.getInputData(3),
-        this.getInputData(4),
-        this.getInputData(5),
-        this.getInputData(6)
-      ))
+    let deck = DeckSectionPoint(
+      this.getInputData(0),
+      this.getInputData(1),
+      this.getInputData(2),
+      this.getInputData(3),
+      this.getInputData(4),
+      this.getInputData(5),
+      this.getInputData(6),
+      this.getInputData(7)
+    )
+    this.setOutputData(0,deck.deckPointDict)
+    this.setOutputData(1,deck.deckLineDict)
   }
