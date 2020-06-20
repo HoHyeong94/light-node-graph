@@ -62,10 +62,11 @@ CompositeJoint.prototype.onExecute = function () {
 export function CompositeFrame() {
     this.addInput("nodeNumDict", "nodeNumDict");
     this.addInput("frameInput", "frameInput");
+    this.addInput("deckLineDict", "deckLineDict");
     this.addOutput("frameInput", "frameInput");
 }
 
 CompositeFrame.prototype.onExecute = function () {
-    const result = CompositeFrameGen(this.getInputData(0), this.getInputData(1))
+    const result = CompositeFrameGen(this.getInputData(0), this.getInputData(1),this.getInputData(2))
     this.setOutputData(0, result)
 }
