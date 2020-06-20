@@ -1,4 +1,4 @@
-import { SupportGenerator, SapJointGenerator, SapFrameGenerator, CompositeJointGen } from "./module"
+import { SupportGenerator, SapJointGenerator, SapFrameGenerator, CompositeJointGen, CompositeFrameGen } from "./module"
 
 export function Support() {
     this.addInput("supportFixed", "boolean");
@@ -59,3 +59,13 @@ CompositeJoint.prototype.onExecute = function () {
     this.setOutputData(1, result.input)
 }
 
+export function CompositeFrame() {
+    this.addInput("nodeNumDict", "nodeNumDict");
+    this.addInput("frameInput", "frameInput");
+    this.addOutput("frameInput", "frameInput");
+}
+
+CompositeFrame.prototype.onExecute = function () {
+    const result = CompositeFrameGen(this.getInputData(0), this.getInputData(1))
+    this.setOutputData(0, result)
+}

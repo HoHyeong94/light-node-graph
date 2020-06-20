@@ -319,16 +319,7 @@ export function CompositeJointGen(nodeInput, nodeNumDict, deckLineDict) {
     let newDict = nodeNumDict;
     let nodeNum = node.data.length + 1;
     let dummycoord = [-1, -1, -1];
-    let gridModelL = [
-        ["G1K1", "G2K1"],
-        ["G1S1", "G2S1"],
-        ["G1K2", "G2K2"],
-        ["G1K3", "G2K3"],
-        ["G1S2", "G2S2"],
-        ["G1K4", "G2K4"],
-        ["G1K5", "G2K5"],
-        ["G1S3", "G2S3"],
-        ["G1K6", "G2K6"]];
+    
 
     for (let i in deckLineDict)
         for (let j in deckLineDict[i]) {
@@ -435,6 +426,56 @@ function SectionCompare(section1, section2) {
         && section1.Izz === section2.Izz ? true : false
     return result
 }
+
+export function CompositeFrameGen(nodeNumDict, frameInput){ //gridModelData, xbeamData, 
+    let step = 2;
+    // let allElement = []; // As New List(Of Element_3d)
+    let elemNum = 1; // As Integer = 1
+    // let sectionNameDict = {}
+    let frame = frameInput.frame;
+    let section = frameInput.section;
+    let material = frameInput.material;
+    let selfWeight = frameInput.selfWeight;
+    
+    let gridModelL = [
+        ["G1K1", "G2K1"],
+        ["G1K2", "G2K2"],
+        ["G1K3", "G2K3"],
+        ["G1K4", "G2K4"],
+        ["G1K5", "G2K5"],
+        ["G1K6", "G2K6"]];
+
+    for (let i in gridModelL){
+        for (let j = 0; j < gridModelL[i].length + 1;j++){
+            let inode = "";
+            let jnode = "";
+            if (j ===0){
+                inode = "LD" + gridModelL[i][j].substr(2)
+                jnode = gridModelL[i][j]
+            } else if (j === gridModelL[i].length){
+                inode = gridModelL[i][j-1]
+                jnode = "RD" + gridModelL[i][j-1].substr(2)
+            } else {
+                inode = gridModelL[i][j-1]
+                jnode = gridModelL[i][j]
+            }
+            let elem = {
+                iNode: nodeNumDict[inode],
+                jNode: nodeNumDict[jnode],
+                sectionName: "none", // node_group.Key & added_index,
+                endOffset: false,
+                number: elemNum
+            }
+            frame.data.push(elem)
+            // let p1 = -1 * section1.A * material.data[2].W   //materials : steel
+            // let p2 = -1 * section2.A * material.data[2].W   //materials : steel
+            // selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
+            elemNum++
+        }
+    }
+    return { frame, section, material, selfWeight }
+}
+
 export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, supportNode, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
     let step = 0;
     let allElement = []; // As New List(Of Element_3d)
