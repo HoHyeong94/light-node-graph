@@ -427,16 +427,16 @@ function SectionCompare(section1, section2) {
     return result
 }
 
-export function CompositeFrameGen(nodeNumDict, frameInput){ //gridModelData, xbeamData, 
+export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict){ //gridModelData, xbeamData, 
     let step = 2;
     // let allElement = []; // As New List(Of Element_3d)
-    let elemNum = 1; // As Integer = 1
     // let sectionNameDict = {}
     let frame = frameInput.frame;
     let section = frameInput.section;
     let material = frameInput.material;
     let selfWeight = frameInput.selfWeight;
-    
+    let elemNum = frame.data.length + 1;
+
     let gridModelL = [
         ["G1K1", "G2K1"],
         ["G1K2", "G2K2"],
@@ -444,6 +444,21 @@ export function CompositeFrameGen(nodeNumDict, frameInput){ //gridModelData, xbe
         ["G1K4", "G2K4"],
         ["G1K5", "G2K5"],
         ["G1K6", "G2K6"]];
+    for (let i in deckLineDict){
+        for (let j = 0; j< deckLineDict[i].length -1; j++){
+            let inode = deckLineDict[i][j].key;
+            let jnode = deckLineDict[i][j+1].key;
+            let elem = {
+                iNode: nodeNumDict[inode],
+                jNode: nodeNumDict[jnode],
+                sectionName: "none", // node_group.Key & added_index,
+                endOffset: false,
+                number: elemNum
+            }
+            frame.data.push(elem)
+            elemNum++
+        }
+    }
 
     for (let i in gridModelL){
         for (let j = 0; j < gridModelL[i].length + 1;j++){
