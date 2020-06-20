@@ -8812,7 +8812,31 @@
           ["G1K3", "G2K3"],
           ["G1K4", "G2K4"],
           ["G1K5", "G2K5"],
-          ["G1K6", "G2K6"]];
+          ["G1K6", "G2K6"],
+          ["G1S1", "G2S1"],
+          ["G1S2", "G2S2"],
+          ["G1S3", "G2S3"],
+          ["G1D1", "G2D1"],
+          ["G1D2", "G2D2"],
+          ["G1D3", "G2D3"],
+          ["G1D4", "G2D4"],
+          ["G1D5", "G2D5"],
+          ["G1D6", "G2D6"],
+          ["G1D7", "G2D7"],
+          ["G1D8", "G2D8"],
+          ["G1D9", "G2D9"],
+          ["G1D10", "G2D10"],
+          ["G1D11", "G2D11"],
+          ["G1D12", "G2D12"],
+          ["G1D13", "G2D13"],
+          ["G1D14", "G2D14"],
+          ["G1D15", "G2D15"],
+          ["G1D16", "G2D16"],
+          ["G1D17", "G2D17"],
+          ["G1D18", "G2D18"],
+          ["G1D19", "G2D19"],
+          ["G1D20", "G2D20"],
+      ];
       for (let i in deckLineDict){
           for (let j = 0; j< deckLineDict[i].length -1; j++){
               let inode = deckLineDict[i][j].key;
