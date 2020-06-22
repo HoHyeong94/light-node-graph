@@ -2426,11 +2426,12 @@
       }
       deckLineDict[0].sort(function (a, b) { return a.point.masterStationNumber < b.point.masterStationNumber ? -1 : 1; });
       deckLineDict[1].sort(function (a, b) { return a.point.masterStationNumber < b.point.masterStationNumber ? -1 : 1; });
-      
+
       return { deckPointDict: result, deckLineDict } //{ slab1, slab2 }
   }
   //UflangePoint는 상부플랜지 헌치의 하단좌표를 출력하는 함수임
-  function UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
+  function 
+  UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
 
       let slabToGirder = slabInfo.slabToGirder;
       let points = [];
@@ -2457,7 +2458,7 @@
       wx.forEach(x => hl.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)));
       let hpt = [];
       let wpt = [];
-      const constant = [-3, 3, 3, -3]; //루프계산을 위한 계수 모음
+      const constant = [-3, 3, 3, -3]; //루프계산을 위한 계수 모음, 헌치의 기울기 : 밑변/높이비
       for (let i = 0; i < wx.length; i++) {
           hpt.push({ x: wx[i] + hl[i] * constant[i], y: - ps.slabThickness + girderPoint.gradientY * (wx[i] + hl[i] * constant[i]) });
           wpt.push({ x: wx[i], y: - topY + gradient * (wx[i]) });
@@ -2465,6 +2466,8 @@
       if (wx[1] > wx[3]) {   //임시로 작성한 내용, 개구 폐합에서는 잘못된 3차원 메쉬가 생성됨 200602 by drlim
           wpt[1] = wpt[0];
           wpt[3] = wpt[2];
+
+          
           hpt[1] = wpt[0];
           hpt[3] = wpt[2];
       }
