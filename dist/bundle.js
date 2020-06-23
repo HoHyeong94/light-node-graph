@@ -8885,8 +8885,6 @@
                   let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
                   let gradient = sectionPointDict[jnode].forward.input.gradient;
                   let leftend = deckLineDict[0].find(elem => elem.key === inode);
-                  console.log("check", inode, leftend,deckLineDict[0]);                
-
                   let leftPoint = leftend.point;
                   let rightPoint = gridPoint[jnode];
                   let L = rightPoint.offset - leftPoint.offset;
@@ -8896,7 +8894,20 @@
                   for (let k=0; k<xList.length-1;k++){
                       slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+1]], Uzp: [wList[k], wList[k+1]] });
                   }
-              } else if (j === gridModelL[i].length) ;
+              } else if (j === gridModelL[i].length) {
+                  let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
+                  let gradient = sectionPointDict[inode].forward.input.gradient;
+                  let rightend = deckLineDict[1].find(elem => elem.key === jnode);
+                  let leftPoint = gridPoint[inode];
+                  let rightPoint = rightend.point;
+                  let L = rightPoint.offset - leftPoint.offset;
+                  let x1 = sectionPointDict[inode].forward.uflange[2].length>0? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[jnode].forward.uflange[1][0].x - w1;
+                  let xList = [0, x1/L, 1];
+                  let wList = [slabThickness1 + hh,  slabThickness1 + hh + (- gradient + leftPoint.gradientY) * x1,rightend.endT];
+                  for (let k=0; k<xList.length-1;k++){
+                      slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+1]], Uzp: [wList[k], wList[k+1]] });
+                  }
+              }
               // let p1 = -1 * section1.A * material.data[2].W   //materials : steel
               // let p2 = -1 * section2.A * material.data[2].W   //materials : steel
               // selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
