@@ -432,8 +432,8 @@ export function DeckSectionPoint(
         let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
         if (centerLineStations[i].key.substr(0, 3) !== "CRN" && centerLineStations[i].key !== "CRK0" && centerLineStations[i].key !== "CRK7") {
             let key = centerLineStations[i].key.substr(2);
-            deckLineDict[0].push({ key: ["LD" + key], point: leftPoint, endT });
-            deckLineDict[1].push({ key: ["RD" + key], point: rightPoint, endT });
+            deckLineDict[0].push({ key: "LD" + key, point: leftPoint, endT });
+            deckLineDict[1].push({ key: "RD" + key, point: rightPoint, endT });
         }
         let slabUpperPoints = [leftPoint, masterPoint, rightPoint];
 
