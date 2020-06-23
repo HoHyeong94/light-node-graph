@@ -8863,6 +8863,7 @@
           ["G1D20", "G2D20"],
       ];
       gridModelL.sort(function(a,b){return gridPoint[a[0]].masterStationNumber < gridPoint[b[0]].masterStationNumber ? -1 : 1; });
+      
       for (let i in deckLineDict) {
           for (let j = 0; j < deckLineDict[i].length - 1; j++) {
               let inode = deckLineDict[i][j].key;
@@ -8879,19 +8880,28 @@
           }
       }
 
-      for (let i in gridModelL) {
-          for (let j = 0; j < gridModelL[i].length + 1; j++) {
+      
+          for (let j = 0; j < gridModelL[0].length + 1; j++) { 
+              for (let i = 0; i < gridModelL.length; i++) {
               let inode = "";
               let jnode = "";
+              let ipoint = {};
+              let jpoint = {};
               if (j === 0) {
                   inode = "LD" + gridModelL[i][j].substr(2);
                   jnode = gridModelL[i][j];
+                  ipoint = deckLineDict[0].find(elem => elem.key === inode).point;
+                  jpoint = gridPoint[jnode];
               } else if (j === gridModelL[i].length) {
                   inode = gridModelL[i][j - 1];
                   jnode = "RD" + gridModelL[i][j - 1].substr(2);
+                  ipoint = gridPoint[inode];
+                  jpoint = deckLineDict[1].find(elem => elem.key === jnode).point;
               } else {
                   inode = gridModelL[i][j - 1];
                   jnode = gridModelL[i][j];
+                  ipoint = gridPoint[inode];
+                  jpoint = gridPoint[jnode];
               }
               let elem = {
                   iNode: nodeNumDict[inode],

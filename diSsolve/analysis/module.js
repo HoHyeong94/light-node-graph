@@ -488,19 +488,28 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
         }
     }
 
-    for (let i in gridModelL) {
-        for (let j = 0; j < gridModelL[i].length + 1; j++) {
+    
+        for (let j = 0; j < gridModelL[0].length + 1; j++) { 
+            for (let i = 0; i < gridModelL.length; i++) {
             let inode = "";
             let jnode = "";
+            let ipoint = {};
+            let jpoint = {};
             if (j === 0) {
                 inode = "LD" + gridModelL[i][j].substr(2)
                 jnode = gridModelL[i][j]
+                ipoint = deckLineDict[0].find(elem => elem.key === inode).point;
+                jpoint = gridPoint[jnode];
             } else if (j === gridModelL[i].length) {
                 inode = gridModelL[i][j - 1]
                 jnode = "RD" + gridModelL[i][j - 1].substr(2)
+                ipoint = gridPoint[inode];
+                jpoint = deckLineDict[1].find(elem => elem.key === jnode).point;
             } else {
                 inode = gridModelL[i][j - 1]
                 jnode = gridModelL[i][j]
+                ipoint = gridPoint[inode];
+                jpoint = gridPoint[jnode];
             }
             let elem = {
                 iNode: nodeNumDict[inode],
