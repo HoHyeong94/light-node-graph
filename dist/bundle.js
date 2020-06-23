@@ -8884,9 +8884,11 @@
       for (let j = 0; j < gridModelL[0].length + 1; j++) {
           let ivecB = [0, 0, 0];
           let jvecB = [0, 0, 0];
-          let ivecF = [];
-          let jvecF = [];
+
           for (let i = 0; i < gridModelL.length; i++) {
+              let ivecF = [];
+              let jvecF = [];
+
               let inode = "";
               let jnode = "";
               let ipoint = {};
@@ -8937,10 +8939,10 @@
               }
               let elemL = Math.sqrt((jpoint.x - ipoint.x)**2 + (jpoint.y - ipoint.y)**2);
               let elemUnitVec = [(jpoint.x - ipoint.x)/elemL, (jpoint.y - ipoint.y)/elemL];
-              let briF = Math.abs(ivecF[0]*elemUnitVec[0]+ivecF[1]*elemUnitVec[1]+ivecF[2]*elemUnitVec[2]);
-              let brjF = Math.abs(jvecF[0]*elemUnitVec[0]+jvecF[1]*elemUnitVec[1]+jvecF[2]*elemUnitVec[2]);
-              let briB = Math.abs(ivecB[0]*elemUnitVec[0]+ivecB[1]*elemUnitVec[1]+ivecB[2]*elemUnitVec[2]);
-              let brjB = Math.abs(jvecB[0]*elemUnitVec[0]+jvecB[1]*elemUnitVec[1]+jvecB[2]*elemUnitVec[2]);
+              let briF = Math.abs(ivecF[0]*elemUnitVec[1]-ivecF[1]*elemUnitVec[0]);
+              let brjF = Math.abs(jvecF[0]*elemUnitVec[1]-jvecF[1]*elemUnitVec[0]);
+              let briB = Math.abs(ivecB[0]*elemUnitVec[1]-ivecB[1]*elemUnitVec[0]);
+              let brjB = Math.abs(jvecB[0]*elemUnitVec[1]-jvecB[1]*elemUnitVec[0]);
               let br1 = (briF + briB)/2;
               let br2 = (brjF + brjB)/2;
 
