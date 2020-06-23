@@ -75,7 +75,7 @@ export function AnalysisModel(node, frame) {
         console.log("check", elemDict[frame.slabWeight.data[i].elem][0], elemDict[frame.slabWeight.data[i].elem][1], a, b)
 
         let nivec = new THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a)
-        let njvec = new THREE.Vector3(ivec.x * (1-b) + jvec.x * a, ivec.y * (1-b) + jvec.y * a, ivec.z * (1-b) + jvec.z * a)
+        let njvec = new THREE.Vector3(ivec.x * (1-b) + jvec.x * b, ivec.y * (1-b) + jvec.y * b, ivec.z * (1-b) + jvec.z * b)
         let izload = -1 * frame.slabWeight.data[i].Uzp[0] 
         let jzload = -1 * frame.slabWeight.data[i].Uzp[1] 
         geo.vertices.push(nivec,
