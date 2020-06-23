@@ -535,31 +535,25 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                     slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+1]], Uzp: [wList[k], wList[k+1]] })
                 }
             } else {
-                // let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
-                // let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
-                // sectionPointDict[jnode].forward.input
-                // let wx = [lw2.x - ps.uFlangeC - w1, lw2.x - ps.uFlangeC + ps.uFlangeW + w1, rw2.x + ps.uFlangeC + w1, rw2.x + ps.uFlangeC - ps.uFlangeW - w1]
-                // let hl = [];
-                // wx.forEach(x => hl.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)))
-                // let hpt = [];
-                // let wpt = [];
-                // const constant = [-3, 3, 3, -3]; //루프계산을 위한 계수 모음, 헌치의 기울기 : 밑변/높이비
-                // for (let i = 0; i < wx.length; i++) {
-                //     hpt.push({ x: wx[i] + hl[i] * constant[i], y: - ps.slabThickness + girderPoint.gradientY * (wx[i] + hl[i] * constant[i]) })
-                //     wpt.push({ x: wx[i], y: - topY + gradient * (wx[i]) })
-                // }
-
-
-                
-                // let p1
-                // let p2
-                // let sp
-                // let ep
-                // slabWeight.data.push({ elem: elemNum, RD: [sp, ep], Uzp: [p1, p2] })
+                let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
+                let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
+                let gradient1 = sectionPointDict[inode].forward.input.gradient;
+                let gradient2 = sectionPointDict[jnode].forward.input.gradient;
+                let leftPoint = gridPoint[inode];
+                let rightPoint = gridPoint[jnode];
+                let L = rightPoint.offset - leftPoint.offset;
+                let x1 = sectionPointDict[inode].forward.uflange[2].length>0? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
+                let x2 = sectionPointDict[jnode].forward.uflange[2].length>0? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
+                let h1 = x1 + 3* Math.abs(hh + (- gradient1 + leftPoint.gradientY) * x1)
+                let h2 = x2 + 3* Math.abs(hh + (- gradient2 + rightPoint.gradientY) * x2)
+                let xList = [0, x1/L, h1/L, (L+h2)/L, (L+x2)/L, 1];
+                let wList = [slabThickness1 + hh, slabThickness1 + hh + (- gradient1 + leftPoint.gradientY) * x1, slabThickness1, slabThickness2, slabThickness2 + hh + (- gradient2 + rightPoint.gradientY) * x2, slabThickness2 + hh]
+                let dummy =1;
+                if (hh ===0 && gradient1 ===  leftPoint.gradientY){ dummy = 5; }
+                for (let k=0; k<xList.length-1;k+=dummy){
+                    slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+dummy]], Uzp: [wList[k], wList[k+dummy]] })
+                }
             }
-            // let p1 = -1 * section1.A * material.data[2].W   //materials : steel
-            // let p2 = -1 * section2.A * material.data[2].W   //materials : steel
-            // selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
             elemNum++
         }
     }

@@ -6307,8 +6307,6 @@
           let jvec = geometry.vertices[elemDict[frame.slabWeight.data[i].elem][1]];
           let a = frame.slabWeight.data[i].RD[0]; 
           let b = frame.slabWeight.data[i].RD[1]; 
-          console.log("check", elemDict[frame.slabWeight.data[i].elem][0], elemDict[frame.slabWeight.data[i].elem][1], a, b);
-
           let nivec = new global.THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a);
           let njvec = new global.THREE.Vector3(ivec.x * (1-b) + jvec.x * b, ivec.y * (1-b) + jvec.y * b, ivec.z * (1-b) + jvec.z * b);
           let izload = -1 * frame.slabWeight.data[i].Uzp[0]; 
@@ -8928,10 +8926,26 @@
                   for (let k=0; k<xList.length-1;k++){
                       slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+1]], Uzp: [wList[k], wList[k+1]] });
                   }
+              } else {
+                  let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
+                  let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
+                  let gradient1 = sectionPointDict[inode].forward.input.gradient;
+                  let gradient2 = sectionPointDict[jnode].forward.input.gradient;
+                  let leftPoint = gridPoint[inode];
+                  let rightPoint = gridPoint[jnode];
+                  let L = rightPoint.offset - leftPoint.offset;
+                  let x1 = sectionPointDict[inode].forward.uflange[2].length>0? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
+                  let x2 = sectionPointDict[jnode].forward.uflange[2].length>0? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
+                  let h1 = x1 + 3* Math.abs(hh + (- gradient1 + leftPoint.gradientY) * x1);
+                  let h2 = x2 + 3* Math.abs(hh + (- gradient2 + rightPoint.gradientY) * x2);
+                  let xList = [0, x1/L, h1/L, (L+h2)/L, (L+x2)/L, 1];
+                  let wList = [slabThickness1 + hh, slabThickness1 + hh + (- gradient1 + leftPoint.gradientY) * x1, slabThickness1, slabThickness2, slabThickness2 + hh + (- gradient2 + rightPoint.gradientY) * x2, slabThickness2 + hh];
+                  let dummy =1;
+                  if (hh ===0 && gradient1 ===  leftPoint.gradientY){ dummy = 5; }
+                  for (let k=0; k<xList.length-1;k+=dummy){
+                      slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+dummy]], Uzp: [wList[k], wList[k+dummy]] });
+                  }
               }
-              // let p1 = -1 * section1.A * material.data[2].W   //materials : steel
-              // let p2 = -1 * section2.A * material.data[2].W   //materials : steel
-              // selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
               elemNum++;
           }
       }
