@@ -319,22 +319,22 @@ export function CompositeJointGen(nodeInput, nodeNumDict, deckLineDict) {
     let newDict = nodeNumDict;
     let nodeNum = node.data.length + 1;
     let dummycoord = [-1, -1, -1];
-    
+
 
     for (let i in deckLineDict)
         for (let j in deckLineDict[i]) {
-        let x = deckLineDict[i][j].point.x
-        let y = deckLineDict[i][j].point.y
-        let z = deckLineDict[i][j].point.z
-        if (dummycoord[0] !== x ||
-            dummycoord[1] !== y ||
-            dummycoord[2] !== z) {
-            newDict[deckLineDict[i][j].key] = nodeNum;
-            node.data.push({ nodeNum: nodeNum, coord: [x, y, z] });
-            nodeNum++;
-            dummycoord = [x, y, z];
+            let x = deckLineDict[i][j].point.x
+            let y = deckLineDict[i][j].point.y
+            let z = deckLineDict[i][j].point.z
+            if (dummycoord[0] !== x ||
+                dummycoord[1] !== y ||
+                dummycoord[2] !== z) {
+                newDict[deckLineDict[i][j].key] = nodeNum;
+                node.data.push({ nodeNum: nodeNum, coord: [x, y, z] });
+                nodeNum++;
+                dummycoord = [x, y, z];
+            }
         }
-    }
     return { nodeNumDict: newDict, input: { node, local, boundary, rigid } }
 }
 
@@ -427,7 +427,7 @@ function SectionCompare(section1, section2) {
     return result
 }
 
-export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict){ //gridModelData, xbeamData, 
+export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, sectionPointDict, gridPoint, slabInfo) { //gridModelData, xbeamData, 
     let step = 2;
     // let allElement = []; // As New List(Of Element_3d)
     // let sectionNameDict = {}
@@ -435,8 +435,10 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict){ //grid
     let section = frameInput.section;
     let material = frameInput.material;
     let selfWeight = frameInput.selfWeight;
+    let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "slab", data: [] }
     let elemNum = frame.data.length + 1;
-
+    let w1 = slabInfo.w1; //헌치돌출길이
+    let hh = slabInfo.haunchHeight; //헌치높이
     let gridModelL = [
         ["G1K1", "G2K1"],
         ["G1K2", "G2K2"],
@@ -468,10 +470,10 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict){ //grid
         ["G1D19", "G2D19"],
         ["G1D20", "G2D20"],
     ];
-    for (let i in deckLineDict){
-        for (let j = 0; j< deckLineDict[i].length -1; j++){
+    for (let i in deckLineDict) {
+        for (let j = 0; j < deckLineDict[i].length - 1; j++) {
             let inode = deckLineDict[i][j].key;
-            let jnode = deckLineDict[i][j+1].key;
+            let jnode = deckLineDict[i][j + 1].key;
             let elem = {
                 iNode: nodeNumDict[inode],
                 jNode: nodeNumDict[jnode],
@@ -484,18 +486,18 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict){ //grid
         }
     }
 
-    for (let i in gridModelL){
-        for (let j = 0; j < gridModelL[i].length + 1;j++){
+    for (let i in gridModelL) {
+        for (let j = 0; j < gridModelL[i].length + 1; j++) {
             let inode = "";
             let jnode = "";
-            if (j ===0){
+            if (j === 0) {
                 inode = "LD" + gridModelL[i][j].substr(2)
                 jnode = gridModelL[i][j]
-            } else if (j === gridModelL[i].length){
-                inode = gridModelL[i][j-1]
-                jnode = "RD" + gridModelL[i][j-1].substr(2)
+            } else if (j === gridModelL[i].length) {
+                inode = gridModelL[i][j - 1]
+                jnode = "RD" + gridModelL[i][j - 1].substr(2)
             } else {
-                inode = gridModelL[i][j-1]
+                inode = gridModelL[i][j - 1]
                 jnode = gridModelL[i][j]
             }
             let elem = {
@@ -506,13 +508,50 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict){ //grid
                 number: elemNum
             }
             frame.data.push(elem)
+            if (j === 0) {
+                let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
+                let gradient = sectionPointDict[jnode].forward.input.gradient;
+                let leftend = deckLineDict[0].find(elem => elem.key === inode);
+                let leftPoint = leftend.point;
+                let rightPoint = gridPoint[jnode];
+                let L = rightPoint.offset = leftPoint.offset;
+                let x1 = sectionPointDict[jnode].forward.uflange[2].length>0? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
+                let xList = [0, (L+x1/L), 1];
+                let wList = [leftend.endT, slabThickness2 + hh + (- gradient + rightPoint.gradientY) * x1, slabThickness2 + hh];
+                for (let k=0; k<xList.length-1;k++){
+                    slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+1]], Uzp: [wList[k], wList[k+1]] })
+                }
+            } else if (j === gridModelL[i].length) {
+            } else {
+                // let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
+                // let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
+                // sectionPointDict[jnode].forward.input
+                // let wx = [lw2.x - ps.uFlangeC - w1, lw2.x - ps.uFlangeC + ps.uFlangeW + w1, rw2.x + ps.uFlangeC + w1, rw2.x + ps.uFlangeC - ps.uFlangeW - w1]
+                // let hl = [];
+                // wx.forEach(x => hl.push(Math.abs(hh + (- gradient + girderPoint.gradientY) * x)))
+                // let hpt = [];
+                // let wpt = [];
+                // const constant = [-3, 3, 3, -3]; //루프계산을 위한 계수 모음, 헌치의 기울기 : 밑변/높이비
+                // for (let i = 0; i < wx.length; i++) {
+                //     hpt.push({ x: wx[i] + hl[i] * constant[i], y: - ps.slabThickness + girderPoint.gradientY * (wx[i] + hl[i] * constant[i]) })
+                //     wpt.push({ x: wx[i], y: - topY + gradient * (wx[i]) })
+                // }
+
+
+                
+                // let p1
+                // let p2
+                // let sp
+                // let ep
+                // slabWeight.data.push({ elem: elemNum, RD: [sp, ep], Uzp: [p1, p2] })
+            }
             // let p1 = -1 * section1.A * material.data[2].W   //materials : steel
             // let p2 = -1 * section2.A * material.data[2].W   //materials : steel
             // selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
             elemNum++
         }
     }
-    return { frame, section, material, selfWeight }
+    return { frame, section, material, selfWeight, slabWeight }
 }
 
 export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, supportNode, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){

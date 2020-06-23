@@ -116,7 +116,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                     wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
                     wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
                     wuf: tl2.x < tr1.x ? ps.uFlangeW : tr2.x - tl1.x,       //상부플랜지 폭
-                    wlf: b2.x - b1.x,                           //하부플랜지 폭
+                    wlf: b2.x - b1.x,                                 //하부플랜지 
+                    gradient :gradient,                           //상부플랜지 기울기
                     H: bottomY - topY,                           //강거더 높이
                     tlf: ps.lFlangeThk,                                //하부플랜지 두께
                     tuf: ps.uFlangeThk,                                 //상부플랜지두께
@@ -431,8 +432,8 @@ export function DeckSectionPoint(
         let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
         if (centerLineStations[i].key.substr(0, 3) !== "CRN" && centerLineStations[i].key !== "CRK0" && centerLineStations[i].key !== "CRK7") {
             let key = centerLineStations[i].key.substr(2);
-            deckLineDict[0].push({ key: ["LD" + key], point: leftPoint });
-            deckLineDict[1].push({ key: ["RD" + key], point: rightPoint });
+            deckLineDict[0].push({ key: ["LD" + key], point: leftPoint, endT });
+            deckLineDict[1].push({ key: ["RD" + key], point: rightPoint, endT });
         }
         let slabUpperPoints = [leftPoint, masterPoint, rightPoint];
 

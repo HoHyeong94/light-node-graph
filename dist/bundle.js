@@ -2077,7 +2077,8 @@
                       wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
                       wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
                       wuf: tl2.x < tr1.x ? ps.uFlangeW : tr2.x - tl1.x,       //상부플랜지 폭
-                      wlf: b2.x - b1.x,                           //하부플랜지 폭
+                      wlf: b2.x - b1.x,                                 //하부플랜지 
+                      gradient :gradient,                           //상부플랜지 기울기
                       H: bottomY - topY,                           //강거더 높이
                       tlf: ps.lFlangeThk,                                //하부플랜지 두께
                       tuf: ps.uFlangeThk,                                 //상부플랜지두께
@@ -2392,8 +2393,8 @@
           let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
           if (centerLineStations[i].key.substr(0, 3) !== "CRN" && centerLineStations[i].key !== "CRK0" && centerLineStations[i].key !== "CRK7") {
               let key = centerLineStations[i].key.substr(2);
-              deckLineDict[0].push({ key: ["LD" + key], point: leftPoint });
-              deckLineDict[1].push({ key: ["RD" + key], point: rightPoint });
+              deckLineDict[0].push({ key: ["LD" + key], point: leftPoint, endT });
+              deckLineDict[1].push({ key: ["RD" + key], point: rightPoint, endT });
           }
           let slabUpperPoints = [leftPoint, masterPoint, rightPoint];
 
@@ -8692,22 +8693,22 @@
       let newDict = nodeNumDict;
       let nodeNum = node.data.length + 1;
       let dummycoord = [-1, -1, -1];
-      
+
 
       for (let i in deckLineDict)
           for (let j in deckLineDict[i]) {
-          let x = deckLineDict[i][j].point.x;
-          let y = deckLineDict[i][j].point.y;
-          let z = deckLineDict[i][j].point.z;
-          if (dummycoord[0] !== x ||
-              dummycoord[1] !== y ||
-              dummycoord[2] !== z) {
-              newDict[deckLineDict[i][j].key] = nodeNum;
-              node.data.push({ nodeNum: nodeNum, coord: [x, y, z] });
-              nodeNum++;
-              dummycoord = [x, y, z];
+              let x = deckLineDict[i][j].point.x;
+              let y = deckLineDict[i][j].point.y;
+              let z = deckLineDict[i][j].point.z;
+              if (dummycoord[0] !== x ||
+                  dummycoord[1] !== y ||
+                  dummycoord[2] !== z) {
+                  newDict[deckLineDict[i][j].key] = nodeNum;
+                  node.data.push({ nodeNum: nodeNum, coord: [x, y, z] });
+                  nodeNum++;
+                  dummycoord = [x, y, z];
+              }
           }
-      }
       return { nodeNumDict: newDict, input: { node, local, boundary, rigid } }
   }
 
@@ -8800,15 +8801,17 @@
       return result
   }
 
-  function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict){ //gridModelData, xbeamData, 
+  function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, sectionPointDict, gridPoint, slabInfo) { //gridModelData, xbeamData, 
       // let allElement = []; // As New List(Of Element_3d)
       // let sectionNameDict = {}
       let frame = frameInput.frame;
       let section = frameInput.section;
       let material = frameInput.material;
       let selfWeight = frameInput.selfWeight;
+      let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "slab", data: [] };
       let elemNum = frame.data.length + 1;
-
+      let w1 = slabInfo.w1; //헌치돌출길이
+      let hh = slabInfo.haunchHeight; //헌치높이
       let gridModelL = [
           ["G1K1", "G2K1"],
           ["G1K2", "G2K2"],
@@ -8840,10 +8843,10 @@
           ["G1D19", "G2D19"],
           ["G1D20", "G2D20"],
       ];
-      for (let i in deckLineDict){
-          for (let j = 0; j< deckLineDict[i].length -1; j++){
+      for (let i in deckLineDict) {
+          for (let j = 0; j < deckLineDict[i].length - 1; j++) {
               let inode = deckLineDict[i][j].key;
-              let jnode = deckLineDict[i][j+1].key;
+              let jnode = deckLineDict[i][j + 1].key;
               let elem = {
                   iNode: nodeNumDict[inode],
                   jNode: nodeNumDict[jnode],
@@ -8856,18 +8859,18 @@
           }
       }
 
-      for (let i in gridModelL){
-          for (let j = 0; j < gridModelL[i].length + 1;j++){
+      for (let i in gridModelL) {
+          for (let j = 0; j < gridModelL[i].length + 1; j++) {
               let inode = "";
               let jnode = "";
-              if (j ===0){
+              if (j === 0) {
                   inode = "LD" + gridModelL[i][j].substr(2);
                   jnode = gridModelL[i][j];
-              } else if (j === gridModelL[i].length){
-                  inode = gridModelL[i][j-1];
-                  jnode = "RD" + gridModelL[i][j-1].substr(2);
+              } else if (j === gridModelL[i].length) {
+                  inode = gridModelL[i][j - 1];
+                  jnode = "RD" + gridModelL[i][j - 1].substr(2);
               } else {
-                  inode = gridModelL[i][j-1];
+                  inode = gridModelL[i][j - 1];
                   jnode = gridModelL[i][j];
               }
               let elem = {
@@ -8878,13 +8881,27 @@
                   number: elemNum
               };
               frame.data.push(elem);
+              if (j === 0) {
+                  let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
+                  let gradient = sectionPointDict[jnode].forward.input.gradient;
+                  let leftend = deckLineDict[0].find(elem => elem.key === inode);
+                  let leftPoint = leftend.point;
+                  let rightPoint = gridPoint[jnode];
+                  let L = rightPoint.offset = leftPoint.offset;
+                  let x1 = sectionPointDict[jnode].forward.uflange[2].length>0? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
+                  let xList = [0, (L+x1/L), 1];
+                  let wList = [leftend.endT, slabThickness2 + hh + (- gradient + rightPoint.gradientY) * x1, slabThickness2 + hh];
+                  for (let k=0; k<xList.length-1;k++){
+                      slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+1]], Uzp: [wList[k], wList[k+1]] });
+                  }
+              } else if (j === gridModelL[i].length) ;
               // let p1 = -1 * section1.A * material.data[2].W   //materials : steel
               // let p2 = -1 * section2.A * material.data[2].W   //materials : steel
               // selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
               elemNum++;
           }
       }
-      return { frame, section, material, selfWeight }
+      return { frame, section, material, selfWeight, slabWeight }
   }
 
   function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, supportNode, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
