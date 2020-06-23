@@ -528,7 +528,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 let leftPoint = gridPoint[inode];
                 let rightPoint = rightend.point;
                 let L = rightPoint.offset - leftPoint.offset;
-                let x1 = sectionPointDict[inode].forward.uflange[2].length>0? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x - w1;
+                let x1 = sectionPointDict[inode].forward.uflange[2].length>0? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
                 let xList = [0, x1/L, 1];
                 let wList = [slabThickness1 + hh,  slabThickness1 + hh + (- gradient + leftPoint.gradientY) * x1,rightend.endT];
                 for (let k=0; k<xList.length-1;k++){
