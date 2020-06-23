@@ -470,8 +470,8 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
         ["G1D19", "G2D19"],
         ["G1D20", "G2D20"],
     ];
-    gridModelL.sort(function(a,b){return gridPoint[a[0]].masterStationNumber < gridPoint[b[0]].masterStationNumber ? -1 : 1; });
-    
+    gridModelL.sort(function (a, b) { return gridPoint[a[0]].masterStationNumber < gridPoint[b[0]].masterStationNumber ? -1 : 1; });
+
     for (let i in deckLineDict) {
         for (let j = 0; j < deckLineDict[i].length - 1; j++) {
             let inode = deckLineDict[i][j].key;
@@ -488,13 +488,22 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
         }
     }
 
-    
-        for (let j = 0; j < gridModelL[0].length + 1; j++) { 
-            for (let i = 0; i < gridModelL.length; i++) {
+
+    for (let j = 0; j < gridModelL[0].length + 1; j++) {
+        let ivecB = [0, 0, 0];
+        let jvecB = [0, 0, 0];
+        let ivecF = [];
+        let jvecF = [];
+        for (let i = 0; i < gridModelL.length; i++) {
             let inode = "";
             let jnode = "";
             let ipoint = {};
             let jpoint = {};
+            let inode2 = "";
+            let jnode2 = "";
+            let ipoint2 = {};
+            let jpoint2 = {};
+
             if (j === 0) {
                 inode = "LD" + gridModelL[i][j].substr(2)
                 jnode = gridModelL[i][j]
@@ -511,6 +520,42 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 ipoint = gridPoint[inode];
                 jpoint = gridPoint[jnode];
             }
+            if (i < gridModelL.length - 1) {
+                if (j === 0) {
+                    inode2 = "LD" + gridModelL[i+1][j].substr(2)
+                    jnode2 = gridModelL[i+1][j]
+                    ipoint2 = deckLineDict[0].find(elem => elem.key === inode2).point;
+                    jpoint2 = gridPoint[jnode2];
+                } else if (j === gridModelL[i].length) {
+                    inode2 = gridModelL[i+1][j - 1]
+                    jnode2 = "RD" + gridModelL[i+1][j - 1].substr(2)
+                    ipoint2 = gridPoint[inode2];
+                    jpoint2 = deckLineDict[1].find(elem => elem.key === jnode2).point;
+                } else {
+                    inode2 = gridModelL[i+1][j - 1]
+                    jnode2 = gridModelL[i+1][j]
+                    ipoint2 = gridPoint[inode2];
+                    jpoint2 = gridPoint[jnode2];
+                }
+                ivecF = [ipoint2.x - ipoint.x, ipoint2.y - ipoint.y];
+                jvecF = [jpoint2.x - jpoint.x, jpoint2.y - jpoint.y];
+            } else {
+                ivecF = [0, 0, 0];
+                jvecF = [0, 0, 0];
+            }
+            let elemL = Math.sqrt((jpoint.x - ipoint.x)**2 + (jpoint.y - ipoint.y)**2)
+            let elemUnitVec = [(jpoint.x - ipoint.x)/elemL, (jpoint.y - ipoint.y)/elemL]
+            let briF = Math.abs(ivecF[0]*elemUnitVec[0]+ivecF[1]*elemUnitVec[1]+ivecF[2]*elemUnitVec[2])
+            let brjF = Math.abs(jvecF[0]*elemUnitVec[0]+jvecF[1]*elemUnitVec[1]+jvecF[2]*elemUnitVec[2])
+            let briB = Math.abs(ivecB[0]*elemUnitVec[0]+ivecB[1]*elemUnitVec[1]+ivecB[2]*elemUnitVec[2])
+            let brjB = Math.abs(jvecB[0]*elemUnitVec[0]+jvecB[1]*elemUnitVec[1]+jvecB[2]*elemUnitVec[2])
+            let br1 = (briF + briB)/2
+            let br2 = (brjF + brjB)/2
+
+            ivecB = ivecF;
+            jvecB = jvecF;
+
+
             let elem = {
                 iNode: nodeNumDict[inode],
                 jNode: nodeNumDict[jnode],
@@ -526,11 +571,12 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 let leftPoint = leftend.point;
                 let rightPoint = gridPoint[jnode];
                 let L = rightPoint.offset - leftPoint.offset;
-                let x1 = sectionPointDict[jnode].forward.uflange[2].length>0? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
-                let xList = [0, (L+x1)/L, 1];
+                let x1 = sectionPointDict[jnode].forward.uflange[2].length > 0 ? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
+                let xList = [0, (L + x1) / L, 1];
                 let wList = [leftend.endT, slabThickness2 + hh + (- gradient + rightPoint.gradientY) * x1, slabThickness2 + hh];
-                for (let k=0; k<xList.length-1;k++){
-                    slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+1]], Uzp: [wList[k], wList[k+1]] })
+                for (let k = 0; k < xList.length - 1; k++) {
+                    slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k + 1]], 
+                        Uzp: [wList[k] * ( (1-xList[k])*br1 + xList[k] * br2), wList[k + 1] * ( (1-xList[k+1])*br1 + xList[k+1] * br2) ] })
                 }
             } else if (j === gridModelL[i].length) {
                 let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
@@ -539,11 +585,12 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 let leftPoint = gridPoint[inode];
                 let rightPoint = rightend.point;
                 let L = rightPoint.offset - leftPoint.offset;
-                let x1 = sectionPointDict[inode].forward.uflange[2].length>0? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
-                let xList = [0, x1/L, 1];
-                let wList = [slabThickness1 + hh,  slabThickness1 + hh + (- gradient + leftPoint.gradientY) * x1,rightend.endT];
-                for (let k=0; k<xList.length-1;k++){
-                    slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+1]], Uzp: [wList[k], wList[k+1]] })
+                let x1 = sectionPointDict[inode].forward.uflange[2].length > 0 ? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
+                let xList = [0, x1 / L, 1];
+                let wList = [slabThickness1 + hh, slabThickness1 + hh + (- gradient + leftPoint.gradientY) * x1, rightend.endT];
+                for (let k = 0; k < xList.length - 1; k++) {
+                    slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k + 1]], 
+                        Uzp: [wList[k] * ( (1-xList[k])*br1 + xList[k] * br2), wList[k + 1] * ( (1-xList[k+1])*br1 + xList[k+1] * br2) ] })
                 }
             } else {
                 let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
@@ -553,16 +600,17 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 let leftPoint = gridPoint[inode];
                 let rightPoint = gridPoint[jnode];
                 let L = rightPoint.offset - leftPoint.offset;
-                let x1 = sectionPointDict[inode].forward.uflange[2].length>0? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
-                let x2 = sectionPointDict[jnode].forward.uflange[2].length>0? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
-                let h1 = x1 + 3* Math.abs(hh + (- gradient1 + leftPoint.gradientY) * x1)
-                let h2 = x2 - 3* Math.abs(hh + (- gradient2 + rightPoint.gradientY) * x2)
-                let xList = [0, x1/L, h1/L, (L+h2)/L, (L+x2)/L, 1];
+                let x1 = sectionPointDict[inode].forward.uflange[2].length > 0 ? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
+                let x2 = sectionPointDict[jnode].forward.uflange[2].length > 0 ? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
+                let h1 = x1 + 3 * Math.abs(hh + (- gradient1 + leftPoint.gradientY) * x1)
+                let h2 = x2 - 3 * Math.abs(hh + (- gradient2 + rightPoint.gradientY) * x2)
+                let xList = [0, x1 / L, h1 / L, (L + h2) / L, (L + x2) / L, 1];
                 let wList = [slabThickness1 + hh, slabThickness1 + hh + (- gradient1 + leftPoint.gradientY) * x1, slabThickness1, slabThickness2, slabThickness2 + hh + (- gradient2 + rightPoint.gradientY) * x2, slabThickness2 + hh]
-                let dummy =1;
-                if (hh ===0 && gradient1 ===  leftPoint.gradientY){ dummy = 5; }
-                for (let k=0; k<xList.length-1;k+=dummy){
-                    slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k+dummy]], Uzp: [wList[k], wList[k+dummy]] })
+                let dummy = 1;
+                if (hh === 0 && gradient1 === leftPoint.gradientY) { dummy = 5; }
+                for (let k = 0; k < xList.length - 1; k += dummy) {
+                    slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k + dummy]], 
+                        Uzp: [wList[k] * ( (1-xList[k])*br1 + xList[k] * br2), wList[k + 1] * ( (1-xList[k+dummy])*br1 + xList[k+dummy] * br2) ] })
                 }
             }
             elemNum++
