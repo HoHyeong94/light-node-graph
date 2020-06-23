@@ -400,9 +400,9 @@ export function DeckSectionPoint(
                 }
                 //deckSectionInfo로 분리예정
                 if (i === 0) {
-                    deckLineDict[0].push({ key: "LD" + key, point: OffsetPoint(masterPoint, masterLine, leftOffset) });
+                    deckLineDict[0].push({ key: "LD" + key, point: OffsetPoint(masterPoint, masterLine, leftOffset), endT });
                 } else {
-                    deckLineDict[1].push({ key: "RD" + key, point: OffsetPoint(masterPoint, masterLine, rightOffset) });
+                    deckLineDict[1].push({ key: "RD" + key, point: OffsetPoint(masterPoint, masterLine, rightOffset), endT });
                 }
             }
         }
