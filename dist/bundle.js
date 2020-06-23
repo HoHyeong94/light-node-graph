@@ -8945,7 +8945,7 @@
               let brjB = Math.abs(jvecB[0]*elemUnitVec[1]-jvecB[1]*elemUnitVec[0]);
               let br1 = (briF + briB)/2;
               let br2 = (brjF + brjB)/2;
-
+              console.log("check", inode, jnode, briF,brjF, briB,brjB);
               ivecB = ivecF;
               jvecB = jvecF;
 
