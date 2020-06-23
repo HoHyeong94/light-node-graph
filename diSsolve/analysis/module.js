@@ -545,7 +545,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 let x1 = sectionPointDict[inode].forward.uflange[2].length>0? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
                 let x2 = sectionPointDict[jnode].forward.uflange[2].length>0? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
                 let h1 = x1 + 3* Math.abs(hh + (- gradient1 + leftPoint.gradientY) * x1)
-                let h2 = x2 + 3* Math.abs(hh + (- gradient2 + rightPoint.gradientY) * x2)
+                let h2 = x2 - 3* Math.abs(hh + (- gradient2 + rightPoint.gradientY) * x2)
                 let xList = [0, x1/L, h1/L, (L+h2)/L, (L+x2)/L, 1];
                 let wList = [slabThickness1 + hh, slabThickness1 + hh + (- gradient1 + leftPoint.gradientY) * x1, slabThickness1, slabThickness2, slabThickness2 + hh + (- gradient2 + rightPoint.gradientY) * x2, slabThickness2 + hh]
                 let dummy =1;
