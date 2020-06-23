@@ -551,8 +551,8 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             let brjF = Math.abs(jvecF[0]*elemUnitVec[1]-jvecF[1]*elemUnitVec[0])
             let briB = Math.abs(ivecB[0]*elemUnitVec[1]-ivecB[1]*elemUnitVec[0])
             let brjB = Math.abs(jvecB[0]*elemUnitVec[1]-jvecB[1]*elemUnitVec[0])
-            let br1 = (briF + briB)/2
-            let br2 = (brjF + brjB)/2
+            let br1 = (briF + briB)/2 * 2.5 * 9.81 * 0.000001
+            let br2 = (brjF + brjB)/2 * 2.5 * 9.81 * 0.000001
             console.log("check", inode, jnode, briF,brjF, briB,brjB)
             ivecB = ivecF;
             jvecB = jvecF;

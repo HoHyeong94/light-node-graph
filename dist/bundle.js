@@ -6309,8 +6309,8 @@
           let b = frame.slabWeight.data[i].RD[1]; 
           let nivec = new global.THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a);
           let njvec = new global.THREE.Vector3(ivec.x * (1-b) + jvec.x * b, ivec.y * (1-b) + jvec.y * b, ivec.z * (1-b) + jvec.z * b);
-          let izload = -1 * frame.slabWeight.data[i].Uzp[0] /10000;
-          let jzload = -1 * frame.slabWeight.data[i].Uzp[1] /10000;
+          let izload = -1 * frame.slabWeight.data[i].Uzp[0] * 10;
+          let jzload = -1 * frame.slabWeight.data[i].Uzp[1] * 10;
           geo.vertices.push(nivec,
               new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload),
               new global.THREE.Vector3(njvec.x, njvec.y, njvec.z + jzload),
@@ -8943,8 +8943,8 @@
               let brjF = Math.abs(jvecF[0]*elemUnitVec[1]-jvecF[1]*elemUnitVec[0]);
               let briB = Math.abs(ivecB[0]*elemUnitVec[1]-ivecB[1]*elemUnitVec[0]);
               let brjB = Math.abs(jvecB[0]*elemUnitVec[1]-jvecB[1]*elemUnitVec[0]);
-              let br1 = (briF + briB)/2;
-              let br2 = (brjF + brjB)/2;
+              let br1 = (briF + briB)/2 * 2.5 * 9.81 * 0.000001;
+              let br2 = (brjF + brjB)/2 * 2.5 * 9.81 * 0.000001;
               console.log("check", inode, jnode, briF,brjF, briB,brjB);
               ivecB = ivecF;
               jvecB = jvecF;
