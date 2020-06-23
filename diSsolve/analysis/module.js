@@ -512,7 +512,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
                 let gradient = sectionPointDict[jnode].forward.input.gradient;
                 let leftend = deckLineDict[0].find(elem => elem.key === inode);
-                console.log("check", inode, leftend)                
+                console.log("check", inode, leftend,deckLineDict[0]);                
 
                 let leftPoint = leftend.point;
                 let rightPoint = gridPoint[jnode];
