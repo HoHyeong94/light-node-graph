@@ -8862,6 +8862,7 @@
           ["G1D19", "G2D19"],
           ["G1D20", "G2D20"],
       ];
+      gridModelL.sort(function(a,b){return gridPoint[a[0]].masterStationNumber < gridPoint[b[0]].masterStationNumber ? -1 : 1; });
       for (let i in deckLineDict) {
           for (let j = 0; j < deckLineDict[i].length - 1; j++) {
               let inode = deckLineDict[i][j].key;
