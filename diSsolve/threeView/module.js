@@ -70,6 +70,7 @@ export function AnalysisModel(node, frame) {
         let geo = new THREE.Geometry();
         let ivec = geometry.vertices[elemDict[frame.slabWeight.data[i].elem][0]]
         let jvec = geometry.vertices[elemDict[frame.slabWeight.data[i].elem][1]]
+        console.log("check", elemDict[frame.slabWeight.data[i].elem][0], elemDict[frame.slabWeight.data[i].elem][1])
         let a = frame.slabWeight.data[i].RD[0] 
         let b = frame.slabWeight.data[i].RD[1] 
 
