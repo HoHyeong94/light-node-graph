@@ -624,7 +624,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             for (let k in barrierOffset){
                 if (ipoint.offset <= barrierOffset[k] && jpoint.offset >= barrierOffset[k]){
                     let x1 = (barrierOffset[k] - ipoint.offset)/L
-                    barrier.data.push({ elem: elemNum, RD: x1, Uzp: -1 * barrierInfo[k] * ( (1-x1)*br1 + x1 * br2)})
+                    barrier.data.push({ elem: elemNum, RD: x1, Uzp: -1 * barrierInfo[k].area * ( (1-x1)*br1 + x1 * br2)})
                 }
             }
             elemNum++
