@@ -6324,7 +6324,7 @@
           let jvec = geometry.vertices[elemDict[frame.barrier.data[i].elem][1]];
           let a = frame.barrier.data[i].RD;
           let nivec = new global.THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a);
-          let izload = -1 * frame.barrier.data[i].Uzp * 10;
+          let izload = -1 * frame.barrier.data[i].Uzp / 10;
           geo.vertices.push(nivec,
               new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload));
           group.add(new global.THREE.Line(geo, aquaLine));
