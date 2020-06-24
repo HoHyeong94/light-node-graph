@@ -8912,7 +8912,7 @@
               let leftDeckNode = "LD" + gridModelL[i][0].substr(2);
               let rightDeckNode = "RD" + gridModelL[i][gridModelL[i].length - 1].substr(2);
               let leftDeckPoint = deckLineDict[0].find(elem => elem.key === leftDeckNode).point;
-              let rightDeckPoint = deckLineDict[0].find(elem => elem.key === rightDeckNode).point;
+              let rightDeckPoint = deckLineDict[1].find(elem => elem.key === rightDeckNode).point;
               let barrierOffset = [];
               for (let k in barrierInfo){
                   barrierOffset.push(barrierInfo[k].isLeft?leftDeckPoint.offset + barrierInfo[k].offset : rightDeckPoint.offset - barrierInfo[k].offset);
