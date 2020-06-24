@@ -442,7 +442,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
     let barrierInfo = [{isLeft : true, offset : 180, area : 200000}, {isLeft : false, offset : 180, area : 200000}];
-    let pavementInfo = [{leftOffset : 450, rightOffset : 450, thickness : 80}]
+    let pavementInfo = [{isLeft : [true,false] , Offset : [450,450], thickness : 80}]
     let gridModelL = [
         ["G1K1", "G2K1"],
         ["G1K2", "G2K2"],
@@ -514,8 +514,13 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             let leftDeckPoint = deckLineDict[0].find(elem => elem.key === leftDeckNode).point;
             let rightDeckPoint = deckLineDict[1].find(elem => elem.key === rightDeckNode).point;
             let barrierOffset = [];
+            let pavementOffset = [];
             for (let k in barrierInfo){
                 barrierOffset.push(barrierInfo[k].isLeft?leftDeckPoint.offset + barrierInfo[k].offset : rightDeckPoint.offset - barrierInfo[k].offset);
+            }
+            for (let k in pavementInfo){
+                pavementOffset.push([pavementInfo[k].isLeft[0]?leftDeckPoint.offset + pavementInfo[k].offset[0] : rightDeckPoint.offset - pavementInfo[k].offset[0],
+                    pavementInfo[k].isLeft[1]?leftDeckPoint.offset + pavementInfo[k].offset[1] : rightDeckPoint.offset - pavementInfo[k].offset[1]]);
             }
 
             if (j === 0) {
@@ -625,6 +630,25 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 if (ipoint.offset <= barrierOffset[k] && jpoint.offset >= barrierOffset[k]){
                     let x1 = (barrierOffset[k] - ipoint.offset)/L
                     barrier.data.push({ elem: elemNum, RD: x1, Uzp: -1 * barrierInfo[k].area * ( (1-x1)*br1 + x1 * br2)})
+                }
+            }
+            for (let k in pavementOffset){
+                let x1 = 1
+                let x2 = 0
+                if (ipoint.offset <= pavementOffset[k][0] && jpoint.offset >= pavementOffset[k][0]){
+                    x1 = (pavementOffset[k][0] - ipoint.offset)/L
+                } else if (ipoint.offset > pavementOffset[k][0]){
+                    x1 = 0
+                }
+                if (ipoint.offset <= pavementOffset[k][1] && jpoint.offset >= pavementOffset[k][1]){
+                    x2 = (pavementOffset[k][1] - ipoint.offset)/L
+                } else if (jpoint.offset < pavementOffset[k][1]){
+                    x2 = 1
+                }
+                if (x2 > x1) {
+                    pavement.data.push({ elem: elemNum, RD: [x1, x2], 
+                        Uzp: [-1 * pavementInfo[k].thickness * ( (1-x1)*br1 + x1 * br2),
+                         -1 * pavementInfo[k].thickness * ( (1-x2)*br1 + x2 * br2) ] })
                 }
             }
             elemNum++

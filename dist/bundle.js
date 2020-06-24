@@ -6330,6 +6330,25 @@
           group.add(new global.THREE.Line(geo, aquaLine));
       }
 
+      for (let i in frame.pavement.data) {
+          let geo = new global.THREE.Geometry();
+          let ivec = geometry.vertices[elemDict[frame.pavement.data[i].elem][0]];
+          let jvec = geometry.vertices[elemDict[frame.pavement.data[i].elem][1]];
+          let a = frame.pavement.data[i].RD[0]; 
+          let b = frame.pavement.data[i].RD[1]; 
+          let nivec = new global.THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a);
+          let njvec = new global.THREE.Vector3(ivec.x * (1-b) + jvec.x * b, ivec.y * (1-b) + jvec.y * b, ivec.z * (1-b) + jvec.z * b);
+          let izload = -1 * frame.pavement.data[i].Uzp[0] * 10;
+          let jzload = -1 * frame.pavement.data[i].Uzp[1] * 10;
+          geo.vertices.push(nivec,
+              new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload),
+              new global.THREE.Vector3(njvec.x, njvec.y, njvec.z + jzload),
+              njvec);
+          group.add(new global.THREE.Line(geo, aquaLine));
+      }
+
+
+
       let arrow = 200;
       for (let i in node.boundary.data) {
           // let arrow = new THREE.Group();
@@ -8843,6 +8862,7 @@
       let w1 = slabInfo.w1; //헌치돌출길이
       let hh = slabInfo.haunchHeight; //헌치높이
       let barrierInfo = [{isLeft : true, offset : 180, area : 200000}, {isLeft : false, offset : 180, area : 200000}];
+      let pavementInfo = [{isLeft : [true,false] , Offset : [450,450], thickness : 80}];
       let gridModelL = [
           ["G1K1", "G2K1"],
           ["G1K2", "G2K2"],
@@ -8914,8 +8934,13 @@
               let leftDeckPoint = deckLineDict[0].find(elem => elem.key === leftDeckNode).point;
               let rightDeckPoint = deckLineDict[1].find(elem => elem.key === rightDeckNode).point;
               let barrierOffset = [];
+              let pavementOffset = [];
               for (let k in barrierInfo){
                   barrierOffset.push(barrierInfo[k].isLeft?leftDeckPoint.offset + barrierInfo[k].offset : rightDeckPoint.offset - barrierInfo[k].offset);
+              }
+              for (let k in pavementInfo){
+                  pavementOffset.push([pavementInfo[k].isLeft[0]?leftDeckPoint.offset + pavementInfo[k].offset[0] : rightDeckPoint.offset - pavementInfo[k].offset[0],
+                      pavementInfo[k].isLeft[1]?leftDeckPoint.offset + pavementInfo[k].offset[1] : rightDeckPoint.offset - pavementInfo[k].offset[1]]);
               }
 
               if (j === 0) {
@@ -9025,6 +9050,25 @@
                   if (ipoint.offset <= barrierOffset[k] && jpoint.offset >= barrierOffset[k]){
                       let x1 = (barrierOffset[k] - ipoint.offset)/L;
                       barrier.data.push({ elem: elemNum, RD: x1, Uzp: -1 * barrierInfo[k].area * ( (1-x1)*br1 + x1 * br2)});
+                  }
+              }
+              for (let k in pavementOffset){
+                  let x1 = 1;
+                  let x2 = 0;
+                  if (ipoint.offset <= pavementOffset[k][0] && jpoint.offset >= pavementOffset[k][0]){
+                      x1 = (pavementOffset[k][0] - ipoint.offset)/L;
+                  } else if (ipoint.offset > pavementOffset[k][0]){
+                      x1 = 0;
+                  }
+                  if (ipoint.offset <= pavementOffset[k][1] && jpoint.offset >= pavementOffset[k][1]){
+                      x2 = (pavementOffset[k][1] - ipoint.offset)/L;
+                  } else if (jpoint.offset < pavementOffset[k][1]){
+                      x2 = 1;
+                  }
+                  if (x2 > x1) {
+                      pavement.data.push({ elem: elemNum, RD: [x1, x2], 
+                          Uzp: [-1 * pavementInfo[k].thickness * ( (1-x1)*br1 + x1 * br2),
+                           -1 * pavementInfo[k].thickness * ( (1-x2)*br1 + x2 * br2) ] });
                   }
               }
               elemNum++;
