@@ -8862,7 +8862,7 @@
       let w1 = slabInfo.w1; //헌치돌출길이
       let hh = slabInfo.haunchHeight; //헌치높이
       let barrierInfo = [{isLeft : true, offset : 180, area : 200000}, {isLeft : false, offset : 180, area : 200000}];
-      let pavementInfo = [{isLeft : [true,false] , Offset : [450,450], thickness : 80}];
+      let pavementInfo = [{isLeft : [true,false] , offset : [450,450], thickness : 80}];
       let gridModelL = [
           ["G1K1", "G2K1"],
           ["G1K2", "G2K2"],
