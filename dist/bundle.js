@@ -8909,8 +8909,8 @@
               let jnode2 = "";
               let ipoint2 = {};
               let jpoint2 = {};
-              let leftDeckNode = "LD" + gridModelL[i][j].substr(2);
-              let rightDeckNode = "RD" + gridModelL[i][j - 1].substr(2);
+              let leftDeckNode = "LD" + gridModelL[i][0].substr(2);
+              let rightDeckNode = "RD" + gridModelL[i][gridModelL[i].length - 1].substr(2);
               let leftDeckPoint = deckLineDict[0].find(elem => elem.key === leftDeckNode).point;
               let rightDeckPoint = deckLineDict[0].find(elem => elem.key === rightDeckNode).point;
               let barrierOffset = [];
