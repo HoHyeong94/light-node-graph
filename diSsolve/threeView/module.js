@@ -83,8 +83,17 @@ export function AnalysisModel(node, frame) {
         group.add(new THREE.Line(geo, aquaLine));
     }
 
-
-
+    for (let i in frame.barrier.data) {
+        let geo = new THREE.Geometry();
+        let ivec = geometry.vertices[elemDict[frame.barrier.data[i].elem][0]]
+        let jvec = geometry.vertices[elemDict[frame.barrier.data[i].elem][1]]
+        let a = frame.slabWeight.data[i].RD
+        let nivec = new THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a)
+        let izload = -1 * frame.slabWeight.data[i].Uzp * 10
+        geo.vertices.push(nivec,
+            new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
+        group.add(new THREE.Line(geo, aquaLine));
+    }
 
     let arrow = 200;
     for (let i in node.boundary.data) {
