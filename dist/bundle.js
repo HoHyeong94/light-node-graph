@@ -9103,7 +9103,7 @@
               for (let k in laneData){
                   if (ipoint.offset <= laneOffset[k] && jpoint.offset >= laneOffset[k]){
                       let x1 = (laneOffset[k] - ipoint.offset)/L;
-                      let name = "lane" + (k*1+1) + "P" + pNum;
+                      let name = "ln" + (k*1+1) + "P" + pNum;
                       lane[k].push({ command: "LOAD", type: "Concentrated Span", Name: name, data: 
                       [{ elem: elemNum, RD: x1, Uzp: 1 }]}); //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                       pNum ++;
@@ -9112,7 +9112,6 @@
               elemNum++;
           }
       }
-      console.log("lane", lane);
       return { frame, section, material, selfWeight, slabWeight, pavement, barrier, lane }
   }
 
