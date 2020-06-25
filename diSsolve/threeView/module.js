@@ -116,9 +116,9 @@ export function AnalysisModel(node, frame) {
     for (let i in frame.lane) {
         let geo = new THREE.Geometry();
         for (let j in frame.lane[i]) {
-            let ivec = geometry.vertices[elemDict[frame.lane[i][j].data.elem][0]]
-            let jvec = geometry.vertices[elemDict[frame.lane[i][j].data.elem][1]]
-            let a = frame.lane[i][j].data.RD
+            let ivec = geometry.vertices[elemDict[frame.lane[i][j].data[0].elem][0]]
+            let jvec = geometry.vertices[elemDict[frame.lane[i][j].data[0].elem][1]]
+            let a = frame.lane[i][j].data[0].RD
             let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
             geo.vertices.push(nivec)
         }
