@@ -17,7 +17,8 @@ LineViewer.prototype.on3DExecute = function() {
   console.log(this.getInputData(1)?true:false)
   console.log(initPoint,color)
   let mesh = LineView(points,initPoint,color)
-  sceneAdder({layer:2, mesh:mesh},"line");
+  // sceneAdder({layer:2, mesh:mesh},"line");
+  sceneAdder(mesh, [2, "line","1"])
 };
 
 export function SteelPlateView(){
@@ -29,7 +30,8 @@ SteelPlateView.prototype.onExecute = function() {
   const steeBoxDict = this.getInputData(0);
   const initPoint = this.getInputData(1);
   const group = SteelBoxView(steeBoxDict,initPoint);
-  sceneAdder({ layer: 0, mesh: group},"steelbox"); 
+  // sceneAdder({ layer: 0, mesh: group},"steelbox"); 
+  sceneAdder(group, [0, "steelBox","1"])
 }
 
 export function DiaPhragmView(){
@@ -45,7 +47,8 @@ DiaPhragmView.prototype.onExecute = function() {
   const group = DiaView(diaDict,initPoint);
   // let n = Math.random().toFixed(5)
   // console.log("random", n)
-  sceneAdder({ layer: 0, mesh: group},keyName ); 
+  // sceneAdder({ layer: 0, mesh: group},keyName ); 
+  sceneAdder(group, [0, "Part", keyName])
 }
 
 export function HorBracingView(){
@@ -58,8 +61,10 @@ export function HorBracingView(){
     const initPoint = this.getInputData(1);
     const group = HBracingView(hb.hBracingDict,initPoint);
     const group2 = HBracingPlateView(hb.hBracingPlateDict,initPoint);
-    sceneAdder({ layer: 0, mesh: group}, "hbracing"); 
-    sceneAdder({ layer: 0, mesh: group2},"hbracingPlate"); 
+    // sceneAdder({ layer: 0, mesh: group}, "hbracing"); 
+    // sceneAdder({ layer: 0, mesh: group2},"hbracingPlate"); 
+    sceneAdder(group, [0, "HBracing", "Bracing"])
+    sceneAdder(group2, [0, "HBracing", "Plate"])
   }
   
   export function DeckView(){
@@ -69,9 +74,10 @@ export function HorBracingView(){
   }
   
   DeckView.prototype.onExecute = function() {
-    sceneAdder({ layer: 0, 
-        mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
-    },"deck"); 
+    // sceneAdder({ layer: 0, 
+    //     mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
+    // },"deck"); 
+    sceneAdder(DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2)), [0, "deck", "1"]); 
   }
 
   export function SpliceBoltView(){
@@ -86,7 +92,8 @@ export function HorBracingView(){
     for (let key in this.getInputData(0)){
       let boltMesh = boltView(this.getInputData(0)[key],this.getInputData(1))
       if (boltMesh){
-      sceneAdder({ layer: 0, mesh: boltMesh },"bolt"+key);
+      // sceneAdder({ layer: 0, mesh: boltMesh },"bolt"+key);
+      sceneAdder(boltMesh, [0, "bolt", key]);
       }
     }
   }
@@ -97,9 +104,10 @@ export function HorBracingView(){
   }
   
   StudView.prototype.onExecute = function() {
-    sceneAdder({ layer: 0, 
-        mesh: StudMeshView(this.getInputData(0),this.getInputData(1))
-    },"stud"); 
+    // sceneAdder({ layer: 0, 
+    //     mesh: StudMeshView(this.getInputData(0),this.getInputData(1))
+    // },"stud"); 
+    sceneAdder( StudMeshView(this.getInputData(0),this.getInputData(1)), [0, "stud", "1"]); 
   }
 
   export function BarrierView(){
@@ -111,9 +119,10 @@ export function HorBracingView(){
   BarrierView.prototype.onExecute = function() {
     const decPoint = this.getInputData(0)
     for (let key in decPoint){
-      sceneAdder({ layer: 0, 
-          mesh: BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2))
-      },"Barrier"+key);
+      // sceneAdder({ layer: 0, 
+      //     mesh: BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2))
+      // },"Barrier"+key);
+      sceneAdder( BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2)), [0, "Barrier", key]);
     }
   }
 
@@ -125,10 +134,12 @@ export function HorBracingView(){
   RebarView.prototype.onExecute = function() {
     const deckRebar= this.getInputData(0)
     for (let i in deckRebar.r1){
-      sceneAdder({ layer : 0, mesh : LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff)}, "rebar1" + i)
+      // sceneAdder({ layer : 0, mesh : LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff)}, "rebar1" + i)
+      sceneAdder(LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff), [0, "rebar1", i])
     }
     for (let i in deckRebar.r2){
-      sceneAdder({ layer : 0, mesh : LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00)}, "rebar2" + i)
+      // sceneAdder({ layer : 0, mesh : LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00)}, "rebar2" + i)
+      sceneAdder(LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00), [0, "rebar2", i])
     }
 
   }
@@ -153,5 +164,6 @@ export function AnalysisView() {
 }
 
 AnalysisView.prototype.onExecute = function () {
-  sceneAdder({ layer : 2, mesh : AnalysisModel(this.getInputData(0),this.getInputData(1))}, "analysis");
+  // sceneAdder({ layer : 2, mesh : AnalysisModel(this.getInputData(0),this.getInputData(1))}, "analysis");
+  sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "1"]);
 }
