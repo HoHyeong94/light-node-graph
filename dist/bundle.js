@@ -6347,6 +6347,18 @@
           group.add(new global.THREE.Line(geo, aquaLine));
       }
 
+      for (let i in frame.lane.data) {
+          for (let j in frame.lane.data[i]){
+          let geo = new global.THREE.Geometry();
+          let ivec = geometry.vertices[elemDict[frame.lane.data[i][j].elem][0]];
+          let jvec = geometry.vertices[elemDict[frame.pavement.data[i][j].elem][1]];
+          let a = frame.barrier.data[i].RD;
+          let nivec = new global.THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a);
+          geo.vertices.push(nivec);
+          }
+          group.add(new global.THREE.Line(geo, aquaLine));
+      }
+
 
 
       let arrow = 200;
@@ -8858,12 +8870,17 @@
       let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "slab", data: [] };
       let pavement = { command: "LOAD", type: "Distributed Span", Name: "pavement", data: [] };
       let barrier = { command: "LOAD", type: "Concentrated Span", Name: "barrier", data: [] };
+      let lane = { command: "LOAD", type: "Concentrated Span", Name: "lane", data: [] };
       let elemNum = frame.data.length + 1;
       let w1 = slabInfo.w1; //헌치돌출길이
       let hh = slabInfo.haunchHeight; //헌치높이
-      let barrierInfo = [{isLeft : true, offset : 180, area : 200000}, {isLeft : false, offset : 180, area : 200000}];
-      let pavementInfo = [{isLeft : [true,false] , offset : [450,450], thickness : 80}];
-      let gridModelL = [
+      const barrierInfo = [{isLeft : true, offset : 180, area : 200000}, {isLeft : false, offset : 180, area : 200000}];
+      const pavementInfo = [{isLeft : [true,false] , offset : [450,450], thickness : 80}];
+      const laneData = [{baseLine : "leftDeck", offset : 2250}, {baseLine : "leftDeck", offset : 5850}];
+      for (let i in laneData){
+          lane.data.push([]); //차선수만큼 리스트 개수 확보
+      }
+      const gridModelL = [
           ["G1K1", "G2K1"],
           ["G1K2", "G2K2"],
           ["G1K3", "G2K3"],
@@ -8935,12 +8952,20 @@
               let rightDeckPoint = deckLineDict[1].find(elem => elem.key === rightDeckNode).point;
               let barrierOffset = [];
               let pavementOffset = [];
+              let laneOffset = [];
               for (let k in barrierInfo){
                   barrierOffset.push(barrierInfo[k].isLeft?leftDeckPoint.offset + barrierInfo[k].offset : rightDeckPoint.offset - barrierInfo[k].offset);
               }
               for (let k in pavementInfo){
                   pavementOffset.push([pavementInfo[k].isLeft[0]?leftDeckPoint.offset + pavementInfo[k].offset[0] : rightDeckPoint.offset - pavementInfo[k].offset[0],
                       pavementInfo[k].isLeft[1]?leftDeckPoint.offset + pavementInfo[k].offset[1] : rightDeckPoint.offset - pavementInfo[k].offset[1]]);
+              }
+              for (let k in laneData){
+                  if (laneData[k].baseLine === "leftDeck"){
+                      laneOffset.push(leftDeckPoint.offset + laneData[k].offset);
+                  } else if (laneData[k].baseLine === "rightDeck"){
+                      laneOffset.push(leftDeckPoint.offset + laneData[k].offset);
+                  } // 거더에 대한 모든 기준 포인트가 저장되어야 함.
               }
 
               if (j === 0) {
@@ -9071,10 +9096,17 @@
                            -1 * pavementInfo[k].thickness * ( (1-x2)*br1 + x2 * br2) ] });
                   }
               }
+
+              for (let k in laneData){
+                  if (ipoint.offset <= laneOffset[k] && jpoint.offset >= laneOffset[k]){
+                      let x1 = (laneOffset[k] - ipoint.offset)/L;
+                      lane.data[k].push({ elem: elemNum, RD: x1, Uzp: 1 });
+                  }
+              }
               elemNum++;
           }
       }
-      return { frame, section, material, selfWeight, slabWeight, pavement, barrier }
+      return { frame, section, material, selfWeight, slabWeight, pavement, barrier, lane }
   }
 
   function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, supportNode, nodeNumDict, materials, sectionDB) {//consStep, all_material, girder_section_info, all_beam_section_info){
