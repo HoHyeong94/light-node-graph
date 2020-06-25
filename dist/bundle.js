@@ -6351,8 +6351,8 @@
           for (let j in frame.lane.data[i]){
           let geo = new global.THREE.Geometry();
           let ivec = geometry.vertices[elemDict[frame.lane.data[i][j].elem][0]];
-          let jvec = geometry.vertices[elemDict[frame.pavement.data[i][j].elem][1]];
-          let a = frame.barrier.data[i].RD;
+          let jvec = geometry.vertices[elemDict[frame.lane.data[i][j].elem][1]];
+          let a = frame.lane.data[i][j].RD;
           let nivec = new global.THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a);
           geo.vertices.push(nivec);
           }
