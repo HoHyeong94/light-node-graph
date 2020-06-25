@@ -6245,6 +6245,7 @@
       let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
       let yellowLine = new global.THREE.LineBasicMaterial({ color: 0xffff00 });
       let circleMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffff00 });
+      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
       let elemDict = {};
       for (let i in node.node.data) {
           let pt = new global.THREE.Vector3(
@@ -6356,7 +6357,9 @@
               let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
               geo.vertices.push(nivec);
           }
-          group.add(new global.THREE.Line(geo, aquaLine));
+          let line = new global.THREE.Line(geo, redDotLine);
+          line.computeLineDistances();
+          group.add(line);
       }
 
 

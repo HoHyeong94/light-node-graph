@@ -10,6 +10,7 @@ export function AnalysisModel(node, frame) {
     let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
     let yellowLine = new THREE.LineBasicMaterial({ color: 0xffff00 })
     let circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
     let elemDict = {};
     for (let i in node.node.data) {
         let pt = new THREE.Vector3(
@@ -121,7 +122,9 @@ export function AnalysisModel(node, frame) {
             let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
             geo.vertices.push(nivec)
         }
-        group.add(new THREE.Line(geo, aquaLine));
+        let line = new THREE.Line(geo, redDotLine)
+        line.computeLineDistances();
+        group.add(line);
     }
 
 

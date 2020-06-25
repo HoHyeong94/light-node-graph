@@ -1145,7 +1145,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
 
 
 
-function LineMesh(point0, lineMaterial, z) {
+export function LineMesh(point0, lineMaterial, z) {
     let points = []
     let z1 = z ? z : 0;
     for (let i in point0) {
