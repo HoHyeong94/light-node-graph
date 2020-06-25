@@ -677,6 +677,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             elemNum++
         }
     }
+    console.log("lane", lane)
     return { frame, section, material, selfWeight, slabWeight, pavement, barrier, lane }
 }
 
