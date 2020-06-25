@@ -58,7 +58,7 @@ export function AnalysisModel(node, frame) {
         let ivec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][0]]
         let jvec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][1]]
         let izload = frame.selfWeight.data[i].Uzp[0] * 0.2
-        let jzload = frame.selfWeight.data[i].Uzp[1] * 0.2 
+        let jzload = frame.selfWeight.data[i].Uzp[1] * 0.2
         geo.vertices.push(ivec,
             new THREE.Vector3(ivec.x, ivec.y, ivec.z + izload),
             new THREE.Vector3(jvec.x, jvec.y, jvec.z + jzload),
@@ -70,10 +70,10 @@ export function AnalysisModel(node, frame) {
         let geo = new THREE.Geometry();
         let ivec = geometry.vertices[elemDict[frame.slabWeight.data[i].elem][0]]
         let jvec = geometry.vertices[elemDict[frame.slabWeight.data[i].elem][1]]
-        let a = frame.slabWeight.data[i].RD[0] 
-        let b = frame.slabWeight.data[i].RD[1] 
-        let nivec = new THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a)
-        let njvec = new THREE.Vector3(ivec.x * (1-b) + jvec.x * b, ivec.y * (1-b) + jvec.y * b, ivec.z * (1-b) + jvec.z * b)
+        let a = frame.slabWeight.data[i].RD[0]
+        let b = frame.slabWeight.data[i].RD[1]
+        let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+        let njvec = new THREE.Vector3(ivec.x * (1 - b) + jvec.x * b, ivec.y * (1 - b) + jvec.y * b, ivec.z * (1 - b) + jvec.z * b)
         let izload = -1 * frame.slabWeight.data[i].Uzp[0] * 10
         let jzload = -1 * frame.slabWeight.data[i].Uzp[1] * 10
         geo.vertices.push(nivec,
@@ -88,7 +88,7 @@ export function AnalysisModel(node, frame) {
         let ivec = geometry.vertices[elemDict[frame.barrier.data[i].elem][0]]
         let jvec = geometry.vertices[elemDict[frame.barrier.data[i].elem][1]]
         let a = frame.barrier.data[i].RD
-        let nivec = new THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a)
+        let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
         let izload = -1 * frame.barrier.data[i].Uzp / 10
         geo.vertices.push(nivec,
             new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
@@ -99,10 +99,10 @@ export function AnalysisModel(node, frame) {
         let geo = new THREE.Geometry();
         let ivec = geometry.vertices[elemDict[frame.pavement.data[i].elem][0]]
         let jvec = geometry.vertices[elemDict[frame.pavement.data[i].elem][1]]
-        let a = frame.pavement.data[i].RD[0] 
-        let b = frame.pavement.data[i].RD[1] 
-        let nivec = new THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a)
-        let njvec = new THREE.Vector3(ivec.x * (1-b) + jvec.x * b, ivec.y * (1-b) + jvec.y * b, ivec.z * (1-b) + jvec.z * b)
+        let a = frame.pavement.data[i].RD[0]
+        let b = frame.pavement.data[i].RD[1]
+        let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+        let njvec = new THREE.Vector3(ivec.x * (1 - b) + jvec.x * b, ivec.y * (1 - b) + jvec.y * b, ivec.z * (1 - b) + jvec.z * b)
         let izload = -1 * frame.pavement.data[i].Uzp[0] * 10
         let jzload = -1 * frame.pavement.data[i].Uzp[1] * 10
         geo.vertices.push(nivec,
@@ -113,13 +113,13 @@ export function AnalysisModel(node, frame) {
     }
 
     for (let i in frame.lane.data) {
-        for (let j in frame.lane.data[i]){
         let geo = new THREE.Geometry();
-        let ivec = geometry.vertices[elemDict[frame.lane.data[i][j].elem][0]]
-        let jvec = geometry.vertices[elemDict[frame.lane.data[i][j].elem][1]]
-        let a = frame.lane.data[i][j].RD
-        let nivec = new THREE.Vector3(ivec.x * (1-a) + jvec.x * a, ivec.y * (1-a) + jvec.y * a, ivec.z * (1-a) + jvec.z * a)
-        geo.vertices.push(nivec)
+        for (let j in frame.lane.data[i]) {
+            let ivec = geometry.vertices[elemDict[frame.lane.data[i][j].elem][0]]
+            let jvec = geometry.vertices[elemDict[frame.lane.data[i][j].elem][1]]
+            let a = frame.lane.data[i][j].RD
+            let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+            geo.vertices.push(nivec)
         }
         group.add(new THREE.Line(geo, aquaLine));
     }
@@ -424,28 +424,28 @@ export function boltView(spliceDict, initPoint) {
     // var geometry = new THREE.CylinderBufferGeometry(radius,radius,bolt0.t*2+bolt0.l,6,1)
     // let dummyList = [];
     // for (let key in spliceDict) {
-        //    let point = nameToPointDict[diakey]
-        for (let partkey in spliceDict) {
-            if (spliceDict[partkey].bolt) {
-                let Thickness = spliceDict[partkey].Thickness
-                let zPosition = spliceDict[partkey].z
-                let rotationY = spliceDict[partkey].rotationY + Math.PI / 2
-                let rotationX = spliceDict[partkey].rotationX
-                let point = spliceDict[partkey].point
-                let bolt = spliceDict[partkey].bolt
-                for (let k in bolt) {
-                    for (let i = 0; i < bolt[k].gNum; i++) {
-                        for (let j = 0; j < bolt[k].pNum; j++) {
-                            let xtranslate = bolt[k].startPoint.x - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
-                            let ytranslate = bolt[k].startPoint.y - j * bolt[k].P
-                            group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
-                            // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
-                            boltIs = true
-                        }
+    //    let point = nameToPointDict[diakey]
+    for (let partkey in spliceDict) {
+        if (spliceDict[partkey].bolt) {
+            let Thickness = spliceDict[partkey].Thickness
+            let zPosition = spliceDict[partkey].z
+            let rotationY = spliceDict[partkey].rotationY + Math.PI / 2
+            let rotationX = spliceDict[partkey].rotationX
+            let point = spliceDict[partkey].point
+            let bolt = spliceDict[partkey].bolt
+            for (let k in bolt) {
+                for (let i = 0; i < bolt[k].gNum; i++) {
+                    for (let j = 0; j < bolt[k].pNum; j++) {
+                        let xtranslate = bolt[k].startPoint.x - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
+                        let ytranslate = bolt[k].startPoint.y - j * bolt[k].P
+                        group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
+                        // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
+                        boltIs = true
                     }
                 }
             }
         }
+    }
     // }
     // console.log("dummyList",dummyList)
     // let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
@@ -455,7 +455,7 @@ export function boltView(spliceDict, initPoint) {
     // }
     // mesh.instanceMatrix.needsUpdate = true;
     // group.add(mesh)
-    let result = boltIs? group:null;
+    let result = boltIs ? group : null;
     return result
 }
 
