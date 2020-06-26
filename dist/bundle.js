@@ -6798,8 +6798,8 @@
     console.log(this.getInputData(1)?true:false);
     console.log(initPoint,color);
     let mesh = LineView(points,initPoint,color);
-    // sceneAdder({layer:2, mesh:mesh},"line");
-    global.sceneAdder(mesh, [2, "line","total"]);
+    global.sceneAdder({layer:2, mesh:mesh},"line");
+    // sceneAdder(mesh, [2, "line","total"])
   };
 
   function SteelPlateView(){
@@ -6811,8 +6811,8 @@
     const steeBoxDict = this.getInputData(0);
     const initPoint = this.getInputData(1);
     const group = SteelBoxView(steeBoxDict,initPoint);
-    // sceneAdder({ layer: 0, mesh: group},"steelbox"); 
-    global.sceneAdder(group, [0, "steelBox","total"]);
+    global.sceneAdder({ layer: 0, mesh: group},"steelbox"); 
+    // sceneAdder(group, [0, "steelBox","total"])
   };
 
   function DiaPhragmView(){
@@ -6828,8 +6828,8 @@
     const group = DiaView(diaDict,initPoint);
     // let n = Math.random().toFixed(5)
     // console.log("random", n)
-    // sceneAdder({ layer: 0, mesh: group},keyName ); 
-    global.sceneAdder(group, [0, "Part", keyName]);
+    global.sceneAdder({ layer: 0, mesh: group},keyName ); 
+    // sceneAdder(group, [0, "Part", keyName])
   };
 
   function HorBracingView(){
@@ -6842,10 +6842,10 @@
       const initPoint = this.getInputData(1);
       const group = HBracingView(hb.hBracingDict,initPoint);
       const group2 = HBracingPlateView(hb.hBracingPlateDict,initPoint);
-      // sceneAdder({ layer: 0, mesh: group}, "hbracing"); 
-      // sceneAdder({ layer: 0, mesh: group2},"hbracingPlate"); 
-      global.sceneAdder(group, [0, "HBracing", "Bracing"]);
-      global.sceneAdder(group2, [0, "HBracing", "Plate"]);
+      global.sceneAdder({ layer: 0, mesh: group}, "hbracing"); 
+      global.sceneAdder({ layer: 0, mesh: group2},"hbracingPlate"); 
+      // sceneAdder(group, [0, "HBracing", "Bracing"])
+      // sceneAdder(group2, [0, "HBracing", "Plate"])
     };
     
     function DeckView(){
@@ -6855,10 +6855,10 @@
     }
     
     DeckView.prototype.onExecute = function() {
-      // sceneAdder({ layer: 0, 
-      //     mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
-      // },"deck"); 
-      global.sceneAdder(DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2)), [0, "deck", "total"]); 
+      global.sceneAdder({ layer: 0, 
+          mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
+      },"deck"); 
+      // sceneAdder(DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2)), [0, "deck", "total"]); 
     };
 
     function SpliceBoltView(){
@@ -6873,8 +6873,8 @@
       for (let key in this.getInputData(0)){
         let boltMesh = boltView(this.getInputData(0)[key],this.getInputData(1));
         if (boltMesh){
-        // sceneAdder({ layer: 0, mesh: boltMesh },"bolt"+key);
-        global.sceneAdder(boltMesh, [0, "bolt", key]);
+        global.sceneAdder({ layer: 0, mesh: boltMesh },"bolt"+key);
+        // sceneAdder(boltMesh, [0, "bolt", key]);
         }
       }
     };
@@ -6885,10 +6885,10 @@
     }
     
     StudView.prototype.onExecute = function() {
-      // sceneAdder({ layer: 0, 
-      //     mesh: StudMeshView(this.getInputData(0),this.getInputData(1))
-      // },"stud"); 
-      global.sceneAdder( StudMeshView(this.getInputData(0),this.getInputData(1)), [0, "stud", "total"]); 
+      global.sceneAdder({ layer: 0, 
+          mesh: StudMeshView(this.getInputData(0),this.getInputData(1))
+      },"stud"); 
+      // sceneAdder( StudMeshView(this.getInputData(0),this.getInputData(1)), [0, "stud", "total"]); 
     };
 
     function BarrierView(){
@@ -6900,10 +6900,10 @@
     BarrierView.prototype.onExecute = function() {
       const decPoint = this.getInputData(0);
       for (let key in decPoint){
-        // sceneAdder({ layer: 0, 
-        //     mesh: BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2))
-        // },"Barrier"+key);
-        global.sceneAdder( BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2)), [0, "Barrier", key]);
+        global.sceneAdder({ layer: 0, 
+            mesh: BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2))
+        },"Barrier"+key);
+        // sceneAdder( BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2)), [0, "Barrier", key]);
       }
     };
 
@@ -6915,12 +6915,12 @@
     RebarView.prototype.onExecute = function() {
       const deckRebar= this.getInputData(0);
       for (let i in deckRebar.r1){
-        // sceneAdder({ layer : 0, mesh : LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff)}, "rebar1" + i)
-        global.sceneAdder(LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff), [0, "rebar1", i]);
+        global.sceneAdder({ layer : 0, mesh : LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff)}, "rebar1" + i);
+        // sceneAdder(LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff), [0, "rebar1", i])
       }
       for (let i in deckRebar.r2){
-        // sceneAdder({ layer : 0, mesh : LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00)}, "rebar2" + i)
-        global.sceneAdder(LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00), [0, "rebar2", i]);
+        global.sceneAdder({ layer : 0, mesh : LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00)}, "rebar2" + i);
+        // sceneAdder(LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00), [0, "rebar2", i])
       }
 
     };
@@ -6945,8 +6945,8 @@
   }
 
   AnalysisView.prototype.onExecute = function () {
-    // sceneAdder({ layer : 2, mesh : AnalysisModel(this.getInputData(0),this.getInputData(1))}, "analysis");
-    global.sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
+    global.sceneAdder({ layer : 2, mesh : AnalysisModel(this.getInputData(0),this.getInputData(1))}, "analysis");
+    // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
   };
 
   // import makerjs from 'makerjs'
@@ -8430,8 +8430,8 @@
     let group = topDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5),this.getInputData(6));
     // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
     group.position.set(0,-offset,0);
-    // sceneAdder({layer:6, mesh:group},"topView");
-    global.sceneAdder(group,[6, "topView", "total"]);
+    global.sceneAdder({layer:6, mesh:group},"topView");
+    // sceneAdder(group,[6, "topView", "total"]);
   };
 
   function GirderGeneralView1(){
@@ -8444,8 +8444,8 @@
 
   GirderGeneralView1.prototype.on3DExecute = function() {
     let group = GirderGeneralDraw1(this.getInputData(0),this.getInputData(1));
-    // sceneAdder({layer:this.getInputData(1), mesh:group},"GirderGeneralView1");
-    global.sceneAdder(group, [this.getInputData(1), "GirderGeneralView1", "total"] );
+    global.sceneAdder({layer:this.getInputData(1), mesh:group},"GirderGeneralView1");
+    // sceneAdder(group, [this.getInputData(1), "GirderGeneralView1", "total"] );
   };
 
   function GirderGeneralView2(){
@@ -8461,8 +8461,8 @@
 
   GirderGeneralView2.prototype.on3DExecute = function() {
     let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2), this.getInputData(3), this.getInputData(4));
-    // sceneAdder({layer:this.getInputData(4), mesh:group},"GirderGeneralView2");
-    global.sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
+    global.sceneAdder({layer:this.getInputData(4), mesh:group},"GirderGeneralView2");
+    // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
   };
 
   // export function SideViewer(){
@@ -8495,8 +8495,8 @@
 
   LineDraw.prototype.on3DExecute = function() {
     let group = LineDrawView(this.getInputData(0),this.getInputData(1));
-    // sceneAdder({layer:3, mesh:group},"LineView")
-    global.sceneAdder(group, [3, "LineView", "total"]);
+    global.sceneAdder({layer:3, mesh:group},"LineView");
+    // sceneAdder(group, [3, "LineView", "total"])
   };
 
   function LineSideDraw(){
@@ -8508,8 +8508,8 @@
 
   LineSideDraw.prototype.on3DExecute = function() {
     let group = LineSideView(this.getInputData(0));
-    // sceneAdder({layer:4, mesh:group},"LineSideView")
-    global.sceneAdder(group, [4, "LineSideView", "total"]);
+    global.sceneAdder({layer:4, mesh:group},"LineSideView");
+    // sceneAdder(group, [4, "LineSideView", "total"]);
   };
 
   function GirderLayoutDraw(){
@@ -8521,10 +8521,10 @@
 
   GirderLayoutDraw.prototype.on3DExecute = function() {
     let group = GirderLayoutView(this.getInputData(0));
-    // sceneAdder({layer:3, mesh:group.plan},"GirderLayout")
-    // sceneAdder({layer:4, mesh:group.side},"GirderLayoutSide")
-    global.sceneAdder(group.plan, [3, "GirderLayout", "total"]);
-    global.sceneAdder(group.side, [4, "GirderLayoutSide", "total"]);
+    global.sceneAdder({layer:3, mesh:group.plan},"GirderLayout");
+    global.sceneAdder({layer:4, mesh:group.side},"GirderLayoutSide");
+    // sceneAdder(group.plan, [3, "GirderLayout", "total"])
+    // sceneAdder(group.side, [4, "GirderLayoutSide", "total"])
   };
 
   function partProperty(width, thickness, Dy, Dz, cos) {
