@@ -8897,10 +8897,10 @@
       let elemNum = frame.data.length + 1;
       let w1 = slabInfo.w1; //헌치돌출길이
       let hh = slabInfo.haunchHeight; //헌치높이
-      const barrierInfo = [{isLeft : true, offset : 180, area : 200000}, {isLeft : false, offset : 180, area : 200000}];
-      const pavementInfo = [{isLeft : [true,false] , offset : [450,450], thickness : 80}];
-      const laneData = [{baseLine : "leftDeck", offset : 2250}, {baseLine : "leftDeck", offset : 5850}];
-      for (let i in laneData){
+      const barrierInfo = [{ isLeft: true, offset: 180, area: 200000 }, { isLeft: false, offset: 180, area: 200000 }];
+      const pavementInfo = [{ isLeft: [true, false], offset: [450, 450], thickness: 80 }];
+      const laneData = [{ baseLine: "leftDeck", offset: 2250 }, { baseLine: "leftDeck", offset: 5850 }];
+      for (let i in laneData) {
           lane.push([]); //차선수만큼 리스트 개수 확보
       }
       const gridModelL = [
@@ -8952,94 +8952,88 @@
           }
       }
       let pNum = 1;
+      let nextPoints = [];
+      let nextNode = [];
+      let nextLeftDeck = {};
+      let nextRightDeck = {};
+      let brB = [];
 
-      for (let j = 0; j < gridModelL[0].length + 1; j++) { //모델에 따라서 격자가 서로 다를 수 있음. 개수가 동일하지 않음, 추후 수정이 필요
-          let ivecB = [0, 0, 0];
-          let jvecB = [0, 0, 0];
+      for (let i = 0; i < gridModelL.length; i++) {
+          let barrierOffset = [];
+          let pavementOffset = [];
+          let laneOffset = [];
+          let currentNode = [];
+          let currentPoints = [];
+          let leftDeck = {};
+          let rightDeck = {};
+          let ivecF = [];
+          let br = [];
+          let brF = [];
 
-          for (let i = 0; i < gridModelL.length; i++) {
-              let ivecF = [];
-              let jvecF = [];
-              let inode = "";
-              let jnode = "";
-              let ipoint = {};
-              let jpoint = {};
-              let L = 0;
-              let inode2 = "";
-              let jnode2 = "";
-              let ipoint2 = {};
-              let jpoint2 = {};
-              let leftDeckNode = "LD" + gridModelL[i][0].substr(2);
-              let rightDeckNode = "RD" + gridModelL[i][gridModelL[i].length - 1].substr(2);
-              let leftDeckPoint = deckLineDict[0].find(elem => elem.key === leftDeckNode).point;
-              let rightDeckPoint = deckLineDict[1].find(elem => elem.key === rightDeckNode).point;
-              let barrierOffset = [];
-              let pavementOffset = [];
-              let laneOffset = [];
-              for (let k in barrierInfo){
-                  barrierOffset.push(barrierInfo[k].isLeft?leftDeckPoint.offset + barrierInfo[k].offset : rightDeckPoint.offset - barrierInfo[k].offset);
-              }
-              for (let k in pavementInfo){
-                  pavementOffset.push([pavementInfo[k].isLeft[0]?leftDeckPoint.offset + pavementInfo[k].offset[0] : rightDeckPoint.offset - pavementInfo[k].offset[0],
-                      pavementInfo[k].isLeft[1]?leftDeckPoint.offset + pavementInfo[k].offset[1] : rightDeckPoint.offset - pavementInfo[k].offset[1]]);
-              }
-              for (let k in laneData){
-                  if (laneData[k].baseLine === "leftDeck"){
-                      laneOffset.push(leftDeckPoint.offset + laneData[k].offset);
-                  } else if (laneData[k].baseLine === "rightDeck"){
-                      laneOffset.push(leftDeckPoint.offset + laneData[k].offset);
-                  } // 거더에 대한 모든 기준 포인트가 저장되어야 함.
-              }
-
-              if (j === 0) {
-                  inode = leftDeckNode;
-                  jnode = gridModelL[i][j];
-                  ipoint = leftDeckPoint;
-                  jpoint = gridPoint[jnode];
-              } else if (j === gridModelL[i].length) {
-                  inode = gridModelL[i][j - 1];
-                  jnode = rightDeckNode;
-                  ipoint = gridPoint[inode];
-                  jpoint = rightDeckPoint;
-              } else {
-                  inode = gridModelL[i][j - 1];
-                  jnode = gridModelL[i][j];
-                  ipoint = gridPoint[inode];
-                  jpoint = gridPoint[jnode];
-              }
-              if (i < gridModelL.length - 1) {
-                  if (j === 0) {
-                      inode2 = "LD" + gridModelL[i+1][j].substr(2);
-                      jnode2 = gridModelL[i+1][j];
-                      ipoint2 = deckLineDict[0].find(elem => elem.key === inode2).point;
-                      jpoint2 = gridPoint[jnode2];
-                  } else if (j === gridModelL[i].length) {
-                      inode2 = gridModelL[i+1][j - 1];
-                      jnode2 = "RD" + gridModelL[i+1][j - 1].substr(2);
-                      ipoint2 = gridPoint[inode2];
-                      jpoint2 = deckLineDict[1].find(elem => elem.key === jnode2).point;
-                  } else {
-                      inode2 = gridModelL[i+1][j - 1];
-                      jnode2 = gridModelL[i+1][j];
-                      ipoint2 = gridPoint[inode2];
-                      jpoint2 = gridPoint[jnode2];
+          if (i === 0) {
+              leftDeck = deckLineDict[0].find(elem => elem.key === "LD" + gridModelL[i][0].substr(2));
+              rightDeck = deckLineDict[1].find(elem => elem.key === "RD" + gridModelL[i][gridModelL[i].length - 1].substr(2));
+              currentPoints.push(leftDeck.point);
+              gridModelL[i].forEach(elem => currentPoints.push(gridPoint[elem]));
+              currentPoints.push(rightDeck.point);
+              currentNode = ["LD" + gridModelL[i][0].substr(2), ...gridModelL[i], "RD" + gridModelL[i][gridModelL[i].length - 1].substr(2)];
+          } else {
+              currentPoints = [...nextPoints];
+              leftDeck = nextLeftDeck;
+              rightDeck = nextRightDeck;
+              currentNode = nextNode;
+          }
+          if (i < gridModelL.length - 1) {
+              nextNode = ["LD" + gridModelL[i + 1][0].substr(2), ...gridModelL[i + 1], "RD" + gridModelL[i + 1][gridModelL[i + 1].length - 1].substr(2)];
+              nextLeftDeck = deckLineDict[0].find(elem => elem.key === "LD" + gridModelL[i + 1][0].substr(2));
+              nextRightDeck = deckLineDict[1].find(elem => elem.key === "RD" + gridModelL[i + 1][gridModelL[i].length - 1].substr(2));
+              nextPoints = [nextLeftDeck.point];
+              gridModelL[i + 1].forEach(elem => nextPoints.push(gridPoint[elem]));
+              nextPoints.push(nextRightDeck.point);
+              let elemUnitVec = [];
+              for (let k = 0; k < currentPoints.length - 1; k++) {
+                  let elemL = Math.sqrt((currentPoints[k + 1].x - currentPoints[k].x) ** 2 + (currentPoints[k + 1].y - currentPoints[k].y) ** 2);
+                  elemUnitVec.push([(currentPoints[k + 1].x - currentPoints[k].x) / elemL, (currentPoints[k + 1].y - currentPoints[k].y) / elemL]);
+                  ivecF = [nextPoints[k].x - currentPoints[k].x, nextPoints[k].y - currentPoints[k].y];
+                  brF.push(Math.abs(ivecF[0] * elemUnitVec[k][1] - ivecF[1] * elemUnitVec[k][0]));
+                  if (k === currentPoints.length - 2) {
+                      ivecF = [nextPoints[k + 1].x - currentPoints[k + 1].x, nextPoints[k + 1].y - currentPoints[k + 1].y];
+                      brF.push(Math.abs(ivecF[0] * elemUnitVec[k][1] - ivecF[1] * elemUnitVec[k][0]));
                   }
-                  ivecF = [ipoint2.x - ipoint.x, ipoint2.y - ipoint.y];
-                  jvecF = [jpoint2.x - jpoint.x, jpoint2.y - jpoint.y];
-              } else {
-                  ivecF = [0, 0, 0];
-                  jvecF = [0, 0, 0];
               }
-              let elemL = Math.sqrt((jpoint.x - ipoint.x)**2 + (jpoint.y - ipoint.y)**2);
-              let elemUnitVec = [(jpoint.x - ipoint.x)/elemL, (jpoint.y - ipoint.y)/elemL];
-              let briF = Math.abs(ivecF[0]*elemUnitVec[1]-ivecF[1]*elemUnitVec[0]);
-              let brjF = Math.abs(jvecF[0]*elemUnitVec[1]-jvecF[1]*elemUnitVec[0]);
-              let briB = Math.abs(ivecB[0]*elemUnitVec[1]-ivecB[1]*elemUnitVec[0]);
-              let brjB = Math.abs(jvecB[0]*elemUnitVec[1]-jvecB[1]*elemUnitVec[0]);
-              let br1 = (briF + briB)/2 * 2.5 * 9.81 * 0.000001;
-              let br2 = (brjF + brjB)/2 * 2.5 * 9.81 * 0.000001;
-              ivecB = ivecF;
-              jvecB = jvecF;
+          }
+
+          if (i === 0) {
+              brF.forEach(elem => br.push(elem / 2 * 2.5 * 9.81 * 0.000001));
+          } else if (i === gridModelL.length - 1) {
+              brB.forEach(elem => br.push(elem / 2 * 2.5 * 9.81 * 0.000001));
+          } else {
+              for (let k in brF) {
+                  br.push((brF[k] + brB[k]) / 2 * 2.5 * 9.81 * 0.000001);
+              }
+          }
+          if (i < gridModelL.length - 1) {
+              brB = brF;
+          }
+
+          for (let k in barrierInfo) {
+              barrierOffset.push(barrierInfo[k].isLeft ? currentPoints[0].offset + barrierInfo[k].offset : currentPoints[currentPoints.length - 1].offset - barrierInfo[k].offset);
+          }
+          for (let k in pavementInfo) {
+              pavementOffset.push([pavementInfo[k].isLeft[0] ? currentPoints[0].offset + pavementInfo[k].offset[0] : currentPoints[currentPoints.length - 1].offset - pavementInfo[k].offset[0],
+              pavementInfo[k].isLeft[1] ? currentPoints[0].offset + pavementInfo[k].offset[1] : currentPoints[currentPoints.length - 1].offset - pavementInfo[k].offset[1]]);
+          }
+          for (let k in laneData) {
+              if (laneData[k].baseLine === "leftDeck") {
+                  laneOffset.push(currentPoints[0].offset + laneData[k].offset);
+              } else if (laneData[k].baseLine === "rightDeck") {
+                  laneOffset.push(currentPoints[currentPoints.length - 1].offset - laneData[k].offset);
+              } // 거더에 대한 모든 기준 포인트가 저장되어야 함.
+          }
+
+          for (let j = 0; j < currentPoints.length - 1; j++) {
+              let inode = currentNode[j];
+              let jnode = currentNode[j + 1];
 
               let elem = {
                   iNode: nodeNumDict[inode],
@@ -9053,35 +9047,26 @@
               let inc = 1;
               frame.data.push(elem);
 
-
+              let leftPoint = currentPoint[j];
+              let rightPoint = currentPoint[j + 1];
+              L = rightPoint.offset - leftPoint.offset;
               if (j === 0) {
                   let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
                   let gradient = sectionPointDict[jnode].forward.input.gradient;
-                  let leftend = deckLineDict[0].find(elem => elem.key === inode);
-                  let leftPoint = leftend.point;
-                  let rightPoint = gridPoint[jnode];
-                  L = rightPoint.offset - leftPoint.offset;
                   let x1 = sectionPointDict[jnode].forward.uflange[2].length > 0 ? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
                   xList = [0, (L + x1) / L, 1];
-                  wList = [leftend.endT, slabThickness2 + hh + (- gradient + rightPoint.gradientY) * x1, slabThickness2 + hh];
+                  wList = [leftDeck.endT, slabThickness2 + hh + (- gradient + rightPoint.gradientY) * x1, slabThickness2 + hh];
               } else if (j === gridModelL[i].length) {
                   let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
                   let gradient = sectionPointDict[inode].forward.input.gradient;
-                  let rightend = deckLineDict[1].find(elem => elem.key === jnode);
-                  let leftPoint = gridPoint[inode];
-                  let rightPoint = rightend.point;
-                  L = rightPoint.offset - leftPoint.offset;
                   let x1 = sectionPointDict[inode].forward.uflange[2].length > 0 ? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
                   xList = [0, x1 / L, 1];
-                  wList = [slabThickness1 + hh, slabThickness1 + hh + (- gradient + leftPoint.gradientY) * x1, rightend.endT];
+                  wList = [slabThickness1 + hh, slabThickness1 + hh + (- gradient + leftPoint.gradientY) * x1, rightDeck.endT];
               } else {
                   let slabThickness1 = sectionPointDict[inode].forward.input.Tcu;
                   let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
                   let gradient1 = sectionPointDict[inode].forward.input.gradient;
                   let gradient2 = sectionPointDict[jnode].forward.input.gradient;
-                  let leftPoint = gridPoint[inode];
-                  let rightPoint = gridPoint[jnode];
-                  L = rightPoint.offset - leftPoint.offset;
                   let x1 = sectionPointDict[inode].forward.uflange[2].length > 0 ? sectionPointDict[inode].forward.uflange[2][1].x : sectionPointDict[inode].forward.uflange[1][0].x + w1;
                   let x2 = sectionPointDict[jnode].forward.uflange[2].length > 0 ? sectionPointDict[jnode].forward.uflange[2][0].x : sectionPointDict[jnode].forward.uflange[0][0].x - w1;
                   let h1 = x1 + 3 * Math.abs(hh + (- gradient1 + leftPoint.gradientY) * x1);
@@ -9091,42 +9076,48 @@
                   if (hh === 0 && gradient1 === leftPoint.gradientY) { inc = 5; }
               }
               for (let k = 0; k < xList.length - 1; k += inc) {
-                  slabWeight.data.push({ elem: elemNum, RD: [xList[k], xList[k + inc]], 
-                      Uzp: [wList[k] * ( (1-xList[k])*br1 + xList[k] * br2), wList[k + inc] * ( (1-xList[k+inc])*br1 + xList[k+inc] * br2) ] });
+                  slabWeight.data.push({
+                      elem: elemNum, RD: [xList[k], xList[k + inc]],
+                      Uzp: [wList[k] * ((1 - xList[k]) * br[j] + xList[k] * br[j + 1]), wList[k + inc] * ((1 - xList[k + inc]) * br[j] + xList[k + inc] * br[j + 1])]
+                  });
               }
-              for (let k in barrierOffset){
-                  if (ipoint.offset <= barrierOffset[k] && jpoint.offset >= barrierOffset[k]){
-                      let x1 = (barrierOffset[k] - ipoint.offset)/L;
-                      barrier.data.push({ elem: elemNum, RD: x1, Uzp: -1 * barrierInfo[k].area * ( (1-x1)*br1 + x1 * br2)});
+              for (let k in barrierOffset) {
+                  if (currentPoints[j].offset <= barrierOffset[k] && currentPoints[j + 1].offset >= barrierOffset[k]) {
+                      let x1 = (barrierOffset[k] - currentPoints[j].offset) / L;
+                      barrier.data.push({ elem: elemNum, RD: x1, Uzp: -1 * barrierInfo[k].area * ((1 - x1) * br[j] + x1 * br[j + 1]) });
                   }
               }
-              for (let k in pavementOffset){
+              for (let k in pavementOffset) {
                   let x1 = 1;
                   let x2 = 0;
-                  if (ipoint.offset <= pavementOffset[k][0] && jpoint.offset >= pavementOffset[k][0]){
-                      x1 = (pavementOffset[k][0] - ipoint.offset)/L;
-                  } else if (ipoint.offset > pavementOffset[k][0]){
+                  if (currentPoints[j].offset <= pavementOffset[k][0] && currentPoints[j + 1].offset >= pavementOffset[k][0]) {
+                      x1 = (pavementOffset[k][0] - currentPoints[j].offset) / L;
+                  } else if (currentPoints[j].offset > pavementOffset[k][0]) {
                       x1 = 0;
                   }
-                  if (ipoint.offset <= pavementOffset[k][1] && jpoint.offset >= pavementOffset[k][1]){
-                      x2 = (pavementOffset[k][1] - ipoint.offset)/L;
-                  } else if (jpoint.offset < pavementOffset[k][1]){
+                  if (currentPoints[j].offset <= pavementOffset[k][1] && currentPoints[j + 1].offset >= pavementOffset[k][1]) {
+                      x2 = (pavementOffset[k][1] - currentPoints[j].offset) / L;
+                  } else if (currentPoints[j + 1].offset < pavementOffset[k][1]) {
                       x2 = 1;
                   }
                   if (x2 > x1) {
-                      pavement.data.push({ elem: elemNum, RD: [x1, x2], 
-                          Uzp: [-1 * pavementInfo[k].thickness * ( (1-x1)*br1 + x1 * br2),
-                           -1 * pavementInfo[k].thickness * ( (1-x2)*br1 + x2 * br2) ] });
+                      pavement.data.push({
+                          elem: elemNum, RD: [x1, x2],
+                          Uzp: [-1 * pavementInfo[k].thickness * ((1 - x1) * br[j] + x1 * br[j + 1]),
+                          -1 * pavementInfo[k].thickness * ((1 - x2) * br[j] + x2 * br[j + 1])]
+                      });
                   }
               }
 
-              for (let k in laneData){
-                  if (ipoint.offset <= laneOffset[k] && jpoint.offset >= laneOffset[k]){
-                      let x1 = (laneOffset[k] - ipoint.offset)/L;
-                      let name = "ln" + (k*1+1) + "P" + pNum;
-                      lane[k].push({ command: "LOAD", type: "Concentrated Span", Name: name, data: 
-                      [{ elem: elemNum, RD: x1, Uzp: 1 }]}); //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
-                      pNum ++;
+              for (let k in laneData) {
+                  if (currentPoints[j].offset <= laneOffset[k] && currentPoints[j + 1].offset >= laneOffset[k]) {
+                      let x1 = (laneOffset[k] - currentPoints[j].offset) / L;
+                      let name = "ln" + (k * 1 + 1) + "P" + pNum;
+                      lane[k].push({
+                          command: "LOAD", type: "Concentrated Span", Name: name, data:
+                              [{ elem: elemNum, RD: x1, Uzp: 1 }]
+                      }); //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
+                      pNum++;
                   }
               }
               elemNum++;
