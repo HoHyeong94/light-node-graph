@@ -6799,7 +6799,7 @@
     console.log(initPoint,color);
     let mesh = LineView(points,initPoint,color);
     // sceneAdder({layer:2, mesh:mesh},"line");
-    global.sceneAdder(mesh, [2, "line","1"]);
+    global.sceneAdder(mesh, [2, "line","total"]);
   };
 
   function SteelPlateView(){
@@ -6812,7 +6812,7 @@
     const initPoint = this.getInputData(1);
     const group = SteelBoxView(steeBoxDict,initPoint);
     // sceneAdder({ layer: 0, mesh: group},"steelbox"); 
-    global.sceneAdder(group, [0, "steelBox","1"]);
+    global.sceneAdder(group, [0, "steelBox","total"]);
   };
 
   function DiaPhragmView(){
@@ -6858,7 +6858,7 @@
       // sceneAdder({ layer: 0, 
       //     mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
       // },"deck"); 
-      global.sceneAdder(DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2)), [0, "deck", "1"]); 
+      global.sceneAdder(DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2)), [0, "deck", "total"]); 
     };
 
     function SpliceBoltView(){
@@ -6888,7 +6888,7 @@
       // sceneAdder({ layer: 0, 
       //     mesh: StudMeshView(this.getInputData(0),this.getInputData(1))
       // },"stud"); 
-      global.sceneAdder( StudMeshView(this.getInputData(0),this.getInputData(1)), [0, "stud", "1"]); 
+      global.sceneAdder( StudMeshView(this.getInputData(0),this.getInputData(1)), [0, "stud", "total"]); 
     };
 
     function BarrierView(){
@@ -6946,7 +6946,7 @@
 
   AnalysisView.prototype.onExecute = function () {
     // sceneAdder({ layer : 2, mesh : AnalysisModel(this.getInputData(0),this.getInputData(1))}, "analysis");
-    global.sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "1"]);
+    global.sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
   };
 
   // import makerjs from 'makerjs'
@@ -8431,7 +8431,7 @@
     // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
     group.position.set(0,-offset,0);
     // sceneAdder({layer:6, mesh:group},"topView");
-    global.sceneAdder(group,[6, "topView", "1"]);
+    global.sceneAdder(group,[6, "topView", "total"]);
   };
 
   function GirderGeneralView1(){
@@ -8445,7 +8445,7 @@
   GirderGeneralView1.prototype.on3DExecute = function() {
     let group = GirderGeneralDraw1(this.getInputData(0),this.getInputData(1));
     // sceneAdder({layer:this.getInputData(1), mesh:group},"GirderGeneralView1");
-    global.sceneAdder(group, [this.getInputData(1), "GirderGeneralView1", "1"] );
+    global.sceneAdder(group, [this.getInputData(1), "GirderGeneralView1", "total"] );
   };
 
   function GirderGeneralView2(){
@@ -8462,7 +8462,7 @@
   GirderGeneralView2.prototype.on3DExecute = function() {
     let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2), this.getInputData(3), this.getInputData(4));
     // sceneAdder({layer:this.getInputData(4), mesh:group},"GirderGeneralView2");
-    global.sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "1"]);
+    global.sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
   };
 
   // export function SideViewer(){
@@ -8496,7 +8496,7 @@
   LineDraw.prototype.on3DExecute = function() {
     let group = LineDrawView(this.getInputData(0),this.getInputData(1));
     // sceneAdder({layer:3, mesh:group},"LineView")
-    global.sceneAdder(group, [3, "LineView", "1"]);
+    global.sceneAdder(group, [3, "LineView", "total"]);
   };
 
   function LineSideDraw(){
@@ -8509,7 +8509,7 @@
   LineSideDraw.prototype.on3DExecute = function() {
     let group = LineSideView(this.getInputData(0));
     // sceneAdder({layer:4, mesh:group},"LineSideView")
-    global.sceneAdder(group, [4, "LineSideView", "1"]);
+    global.sceneAdder(group, [4, "LineSideView", "total"]);
   };
 
   function GirderLayoutDraw(){
@@ -8523,8 +8523,8 @@
     let group = GirderLayoutView(this.getInputData(0));
     // sceneAdder({layer:3, mesh:group.plan},"GirderLayout")
     // sceneAdder({layer:4, mesh:group.side},"GirderLayoutSide")
-    global.sceneAdder(group.plan, [3, "GirderLayout", "1"]);
-    global.sceneAdder(group.side, [4, "GirderLayoutSide", "1"]);
+    global.sceneAdder(group.plan, [3, "GirderLayout", "total"]);
+    global.sceneAdder(group.side, [4, "GirderLayoutSide", "total"]);
   };
 
   function partProperty(width, thickness, Dy, Dz, cos) {

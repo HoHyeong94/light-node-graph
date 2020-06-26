@@ -18,7 +18,7 @@ LineViewer.prototype.on3DExecute = function() {
   console.log(initPoint,color)
   let mesh = LineView(points,initPoint,color)
   // sceneAdder({layer:2, mesh:mesh},"line");
-  sceneAdder(mesh, [2, "line","1"])
+  sceneAdder(mesh, [2, "line","total"])
 };
 
 export function SteelPlateView(){
@@ -31,7 +31,7 @@ SteelPlateView.prototype.onExecute = function() {
   const initPoint = this.getInputData(1);
   const group = SteelBoxView(steeBoxDict,initPoint);
   // sceneAdder({ layer: 0, mesh: group},"steelbox"); 
-  sceneAdder(group, [0, "steelBox","1"])
+  sceneAdder(group, [0, "steelBox","total"])
 }
 
 export function DiaPhragmView(){
@@ -77,7 +77,7 @@ export function HorBracingView(){
     // sceneAdder({ layer: 0, 
     //     mesh: DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
     // },"deck"); 
-    sceneAdder(DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2)), [0, "deck", "1"]); 
+    sceneAdder(DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2)), [0, "deck", "total"]); 
   }
 
   export function SpliceBoltView(){
@@ -107,7 +107,7 @@ export function HorBracingView(){
     // sceneAdder({ layer: 0, 
     //     mesh: StudMeshView(this.getInputData(0),this.getInputData(1))
     // },"stud"); 
-    sceneAdder( StudMeshView(this.getInputData(0),this.getInputData(1)), [0, "stud", "1"]); 
+    sceneAdder( StudMeshView(this.getInputData(0),this.getInputData(1)), [0, "stud", "total"]); 
   }
 
   export function BarrierView(){
@@ -165,5 +165,5 @@ export function AnalysisView() {
 
 AnalysisView.prototype.onExecute = function () {
   // sceneAdder({ layer : 2, mesh : AnalysisModel(this.getInputData(0),this.getInputData(1))}, "analysis");
-  sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "1"]);
+  sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
 }
