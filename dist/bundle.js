@@ -9047,8 +9047,8 @@
               let inc = 1;
               frame.data.push(elem);
 
-              let leftPoint = currentPoint[j];
-              let rightPoint = currentPoint[j + 1];
+              let leftPoint = currentPoints[j];
+              let rightPoint = currentPoints[j + 1];
               L = rightPoint.offset - leftPoint.offset;
               if (j === 0) {
                   let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
