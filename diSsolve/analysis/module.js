@@ -594,7 +594,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
 
             let leftPoint = currentPoints[j]
             let rightPoint = currentPoints[j + 1]
-            L = rightPoint.offset - leftPoint.offset;
+            let L = rightPoint.offset - leftPoint.offset;
             if (j === 0) {
                 let slabThickness2 = sectionPointDict[jnode].forward.input.Tcu;
                 let gradient = sectionPointDict[jnode].forward.input.gradient;
