@@ -669,9 +669,9 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                     //         [{ elem: elemNum, RD: x1, Uzp: 1 }]
                     // }) //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                     lane[name] = { command: "LOAD", type: "Concentrated Span", Name: name, data:
-                                [{ elem: elemNum, RD: x1, Uzp: 1 }] } //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
+                                [{ elem: elemNum, RD: x1, Uz: -1000 }] } //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                     pNum++
-                    
+
                 }
             }
             elemNum++
