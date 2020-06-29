@@ -635,7 +635,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             for (let k in barrierOffset) {
                 if (currentPoints[j].offset <= barrierOffset[k] && currentPoints[j + 1].offset >= barrierOffset[k]) {
                     let x1 = (barrierOffset[k] - currentPoints[j].offset) / L
-                    barrier.data.push({ elem: elemNum, RD: x1, Uzp: -1 * barrierInfo[k].area * ((1 - x1) * br[j] + x1 * br[j + 1]) })
+                    barrier.data.push({ elem: elemNum, RD: x1, Uz: -1 * barrierInfo[k].area * ((1 - x1) * br[j] + x1 * br[j + 1]) })
                 }
             }
             for (let k in pavementOffset) {
