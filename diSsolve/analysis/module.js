@@ -438,7 +438,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "slab", data: [] }
     let pavement = { command: "LOAD", type: "Distributed Span", Name: "pavement", data: [] }
     let barrier = { command: "LOAD", type: "Concentrated Span", Name: "barrier", data: [] }
-    let lane = []
+    let lane = {};
     let elemNum = frame.data.length + 1;
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
@@ -668,9 +668,10 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                     //     command: "LOAD", type: "Concentrated Span", Name: name, data:
                     //         [{ elem: elemNum, RD: x1, Uzp: 1 }]
                     // }) //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
-                    lane.push({ name : { command: "LOAD", type: "Concentrated Span", Name: name, data:
-                                [{ elem: elemNum, RD: x1, Uzp: 1 }] }}) //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
+                    lane[name] = { command: "LOAD", type: "Concentrated Span", Name: name, data:
+                                [{ elem: elemNum, RD: x1, Uzp: 1 }] } //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                     pNum++
+                    
                 }
             }
             elemNum++
