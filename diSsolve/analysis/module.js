@@ -433,7 +433,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     // let sectionNameDict = {}
     let frame = frameInput.frame;
     let section = frameInput.section;
-    let materials = frameInput.material;
+    let material = frameInput.material;
     let selfWeight = frameInput.selfWeight;
     let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "slab", data: [] }
     let pavement = { command: "LOAD", type: "Distributed Span", Name: "pavement", data: [] }
@@ -443,8 +443,8 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
 
-    section.data.generalSectionList.push({ NAME: "dummy", Mat: materials[0][0], A: 100, I: [1000, 1000], J: 1000 })
-    section.data.generalSectionList.push({ NAME: "slab", Mat: materials[0][0], A: 270000, I: [1640250000, 1640250000], J: 1640250000 }) //temparary
+    section.data.generalSectionList.push({ NAME: "dummy", Mat: material.data[0].NAME, A: 100, I: [1000, 1000], J: 1000 })
+    section.data.generalSectionList.push({ NAME: "slab", Mat: material.data[0].NAME, A: 270000, I: [1640250000, 1640250000], J: 1640250000 }) //temparary
 
 
 
