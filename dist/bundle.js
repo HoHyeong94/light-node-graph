@@ -8536,46 +8536,6 @@
       return { area, Ioyy, Iozz, Dy, Dz }
   }
 
-
-
-  const materials = {
-      slabConc: { name: "slabConc", elast: 28825.3, shearElast: 12318.5, poissonRatio: 0.17 }, // 강도와 재료 입력으로 자동생성
-      bottomConc: { name: "lowerConc", elast: 31209.5, shearElast: 13337.4, poissonRatio: 0.17 },
-      Steel: { name: "steelBox", elast: 210000, shearElast: 81000, poissonRatio: 0.3 },
-      rebar: { name: "rebar", elast: 200000, shearElast: 80000, poissonRatio: 0.3 },
-      input:
-          [
-              [
-                  "slabConc",
-                  28825.3,
-                  12318.5,
-                  0.17,
-                  25
-              ],
-              [
-                  "lowerConc",
-                  31209.5,
-                  13337.4,
-                  0.17,
-                  25
-              ],
-              [
-                  "steelBox",
-                  210000,
-                  81000,
-                  0.3,
-                  78.5
-              ],
-              [
-                  "rebar",
-                  200000,
-                  80000,
-                  0.3,
-                  78.5
-              ]
-          ]
-  };
-
   //I형 가로보의 시공단계별 단면계수 생성
   function Isection(xi, materials) { //, slab
 
@@ -8928,7 +8888,7 @@
       // let sectionNameDict = {}
       let frame = frameInput.frame;
       let section = frameInput.section;
-      let material = frameInput.material;
+      let materials = frameInput.material;
       let selfWeight = frameInput.selfWeight;
       let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "slab", data: [] };
       let pavement = { command: "LOAD", type: "Distributed Span", Name: "pavement", data: [] };
