@@ -676,7 +676,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             elemNum++
         }
     }
-    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, lane }
+    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane }
 }
 
 // export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, sectionPointDict, gridPoint, slabInfo) { //gridModelData, xbeamData, 
