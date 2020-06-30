@@ -218,6 +218,7 @@ export function AnalysisModel(node, frame) {
 
     for (let i in frame.laneList) {
         let geo = new THREE.Geometry();
+        let geo2 = new THREE.Geometry();
         for (let j in frame.laneList[i]) {
             let loadData = frame[frame.laneList[i][j]].data[0]
             let ivec = geometry.vertices[elemDict[loadData.elem][0]]
@@ -225,9 +226,12 @@ export function AnalysisModel(node, frame) {
             let a = loadData.RD
             let izload = analysisOutput.force[influenceElem]["0.00000"][frame.laneList[i][j]][5] * 1000000
             let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
-            geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
+            let nivec2 = new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload)
+            geo.vertices.push(nivec2)
+            geo2.vertices.push(nivec,nivec2)
         }
         group.add(new THREE.Line(geo, yellowLine));
+        group.add(new THREE.LineSegments(geo2, yellowLine));
     }
 
 
