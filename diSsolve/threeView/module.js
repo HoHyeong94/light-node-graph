@@ -196,7 +196,7 @@ export function AnalysisModel(node, frame) {
             }
         }
     }
-    let scaler = 5000 / Math.max(Math.abs(MaxValue),Math.abs(MinValue)) 
+    let scaler = 5000 / Math.max(Math.abs(maxValue),Math.abs(minValue)) 
     for (let elemNum in analysisOutput.force) {
         let ivec = geometry.vertices[elemDict[elemNum][0]]
         let jvec = geometry.vertices[elemDict[elemNum][1]]
