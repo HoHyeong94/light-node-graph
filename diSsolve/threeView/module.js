@@ -180,8 +180,6 @@ export function AnalysisModel(node, frame) {
     }
 
     // test //
-    let dummy = analysisOutput.force["1"]["0.00000"]["STBOX"]
-    console.log("test", dummy)
     let maxValue = null;
     let minValue = null;
 
@@ -215,6 +213,25 @@ export function AnalysisModel(node, frame) {
             group.add(new THREE.Line(geo, redLine));
         }
     }
+
+    let influenceElem = "16"
+
+    for (let i in frame.laneList) {
+        let geo = new THREE.Geometry();
+        for (let j in frame.laneList[i]) {
+            let loadData = frame[frame.laneList[i][j]].data[0]
+            let ivec = geometry.vertices[elemDict[loadData.elem][0]]
+            let jvec = geometry.vertices[elemDict[loadData.elem][1]]
+            let a = loadData.RD
+            let izload = analysisOutput.force[influenceElem]["0.00000"][frame.laneList[i][j]][5] * 10000000
+            let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+            geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
+        }
+        group.add(new THREE.Line(geo, yellowLine));
+    }
+
+
+
     return group
 }
 
