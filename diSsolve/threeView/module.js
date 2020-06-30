@@ -12,6 +12,7 @@ export function AnalysisModel(node, frame) {
     let yellowLine = new THREE.LineBasicMaterial({ color: 0xffff00 })
     let circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
+    let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 })
     let elemDict = {};
     for (let i in node.node.data) {
         let pt = new THREE.Vector3(
@@ -180,8 +181,19 @@ export function AnalysisModel(node, frame) {
 
     // test //
     let dummy = analysisOutput.force["1"]["0.00000"]["STBOX"]
-    console.log("test",dummy)
-
+    console.log("test", dummy)
+    for (let elemNum in analysisOutput.force) {
+        let ivec = geometry.vertices[elemDict[elemNum][0]]
+        let jvec = geometry.vertices[elemDict[elemNum][1]]
+        let geo = new THREE.Geometry();
+        for (let seg in analysisOutput.force[elemNum]) {
+            let a = seg * 1;
+            let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+            let izload = analysisOutput.force[elemNum][seg]["STBOX"][4] * 10
+            geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
+            group.add(new THREE.Line(geo, redLine));
+        }
+    }
     return group
 }
 
