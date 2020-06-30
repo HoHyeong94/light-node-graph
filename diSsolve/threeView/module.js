@@ -179,7 +179,7 @@ export function AnalysisModel(node, frame) {
     }
 
     // test //
-    let dummy = analysisOutput.force["1"]["0.0000"]["STBOX"]
+    let dummy = analysisOutput.force["1"]["0.00000"]["STBOX"]
     console.log("test",dummy)
 
     return group
