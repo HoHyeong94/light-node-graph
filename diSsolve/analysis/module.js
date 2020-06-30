@@ -439,6 +439,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     let pavement = { command: "LOAD", type: "Distributed Span", Name: "pavement", data: [] }
     let barrier = { command: "LOAD", type: "Concentrated Span", Name: "barrier", data: [] }
     let lane = {};
+    let laneList = []
     let elemNum = frame.data.length + 1;
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
@@ -451,9 +452,9 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     const barrierInfo = [{ isLeft: true, offset: 180, area: 200000 }, { isLeft: false, offset: 180, area: 200000 }];
     const pavementInfo = [{ isLeft: [true, false], offset: [450, 450], thickness: 80 }]
     const laneData = [{ baseLine: "leftDeck", offset: 2250 }, { baseLine: "leftDeck", offset: 5850 }]
-    // for (let i in laneData) {
-    //     lane.push([]); //차선수만큼 리스트 개수 확보
-    // }
+    for (let i in laneData) {
+        laneList.push([]); //차선수만큼 리스트 개수 확보
+    }
     const gridModelL = [
         ["G1K1", "G2K1"],
         ["G1K2", "G2K2"],
@@ -664,10 +665,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
                 if (currentPoints[j].offset <= laneOffset[k] && currentPoints[j + 1].offset >= laneOffset[k]) {
                     let x1 = (laneOffset[k] - currentPoints[j].offset) / L
                     let name = "ln" + (k * 1 + 1) + "P" + pNum;
-                    // lane[k].push({
-                    //     command: "LOAD", type: "Concentrated Span", Name: name, data:
-                    //         [{ elem: elemNum, RD: x1, Uzp: 1 }]
-                    // }) //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
+                    laneList[k].push(name) //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                     lane[name] = { command: "LOAD", type: "Concentrated Span", Name: name, data:
                                 [{ elem: elemNum, RD: x1, Uz: -1000 }] } //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                     pNum++
@@ -677,7 +675,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             elemNum++
         }
     }
-    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane }
+    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList }
 }
 
 // export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, sectionPointDict, gridPoint, slabInfo) { //gridModelData, xbeamData, 

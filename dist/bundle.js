@@ -6348,19 +6348,20 @@
           group.add(new global.THREE.Line(geo, aquaLine));
       }
 
-      // for (let i in frame.lane) {
-      //     let geo = new THREE.Geometry();
-      //     for (let j in frame.lane[i]) {
-      //         let ivec = geometry.vertices[elemDict[frame.lane[i][j].data[0].elem][0]]
-      //         let jvec = geometry.vertices[elemDict[frame.lane[i][j].data[0].elem][1]]
-      //         let a = frame.lane[i][j].data[0].RD
-      //         let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
-      //         geo.vertices.push(nivec)
-      //     }
-      //     let line = new THREE.Line(geo, redDotLine)
-      //     line.computeLineDistances();
-      //     group.add(line);
-      // }
+      for (let i in frame.laneList) {
+          let geo = new global.THREE.Geometry();
+          for (let j in frame.laneList[i]) {
+              let loadData = frame[frame.laneList[i][j]].data[0];
+              let ivec = geometry.vertices[elemDict[loadData.elem][0]];
+              let jvec = geometry.vertices[elemDict[loadData.elem][1]];
+              let a = loadData.RD;
+              let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
+              geo.vertices.push(nivec);
+          }
+          let line = new global.THREE.Line(geo, redDotLine);
+          line.computeLineDistances();
+          group.add(line);
+      }
 
 
 
@@ -8894,6 +8895,7 @@
       let pavement = { command: "LOAD", type: "Distributed Span", Name: "pavement", data: [] };
       let barrier = { command: "LOAD", type: "Concentrated Span", Name: "barrier", data: [] };
       let lane = {};
+      let laneList = [];
       let elemNum = frame.data.length + 1;
       let w1 = slabInfo.w1; //헌치돌출길이
       let hh = slabInfo.haunchHeight; //헌치높이
@@ -8906,9 +8908,9 @@
       const barrierInfo = [{ isLeft: true, offset: 180, area: 200000 }, { isLeft: false, offset: 180, area: 200000 }];
       const pavementInfo = [{ isLeft: [true, false], offset: [450, 450], thickness: 80 }];
       const laneData = [{ baseLine: "leftDeck", offset: 2250 }, { baseLine: "leftDeck", offset: 5850 }];
-      // for (let i in laneData) {
-      //     lane.push([]); //차선수만큼 리스트 개수 확보
-      // }
+      for (let i in laneData) {
+          laneList.push([]); //차선수만큼 리스트 개수 확보
+      }
       const gridModelL = [
           ["G1K1", "G2K1"],
           ["G1K2", "G2K2"],
@@ -9119,10 +9121,7 @@
                   if (currentPoints[j].offset <= laneOffset[k] && currentPoints[j + 1].offset >= laneOffset[k]) {
                       let x1 = (laneOffset[k] - currentPoints[j].offset) / L;
                       let name = "ln" + (k * 1 + 1) + "P" + pNum;
-                      // lane[k].push({
-                      //     command: "LOAD", type: "Concentrated Span", Name: name, data:
-                      //         [{ elem: elemNum, RD: x1, Uzp: 1 }]
-                      // }) //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
+                      laneList[k].push(name); //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                       lane[name] = { command: "LOAD", type: "Concentrated Span", Name: name, data:
                                   [{ elem: elemNum, RD: x1, Uz: -1000 }] }; //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                       pNum++;
@@ -9132,7 +9131,7 @@
               elemNum++;
           }
       }
-      return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane }
+      return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList }
   }
 
   // export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, sectionPointDict, gridPoint, slabInfo) { //gridModelData, xbeamData, 
