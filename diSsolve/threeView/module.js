@@ -182,6 +182,21 @@ export function AnalysisModel(node, frame) {
     // test //
     let dummy = analysisOutput.force["1"]["0.00000"]["STBOX"]
     console.log("test", dummy)
+    let maxValue = null;
+    let minValue = null;
+
+    for (let elemNum in analysisOutput.force) {
+        for (let seg in analysisOutput.force[elemNum]) {
+            let newValue = analysisOutput.force[elemNum][seg]["STBOX"][5]
+            if (!maxValue || newValue > maxValue) {
+                maxValue = newValue
+            }
+            if (!minValue || newValue < minValue) {
+                minValue = newValue
+            }
+        }
+    }
+    let scaler = 5000 / Math.max(Math.abs(MaxValue),Math.abs(MinValue)) 
     for (let elemNum in analysisOutput.force) {
         let ivec = geometry.vertices[elemDict[elemNum][0]]
         let jvec = geometry.vertices[elemDict[elemNum][1]]
@@ -189,7 +204,7 @@ export function AnalysisModel(node, frame) {
         for (let seg in analysisOutput.force[elemNum]) {
             let a = seg * 1;
             let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
-            let izload = analysisOutput.force[elemNum][seg]["STBOX"][5]
+            let izload = analysisOutput.force[elemNum][seg]["STBOX"][5] * scaler
             if (seg === "0.00000") {
                 geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
             }
