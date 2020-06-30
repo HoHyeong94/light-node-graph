@@ -189,8 +189,14 @@ export function AnalysisModel(node, frame) {
         for (let seg in analysisOutput.force[elemNum]) {
             let a = seg * 1;
             let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
-            let izload = analysisOutput.force[elemNum][seg]["STBOX"][4] * 10
+            let izload = analysisOutput.force[elemNum][seg]["STBOX"][5] * 10
+            if (seg === "0.00000") {
+                geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
+            }
             geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
+            if (seg === "1.00000") {
+                geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
+            }
             group.add(new THREE.Line(geo, redLine));
         }
     }
