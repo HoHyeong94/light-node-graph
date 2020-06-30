@@ -223,7 +223,7 @@ export function AnalysisModel(node, frame) {
             let ivec = geometry.vertices[elemDict[loadData.elem][0]]
             let jvec = geometry.vertices[elemDict[loadData.elem][1]]
             let a = loadData.RD
-            let izload = analysisOutput.force[influenceElem]["0.00000"][frame.laneList[i][j]][5] * 10000000
+            let izload = analysisOutput.force[influenceElem]["0.00000"][frame.laneList[i][j]][5] * 1000000
             let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
             geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
         }
