@@ -664,7 +664,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             for (let k in laneData) {
                 if (currentPoints[j].offset <= laneOffset[k] && currentPoints[j + 1].offset >= laneOffset[k]) {
                     let x1 = (laneOffset[k] - currentPoints[j].offset) / L
-                    let name = "ln" + (k * 1 + 1) + "P" + pNum;
+                    let name = "LN" + (k * 1 + 1) + "P" + pNum;
                     laneList[k].push(name) //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                     lane[name] = { command: "LOAD", type: "Concentrated Span", Name: name, data:
                                 [{ elem: elemNum, RD: x1, Uz: -1000 }] } //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
