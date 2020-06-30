@@ -1,4 +1,5 @@
 import { THREE, SpriteText } from "global";
+import { analysisOutput } from "../DB/module"
 
 export function AnalysisModel(node, frame) {
     let group = new THREE.Group();
@@ -176,6 +177,10 @@ export function AnalysisModel(node, frame) {
 
         // group.add(arrow)
     }
+
+    // test //
+    let dummy = analysisOutput.force["1"]["0.0000"]["STBOX"]
+    console.log("test",dummy)
 
     return group
 }
