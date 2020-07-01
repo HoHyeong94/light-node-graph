@@ -235,7 +235,7 @@ export function AnalysisModel(node, frame) {
     }
     delete analysisOutput.disp
     for (let elem in analysisOutput.force){
-        if ( !frame.girderElemList.includes(elem)){
+        if ( !frame.girderElemList.includes(elem*1)){
             delete analysisOutput.force[elem]
         }
     }
