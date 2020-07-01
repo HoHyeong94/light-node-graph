@@ -243,7 +243,7 @@ export function AnalysisModel(node, frame) {
     console.log("newSapOutput", analysisOutput)
 
 
-    return group
+    return {group, analysisOutput}
 }
 
 export function LineView(linepoints, initPoint, color) {

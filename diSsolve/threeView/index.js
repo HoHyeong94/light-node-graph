@@ -161,9 +161,12 @@ InitPoint.prototype.onExecute = function() {
 export function AnalysisView() {
   this.addInput("nodeInput", "nodeInput");
   this.addInput("frameInput", "frameInput");
+  this.addOutput("temOut", "temOut");
 }
 
 AnalysisView.prototype.onExecute = function () {
-  sceneAdder({ layer : 2, mesh : AnalysisModel(this.getInputData(0),this.getInputData(1))}, "analysis");
+  let result = AnalysisModel(this.getInputData(0),this.getInputData(1))
+  sceneAdder({ layer : 2, mesh : result.group}, "analysis");
   // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
+  this.setOutputData(0, result.analysisOutput)
 }
