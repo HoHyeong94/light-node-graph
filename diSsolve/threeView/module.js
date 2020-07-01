@@ -233,7 +233,14 @@ export function AnalysisModel(node, frame) {
         group.add(new THREE.Line(geo, yellowLine));
         group.add(new THREE.LineSegments(geo2, yellowLine));
     }
+    delete analysisOutput.disp
+    for (let elem in analysisOutput.force){
+        if ( !frame.girderElemList.includes(elem)){
+            delete analysisOutput.force[elem]
+        }
+    }
 
+    console.log("newSapOutput", analysisOutput)
 
 
     return group

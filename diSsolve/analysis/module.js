@@ -675,7 +675,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             elemNum++
         }
     }
-    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList }
+    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
 }
 
 
@@ -702,6 +702,8 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
     let tsectionNum = 1;
     let generalSectionList = [];
     let taperedSectionList = [];
+    let girderElemList = [];
+    
     for (let i in girderStation) {
         let tempSection = { name: "temp", A: 0, Ixx: 0, Iyy: 0, Izz: 0 }
         for (let j = 0; j < girderStation[i].length - 1; j++) {
@@ -764,11 +766,13 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
                     endOffset: false,
                     number: elemNum
                 }
+                girderElemList.push(elemNum)
                 allElement.push(elem)
                 let p1 = -1 * section1.A * material.data[2].W   //materials : steel
                 let p2 = -1 * section2.A * material.data[2].W   //materials : steel
                 selfWeight.data.push({ elem: elemNum, RD: [0, 1], Uzp: [p1, p2] })
                 elemNum++
+                
             }
         }
     }
@@ -846,5 +850,5 @@ export function SapFrameGenerator(girderStation, sectionPointDict, xbeamData, su
 
     let frame = { command: "FRAME", data: allElement };
     let section = { command: "FRAME SECTION", data: { generalSectionList, taperedSectionList } }
-    return { sectionPropDict, input: { frame, section, material, selfWeight } }
+    return { sectionPropDict, input: { frame, section, material, selfWeight, girderElemList },  }
 }
