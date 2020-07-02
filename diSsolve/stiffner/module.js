@@ -926,7 +926,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.flangeThickness },
   { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y }]
   let lPoint = ToGlobalPoint(point, lowerflange[1])
-  let lowerflangeL = lowerflange[3].x - lowerPlate[0].x - 2 * dsi.bracketLength
+  let lowerflangeL = lowerflange[3].x - lowerflange[0].x
   let lowerflange2 = [{ x: 0, y: dsi.flangeWidth/2},
                       { x: 0, y: - dsi.flangeWidth/2},
                       { x: lowerflangeL, y: - dsi.flangeWidth/2},
