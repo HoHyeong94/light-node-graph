@@ -853,16 +853,15 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
     scallopRadius: 35,
   } //  임시 입력변수
 
-  const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
+  // const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
   const tr = webPoints[3];
-  const rotationY = (skew - 90) * Math.PI / 180
+  // const rotationY = (skew - 90) * Math.PI / 180
   const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
   const rwCot = (tr.x - br.x) / (tr.y - br.y)
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
-
   
   ///lower stiffener
   let lowerPlate = [
@@ -905,17 +904,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4));
   stiffnerPoints.push(stiffner[3]);
   result["stiffner1"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [],0,null,null,[]);
-  // {
-  //   points: stiffnerPoints,
-  //   Thickness: dsi.stiffThickness,
-  //   z: -dsi.stiffThickness / 2,
-  //   rotationX: Math.PI / 2,
-  //   rotationY: rotationY,
-  //   hole: [],
-  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  // }
-
+  
   stiffnerPoint = [tr, upperPlate[2]]
   tan1 = gradient;
   stiffner = PlateRestPoint(stiffnerPoint[0], stiffnerPoint[1], tan1, 0, -stiffWidth)
@@ -929,16 +918,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4))
   stiffnerPoints.push(stiffner[3])
   result["stiffner2"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [],0,null,null,[]);
-  // {
-  //   points: stiffnerPoints,
-  //   Thickness: dsi.stiffThickness,
-  //   z: -dsi.stiffThickness / 2,
-  //   rotationX: Math.PI / 2,
-  //   rotationY: rotationY,
-  //   hole: [],
-  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  // }
+  
   return result
 }
 
@@ -967,59 +947,69 @@ export function DYdia1(webPoints, skew, uflangePoint, ds) {
   const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
   const rwCot = (tr.x - br.x) / (tr.y - br.y)
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
-
-
   ///lower stiffener
   let lowerPlate = [
     { x: bl.x + lwCot * dsi.lowerHeight, y: bl.y + dsi.lowerHeight },
-    { x: bl.x + lwCot * (dsi.lowerHeight + dsi.lowerThickness), y: bl.y + dsi.lowerHeight + dsi.lowerThickness },
-    { x: br.x + rwCot * (dsi.lowerHeight + dsi.lowerThickness), y: br.y + dsi.lowerHeight + dsi.lowerThickness },
+    { x: bl.x + lwCot * (dsi.lowerHeight - dsi.lowerThickness), y: bl.y + dsi.lowerHeight - dsi.lowerThickness },
+    { x: br.x + rwCot * (dsi.lowerHeight - dsi.lowerThickness), y: br.y + dsi.lowerHeight - dsi.lowerThickness },
     { x: br.x + rwCot * dsi.lowerHeight, y: br.y + dsi.lowerHeight }
   ];
-  result["lowerPlate"] = {
-    points: lowerPlate,
-    Thickness: dsi.lowerWidth,
-    z: -dsi.lowerWidth / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  let lowerPlateL = lowerPlate[3].x - lowerPlate[0].x;
+  let lowerPlate2 = [ {x: 0, y: dsi.lowerWidth/2}, {x: 0, y: -dsi.lowerWidth/2}, {x: lowerPlateL, y: -dsi.lowerWidth/2},{x: lowerPlateL, y: dsi.lowerWidth/2} ];
+  let lPoint = ToGlobalPoint(point, lowerPlate[0]);
+  result["lowerPlate"] = hPlateGen2(lowerPlate2, lPoint, dsi.lowerThickness, -dsi.lowerThickness, point.skew, 0,0, lowerPlate);
+
+  // result["lowerPlate"] = {
+  //   points: lowerPlate,
+  //   Thickness: dsi.lowerWidth,
+  //   z: -dsi.lowerWidth / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
+
   let upperPlate = [
     { x: bl.x + lwCot * dsi.upperHeight, y: bl.y + dsi.upperHeight },
-    { x: bl.x + lwCot * (dsi.upperHeight - dsi.upperThickness), y: bl.y + dsi.upperHeight - dsi.upperThickness },
-    { x: br.x + rwCot * (dsi.upperHeight - dsi.upperThickness), y: br.y + dsi.upperHeight - dsi.upperThickness },
+    { x: bl.x + lwCot * (dsi.upperHeight + dsi.upperThickness), y: bl.y + dsi.upperHeight + dsi.upperThickness },
+    { x: br.x + rwCot * (dsi.upperHeight + dsi.upperThickness), y: br.y + dsi.upperHeight + dsi.upperThickness },
     { x: br.x + rwCot * dsi.upperHeight, y: br.y + dsi.upperHeight }
-  ]
-  result["upperPlate"] = {
-    points: upperPlate,
-    Thickness: dsi.upperWidth,
-    z: -dsi.upperWidth / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  ];
+  let upperPlateL = upperPlate[3].x - upperPlate[0].x
+  let upperPlate2 = [ {x: 0, y: dsi.upperWidth/2}, {x: 0, y: -dsi.upperWidth/2}, {x: upperPlateL, y: - dsi.upperWidth/2}, {x: upperPlateL, y: dsi.upperWidth/2}];
+  let uPoint = ToGlobalPoint(point, upperPlate[0]);
+  result["upperPlate"] = hPlateGen2(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0,upperPlate)
+  // result["upperPlate"] = {
+  //   points: upperPlate,
+  //   Thickness: dsi.upperWidth,
+  //   z: -dsi.upperWidth / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
 
   let centerPlate = [lowerPlate[1], lowerPlate[2], upperPlate[2], upperPlate[1]]
-  let centerPoints = [];
-  centerPoints.push(...scallop(centerPlate[0], centerPlate[1], centerPlate[2], dsi.scallopRadius, 4));
-  centerPoints.push(...scallop(centerPlate[1], centerPlate[2], centerPlate[3], dsi.scallopRadius, 4));
-  centerPoints.push(...scallop(centerPlate[2], centerPlate[3], centerPlate[0], dsi.scallopRadius, 4));
-  centerPoints.push(...scallop(centerPlate[3], centerPlate[0], centerPlate[1], dsi.scallopRadius, 4));
+  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness,[0,1,2,3], dsi.scallopRadius, null, null, [] )
+  
+  // let centerPoints = [];
+  // centerPoints.push(...scallop(centerPlate[0], centerPlate[1], centerPlate[2], dsi.scallopRadius, 4));
+  // centerPoints.push(...scallop(centerPlate[1], centerPlate[2], centerPlate[3], dsi.scallopRadius, 4));
+  // centerPoints.push(...scallop(centerPlate[2], centerPlate[3], centerPlate[0], dsi.scallopRadius, 4));
+  // centerPoints.push(...scallop(centerPlate[3], centerPlate[0], centerPlate[1], dsi.scallopRadius, 4));
 
-  result["centerPlate"] = {
-    points: centerPoints,
-    Thickness: dsi.centerThickness,
-    z: -dsi.centerThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  // result["centerPlate"] = {
+  //   points: centerPoints,
+  //   Thickness: dsi.centerThickness,
+  //   z: -dsi.centerThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
   let stiffnerPoint = [[bl, lowerPlate[0]],
   [br, lowerPlate[3]],
   [tl, upperPlate[0]],
@@ -1028,20 +1018,21 @@ export function DYdia1(webPoints, skew, uflangePoint, ds) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let tan1 = i < 2 ? 0 : gradient;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], tan1, 0, stiffWidth)
-    let stiffnerPoints = [];
-    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
-    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-    stiffnerPoints.push(stiffner[2], stiffner[3])
-    result["stiffner" + i.toFixed(0)] = {
-      points: stiffnerPoints,
-      Thickness: dsi.centerThickness,
-      z: -dsi.centerThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: rotationY,
-      hole: [],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    }
+    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [])
+    // let stiffnerPoints = [];
+    // stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    // stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    // stiffnerPoints.push(stiffner[2], stiffner[3])
+    // result["stiffner" + i.toFixed(0)] = {
+    //   points: stiffnerPoints,
+    //   Thickness: dsi.centerThickness,
+    //   z: -dsi.centerThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: rotationY,
+    //   hole: [],
+    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    // }
   }
   
   return result
