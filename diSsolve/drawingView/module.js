@@ -1247,79 +1247,91 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
         fontSize: titleSize
     })
 
-    let circle = new THREE.EllipseCurve(0, titlePosition, titleSize * 2.5, titleSize * 2.5)
+    let circle = new THREE.EllipseCurve(0, titlePosition, titleSize * 2.5, titleSize * 2.5);
     let cp = circle.getPoints(16);
-    let circlegeo = new THREE.Geometry().setFromPoints(cp)
-    let titleCircle = new THREE.Line(circlegeo, lineMaterial)
+    let circlegeo = new THREE.Geometry().setFromPoints(cp);
+    let titleCircle = new THREE.Line(circlegeo, lineMaterial);
     group.add(titleCircle)
 
     for (var key in sectionPoint) {
-        if (sectionPoint[key].constructor === Array) {
-            group.add(sectionMesh(sectionPoint[key], lineMaterial))
-        }
-    }
-    for (var key in diaPoint) {
-        if (diaPoint[key].points) {
-            group.add(sectionMesh(diaPoint[key].points, lineMaterial))
-        }
-        if (diaPoint[key].size) {
-            label.push({
-                text: diaPoint[key].size.Label,
-                anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0],
-                rotation: Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1]) / (diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
-                fontSize: labelSize
-            })
-        }
-        if (diaPoint[key].welding) {
-            for (let i in diaPoint[key].welding) {
-                weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
+        if (key === "uflange" || key === "lflange" || key === "web") {
+            // console.log("check",sectionPoint)
+            for (let k in sectionPoint[key]) {
+                if (sectionPoint[key][k].length > 0) {
+                    group.add(sectionMesh(sectionPoint.forward[key][k], lineMaterial))
+                }
             }
-        }
+        }    
+        // if (sectionPoint[key].constructor === Array) {
+        //     group.add(sectionMesh(sectionPoint[key], lineMaterial))
+        // }
     }
 
-    let dims = [];
-    dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 1))   //top1
-    dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.leftTopPlate[2], sectionPoint.rightTopPlate[2], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 0)) //top2
-    dims.push(Dimension([sectionPoint.rWeb[0], sectionPoint.rWeb[1]], 1, sc, 1, false, true, 2)) //right1
-    dims.push(Dimension([sectionPoint.rWeb[0], diaPoint.lowerTopShape.points[3], diaPoint.lowerTopShape.points[2], diaPoint.rightTopPlateShape.points[3], diaPoint.rightTopPlateShape.points[0], sectionPoint.rWeb[1]], 5, sc, 1, false, true, 1)) //right2
-    dims.push(Dimension([sectionPoint.lWeb[0], sectionPoint.lWeb[1]], 1, sc, 1, false, false, 2)) //left1
-    dims.push(Dimension([sectionPoint.lWeb[0], diaPoint.lowerTopShape.points[0], diaPoint.lowerTopShape.points[1], diaPoint.leftTopPlateShape.points[3], diaPoint.leftTopPlateShape.points[0], sectionPoint.lWeb[1]], 5, sc, 1, false, false, 1)) // left2
-    dims.push(Dimension([sectionPoint.bottomPlate[3], sectionPoint.lWeb[0], sectionPoint.rWeb[0], sectionPoint.bottomPlate[2]], 0, sc, 1, true, false, 0)) //bottom1
-    dims.push(Dimension([sectionPoint.bottomPlate[3], sectionPoint.bottomPlate[2]], 0, sc, 1, true, false, 1)) //botoom2
+    
 
-    // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
 
-    for (let i in dims) {
-        dims[i].meshes.forEach(function (mesh) { group.add(mesh) })
-        dims[i].labels.forEach(function (elem) { label.push(elem) })
-    }
-    for (let i in weldings) {
-        weldings[i].meshes.forEach(function (mesh) { group.add(mesh) })
-        weldings[i].labels.forEach(function (elem) { label.push(elem) })
-    }
+    // for (var key in diaPoint) {
+    //     if (diaPoint[key].points) {
+    //         group.add(sectionMesh(diaPoint[key].points, lineMaterial))
+    //     }
+    //     if (diaPoint[key].size) {
+    //         label.push({
+    //             text: diaPoint[key].size.Label,
+    //             anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0],
+    //             rotation: Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1]) / (diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
+    //             fontSize: labelSize
+    //         })
+    //     }
+    //     if (diaPoint[key].welding) {
+    //         for (let i in diaPoint[key].welding) {
+    //             weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
+    //         }
+    //     }
+    // }
 
-    var loader = new THREE.FontLoader();
-    loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-        // console.log(font)
-        // var font = {generateShapes:(messagem , num)=>{}}
-        for (let i in label) {
-            var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-            var geometry = new THREE.ShapeBufferGeometry(shapes);
-            var xMid
-            geometry.computeBoundingBox();
-            xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-            geometry.translate(xMid, -label[i].fontSize / 2, 0);
-            if (label[i].rotation) {
-                geometry.rotateZ(label[i].rotation)
-            }
-            geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
-            // make shape ( N.B. edge view not visible )
-            textMesh = new THREE.Mesh(geometry, textMaterial);
-            textMesh.layers.set(1)
-            group.add(textMesh);
-        }
-        // text.position.z = 0;
-    });
+    // let dims = [];
+    // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 1))   //top1
+    // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.leftTopPlate[2], sectionPoint.rightTopPlate[2], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 0)) //top2
+    // dims.push(Dimension([sectionPoint.rWeb[0], sectionPoint.rWeb[1]], 1, sc, 1, false, true, 2)) //right1
+    // dims.push(Dimension([sectionPoint.rWeb[0], diaPoint.lowerTopShape.points[3], diaPoint.lowerTopShape.points[2], diaPoint.rightTopPlateShape.points[3], diaPoint.rightTopPlateShape.points[0], sectionPoint.rWeb[1]], 5, sc, 1, false, true, 1)) //right2
+    // dims.push(Dimension([sectionPoint.lWeb[0], sectionPoint.lWeb[1]], 1, sc, 1, false, false, 2)) //left1
+    // dims.push(Dimension([sectionPoint.lWeb[0], diaPoint.lowerTopShape.points[0], diaPoint.lowerTopShape.points[1], diaPoint.leftTopPlateShape.points[3], diaPoint.leftTopPlateShape.points[0], sectionPoint.lWeb[1]], 5, sc, 1, false, false, 1)) // left2
+    // dims.push(Dimension([sectionPoint.bottomPlate[3], sectionPoint.lWeb[0], sectionPoint.rWeb[0], sectionPoint.bottomPlate[2]], 0, sc, 1, true, false, 0)) //bottom1
+    // dims.push(Dimension([sectionPoint.bottomPlate[3], sectionPoint.bottomPlate[2]], 0, sc, 1, true, false, 1)) //botoom2
+
+    // // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
+
+    // for (let i in dims) {
+    //     dims[i].meshes.forEach(function (mesh) { group.add(mesh) })
+    //     dims[i].labels.forEach(function (elem) { label.push(elem) })
+    // }
+    // for (let i in weldings) {
+    //     weldings[i].meshes.forEach(function (mesh) { group.add(mesh) })
+    //     weldings[i].labels.forEach(function (elem) { label.push(elem) })
+    // }
+
+    // var loader = new THREE.FontLoader();
+    // loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+    //     // console.log(font)
+    //     // var font = {generateShapes:(messagem , num)=>{}}
+    //     for (let i in label) {
+    //         var shapes = font.generateShapes(label[i].text, label[i].fontSize);
+    //         var geometry = new THREE.ShapeBufferGeometry(shapes);
+    //         var xMid
+    //         geometry.computeBoundingBox();
+    //         xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+    //         geometry.translate(xMid, -label[i].fontSize / 2, 0);
+    //         if (label[i].rotation) {
+    //             geometry.rotateZ(label[i].rotation)
+    //         }
+    //         geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
+    //         // make shape ( N.B. edge view not visible )
+    //         textMesh = new THREE.Mesh(geometry, textMaterial);
+    //         textMesh.layers.set(1)
+    //         group.add(textMesh);
+    //     }
+    //     // text.position.z = 0;
+    // });
 
     return group
 }
