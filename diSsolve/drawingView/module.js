@@ -1258,7 +1258,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
             // console.log("check",sectionPoint)
             for (let k in sectionPoint[key]) {
                 if (sectionPoint[key][k].length > 0) {
-                    group.add(sectionMesh(sectionPoint.forward[key][k], lineMaterial))
+                    group.add(sectionMesh(sectionPoint[key][k], lineMaterial))
                 }
             }
         }    
