@@ -438,24 +438,45 @@ export function DYdia5(webPoints, point, urib, lrib, ds) {
   let holeCenter1 = { x: 0, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness }
   let hstiff1 = [{ x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 },
   { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }, { x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }];
-  result["hstiff1"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter1), dsi.holeStiffThickness, 0, point.skew, 0, 0)
+  let hstiff2D1 = [{ x: -dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
+    { x: dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
+    { x: dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin},
+    { x: -dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin}]
+  result["hstiff1"] = hPlateGen2(hstiff1, ToGlobalPoint(point, holeCenter1), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D1)
 
   let holeCenter2 = { x: 0, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }
-  result["hstiff2"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter2), dsi.holeStiffThickness, 0, point.skew, 0, 0)
+  let hstiff2D2 = [{ x: -dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
+    { x: dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY  + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
+    { x: dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY  + dsi.holeHeight + dsi.holeStiffmargin},
+    { x: -dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY  + dsi.holeHeight + dsi.holeStiffmargin}]
+  result["hstiff2"] = hPlateGen2(hstiff1, ToGlobalPoint(point, holeCenter2), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D2)
 
   let holeCenter3 = { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
   let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: -dsi.webThickness / 2 },
   { x: dsi.holeStiffhl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }, { x: -dsi.holeStiffhl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }];
-  result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2)
+  let vstiff2D1 = [{ x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2}, 
+    { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2},
+    { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2},
+    { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2}]
+  result["vstiff1"] = hPlateGen2(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D1)
 
-  let holeCenter4 = { x: dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
-  result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2)
+    let holeCenter4 = { x: dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  let vstiff2D2 = [{ x: dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2}, 
+    { x: dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2},
+    { x: dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2},
+    { x: dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2}]
+  result["vstiff2"] = hPlateGen2(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D2)
 
   let hStiffCenter = { x: 0, y: bl.y + dsi.hstiffHeight };
   let h1 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 }, { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
   { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: - dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.webThickness / 2 }
   ];
-  result["h1"] = hPlateGen(h1, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, 0, point.skew, 0, 0);
+  let h2D1 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: bl.y + dsi.hstiffHeight },
+    { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.hstiffHeight },
+    { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.hstiffHeight + dsi.hstiffThickness },
+    { x: bl.x + lwCot * (dsi.hstiffHeight + dsi.hstiffThickness), y: bl.y + dsi.hstiffHeight + dsi.hstiffThickness}
+  ]
+  result["h1"] = hPlateGen2(h1, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, 0, point.skew, 0, 0, h2D1);
 
   let h2 = [{ x: br.x + rwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 }, { x: dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
   { x: dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: - dsi.webThickness / 2 }, { x: br.x + rwCot * dsi.hstiffHeight, y: - dsi.webThickness / 2 }
