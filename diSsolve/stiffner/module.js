@@ -142,7 +142,7 @@ export function VstiffShapeDict(
       result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection, sectionDB);
     }
     else if (vStiffLayout[i][section] === "DYvStiff1") {
-      result[gridkey] = DYVstiff1(webPoints, skew, uflangePoints, vSection)
+      result[gridkey] = DYVstiff1(webPoints, gridPoint[gridkey], skew, uflangePoints, vSection)
     }
     result[gridkey].point = gridPoint[gridkey]
   }
@@ -217,7 +217,7 @@ export function HBracingDict(
 }
 
 
-export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
+export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   //ds 입력변수
   let result = {};
   let dsi = {
@@ -250,16 +250,17 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
   leftPoints.push(left[2])
   leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
-  result["left"] = {
-    points: leftPoints,
-    Thickness: dsi.stiffThickness,
-    z: -dsi.stiffThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  result["left"] = vPlateGen(leftPoints,point,dsi.stiffThickness,[],0,null, null,[])
+  // {
+  //   points: leftPoints,
+  //   Thickness: dsi.stiffThickness,
+  //   z: -dsi.stiffThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
   let right = PlateRestPoint(lowerPoints[1], tr, 0, gradient, -dsi.stiffWidth)
   let rightPoints = [];
   rightPoints.push(right[0])
@@ -267,16 +268,17 @@ export function DYVstiff1(webPoints, skew, uflangePoint, ds) {
   rightPoints.push(right[2])
   rightPoints.push(...scallop(right[2], right[3], right[0], dsi.chamfer, 1));
 
-  result["rightLower"] = {
-    points: rightPoints,
-    Thickness: dsi.stiffThickness,
-    z: -dsi.stiffThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  result["rightLower"] = vPlateGen(rightPoints,point,dsi.stiffThickness,[],0,null, null,[])
+  // {
+  //   points: rightPoints,
+  //   Thickness: dsi.stiffThickness,
+  //   z: -dsi.stiffThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
   return result
 }
 
