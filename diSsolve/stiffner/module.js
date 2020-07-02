@@ -594,7 +594,7 @@ let fBolt = {
   let upperPlate = [
     uflange[0][1],
     { x: uflange[0][1].x - gradSin * dsi.flangeThickness, y: uflange[0][1].y + gradCos * dsi.flangeThickness },
-    { x: uflange[0][1].x - gradSin * dsi.flangeThickness, y: uflange[0][1].y + gradCos * dsi.flangeThickness },
+    { x: uflange[1][1].x - gradSin * dsi.flangeThickness, y: uflange[1][1].y + gradCos * dsi.flangeThickness },
     uflange[1][1]
   ]
   let lowerPlate = [
@@ -704,7 +704,7 @@ let fBolt = {
                         { x: 0, y: - dsi.flangeWidth/2},
                         { x: upperflangeL, y: - dsi.flangeWidth/2},
                         { x: upperflangeL, y: dsi.flangeWidth/2}]
-    result["upperflange"] = hPlateGen2(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0, gradient, upperflange)
+    result["upperflange"] = hPlateGen2(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0, gradRadian, upperflange)
     // result["upperflange"] = { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   let lowerflange = [
     { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient - dsi.flangeThickness },
@@ -717,7 +717,7 @@ let fBolt = {
                         { x: 0, y: - dsi.flangeWidth/2},
                         { x: lowerflangeL, y: - dsi.flangeWidth/2},
                         { x: lowerflangeL, y: dsi.flangeWidth/2}]
-    result["lowerflange"] = hPlateGen2(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0, gradient, lowerflange)
+    result["lowerflange"] = hPlateGen2(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0, gradRadian, lowerflange)
   // result["lowerflange"] = { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
   let joint = IbeamJoint(webPlate, point, dsi,wBolt,fBolt)
