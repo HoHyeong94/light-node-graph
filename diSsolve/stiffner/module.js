@@ -59,6 +59,7 @@ export function DiaShapeDict(
     } else if (diaphragmLayout[i][section] == "DYdia1") {
       result[gridkey] = DYdia1(
         webPoints,
+        gridPoint[gridkey],
         skew,
         uflangePoints,
         diaSection
@@ -922,7 +923,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   return result
 }
 
-export function DYdia1(webPoints, skew, uflangePoint, ds) {
+export function DYdia1(webPoints, point, skew, uflangePoint, ds) {
   //ds 입력변수
   let result = {};
   let dsi = {
