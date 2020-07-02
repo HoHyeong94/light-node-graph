@@ -51,6 +51,7 @@ export function DiaShapeDict(
     } else if (diaphragmLayout[i][section] == "DYdia0") {
       result[gridkey] = DYdia0(
         webPoints,
+        gridPoint[gridkey],
         skew,
         lflange,
         diaSection
@@ -835,7 +836,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   return result
 }
 
-export function DYdia0(webPoints, skew, lflangePoint, ds) {
+export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   let result = {};
   let dsi = {
     // lowerHeight: 300,
@@ -862,7 +863,7 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
   const rwCot = (tr.x - br.x) / (tr.y - br.y)
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
 
-
+  
   ///lower stiffener
   let lowerPlate = [
     lflangePoint[0][1],
@@ -870,32 +871,42 @@ export function DYdia0(webPoints, skew, lflangePoint, ds) {
     { x: lflangePoint[1][1].x, y: lflangePoint[1][1].y - dsi.lowerThickness },
     lflangePoint[1][1]
   ];
-  result["lowerPlate"] = {
-    points: lowerPlate,
-    Thickness: dsi.lowerWidth,
-    z: -dsi.lowerWidth / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  let lowerPlateL = lflangePoint[1][1].x - lflangePoint[0][1].x
+  let lowerPlate2 = [ {x: 0, y: dsi.lowerWidth/2}, {x: 0, y: -dsi.lowerWidth/2}, {x: lowerPlateL, y: -dsi.lowerWidth/2},{x: lowerPlateL, y: dsi.lowerWidth/2} ]
+  let lPoint = ToGlobalPoint(point, lflangePoint[0][1])
+  result["lowerPlate"] = hPlateGen2(lowerPlate2, lPoint, dsi.lowerThickness, - dsi.lowerThickness, point.skew, 0,0, lowerPlate)
+  
+  // {
+  //   points: lowerPlate,
+  //   points2D : lowerPlate,
+  //   Thickness: dsi.lowerWidth,
+  //   z: -dsi.lowerWidth / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
   let upperPlate = [
     { x: bl.x + lwCot * dsi.upperHeight, y: bl.y + dsi.upperHeight },
     { x: bl.x + lwCot * (dsi.upperHeight + dsi.upperThickness), y: bl.y + dsi.upperHeight + dsi.upperThickness },
     { x: br.x + rwCot * (dsi.upperHeight + dsi.upperThickness), y: br.y + dsi.upperHeight + dsi.upperThickness },
     { x: br.x + rwCot * dsi.upperHeight, y: br.y + dsi.upperHeight }
   ]
-  result["upperPlate"] = {
-    points: upperPlate,
-    Thickness: dsi.upperWidth,
-    z: -dsi.upperWidth / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  let upperPlateL = upperPlate[3].x - upperPlate[0].x
+  let upperPlate2 = [ {x: 0, y: dsi.upperWidth/2}, {x: 0, y: -dsi.upperWidth/2}, {x: upperPlateL, y: - dsi.upperWidth/2}, {x: upperPlateL, y: dsi.upperWidth/2}];
+  let uPoint = ToGlobalPoint(point, upperPlate[0]);
+  result["upperPlate"] = hPlateGen2(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0,upperPlate)
+  // {
+  //   points: upperPlate,
+  //   Thickness: dsi.upperWidth,
+  //   z: -dsi.upperWidth / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
 
   let centerPlate = [bl, br, upperPlate[3], upperPlate[0]]
   let centerPoints = [];
@@ -1727,5 +1738,15 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
   points.forEach(pt => resultPoints.push({ x: pt.x, y: pt.x * cot + pt.y * cosec }))
 
   let result = { points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint }
+  return result
+}
+
+export function hPlateGen2(points, centerPoint, Thickness, z, skew, rotationX, rotationY, points2D) {
+  const cosec = 1 / Math.sin(skew * Math.PI / 180);
+  const cot = - 1 / Math.tan(skew * Math.PI / 180);
+  let resultPoints = [];
+  points.forEach(pt => resultPoints.push({ x: pt.x, y: pt.x * cot + pt.y * cosec }))
+
+  let result = { points2D, points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint }
   return result
 }

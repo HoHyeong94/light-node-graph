@@ -1270,10 +1270,10 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     
 
 
-    // for (var key in diaPoint) {
-    //     if (diaPoint[key].points) {
-    //         group.add(sectionMesh(diaPoint[key].points, lineMaterial))
-    //     }
+    for (var key in diaPoint) {
+        if (diaPoint[key].points2D) {
+            group.add(sectionMesh(diaPoint[key].points2D, lineMaterial))
+        }
     //     if (diaPoint[key].size) {
     //         label.push({
     //             text: diaPoint[key].size.Label,
@@ -1287,7 +1287,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     //             weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
     //         }
     //     }
-    // }
+    }
 
     // let dims = [];
     // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 1))   //top1
