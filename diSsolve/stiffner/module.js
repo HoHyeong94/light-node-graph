@@ -614,8 +614,8 @@ let fBolt = {
                     [upperPlate[3],upperPlate[2]]]
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
-    let bracket2D = PlateRestPoint(bracketSide[i][0], bracketSide[i][1],gradient, gradient, sign * bracketLength);
     let bracketLength = i < 2 ? dsi.bracketLength : dsi.bracketLength - (uflange[0][1].x - tl.x);
+    let bracket2D = PlateRestPoint(bracketSide[i][0], bracketSide[i][1],gradient, gradient, sign * bracketLength);
     let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.flangeWidth / 2 }, { x: sign * bracketLength, y: dsi.flangeWidth / 2 },
     { x: sign * bracketLength, y: -dsi.flangeWidth / 2 }, { x: sign * 20, y: -dsi.flangeWidth / 2 }, { x: sign * 20, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
