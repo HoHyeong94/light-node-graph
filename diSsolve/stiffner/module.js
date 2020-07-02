@@ -614,7 +614,7 @@ let fBolt = {
                     [upperPlate[3],upperPlate[2]]]
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
-    let bracket2D = PlateRestPoint(bracketSide[i][0], bracketSide[i][1],gradient, gradient)
+    let bracket2D = PlateRestPoint(bracketSide[i][0], bracketSide[i][1],gradient, gradient, sign * bracketLength);
     let bracketLength = i < 2 ? dsi.bracketLength : dsi.bracketLength - (uflange[0][1].x - tl.x);
     let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.flangeWidth / 2 }, { x: sign * bracketLength, y: dsi.flangeWidth / 2 },
     { x: sign * bracketLength, y: -dsi.flangeWidth / 2 }, { x: sign * 20, y: -dsi.flangeWidth / 2 }, { x: sign * 20, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
@@ -635,7 +635,7 @@ let fBolt = {
     // }
   }
 
-  let stiffnerPoint = [[bl, lowerPlate[0]], [br, lowerPlate[3]]];
+  let stiffnerPoint = [[bl, lowerPlate[1]], [br, lowerPlate[2]]];
   for (let i = 0; i < stiffnerPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], 0, gradient, stiffWidth)
