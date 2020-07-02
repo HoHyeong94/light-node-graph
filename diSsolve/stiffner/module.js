@@ -504,19 +504,24 @@ export function DYdia4(webPoints, point, skew, urib, ds) {
   const gradCos = (tr.x - tl.x) / Math.sqrt((tr.x - tl.x) ** 2 + (tr.y - tl.y) ** 2)
   // const gradSin = gradient * gradCos
 
-  let upperPlate = [{ x: tl.x - lwCot * dsi.webHeight, y: tl.y - dsi.webHeight },
+  let webPlate = [{ x: tl.x - lwCot * dsi.webHeight, y: tl.y - dsi.webHeight },
   { x: tr.x - rwCot * dsi.webHeight, y: tr.y - dsi.webHeight }, tr, tl]; // 첫번째 면이 rib에 해당되도록
   let urib2 = urib
   urib2.ribHoleD = dsi.ribHoleD
   urib2.ribHoleR = dsi.ribHoleR
-  result["upperPlate"] = vPlateGen(upperPlate, point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, null, []);
+  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, null, []);
   let centerPoint = ToGlobalPoint(point, { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness });
   let l = (tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness) - (tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness))) / gradCos
-  let upperTopPoints = [{ x: 0, y: - dsi.upperTopWidth / 2 }, { x: 0, y: dsi.upperTopWidth / 2 },
-  { x: l, y: dsi.upperTopWidth / 2 }, { x: l, y: -dsi.upperTopWidth / 2 }]
-  result["upperTopPlate"] = hPlateGen(upperTopPoints, centerPoint, dsi.upperTopThickness, 0, point.skew, 0, -Math.atan(gradient))
-  let stiffnerPoint = [[bl, { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness }],
-  [br, { x: tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness), y: tr.y - dsi.webHeight - dsi.upperTopThickness }]];
+  let webBottomPlate2 = [{ x: 0, y: - dsi.upperTopWidth / 2 }, { x: 0, y: dsi.upperTopWidth / 2 },
+  { x: l, y: dsi.upperTopWidth / 2 }, { x: l, y: -dsi.upperTopWidth / 2 }];
+  let webBottomPlate = [webPlate[0],
+    { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness },
+    { x: tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness), y: tr.y - dsi.webHeight - dsi.upperTopThickness },
+    webPlate[1]
+  ]
+  result["webBottomPlate"] = hPlateGen2(webBottomPlate2, centerPoint, dsi.upperTopThickness, 0, point.skew, 0, -Math.atan(gradient), webBottomPlate)
+  let stiffnerPoint = [[bl, webBottomPlate[1]],
+  [br, webBottomPlate[2]]];
   for (let i = 0; i < stiffnerPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], 0, gradient, stiffWidth)
