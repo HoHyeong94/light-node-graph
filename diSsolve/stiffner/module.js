@@ -608,64 +608,72 @@ let fBolt = {
   ToGlobalPoint(point, lowerPlate[2]),
   ToGlobalPoint(point, upperPlate[0]),
   ToGlobalPoint(point, upperPlate[3])];
+  let bracketSide = [[lowerPlate[0],lowerPlate[1]],
+                    [lowerPlate[3],lowerPlate[2]],
+                    [upperPlate[0],upperPlate[1]],
+                    [upperPlate[3],upperPlate[2]]]
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
+    let bracket2D = PlateRestPoint(bracketSide[i][0], bracketSide[i][1],gradient, gradient)
     let bracketLength = i < 2 ? dsi.bracketLength : dsi.bracketLength - (uflange[0][1].x - tl.x);
     let lowerbracket1 = [{ x: 0, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.bracketWidth / 2 }, { x: sign * 20, y: dsi.flangeWidth / 2 }, { x: sign * bracketLength, y: dsi.flangeWidth / 2 },
     { x: sign * bracketLength, y: -dsi.flangeWidth / 2 }, { x: sign * 20, y: -dsi.flangeWidth / 2 }, { x: sign * 20, y: -dsi.bracketWidth / 2 }, { x: 0, y: -dsi.bracketWidth / 2 }];
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
     lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
     lowerbracket1[6], lowerbracket1[7]];
-    result["bracket" + i.toFixed(0)] = {
-      points: bracketShape,
-      Thickness: i < 2 ? dsi.flangeThickness : dsi.flangeThickness,
-      z: 0,
-      rotationX: 0,
-      rotationY: gradRadian,
-      hole: [],
-      point: bracketPoint[i],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    }
+    result["bracket" + i.toFixed(0)] = hPlateGen2(bracketShape, bracketPoint[i],dsi.flangeThickness, 0, point.skew, 0, gradRadian, bracket2D)
+    // {
+    //   points: bracketShape,
+    //   Thickness: i < 2 ? dsi.flangeThickness : dsi.flangeThickness,
+    //   z: 0,
+    //   rotationX: 0,
+    //   rotationY: gradRadian,
+    //   hole: [],
+    //   point: bracketPoint[i],
+    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    // }
   }
 
   let stiffnerPoint = [[bl, lowerPlate[0]], [br, lowerPlate[3]]];
   for (let i = 0; i < stiffnerPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], 0, gradient, stiffWidth)
-    let stiffnerPoints = [];
-    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
-    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-    stiffnerPoints.push(stiffner[2], stiffner[3])
-    result["stiffner" + i.toFixed(0)] = {
-      points: stiffnerPoints,
-      Thickness: dsi.webThickness,
-      z: -dsi.webThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: rotationY,
-      hole: [],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    }
+    // let stiffnerPoints = [];
+    // stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    // stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    // stiffnerPoints.push(stiffner[2], stiffner[3])
+    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0,1], dsi.scallopRadius,null, null, []);
+    // {
+    //   points: stiffnerPoints,
+    //   Thickness: dsi.webThickness,
+    //   z: -dsi.webThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: rotationY,
+    //   hole: [],
+    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    // }
   }
   let webBracketPoint = [[lowerPlate[0], tl], [lowerPlate[3], tr]];
   for (let i = 0; i < webBracketPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
     let stiffner = PlateRestPoint(webBracketPoint[i][0], webBracketPoint[i][1], gradient, gradient, stiffWidth)
-    let stiffnerPoints = [];
-    stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
-    stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
-    stiffnerPoints.push(stiffner[2], stiffner[3])
-    result["webBracket" + i.toFixed(0)] = {
-      points: stiffnerPoints,
-      Thickness: dsi.webThickness,
-      z: -dsi.webThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: rotationY,
-      hole: [],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    }
+    // let stiffnerPoints = [];
+    // stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
+    // stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+    // stiffnerPoints.push(stiffner[2], stiffner[3])
+    result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0,1], dsi.scallopRadius,null, null, []);
+    // {
+    //   points: stiffnerPoints,
+    //   Thickness: dsi.webThickness,
+    //   z: -dsi.webThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: rotationY,
+    //   hole: [],
+    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    // }
   }
 
   let webPlate = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient },
@@ -673,30 +681,44 @@ let fBolt = {
   { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient },
   { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient }];
 
-  result["webPlate"] = {
-    points: webPlate,
-    Thickness: dsi.webThickness,
-    z: -dsi.webThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
+  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], dsi.scallopRadius,null, null, []);
+  // {
+  //   points: webPlate,
+  //   Thickness: dsi.webThickness,
+  //   z: -dsi.webThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: rotationY,
+  //   hole: [],
+  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+  // }
 
   let upperflange = [
-    { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient + dsi.flangeThickness },
     { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient },
-    { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient },
-    { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient + dsi.flangeThickness }];
-  result["upperflange"] = { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-  
+    { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient + dsi.flangeThickness },
+    { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient + dsi.flangeThickness },
+    { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient }];
+    let uPoint = ToGlobalPoint(point, upperflange[0])
+    let upperflangeL = Math.sqrt( (upperflange[3].x - upperflange[0].x)**2 + (upperflange[3].y - upperflange[0].y)**2)
+    let upperflange2 = [{ x: 0, y: dsi.flangeWidth/2},
+                        { x: 0, y: - dsi.flangeWidth/2},
+                        { x: upperflangeL, y: - dsi.flangeWidth/2},
+                        { x: upperflangeL, y: dsi.flangeWidth/2}]
+    result["upperflange"] = hPlateGen2(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0, gradient, upperflange)
+    // result["upperflange"] = { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   let lowerflange = [
     { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient - dsi.flangeThickness },
     { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient },
     { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient },
     { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient - dsi.flangeThickness }];
-  result["lowerflange"] = { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
+    let lPoint = ToGlobalPoint(point, lowerflange[0])
+    let lowerflangeL = Math.sqrt( (lowerflange[3].x - lowerflange[0].x)**2 + (lowerflange[3].y - lowerflange[0].y)**2)
+    let lowerflange2 = [{ x: 0, y: dsi.flangeWidth/2},
+                        { x: 0, y: - dsi.flangeWidth/2},
+                        { x: lowerflangeL, y: - dsi.flangeWidth/2},
+                        { x: lowerflangeL, y: dsi.flangeWidth/2}]
+    result["lowerflange"] = hPlateGen2(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0, gradient, lowerflange)
+  // result["lowerflange"] = { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
   let joint = IbeamJoint(webPlate, point, dsi,wBolt,fBolt)
   for (let i in joint){ result[i] = joint[i] }
