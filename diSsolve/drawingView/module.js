@@ -1274,7 +1274,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
         if (diaPoint[key].points2D) {
             group.add(sectionMesh(diaPoint[key].points2D, lineMaterial))
         }
-        if (diaPoint[key].hole.length > 0) {
+        if (diaPoint[key].hole) {
             group.add(sectionMesh(diaPoint[key].hole, lineMaterial))
         }
 
