@@ -875,18 +875,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   let lowerPlate2 = [ {x: 0, y: dsi.lowerWidth/2}, {x: 0, y: -dsi.lowerWidth/2}, {x: lowerPlateL, y: -dsi.lowerWidth/2},{x: lowerPlateL, y: dsi.lowerWidth/2} ]
   let lPoint = ToGlobalPoint(point, lflangePoint[0][1])
   result["lowerPlate"] = hPlateGen2(lowerPlate2, lPoint, dsi.lowerThickness, - dsi.lowerThickness, point.skew, 0,0, lowerPlate)
-  
-  // {
-  //   points: lowerPlate,
-  //   points2D : lowerPlate,
-  //   Thickness: dsi.lowerWidth,
-  //   z: -dsi.lowerWidth / 2,
-  //   rotationX: Math.PI / 2,
-  //   rotationY: rotationY,
-  //   hole: [],
-  //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-  //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  // }
+    
   let upperPlate = [
     { x: bl.x + lwCot * dsi.upperHeight, y: bl.y + dsi.upperHeight },
     { x: bl.x + lwCot * (dsi.upperHeight + dsi.upperThickness), y: bl.y + dsi.upperHeight + dsi.upperThickness },
@@ -897,34 +886,26 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   let upperPlate2 = [ {x: 0, y: dsi.upperWidth/2}, {x: 0, y: -dsi.upperWidth/2}, {x: upperPlateL, y: - dsi.upperWidth/2}, {x: upperPlateL, y: dsi.upperWidth/2}];
   let uPoint = ToGlobalPoint(point, upperPlate[0]);
   result["upperPlate"] = hPlateGen2(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0,upperPlate)
+  
+  let centerPlate = [bl, br, upperPlate[3], upperPlate[0]]
+  // let centerPoints = [];
+  // centerPoints.push(...scallop(centerPlate[0], centerPlate[1], centerPlate[2], dsi.scallopRadius, 4));
+  // centerPoints.push(...scallop(centerPlate[1], centerPlate[2], centerPlate[3], dsi.scallopRadius, 4));
+  // centerPoints.push(...scallop(centerPlate[2], centerPlate[3], centerPlate[0], dsi.scallopRadius, 4));
+  // centerPoints.push(...scallop(centerPlate[3], centerPlate[0], centerPlate[1], dsi.scallopRadius, 4));
+
+  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness,[0,1,2,3], dsi.scallopRadius, null, null, [] )
+  
   // {
-  //   points: upperPlate,
-  //   Thickness: dsi.upperWidth,
-  //   z: -dsi.upperWidth / 2,
+  //   points: centerPoints,
+  //   Thickness: dsi.centerThickness,
+  //   z: -dsi.centerThickness / 2,
   //   rotationX: Math.PI / 2,
   //   rotationY: rotationY,
   //   hole: [],
   //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
   //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   // }
-
-  let centerPlate = [bl, br, upperPlate[3], upperPlate[0]]
-  let centerPoints = [];
-  centerPoints.push(...scallop(centerPlate[0], centerPlate[1], centerPlate[2], dsi.scallopRadius, 4));
-  centerPoints.push(...scallop(centerPlate[1], centerPlate[2], centerPlate[3], dsi.scallopRadius, 4));
-  centerPoints.push(...scallop(centerPlate[2], centerPlate[3], centerPlate[0], dsi.scallopRadius, 4));
-  centerPoints.push(...scallop(centerPlate[3], centerPlate[0], centerPlate[1], dsi.scallopRadius, 4));
-
-  result["centerPlate"] = {
-    points: centerPoints,
-    Thickness: dsi.centerThickness,
-    z: -dsi.centerThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: rotationY,
-    hole: [],
-    // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-  }
   let stiffnerPoint = [tl, upperPlate[1]]
   let stiffWidth = dsi.stiffWidth;
   let tan1 = gradient;
@@ -1726,7 +1707,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
     }
   }
 
-  let result = { points: resultPoints, Thickness: Thickness, z: - Thickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint }
+  let result = { points2D : resultPoints, points: resultPoints, Thickness: Thickness, z: - Thickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint }
 
   return result
 }
