@@ -769,20 +769,20 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   ///lower stiffener
   let lowerPlate = [
     { x: bl.x + lwCot * dsi.lowerHeight, y: bl.y + dsi.lowerHeight },
-    { x: bl.x + lwCot * (dsi.lowerHeight + dsi.flangeThickness), y: bl.y + dsi.lowerHeight + dsi.flangeThickness },
-    { x: br.x + rwCot * (dsi.lowerHeight + dsi.flangeThickness), y: br.y + dsi.lowerHeight + dsi.flangeThickness },
+    { x: bl.x + lwCot * (dsi.lowerHeight - dsi.flangeThickness), y: bl.y + dsi.lowerHeight - dsi.flangeThickness },
+    { x: br.x + rwCot * (dsi.lowerHeight - dsi.flangeThickness), y: br.y + dsi.lowerHeight - dsi.flangeThickness },
     { x: br.x + rwCot * dsi.lowerHeight, y: br.y + dsi.lowerHeight }
   ];
   let upperPlate = [
     { x: bl.x + lwCot * dsi.upperHeight, y: bl.y + dsi.upperHeight },
-    { x: bl.x + lwCot * (dsi.upperHeight - dsi.flangeThickness), y: bl.y + dsi.upperHeight - dsi.flangeThickness },
-    { x: br.x + rwCot * (dsi.upperHeight - dsi.flangeThickness), y: br.y + dsi.upperHeight - dsi.flangeThickness },
+    { x: bl.x + lwCot * (dsi.upperHeight + dsi.flangeThickness), y: bl.y + dsi.upperHeight + dsi.flangeThickness },
+    { x: br.x + rwCot * (dsi.upperHeight + dsi.flangeThickness), y: br.y + dsi.upperHeight + dsi.flangeThickness },
     { x: br.x + rwCot * dsi.upperHeight, y: br.y + dsi.upperHeight }
   ]
-  let bracketPoint = [ToGlobalPoint(point, lowerPlate[0]),
-  ToGlobalPoint(point, lowerPlate[3]),
-  ToGlobalPoint(point, upperPlate[1]),
-  ToGlobalPoint(point, upperPlate[2])];
+  let bracketPoint = [ToGlobalPoint(point, lowerPlate[1]),
+  ToGlobalPoint(point, lowerPlate[2]),
+  ToGlobalPoint(point, upperPlate[0]),
+  ToGlobalPoint(point, upperPlate[3])];
   let bracketSide = [[lowerPlate[0], lowerPlate[1]],
                      [lowerPlate[3], lowerPlate[2]],
                      [upperPlate[1], upperPlate[0]],
@@ -799,10 +799,10 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     let thickness = i < 2 ? dsi.flangeThickness : dsi.flangeThickness
     result["bracket" + i.toFixed(0)] = hPlateGen2(bracketShape, bracketPoint[i], thickness, 0, point.skew, 0, 0, bracket2D);
   }
-  let stiffnerPoint = [[bl, lowerPlate[0]],
-  [br, lowerPlate[3]],
-  [tl, upperPlate[0]],
-  [tr, upperPlate[3]]]
+  let stiffnerPoint = [[bl, lowerPlate[1]],
+  [br, lowerPlate[2]],
+  [tl, upperPlate[1]],
+  [tr, upperPlate[2]]]
   for (let i = 0; i < 4; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let tan1 = i < 2 ? 0 : gradient;
@@ -810,32 +810,44 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [])
   }
 
-  let webBracketPoint = [[lowerPlate[1], upperPlate[1]], [lowerPlate[2], upperPlate[2]]];
+  let webBracketPoint = [[lowerPlate[0], upperPlate[0]], [lowerPlate[3], upperPlate[3]]];
   for (let i = 0; i < 2; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
     let stiffner = PlateRestPoint(webBracketPoint[i][0], webBracketPoint[i][1], 0, 0, stiffWidth)
     result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.webThickness, [0, 1], dsi.scallopRadius, null, null, [])
   }
 
-  let webPlate = [{ x: lowerPlate[1].x + dsi.bracketLength, y: lowerPlate[1].y },
-  { x: lowerPlate[2].x - dsi.bracketLength, y: lowerPlate[2].y },
-  { x: upperPlate[2].x - dsi.bracketLength, y: upperPlate[2].y },
-  { x: upperPlate[1].x + dsi.bracketLength, y: upperPlate[1].y }];
+  let webPlate = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
+  { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y },
+  { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y },
+  { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y }];
 
   result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], 0, null, null, [])
 
   let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
-  { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y - dsi.flangeThickness },
-  { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y - dsi.flangeThickness },
+  { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y + dsi.flangeThickness },
+  { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y + dsi.flangeThickness },
   { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y }]
-  result["upperflange"] = { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-
+  let uPoint = ToGlobalPoint(point, upperflange[0])
+  let upperflangeL = upperPlate[3].x - upperPlate[0].x - 2 * dsi.bracketLength
+  let upperflange2 = [{ x: 0, y: dsi.flangeWidth/2},
+                      { x: 0, y: - dsi.flangeWidth/2},
+                      { x: upperflangeL, y: - dsi.flangeWidth/2},
+                      { x: upperflangeL, y: dsi.flangeWidth/2}]
+  result["upperflange"] = hPlateGen2(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0,0, upperflange)
+  // { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
-  { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.flangeThickness },
-  { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y + dsi.flangeThickness },
+  { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y - dsi.flangeThickness },
+  { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.flangeThickness },
   { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y }]
-  result["lowerflange"] = { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
-
+  let lPoint = ToGlobalPoint(point, lowerflange[1])
+  let lowerflangeL = lowerflange[3].x - lowerPlate[0].x - 2 * dsi.bracketLength
+  let lowerflange2 = [{ x: 0, y: dsi.flangeWidth/2},
+                      { x: 0, y: - dsi.flangeWidth/2},
+                      { x: lowerflangeL, y: - dsi.flangeWidth/2},
+                      { x: lowerflangeL, y: dsi.flangeWidth/2}]
+  result["lowerflange"] = hPlateGen2(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0,0, lowerflange)
+  // { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
   let joint = IbeamJoint(webPlate, point, dsi,wBolt,fBolt)
   for (let i in joint){ result[i] = joint[i] }
