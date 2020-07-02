@@ -992,7 +992,7 @@ export function DYdia1(webPoints, point, skew, uflangePoint, ds) {
   //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
   // }
 
-  let centerPlate = [lowerPlate[1], lowerPlate[2], upperPlate[2], upperPlate[1]]
+  let centerPlate = [lowerPlate[0], lowerPlate[3], upperPlate[3], upperPlate[0]]
   result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness,[0,1,2,3], dsi.scallopRadius, null, null, [] )
   
   // let centerPoints = [];
