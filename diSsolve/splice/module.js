@@ -229,7 +229,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
 
 export function TranslatePoints(origin, points, radian){
   let result = [];
-    if(rot){
+    if(radian){
       let cos = Math.cos(radian)
       let sin = Math.sin(radian)
       points.forEach(pt => result.push({x : origin.x + cos*pt.x - sin*pt.y, y:origin.y + sin*pt.x + cos*pt.y}))
