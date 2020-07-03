@@ -162,36 +162,25 @@ export function SplicePlate(iPoint, iSectionPoint) {
     let lRad = -Math.atan(lGradient)
 
     /////////////////////////////////// to the Joint function //////////////////////////////////////////
-  let webPoint1 = ToGlobalPoint(centerPoint, { x: (webPoints[0].x + webPoints[3].x) / 2, y: (webPoints[0].y +webPoints[3].y) / 2 })
-  let webPoint2 = ToGlobalPoint(centerPoint, { x: (webPoints[1].x + webPoints[2].x) / 2, y: (webPoints[1].y +webPoints[2].y) / 2 })
+  let origin1 = { x: (webPoints[0].x + webPoints[3].x) / 2, y: (webPoints[0].y +webPoints[3].y) / 2 }
+  let origin2 = { x: (webPoints[1].x + webPoints[2].x) / 2, y: (webPoints[1].y +webPoints[2].y) / 2 }
+  let webPoint1 = ToGlobalPoint(centerPoint, origin1)
+  let webPoint2 = ToGlobalPoint(centerPoint, origin2)
   let WebBolt = [{ startPoint: { x: xs.webJointWidth / 2 - 40, y: xs.webJointHeight / 2 - 40 }, P: wBolt.P , G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness },
   { startPoint: { x: -(xs.webJointWidth / 2 - 40), y: xs.webJointHeight / 2 - 40 }, P: wBolt.P, G: -wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness }]
   let webJoint1 = [{ x: - xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
   { x: xs.webJointWidth / 2, y: - xs.webJointHeight / 2 },
   { x: xs.webJointWidth / 2, y: xs.webJointHeight / 2 },
   { x: - xs.webJointWidth / 2, y: xs.webJointHeight / 2 }];
-
-  result["webJoint1"] = hPlateGen(webJoint1, webPoint1, xs.webJointThickness, xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
-  //   points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-  //   point: webPoint1, bolt: WebBolt,
-  // }
+  let webJoint2D1 = TranslatePoints(origin1, webJoint1)
+  result["webJoint1"] = hPlateGen2(webJoint1, webPoint1, xs.webJointThickness, xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY, webJoint2D1)
   result["webJoint1"]["bolt"] = WebBolt
   result["webJoint2"] = hPlateGen(webJoint1, webPoint1, xs.webJointThickness, - xs.webJointThickness - xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
-  // {
-  //   points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-  //   point: webPoint1,
-  // }
-  result["webJoint3"] = hPlateGen(webJoint1, webPoint2, xs.webJointThickness, xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
-  // {
-  //   points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-  //   point: webPoint2, bolt: WebBolt,
-  // }
+  let webJoint2D3 = TranslatePoints(origin2, webJoint1)
+  result["webJoint3"] = hPlateGen2(webJoint1, webPoint2, xs.webJointThickness, xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY, webJoint2D3)
   result["webJoint3"]["bolt"] = WebBolt
   result["webJoint4"] = hPlateGen(webJoint1, webPoint2, xs.webJointThickness, - xs.webJointThickness - xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
-  // {
-  //   points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-  //   point: webPoint2,
-  // }
+
   // flange Joint
   let joint1 = [{ x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
@@ -233,4 +222,10 @@ export function SplicePlate(iPoint, iSectionPoint) {
   result["lowerJoint33"] = hPlateGen(joint3, lPoint2, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
 /////////////////////////////////// to the function //////////////////////////////////////////
     return result
+}
+
+export function TranslatePoints(origin, points){
+  let result = [];
+    points.forEach(pt => result.push({x : origin.x + pt.x, y:origin.y + pt.y}))
+  return result
 }
