@@ -182,6 +182,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
   result["webJoint4"] = hPlateGen(webJoint1, webPoint2, xs.webJointThickness, - xs.webJointThickness - xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
 
   // flange Joint
+  let joint2D = [{ x: - xs.flangeJointLength / 2, y: 0 }, { x: xs.flangeJointLength / 2, y: 0 },
+                  { x: xs.flangeJointLength / 2, y: xs.flangeJointThickness },{ x: - xs.flangeJointLength / 2, y: xs.flangeJointThickness }]
   let joint1 = [{ x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
@@ -194,13 +196,14 @@ export function SplicePlate(iPoint, iSectionPoint) {
   { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth },
   { x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth }]
+  
   let flangeBolt = [{ startPoint: { x: joint1[2].x - 40, y: joint1[2].y - 40 }, P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness },
   { startPoint: { x: joint1[3].x + 40, y: joint1[2].y - 40 }, P:  fBolt.P, G: -fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness }]
 
   let uPoint1 = ToGlobalPoint(centerPoint, webPoints[3])
   let uPoint2 = ToGlobalPoint(centerPoint, webPoints[2])
 
-  result["upperJoint1"] = hPlateGen(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint1"] = hPlateGen2(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad, TransLatePoints({x:webPoints[3].x,y:webPoints[3].y + xs.flangeThickness}, joint2D, uRad));
   result["upperJoint1"].bolt = flangeBolt
   result["upperJoint2"] = hPlateGen(joint2, uPoint1, xs.flangeJointThickness,  - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
   result["upperJoint3"] = hPlateGen(joint3, uPoint1, xs.flangeJointThickness,  - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
@@ -224,8 +227,14 @@ export function SplicePlate(iPoint, iSectionPoint) {
     return result
 }
 
-export function TranslatePoints(origin, points){
+export function TranslatePoints(origin, points, radian){
   let result = [];
-    points.forEach(pt => result.push({x : origin.x + pt.x, y:origin.y + pt.y}))
+    if(rot){
+      let cos = Math.cos(radian)
+      let sin = Math.sin(radian)
+      points.forEach(pt => result.push({x : origin.x + cos*pt.x - sin*pt.y, y:origin.y + sin*pt.x + cos*pt.y}))
+    }else{
+      points.forEach(pt => result.push({x : origin.x + pt.x, y:origin.y + pt.y}))
+    }
   return result
 }
