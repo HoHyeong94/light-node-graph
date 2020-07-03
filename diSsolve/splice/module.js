@@ -204,26 +204,33 @@ export function IbeamJoint(webPoints, centerPoint, xs, wBolt, fBolt) {
   let uPoint2 = ToGlobalPoint(centerPoint, webPoints[2])
 
   result["upperJoint1"] = hPlateGen2(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad, 
-    TranslatePoints(webPoints[3], joint2D, xs.flangeThickness, uRad));
+    TranslatePoints(webPoints[3], joint2D, xs.flangeThickness, -uRad));
   result["upperJoint1"].bolt = flangeBolt
-  result["upperJoint2"] = hPlateGen(joint2, uPoint1, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint2"] = hPlateGen2(joint2, uPoint1, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad,
+    TranslatePoints(webPoints[3], joint2D, - xs.flangeJointThickness, -uRad));
   result["upperJoint3"] = hPlateGen(joint3, uPoint1, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
-  result["upperJoint11"] = hPlateGen(joint1, uPoint2, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint11"] = hPlateGen2(joint1, uPoint2, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad,
+    TranslatePoints(webPoints[2], joint2D, xs.flangeThickness, -uRad));
   result["upperJoint11"].bolt = flangeBolt
-  result["upperJoint22"] = hPlateGen(joint2, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
+  result["upperJoint22"] = hPlateGen2(joint2, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad,
+    TranslatePoints(webPoints[2], joint2D, - xs.flangeJointThickness, -uRad));
   result["upperJoint33"] = hPlateGen(joint3, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
 
   let lPoint1 = ToGlobalPoint(centerPoint, webPoints[0])
   let lPoint2 = ToGlobalPoint(centerPoint, webPoints[1])
 
-  result["lowerJoint1"] = hPlateGen(joint1, lPoint1, xs.flangeJointThickness, - xs.flangeThickness - xs.flangeJointThickness, centerPoint.skew, 0, lRad);
+  result["lowerJoint1"] = hPlateGen2(joint1, lPoint1, xs.flangeJointThickness, - xs.flangeThickness - xs.flangeJointThickness, centerPoint.skew, 0, lRad,
+    TranslatePoints(webPoints[0], joint2D, - xs.flangeThickness - xs.flangeJointThickness, -lRad));
   result["lowerJoint2"] = hPlateGen(joint2, lPoint1, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
   result["lowerJoint2"].bolt = flangeBolt
-  result["lowerJoint3"] = hPlateGen(joint3, lPoint1, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
-  result["lowerJoint11"] = hPlateGen(joint1, lPoint2, xs.flangeJointThickness, -xs.flangeThickness - xs.flangeJointThickness, centerPoint.skew, 0, lRad);
+  result["lowerJoint3"] = hPlateGen2(joint3, lPoint1, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad,
+    TranslatePoints(webPoints[0], joint2D, 0, -lRad));
+  result["lowerJoint11"] = hPlateGen2(joint1, lPoint2, xs.flangeJointThickness, -xs.flangeThickness - xs.flangeJointThickness, centerPoint.skew, 0, lRad,
+    TranslatePoints(webPoints[1], joint2D, - xs.flangeThickness - xs.flangeJointThickness, -lRad));
   result["lowerJoint22"] = hPlateGen(joint2, lPoint2, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
   result["lowerJoint22"].bolt = flangeBolt
-  result["lowerJoint33"] = hPlateGen(joint3, lPoint2, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad);
+  result["lowerJoint33"] = hPlateGen2(joint3, lPoint2, xs.flangeJointThickness, 0, centerPoint.skew, 0, lRad,
+    TranslatePoints(webPoints[1], joint2D, 0, -lRad));
   /////////////////////////////////// to the function //////////////////////////////////////////
   return result
 }
