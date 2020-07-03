@@ -1,5 +1,5 @@
 import { ToGlobalPoint } from "../geometryModule"
-import { vPlateGen, hPlateGen } from "../stiffner/module"
+import { vPlateGen, hPlateGen, hPlateGen2 } from "../stiffner/module"
 
 export function SplicePlate(iPoint, iSectionPoint) {
     let result = {}
