@@ -171,22 +171,25 @@ export function SplicePlate(iPoint, iSectionPoint) {
   { x: xs.webJointWidth / 2, y: xs.webJointHeight / 2 },
   { x: - xs.webJointWidth / 2, y: xs.webJointHeight / 2 }];
 
-  result["webJoint1"] = {
-    points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    point: webPoint1, bolt: WebBolt,
-  }
-  result["webJoint2"] = {
-    points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    point: webPoint1,
-  }
-  result["webJoint3"] = {
-    points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    point: webPoint2, bolt: WebBolt,
-  }
-  result["webJoint4"] = {
-    points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    point: webPoint2,
-  }
+  result["webJoint1"] = hPlateGen(webJoint1, webPoint1, xs.webJointThickness, xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
+  //   points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+  //   point: webPoint1, bolt: WebBolt,
+  // }
+  result["webJoint2"] = hPlateGen(webJoint1, webPoint1, xs.webJointThickness, - xs.webJointThickness - xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
+  // {
+  //   points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+  //   point: webPoint1,
+  // }
+  result["webJoint3"] = hPlateGen(webJoint1, webPoint2, xs.webJointThickness, xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
+  // {
+  //   points: webJoint1, Thickness: xs.webJointThickness, z: xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+  //   point: webPoint2, bolt: WebBolt,
+  // }
+  result["webJoint4"] = hPlateGen(webJoint1, webPoint2, xs.webJointThickness, - xs.webJointThickness - xs.webThickness / 2, centerPoint.skew, Math.PI / 2 , rotationY)
+  // {
+  //   points: webJoint1, Thickness: xs.webJointThickness, z: -xs.webJointThickness - xs.webThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+  //   point: webPoint2,
+  // }
   // flange Joint
   let joint1 = [{ x: - xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
   { x: xs.flangeJointLength / 2, y: - xs.flangeWidth / 2 },
