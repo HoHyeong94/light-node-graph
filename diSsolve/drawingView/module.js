@@ -1062,8 +1062,8 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                 let index = i.substr(1,1) * 1 -1;
                 let newPt = [];
                 diaDict[i][key].topView.forEach(function(pt){
-                    let x = (pt.x - initPoint[index].x) * sc
-                    let y = (pt.y - initPoint[index].y) * sc
+                    let x = (pt.x - initPoint[index].x) * scale
+                    let y = (pt.y - initPoint[index].y) * scale
                     newPt.push({ x: Math.cos(rotate[index]) * x - Math.sin(rotate[index]) * y, y: Math.cos(rotate[index]) * y + Math.sin(rotate[index]) * x })
                 })
                 let mesh = sectionMesh(newPt, green)
