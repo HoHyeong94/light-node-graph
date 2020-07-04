@@ -467,7 +467,7 @@ export function DYdia5(webPoints, point, urib, lrib, ds) {
   holePoints.push(...Fillet2D(holeRect[1], holeRect[2], holeRect[3], dsi.holeFilletR, 4));
   holePoints.push(...Fillet2D(holeRect[2], holeRect[3], holeRect[0], dsi.holeFilletR, 4));
   holePoints.push(...Fillet2D(holeRect[3], holeRect[0], holeRect[1], dsi.holeFilletR, 4));
-  result["mainPlate"] = vPlateGen([bl, br, tr, tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints);
+  result["mainPlate"] = vPlateGen([bl, br, tr, tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints, [2, 3]);
 
   let holeCenter1 = { x: 0, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness }
   let hstiff1 = [{ x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 },
@@ -483,7 +483,7 @@ export function DYdia5(webPoints, point, urib, lrib, ds) {
   { x: dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
   { x: dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin },
   { x: -dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }]
-  result["hstiff2"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter2), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D2)
+  result["hstiff2"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter2), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D2, true)
 
   let holeCenter3 = { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
   let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: -dsi.webThickness / 2 },
@@ -492,14 +492,14 @@ export function DYdia5(webPoints, point, urib, lrib, ds) {
   { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
   { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
   { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
-  result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D1)
+  result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D1, true)
 
   let holeCenter4 = { x: dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
   let vstiff2D2 = [{ x: dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
   { x: dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
   { x: dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
   { x: dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
-  result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D2)
+  result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D2, true)
 
   let hStiffCenter = { x: 0, y: bl.y + dsi.hstiffHeight };
   let h1 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 }, { x: - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
@@ -569,7 +569,7 @@ export function DYdia4(webPoints, point, skew, urib, ds) {
   let urib2 = urib
   urib2.ribHoleD = dsi.ribHoleD
   urib2.ribHoleR = dsi.ribHoleR
-  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, null, []);
+  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, null, [], [2, 3]);
   let centerPoint = ToGlobalPoint(point, { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness });
   let l = (tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness) - (tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness))) / gradCos
   let webBottomPlate2 = [{ x: 0, y: - dsi.upperTopWidth / 2 }, { x: 0, y: dsi.upperTopWidth / 2 },
@@ -686,8 +686,8 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], dsi.bracketScallopR, 4),
     lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
     lowerbracket1[6], lowerbracket1[7]];
-    let top2D = i<2?false:true;
-    result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, bracketPoint[i], dsi.flangeThickness, 0, point.skew, 0, gradRadian, bracket2D,top2D)
+    let top2D = i < 2 ? false : true;
+    result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, bracketPoint[i], dsi.flangeThickness, 0, point.skew, 0, gradRadian, bracket2D, top2D)
     // {
     //   points: bracketShape,
     //   Thickness: i < 2 ? dsi.flangeThickness : dsi.flangeThickness,
@@ -729,7 +729,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     // stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
     // stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
     // stiffnerPoints.push(stiffner[2], stiffner[3])
-    result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [], [1,2]);
+    result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [], [1, 2]);
     // {
     //   points: stiffnerPoints,
     //   Thickness: dsi.webThickness,
@@ -747,7 +747,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
   { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient },
   { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient }];
 
-  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], dsi.scallopRadius, null, null, [], [2,3]);
+  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], dsi.scallopRadius, null, null, [], [2, 3]);
   // {
   //   points: webPlate,
   //   Thickness: dsi.webThickness,
@@ -885,7 +885,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
     lowerbracket1[6], lowerbracket1[7]];
     let thickness = i < 2 ? dsi.flangeThickness : dsi.flangeThickness
-    let top2D = i < 2? false: true;
+    let top2D = i < 2 ? false : true;
     result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, bracketPoint[i], thickness, 0, point.skew, 0, 0, bracket2D, top2D);
   }
   let stiffnerPoint = [[bl, lowerPlate[1]],
@@ -903,7 +903,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   for (let i = 0; i < 2; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
     let stiffner = PlateRestPoint(webBracketPoint[i][0], webBracketPoint[i][1], 0, 0, stiffWidth)
-    result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.webThickness, [0, 1], dsi.scallopRadius, null, null, [], [1,2])
+    result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.webThickness, [0, 1], dsi.scallopRadius, null, null, [], [1, 2])
   }
 
   let webPlate = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
@@ -911,7 +911,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y },
   { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y }];
 
-  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], 0, null, null, [], [2,3])
+  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], 0, null, null, [], [2, 3])
 
   let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
   { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y + dsi.flangeThickness },
@@ -1079,7 +1079,7 @@ export function DYdia1(webPoints, point, skew, uflangePoint, ds) {
   result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate, true)
 
   let centerPlate = [lowerPlate[0], lowerPlate[3], upperPlate[3], upperPlate[0]]
-  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2,3])
+  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2, 3])
 
   let stiffnerPoint = [[bl, lowerPlate[1]],
   [br, lowerPlate[2]],
@@ -1784,12 +1784,23 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
     topView = [];
     if (rotationY < Math.PI / 2 && rotationY > -Math.PI / 2) {
       resultPoints.forEach(function (pt) {
-        let gpt = ToGlobalPoint(centerPoint, {x:pt.x * cos, y:pt.y})
+        let gpt = ToGlobalPoint(centerPoint, { x: pt.x * cos, y: 0 })
         let th = pt.y * cosx;
         let dx = centerPoint.normalSin * th;
         let dy = centerPoint.normalCos * th;
-        topView.push({x:gpt.x - dx, y:gpt.y + dy})
+        topView.push({ x: gpt.x - dx, y: gpt.y + dy })
       });
+    } else if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
+      let gpt = ToGlobalPoint(centerPoint, { x: resultPoints[0].x * cos, y: 0 })
+      for (let i = 0; i < 4; i++) {
+        let sign = rotationY > 0? 1:-1
+        let th = i<2? resultPoints[0].y * cosx :resultPoints[3].y * cosx;
+        let dx = centerPoint.normalSin * th;
+        let dy = centerPoint.normalCos * th;
+        let dx2 = i%2 === 0? sign * centerPoint.normalCos * z : sign * centerPoint.normalCos * (z + Thickness)
+        let dy2 = i%2 === 0? sign * centerPoint.normalSin * z : sign * centerPoint.normalSin * (z + Thickness)
+        topView.push({ x: gpt.x - dx + dx2, y: gpt.y + dy + dy2 })
+      }
     }
     console.log("check", topView)
   }
