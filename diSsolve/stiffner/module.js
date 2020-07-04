@@ -250,7 +250,7 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   leftPoints.push(left[2])
   leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
-  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [], dsi.scallopRadius, null, null, [], [1, 2])
+  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [], dsi.scallopRadius, null, null, [], [1, 2], [1,2,4,0])
   // {
   //   points: leftPoints,
   //   Thickness: dsi.stiffThickness,
