@@ -1058,8 +1058,8 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
 
     for (let i in diaDict) {
         for (let key in diaDict[i]) {
+            let index = i.substr(1,1) * 1 -1;
             if (diaDict[i][key].topView) {
-                let index = i.substr(1,1) * 1 -1;
                 let newPt = [];
                 diaDict[i][key].topView.forEach(function(pt){
                     let x = (pt.x - initPoint[index].x) * scale
@@ -1071,8 +1071,21 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                 group.add(mesh)
                 console.log("check", mesh)
             }
+            if (diaDict[i][key].sideView){
+                let newPt = [];
+                diaDict[i][key].sideView.forEach(function(pt){
+                    let x = (pt.x) * scale
+                    let y = (pt.y - initPoint[index].z) * scale
+                    newPt.push({ x , y});
+                })
+                let mesh = sectionMesh(newPt, green)
+                mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
+                group.add(mesh)
+            }
         }
     }
+
+
     return group
 }
 

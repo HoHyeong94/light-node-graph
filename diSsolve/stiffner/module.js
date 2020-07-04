@@ -995,7 +995,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate, true)
 
   let centerPlate = [bl, br, upperPlate[3], upperPlate[0]]
-  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2, 3])
+  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2, 3], [0,1,2,3])
 
   let stiffnerPoint = [tl, upperPlate[1]]
   let stiffWidth = dsi.stiffWidth;
@@ -1670,7 +1670,7 @@ export function hBracingPlate(point, right, webPoints, hBSection) {
 }
 
 // 판요소 생성시 기준점은 좌측하단을 기준으로 반드시 시계반대방향으로 회전할 것
-export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallopR, urib, lrib, holePoints, top2D) {
+export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallopR, urib, lrib, holePoints, top2D, side2D) {
   let skew = centerPoint.skew;
 
   const bl = points[0];
@@ -1685,6 +1685,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
   const rotationY = (skew - 90) * Math.PI / 180
 
   let topView = null;
+  let sideView = null;
 
   if (top2D) {
     let pt1 = { x: points[top2D[0]].x * cosec, y: 0 }
@@ -1694,11 +1695,22 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
     let th = Thickness / 2 * cosec;
     let dx = centerPoint.normalSin * th;
     let dy = centerPoint.normalCos * th;
-
     topView = [{ x: gpt1.x - dx, y: gpt1.y + dy },
     { x: gpt1.x + dx, y: gpt1.y - dy },
     { x: gpt2.x + dx, y: gpt2.y - dy },
     { x: gpt2.x - dx, y: gpt2.y + dy }];
+  }
+
+  if (side2D){
+    let bottomY = centerPoint.z + (points[side2D[0]].y - points[side2D[1]].y)/ (points[side2D[0]].x - points[side2D[1]].x) * (- points[side2D[1]].x) + points[side2D[1]].y;
+    let topY = centerPoint.z + (points[side2D[2]].y - points[side2D[3]].y)/ (points[side2D[2]].x - points[side2D[3]].x) * (- points[side2D[3]].x) + points[side2D[3]].y;
+    let X = centerPoint.girderStation;
+    sideView = [
+      {x: X + Thickness /2, y: bottomY},
+      {x: X - Thickness /2, y: bottomY},
+      {x: X - Thickness /2, y: topY},
+      {x: X + Thickness /2, y: topY},
+    ]
   }
 
   let mainPlate = [];
@@ -1757,7 +1769,8 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
     }
   }
 
-  let result = { points2D: resultPoints, points: resultPoints, Thickness: Thickness, z: - Thickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint, topView }
+  let result = { points2D: resultPoints, points: resultPoints, Thickness: Thickness, z: - Thickness / 2, 
+    rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint, topView, sideView }
 
   return result
 }
