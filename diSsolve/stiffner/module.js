@@ -936,7 +936,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: 0, y: - dsi.flangeWidth / 2 },
   { x: lowerflangeL, y: - dsi.flangeWidth / 2 },
   { x: lowerflangeL, y: dsi.flangeWidth / 2 }]
-  result["lowerflange"] = hPlateGen(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0, 0, lowerflange, [0,1])
+  result["lowerflange"] = hPlateGen(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0, 0, lowerflange, false, [0,1])
   // { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
   let joint = IbeamJoint(webPlate, point, dsi, wBolt, fBolt)
