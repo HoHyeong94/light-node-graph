@@ -1775,9 +1775,10 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
   const cot = - 1 / Math.tan(skew * Math.PI / 180);
   let cos = Math.cos(rotationY)
   let resultPoints = [];
-  let topView = [];
+  let topView = null;
   points.forEach(pt => resultPoints.push({ x: pt.x, y: pt.x * cot + pt.y * cosec }))
   if (top2D) {
+    topView = [];
     if (rotationY < Math.PI / 2 && rotationY > -Math.PI / 2) {
       resultPoints.forEach(function (pt) {
         topView.push(ToGlobalPoint(centerPoint, {x:pt.x * cos, y:pt.y} ))
