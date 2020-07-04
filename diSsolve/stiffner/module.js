@@ -250,7 +250,7 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   leftPoints.push(left[2])
   leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
-  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [ ], dsi.scallopRadius, null, null, [], [1,2])
+  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [], dsi.scallopRadius, null, null, [], [1, 2])
   // {
   //   points: leftPoints,
   //   Thickness: dsi.stiffThickness,
@@ -268,7 +268,7 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   rightPoints.push(right[2])
   rightPoints.push(...scallop(right[2], right[3], right[0], dsi.chamfer, 1));
 
-  result["right"] = vPlateGen(rightPoints, point, dsi.stiffThickness, [1], dsi.scallopRadius, null, null, [], [1,2])
+  result["right"] = vPlateGen(rightPoints, point, dsi.stiffThickness, [1], dsi.scallopRadius, null, null, [], [1, 2])
   // {
   //   points: rightPoints,
   //   Thickness: dsi.stiffThickness,
@@ -330,7 +330,7 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
   holePoints.push(...Fillet2D(holeRect[1], holeRect[2], holeRect[3], dsi.holeFilletR, 4));
   holePoints.push(...Fillet2D(holeRect[2], holeRect[3], holeRect[0], dsi.holeFilletR, 4));
   holePoints.push(...Fillet2D(holeRect[3], holeRect[0], holeRect[1], dsi.holeFilletR, 4));
-  result["mainPlate"] = vPlateGen([bl, br, tr, tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints, [2,3]);
+  result["mainPlate"] = vPlateGen([bl, br, tr, tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints, [2, 3]);
 
   let holeCenter1 = { x: dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness }
   let hstiff1 = [{ x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 },
@@ -375,7 +375,7 @@ export function DYdia6(webPoints, point, urib, lrib, ds) {
       { x: dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2, y: tl.y + gradient * (dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2 - tl.x) }
     ]
     result["supportStiff1" + i] = hPlateGen(supportStiff1, ToGlobalPoint(point, supportStiffCenter1), dsi.supportStiffThickness, -dsi.supportStiffThickness / 2, point.skew, 0, Math.PI / 2, supportStiff2D, true);
-    result["supportStiff2" + i] = hPlateGen(supportStiff2, ToGlobalPoint(point, supportStiffCenter1), dsi.supportStiffThickness, -dsi.supportStiffThickness / 2, point.skew, 0, Math.PI / 2,null, true);
+    result["supportStiff2" + i] = hPlateGen(supportStiff2, ToGlobalPoint(point, supportStiffCenter1), dsi.supportStiffThickness, -dsi.supportStiffThickness / 2, point.skew, 0, Math.PI / 2, null, true);
   }
 
   let hStiffCenter = { x: 0, y: bl.y + dsi.hstiffHeight };
@@ -981,7 +981,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   let lowerPlateL = lflangePoint[1][1].x - lflangePoint[0][1].x
   let lowerPlate2 = [{ x: 0, y: dsi.lowerWidth / 2 }, { x: 0, y: -dsi.lowerWidth / 2 }, { x: lowerPlateL, y: -dsi.lowerWidth / 2 }, { x: lowerPlateL, y: dsi.lowerWidth / 2 }]
   let lPoint = ToGlobalPoint(point, lflangePoint[0][1])
-  result["lowerPlate"] = hPlateGen(lowerPlate2, lPoint, dsi.lowerThickness, - dsi.lowerThickness, point.skew, 0, 0, lowerPlate)
+  result["lowerPlate"] = hPlateGen(lowerPlate2, lPoint, dsi.lowerThickness, - dsi.lowerThickness, point.skew, 0, 0, lowerPlate, null, [0,1])
 
   let upperPlate = [
     { x: bl.x + lwCot * dsi.upperHeight, y: bl.y + dsi.upperHeight },
@@ -995,7 +995,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate, true)
 
   let centerPlate = [bl, br, upperPlate[3], upperPlate[0]]
-  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2, 3], [0,1,2,3])
+  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2, 3], [0, 1, 2, 3])
 
   let stiffnerPoint = [tl, upperPlate[1]]
   let stiffWidth = dsi.stiffWidth;
@@ -1011,7 +1011,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   stiffnerPoints.push(addedPoint[0], addedPoint[1])
   stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4));
   stiffnerPoints.push(stiffner[3]);
-  result["stiffner1"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [],  dsi.scallopRadius, null, null, []);
+  result["stiffner1"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [], dsi.scallopRadius, null, null, []);
 
   stiffnerPoint = [tr, upperPlate[2]]
   tan1 = gradient;
@@ -1025,7 +1025,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   stiffnerPoints.push(addedPoint[0], addedPoint[1])
   stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4))
   stiffnerPoints.push(stiffner[3])
-  result["stiffner2"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [0,1],  dsi.scallopRadius, null, null, [],null,[1,2,10,0]);
+  result["stiffner2"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [], null, [1, 2, 10, 0]);
 
   return result
 }
@@ -1701,15 +1701,15 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
     { x: gpt2.x - dx, y: gpt2.y + dy }];
   }
 
-  if (side2D){
-    let bottomY = centerPoint.z + (points[side2D[0]].y - points[side2D[1]].y)/ (points[side2D[0]].x - points[side2D[1]].x) * (- points[side2D[1]].x) + points[side2D[1]].y;
-    let topY = centerPoint.z + (points[side2D[2]].y - points[side2D[3]].y)/ (points[side2D[2]].x - points[side2D[3]].x) * (- points[side2D[3]].x) + points[side2D[3]].y;
+  if (side2D) {
+    let bottomY = centerPoint.z + (points[side2D[0]].y - points[side2D[1]].y) / (points[side2D[0]].x - points[side2D[1]].x) * (- points[side2D[1]].x) + points[side2D[1]].y;
+    let topY = centerPoint.z + (points[side2D[2]].y - points[side2D[3]].y) / (points[side2D[2]].x - points[side2D[3]].x) * (- points[side2D[3]].x) + points[side2D[3]].y;
     let X = centerPoint.girderStation;
     sideView = [
-      {x: X + Thickness /2, y: bottomY},
-      {x: X - Thickness /2, y: bottomY},
-      {x: X - Thickness /2, y: topY},
-      {x: X + Thickness /2, y: topY},
+      { x: X + Thickness / 2, y: bottomY },
+      { x: X - Thickness / 2, y: bottomY },
+      { x: X - Thickness / 2, y: topY },
+      { x: X + Thickness / 2, y: topY },
     ]
   }
 
@@ -1769,8 +1769,10 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
     }
   }
 
-  let result = { points2D: resultPoints, points: resultPoints, Thickness: Thickness, z: - Thickness / 2, 
-    rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint, topView, sideView }
+  let result = {
+    points2D: resultPoints, points: resultPoints, Thickness: Thickness, z: - Thickness / 2,
+    rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint, topView, sideView
+  }
 
   return result
 }
@@ -1785,13 +1787,15 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
 //   return result
 // }
 
-export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, rotationY, points2D, top2D) {
+export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, rotationY, points2D, top2D, side2D) {
   const cosec = 1 / Math.sin(skew * Math.PI / 180);
   const cot = - 1 / Math.tan(skew * Math.PI / 180);
   let cos = Math.cos(rotationY)
   let cosx = Math.cos(rotationX)
   let resultPoints = [];
   let topView = null;
+  let sideView = null;
+
   points.forEach(pt => resultPoints.push({ x: pt.x, y: pt.x * cot + pt.y * cosec }))
   if (top2D) {
     topView = [];
@@ -1806,18 +1810,33 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
     } else if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
       let gpt = ToGlobalPoint(centerPoint, { x: resultPoints[0].x * cos, y: 0 })
       for (let i = 0; i < 4; i++) {
-        let sign = rotationY > 0? 1:-1
-        let th = i<2? resultPoints[0].y * cosx :resultPoints[3].y * cosx;
+        let sign = rotationY > 0 ? 1 : -1
+        let th = i < 2 ? resultPoints[0].y * cosx : resultPoints[3].y * cosx;
         let dx = centerPoint.normalSin * th;
         let dy = centerPoint.normalCos * th;
-        let dx2 = 0<i && i<3? sign * centerPoint.normalCos * z : sign * centerPoint.normalCos * (z + Thickness)
-        let dy2 = 0<i && i<3? sign * centerPoint.normalSin * z : sign * centerPoint.normalSin * (z + Thickness)
+        let dx2 = 0 < i && i < 3 ? sign * centerPoint.normalCos * z : sign * centerPoint.normalCos * (z + Thickness)
+        let dy2 = 0 < i && i < 3 ? sign * centerPoint.normalSin * z : sign * centerPoint.normalSin * (z + Thickness)
         topView.push({ x: gpt.x - dx + dx2, y: gpt.y + dy + dy2 })
       }
     }
     console.log("check", topView)
   }
+  if (side2D) {
+    let cos = Math.cos(rotationX);
+    let sin = Math.sin(rotationX);
+    sideView = [];
+    if (rotationY < Math.PI / 2 && rotationY > -Math.PI / 2) {
+      let x1 = points[side2D[0]].y
+      let x2 = points[side2D[1]].y
+      let X = centerPoint.girderStation;
+      let Y = centerPoint.z;
+      let pts = [{ x: X + x1, y: Y }, { x: X + x2, y: Y },
+      { x: X + x2, y: Y + Thickness }, { x: X + x1, y: Y + Thickness }]
+      pts.forEach(pt => sideView.push({ x: pt.x * cos - pt.y * sin, y: pt.x * sin + pt.y * cos }))
 
-  let result = { points2D: points2D, points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint, topView }
+    }
+  }
+
+  let result = { points2D: points2D, points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint, topView, sideView }
   return result
 }
