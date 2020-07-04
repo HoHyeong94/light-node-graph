@@ -895,8 +895,9 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   for (let i = 0; i < 4; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let tan1 = i < 2 ? 0 : gradient;
-    let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], tan1, 0, stiffWidth)
-    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [])
+    let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], tan1, 0, stiffWidth);
+    let side2D = i%2===0? null : [0,3,2,1];
+    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [], null, side2D)
   }
 
   let webBracketPoint = [[lowerPlate[0], upperPlate[0]], [lowerPlate[3], upperPlate[3]]];
@@ -911,7 +912,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y },
   { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y }];
 
-  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], 0, null, null, [], [2, 3])
+  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], 0, null, null, [], [2, 3], [0,1,2,3])
 
   let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
   { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y + dsi.flangeThickness },
@@ -923,7 +924,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: 0, y: - dsi.flangeWidth / 2 },
   { x: upperflangeL, y: - dsi.flangeWidth / 2 },
   { x: upperflangeL, y: dsi.flangeWidth / 2 }]
-  result["upperflange"] = hPlateGen(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0, 0, upperflange, true)
+  result["upperflange"] = hPlateGen(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0, 0, upperflange, true, [0,1])
   // { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
   { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y - dsi.flangeThickness },
@@ -935,7 +936,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: 0, y: - dsi.flangeWidth / 2 },
   { x: lowerflangeL, y: - dsi.flangeWidth / 2 },
   { x: lowerflangeL, y: dsi.flangeWidth / 2 }]
-  result["lowerflange"] = hPlateGen(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0, 0, lowerflange)
+  result["lowerflange"] = hPlateGen(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0, 0, lowerflange, [0,1])
   // { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
   let joint = IbeamJoint(webPlate, point, dsi, wBolt, fBolt)
