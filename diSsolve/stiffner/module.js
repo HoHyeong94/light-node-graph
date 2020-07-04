@@ -1668,7 +1668,7 @@ export function hBracingPlate(point, right, webPoints, hBSection) {
 }
 
 // 판요소 생성시 기준점은 좌측하단을 기준으로 반드시 시계반대방향으로 회전할 것
-export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallopR, urib, lrib, holePoints) {
+export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallopR, urib, lrib, holePoints, top2D) {
   let skew = centerPoint.skew;
 
   const bl = points[0];
@@ -1681,6 +1681,23 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
 
   const cosec = 1 / Math.sin(skew * Math.PI / 180);
   const rotationY = (skew - 90) * Math.PI / 180
+  
+  let topView = null;
+
+  if (top2D){
+    let pt1 = {x : points[top2D[0]].x * cosec ,y : 0}
+    let pt2 = {x : points[top2D[1]].x * cosec, y : 0}
+    let gpt1 = ToGlobalPoint(centerPoint, pt1);
+    let gpt2 = ToGlobalPoint(centerPoint, pt2);
+    let th = Thickness / 2 * cosec;
+    let dx = centerPoint.normalSin * th;
+    let dy = centerPoint.normalCos * th;
+
+    topView = [{x : gpt1.x - dx, y : gpt1.y + dy},
+              {x : gpt1.x + dx, y : gpt1.y - dy},
+              {x : gpt2.x + dx, y : gpt2.y - dy},
+              {x : gpt2.x - dx, y : gpt2.y + dy}];
+  }
 
   let mainPlate = [];
   points.forEach(pt => mainPlate.push({ x: pt.x * cosec, y: pt.y }));
@@ -1738,7 +1755,7 @@ export function vPlateGen(points, centerPoint, Thickness, scallopVertex, scallop
     }
   }
 
-  let result = { points2D : resultPoints, points: resultPoints, Thickness: Thickness, z: - Thickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint }
+  let result = { points2D : resultPoints, points: resultPoints, Thickness: Thickness, z: - Thickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint, topView }
 
   return result
 }

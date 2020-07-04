@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import { sectionView, topDraw, sideDraw, LineDrawView, LineSideView, GirderLayoutView, GirderGeneralDraw1, GirderGeneralDraw2 } from "./module"
+import { sectionView, topDraw, sideDraw, LineDrawView, LineSideView, GirderLayoutView, GirderGeneralDraw1, GirderGeneralDraw2, PartGeneralDraw } from "./module"
 // import { LineToThree } from "../line/module";
 
 export function SectionViewer(){
@@ -90,6 +90,22 @@ GirderGeneralView2.prototype.on3DExecute = function() {
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
 };
 
+
+export function PartGeneralView(){
+  this.addInput("diaDict","diaDict");
+  this.addInput("layout","layout");
+}
+
+PartGeneralView.prototype.onExecute = function() {
+}
+
+PartGeneralView.prototype.on3DExecute = function() {
+  let group = PartGeneralDraw(this.getInputData(0),this.getInputData(1))
+  let layer = this.getInputData(1).layer;
+  let key = this.getInputData(1).key;
+  sceneAdder({layer:layer, mesh:group},key);
+  // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
+};
 // export function SideViewer(){
 //   this.addInput("steelBoxDict","steelBoxDict");
 //   this.addInput("hBracingDict","hBracingDict");

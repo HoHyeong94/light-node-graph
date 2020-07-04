@@ -1037,6 +1037,26 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
     return group
 }
 
+export function PartGeneralDraw(diaDict, layout) {
+    let group = new THREE.Group();
+    let scale = 1;
+    let girderOffset = 24000;
+    let sideViewOffset = -8000 * scale;
+    let sectionViewOffset = 16000 * scale;
+    let gridMark_width = 1500; // unit : mm
+    for (let i in diaDict) {
+        for (let key in diaDict[i]) {
+            if (diaDict[i][key].topView) {
+                let index = i.substr(1,1);
+                let mesh = sectionMesh(diaDict[i][key].topView)
+                mesh.position.set(0, -index * girderOffset, 0);
+                group.add(mesh)
+            }
+        }
+    }
+    return group
+}
+
 export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layerNum) {
     let group = new THREE.Group();
     // let layerNum = 5;
@@ -1176,13 +1196,13 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
     let deck = deckPointDict.filter(obj => obj.key.includes("CRS"))
     let spanNum = deck.length
     let dims = [];
-    
+
     // let section = { "uflange": [[], [], []], "lflange": [[], [], []], "web": [[], [], []], "deck": [[], [], []] }
     for (let j = 0; j < spanNum; j++) {
         let webDim = [];
         let heightDim = [];
         for (let i = 0; i < girderNum; i++) {
-            let girderPoint = girderStation[i].find(obj => obj.key.includes("G" + (i + 1) + "S" + (j+1)))
+            let girderPoint = girderStation[i].find(obj => obj.key.includes("G" + (i + 1) + "S" + (j + 1)))
             if (i === 0) { initZ.push(girderPoint.point.z) }
             let offset = girderPoint.point.offset
             let sectionPoint = sectionPointDict[girderPoint.key]
@@ -1195,31 +1215,33 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
                             sectionPoint.forward[key][k].forEach(pt => pts.push(
                                 { x: pt.x + offset + j * xoffset, y: pt.y + yoffset + girderPoint.point.z - initZ[j] }))
                             meshes.push(sectionMesh(pts, lineMaterial))
-                            if (key === "web"){ webDim.push(pts[1]);
-                                heightDim = [pts[0],pts[1]] }
+                            if (key === "web") {
+                                webDim.push(pts[1]);
+                                heightDim = [pts[0], pts[1]]
+                            }
                         }
                     }
                 }
             }
             let gpt = { x: offset + j * xoffset, y: yoffset + girderPoint.point.z - initZ[j] - deck[j].slabHeight }
-            dims.push(Dimension([heightDim[0], gpt], 1, 1, 1, false, false,0))
+            dims.push(Dimension([heightDim[0], gpt], 1, 1, 1, false, false, 0))
 
         }
         let deckPt = [];
-        deck[j].deckSectionPoint.forEach(pt => deckPt.push({x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j]}))
+        deck[j].deckSectionPoint.forEach(pt => deckPt.push({ x: pt.x + j * xoffset, y: pt.y + yoffset - initZ[j] }))
         meshes.push(sectionMesh(deckPt, lineMaterial))
 
-        dims.push(Dimension([deckPt[1], ...webDim, deckPt[3]], 0, 1, 1, true, true,0))
-        dims.push(Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true,1))
-        dims.push(Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true,2))
-        dims.push(Dimension([deckPt[0], deckPt[1]], 0, 1, 1, false, false,1))
+        dims.push(Dimension([deckPt[1], ...webDim, deckPt[3]], 0, 1, 1, true, true, 0))
+        dims.push(Dimension([deckPt[1], deckPt[2], deckPt[3]], 0, 1, 1, true, true, 1))
+        dims.push(Dimension([deckPt[1], deckPt[3]], 0, 1, 1, true, true, 2))
+        dims.push(Dimension([deckPt[0], deckPt[1]], 0, 1, 1, false, false, 1))
         // dims.push(Dimension([heightDim[0], heightDim[1]], 0, 1, 1, false, true,1)) // 각 거더별 형고를 표현해야 하는데, 웹의 높이 출력
     }
-    for (let i in dims){
+    for (let i in dims) {
         meshes.push(...dims[i].meshes);
         labels.push(...dims[i].labels);
     }
-    return {meshes, labels}
+    return { meshes, labels }
 }
 
 
@@ -1261,13 +1283,13 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
                     group.add(sectionMesh(sectionPoint[key][k], lineMaterial))
                 }
             }
-        }    
+        }
         // if (sectionPoint[key].constructor === Array) {
         //     group.add(sectionMesh(sectionPoint[key], lineMaterial))
         // }
     }
 
-    
+
 
 
     for (var key in diaPoint) {
@@ -1278,19 +1300,19 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
             group.add(sectionMesh(diaPoint[key].hole, lineMaterial))
         }
 
-    //     if (diaPoint[key].size) {
-    //         label.push({
-    //             text: diaPoint[key].size.Label,
-    //             anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0],
-    //             rotation: Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1]) / (diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
-    //             fontSize: labelSize
-    //         })
-    //     }
-    //     if (diaPoint[key].welding) {
-    //         for (let i in diaPoint[key].welding) {
-    //             weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
-    //         }
-    //     }
+        //     if (diaPoint[key].size) {
+        //         label.push({
+        //             text: diaPoint[key].size.Label,
+        //             anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0],
+        //             rotation: Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1]) / (diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
+        //             fontSize: labelSize
+        //         })
+        //     }
+        //     if (diaPoint[key].welding) {
+        //         for (let i in diaPoint[key].welding) {
+        //             weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
+        //         }
+        //     }
     }
 
     // let dims = [];
