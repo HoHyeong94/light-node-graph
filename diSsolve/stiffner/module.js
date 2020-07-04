@@ -246,11 +246,11 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   let left = PlateRestPoint(lowerPoints[0], tl, 0, gradient, dsi.stiffWidth)
   let leftPoints = [];
   leftPoints.push(left[0])
-  leftPoints.push(...scallop(left[0], left[1], left[2], dsi.scallopRadius, 4));
+  leftPoints.push(left[1]);
   leftPoints.push(left[2])
   leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
-  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [], 0, null, null, [], [1,2])
+  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [ ], dsi.scallopRadius, null, null, [], [1,2])
   // {
   //   points: leftPoints,
   //   Thickness: dsi.stiffThickness,
@@ -264,11 +264,11 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   let right = PlateRestPoint(lowerPoints[1], tr, 0, gradient, -dsi.stiffWidth)
   let rightPoints = [];
   rightPoints.push(right[0])
-  rightPoints.push(...scallop(right[0], right[1], right[2], dsi.scallopRadius, 4));
+  rightPoints.push(right[1]);
   rightPoints.push(right[2])
   rightPoints.push(...scallop(right[2], right[3], right[0], dsi.chamfer, 1));
 
-  result["right"] = vPlateGen(rightPoints, point, dsi.stiffThickness, [], 0, null, null, [], [1,2])
+  result["right"] = vPlateGen(rightPoints, point, dsi.stiffThickness, [1], dsi.scallopRadius, null, null, [], [1,2])
   // {
   //   points: rightPoints,
   //   Thickness: dsi.stiffThickness,
