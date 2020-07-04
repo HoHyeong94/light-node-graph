@@ -1781,7 +1781,11 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
     topView = [];
     if (rotationY < Math.PI / 2 && rotationY > -Math.PI / 2) {
       resultPoints.forEach(function (pt) {
-        topView.push(ToGlobalPoint(centerPoint, {x:pt.x * cos, y:pt.y} ))
+        let gpt = ToGlobalPoint(centerPoint, {x:pt.x * cos, y:pt.y})
+        let th = pt.y;
+        let dx = centerPoint.normalSin * th;
+        let dy = centerPoint.normalCos * th;
+        topView.push({x:gpt.x - dx, y:gpt.y + dy})
       });
     }
     console.log("check", topView)
