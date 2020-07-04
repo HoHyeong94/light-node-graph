@@ -1783,6 +1783,7 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
         topView.push(ToGlobalPoint(centerPoint, {x:pt.x * cos, y:pt.y} ))
       });
     }
+    console.log("check", topView)
   }
 
   let result = { points2D: points2D, points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint, topView }
