@@ -1797,8 +1797,8 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
         let th = i<2? resultPoints[0].y * cosx :resultPoints[3].y * cosx;
         let dx = centerPoint.normalSin * th;
         let dy = centerPoint.normalCos * th;
-        let dx2 = i%2 === 0? sign * centerPoint.normalCos * z : sign * centerPoint.normalCos * (z + Thickness)
-        let dy2 = i%2 === 0? sign * centerPoint.normalSin * z : sign * centerPoint.normalSin * (z + Thickness)
+        let dx2 = 0<i && i<3? sign * centerPoint.normalCos * z : sign * centerPoint.normalCos * (z + Thickness)
+        let dy2 = 0<i && i<3? sign * centerPoint.normalSin * z : sign * centerPoint.normalSin * (z + Thickness)
         topView.push({ x: gpt.x - dx + dx2, y: gpt.y + dy + dy2 })
       }
     }
