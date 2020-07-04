@@ -1037,20 +1037,36 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
     return group
 }
 
-export function PartGeneralDraw(diaDict, layout) {
+export function PartGeneralDraw(diaDict, girderStation, layout) {
     let group = new THREE.Group();
-    let scale = 1;
+    let scale = 1; //layout.scale
     let girderOffset = 24000;
     let sideViewOffset = -8000 * scale;
     let sectionViewOffset = 16000 * scale;
     let gridMark_width = 1500; // unit : mm
+    
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
     
+    let initPoint = [];
+    let endPoint = [];
+    let rotate = [];
+    for (let i in girderStation){
+        initPoint.push(girderStation[i][0].point)
+        endPoint.push(girderStation[i][girderStation[i].length - 1].point)
+        rotate.push(Math.PI - Math.atan((endPoint[i].y - initPoint[i].y) / (endPoint[i].x - initPoint[i].x)))
+    }
+
     for (let i in diaDict) {
         for (let key in diaDict[i]) {
             if (diaDict[i][key].topView) {
-                let index = i.substr(1,1);
-                let mesh = sectionMesh(diaDict[i][key].topView, green)
+                let index = i.substr(1,1) * 1 -1;
+                let newPt = [];
+                diaDict[i][key].topView.forEach(function(pt){
+                    let x = (pt.x - initPoint[index].x) * sc
+                    let y = (pt.y - initPoint[index].y) * sc
+                    newPt.push({ x: Math.cos(rotate[index]) * x - Math.sin(rotate[index]) * y, y: Math.cos(rotate[index]) * y + Math.sin(rotate[index]) * x })
+                })
+                let mesh = sectionMesh(newPt, green)
                 mesh.position.set(0, -index * girderOffset, 0);
                 group.add(mesh)
                 console.log("check", mesh)
