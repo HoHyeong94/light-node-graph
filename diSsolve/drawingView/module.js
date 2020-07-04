@@ -1044,13 +1044,16 @@ export function PartGeneralDraw(diaDict, layout) {
     let sideViewOffset = -8000 * scale;
     let sectionViewOffset = 16000 * scale;
     let gridMark_width = 1500; // unit : mm
+    let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+    
     for (let i in diaDict) {
         for (let key in diaDict[i]) {
             if (diaDict[i][key].topView) {
                 let index = i.substr(1,1);
-                let mesh = sectionMesh(diaDict[i][key].topView)
+                let mesh = sectionMesh(diaDict[i][key].topView, green)
                 mesh.position.set(0, -index * girderOffset, 0);
                 group.add(mesh)
+                console.log("check", mesh)
             }
         }
     }
