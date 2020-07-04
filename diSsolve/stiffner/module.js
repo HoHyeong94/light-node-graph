@@ -250,7 +250,7 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   leftPoints.push(left[2])
   leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
-  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [], 0, null, null, [])
+  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [], 0, null, null, [], [1,2])
   // {
   //   points: leftPoints,
   //   Thickness: dsi.stiffThickness,
@@ -268,7 +268,7 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   rightPoints.push(right[2])
   rightPoints.push(...scallop(right[2], right[3], right[0], dsi.chamfer, 1));
 
-  result["rightLower"] = vPlateGen(rightPoints, point, dsi.stiffThickness, [], 0, null, null, [])
+  result["right"] = vPlateGen(rightPoints, point, dsi.stiffThickness, [], 0, null, null, [], [1,2])
   // {
   //   points: rightPoints,
   //   Thickness: dsi.stiffThickness,
