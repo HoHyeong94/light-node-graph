@@ -569,23 +569,27 @@ export function DYdia4(webPoints, point, skew, urib, ds) {
   let urib2 = urib
   urib2.ribHoleD = dsi.ribHoleD
   urib2.ribHoleR = dsi.ribHoleR
-  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, null, [], [2, 3]);
-  let centerPoint = ToGlobalPoint(point, { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness });
-  let l = (tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness) - (tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness))) / gradCos
-  let webBottomPlate2 = [{ x: 0, y: - dsi.upperTopWidth / 2 }, { x: 0, y: dsi.upperTopWidth / 2 },
-  { x: l, y: dsi.upperTopWidth / 2 }, { x: l, y: -dsi.upperTopWidth / 2 }];
+  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, null, [], [2, 3], [0,1,2,3]);
+  
+  let centerPoint = ToGlobalPoint(point, { x: 0, y: -gradient*tl.x + tl.y - dsi.webHeight - dsi.upperTopThickness });
+  // let l = (tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness)) - (tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness)) / gradCos
+  let webBottomPlate2 = [{ x: (tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness)) / gradCos, y: - dsi.upperTopWidth / 2 }, 
+                        { x: (tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness)) / gradCos, y: dsi.upperTopWidth / 2 },
+                        { x: (tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness)) / gradCos, y: dsi.upperTopWidth / 2 }, 
+                        { x: (tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness)) / gradCos, y: -dsi.upperTopWidth / 2 }];  
   let webBottomPlate = [webPlate[0],
   { x: tl.x - lwCot * (dsi.webHeight + dsi.upperTopThickness), y: tl.y - dsi.webHeight - dsi.upperTopThickness },
   { x: tr.x - rwCot * (dsi.webHeight + dsi.upperTopThickness), y: tr.y - dsi.webHeight - dsi.upperTopThickness },
   webPlate[1]
   ]
-  result["webBottomPlate"] = hPlateGen(webBottomPlate2, centerPoint, dsi.upperTopThickness, 0, point.skew, 0, -Math.atan(gradient), webBottomPlate)
+  result["webBottomPlate"] = hPlateGen(webBottomPlate2, centerPoint, dsi.upperTopThickness, 0, point.skew, 0, -Math.atan(gradient), webBottomPlate, false, [0,1])
   let stiffnerPoint = [[bl, webBottomPlate[1]],
   [br, webBottomPlate[2]]];
   for (let i = 0; i < stiffnerPoint.length; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], 0, gradient, stiffWidth)
-    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, []);
+    let side2D = i%2===0? null : [0,3,2,1];
+    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [], null, side2D);
   }
 
   return result
