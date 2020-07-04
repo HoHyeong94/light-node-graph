@@ -1065,7 +1065,7 @@ export function DYdia1(webPoints, point, skew, uflangePoint, ds) {
   let lowerPlateL = lowerPlate[3].x - lowerPlate[0].x;
   let lowerPlate2 = [{ x: 0, y: dsi.lowerWidth / 2 }, { x: 0, y: -dsi.lowerWidth / 2 }, { x: lowerPlateL, y: -dsi.lowerWidth / 2 }, { x: lowerPlateL, y: dsi.lowerWidth / 2 }];
   let lPoint = ToGlobalPoint(point, lowerPlate[0]);
-  result["lowerPlate"] = hPlateGen(lowerPlate2, lPoint, dsi.lowerThickness, -dsi.lowerThickness, point.skew, 0, 0, lowerPlate);
+  result["lowerPlate"] = hPlateGen(lowerPlate2, lPoint, dsi.lowerThickness, -dsi.lowerThickness, point.skew, 0, 0, lowerPlate, false, [0,1]);
 
   let upperPlate = [
     { x: bl.x + lwCot * dsi.upperHeight, y: bl.y + dsi.upperHeight },
@@ -1076,10 +1076,10 @@ export function DYdia1(webPoints, point, skew, uflangePoint, ds) {
   let upperPlateL = upperPlate[3].x - upperPlate[0].x
   let upperPlate2 = [{ x: 0, y: dsi.upperWidth / 2 }, { x: 0, y: -dsi.upperWidth / 2 }, { x: upperPlateL, y: - dsi.upperWidth / 2 }, { x: upperPlateL, y: dsi.upperWidth / 2 }];
   let uPoint = ToGlobalPoint(point, upperPlate[0]);
-  result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate, true)
+  result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate, true, [0,1])
 
   let centerPlate = [lowerPlate[0], lowerPlate[3], upperPlate[3], upperPlate[0]]
-  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2, 3])
+  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2, 3],[0,1,2,3])
 
   let stiffnerPoint = [[bl, lowerPlate[1]],
   [br, lowerPlate[2]],
@@ -1089,7 +1089,8 @@ export function DYdia1(webPoints, point, skew, uflangePoint, ds) {
     let stiffWidth = i % 2 === 0 ? dsi.stiffWidth : -dsi.stiffWidth;
     let tan1 = i < 2 ? 0 : gradient;
     let stiffner = PlateRestPoint(stiffnerPoint[i][0], stiffnerPoint[i][1], tan1, 0, stiffWidth)
-    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [])
+    let side2D = i % 2 === 0 ? [0,3,2,1]:null;
+    result["stiffner" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.stiffThickness, [0, 1], dsi.scallopRadius, null, null, [],null, side2D)
   }
   return result
 }
