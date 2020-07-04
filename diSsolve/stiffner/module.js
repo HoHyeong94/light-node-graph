@@ -1011,7 +1011,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   stiffnerPoints.push(addedPoint[0], addedPoint[1])
   stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4));
   stiffnerPoints.push(stiffner[3]);
-  result["stiffner1"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [], 0, null, null, []);
+  result["stiffner1"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [],  dsi.scallopRadius, null, null, []);
 
   stiffnerPoint = [tr, upperPlate[2]]
   tan1 = gradient;
@@ -1020,12 +1020,12 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   { x: upperPlate[2].x - dsi.stiffWidth2, y: upperPlate[2].y + 50 },
   { x: upperPlate[2].x - dsi.stiffWidth, y: upperPlate[2].y + 50 + dsi.stiffWidth2 - dsi.stiffWidth }];
   stiffnerPoints = [];
-  stiffnerPoints.push(...scallop(stiffner[3], stiffner[0], stiffner[1], dsi.scallopRadius, 4));
-  stiffnerPoints.push(...scallop(stiffner[0], stiffner[1], stiffner[2], dsi.scallopRadius, 4));
+  stiffnerPoints.push(stiffner[0]);
+  stiffnerPoints.push(stiffner[1]);
   stiffnerPoints.push(addedPoint[0], addedPoint[1])
   stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4))
   stiffnerPoints.push(stiffner[3])
-  result["stiffner2"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [], 0, null, null, []);
+  result["stiffner2"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [0,1],  dsi.scallopRadius, null, null, [], [1,2,9,0]);
 
   return result
 }
