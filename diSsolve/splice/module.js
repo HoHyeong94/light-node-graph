@@ -204,13 +204,13 @@ export function IbeamJoint(webPoints, centerPoint, xs, wBolt, fBolt) {
   let uPoint2 = ToGlobalPoint(centerPoint, webPoints[2])
 
   result["upperJoint1"] = hPlateGen(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad, 
-    TranslatePoints(webPoints[3], joint2D, xs.flangeThickness, -uRad));
+    TranslatePoints(webPoints[3], joint2D, xs.flangeThickness, -uRad), true);
   result["upperJoint1"].bolt = flangeBolt
   result["upperJoint2"] = hPlateGen(joint2, uPoint1, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad,
     TranslatePoints(webPoints[3], joint2D, - xs.flangeJointThickness, -uRad));
   result["upperJoint3"] = hPlateGen(joint3, uPoint1, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
   result["upperJoint11"] = hPlateGen(joint1, uPoint2, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad,
-    TranslatePoints(webPoints[2], joint2D, xs.flangeThickness, -uRad));
+    TranslatePoints(webPoints[2], joint2D, xs.flangeThickness, -uRad),true);
   result["upperJoint11"].bolt = flangeBolt
   result["upperJoint22"] = hPlateGen(joint2, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad,
     TranslatePoints(webPoints[2], joint2D, - xs.flangeJointThickness, -uRad));
