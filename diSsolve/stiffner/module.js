@@ -981,7 +981,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   let lowerPlateL = lflangePoint[1][1].x - lflangePoint[0][1].x
   let lowerPlate2 = [{ x: 0, y: dsi.lowerWidth / 2 }, { x: 0, y: -dsi.lowerWidth / 2 }, { x: lowerPlateL, y: -dsi.lowerWidth / 2 }, { x: lowerPlateL, y: dsi.lowerWidth / 2 }]
   let lPoint = ToGlobalPoint(point, lflangePoint[0][1])
-  result["lowerPlate"] = hPlateGen(lowerPlate2, lPoint, dsi.lowerThickness, - dsi.lowerThickness, point.skew, 0, 0, lowerPlate, null, [0,1])
+  result["lowerPlate"] = hPlateGen(lowerPlate2, lPoint, dsi.lowerThickness, - dsi.lowerThickness, point.skew, 0, 0, lowerPlate, false, [0,1])
 
   let upperPlate = [
     { x: bl.x + lwCot * dsi.upperHeight, y: bl.y + dsi.upperHeight },
@@ -992,7 +992,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   let upperPlateL = upperPlate[3].x - upperPlate[0].x
   let upperPlate2 = [{ x: 0, y: dsi.upperWidth / 2 }, { x: 0, y: -dsi.upperWidth / 2 }, { x: upperPlateL, y: - dsi.upperWidth / 2 }, { x: upperPlateL, y: dsi.upperWidth / 2 }];
   let uPoint = ToGlobalPoint(point, upperPlate[0]);
-  result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate, true)
+  result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate, true, [0,1])
 
   let centerPlate = [bl, br, upperPlate[3], upperPlate[0]]
   result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2, 3], [0, 1, 2, 3])
@@ -1829,7 +1829,7 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
       let x1 = points[side2D[0]].y
       let x2 = points[side2D[1]].y
       let X = centerPoint.girderStation;
-      let Y = centerPoint.z;
+      let Y = centerPoint.z + z;
       let pts = [{ x: X + x1, y: Y }, { x: X + x2, y: Y },
       { x: X + x2, y: Y + Thickness }, { x: X + x1, y: Y + Thickness }]
       pts.forEach(pt => sideView.push({ x: pt.x * cos - pt.y * sin, y: pt.x * sin + pt.y * cos }))
