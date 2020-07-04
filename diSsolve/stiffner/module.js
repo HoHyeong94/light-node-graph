@@ -993,7 +993,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   result["upperPlate"] = hPlateGen2(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0,upperPlate)
   
   let centerPlate = [bl, br, upperPlate[3], upperPlate[0]]
-  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness,[0,1,2,3], dsi.scallopRadius, null, null, [] )
+  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness,[0,1,2,3], dsi.scallopRadius, null, null, [],[2,3] )
   
   let stiffnerPoint = [tl, upperPlate[1]]
   let stiffWidth = dsi.stiffWidth;
