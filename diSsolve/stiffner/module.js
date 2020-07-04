@@ -884,7 +884,8 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], dsi.bracketScallopR, 4),
     lowerbracket1[6], lowerbracket1[7]];
     let thickness = i < 2 ? dsi.flangeThickness : dsi.flangeThickness
-    result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, bracketPoint[i], thickness, 0, point.skew, 0, 0, bracket2D);
+    let top2D = i < 2? false: true;
+    result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, bracketPoint[i], thickness, 0, point.skew, 0, 0, bracket2D, top2D);
   }
   let stiffnerPoint = [[bl, lowerPlate[1]],
   [br, lowerPlate[2]],
@@ -901,7 +902,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   for (let i = 0; i < 2; i++) {
     let stiffWidth = i % 2 === 0 ? dsi.bracketLength : -dsi.bracketLength;
     let stiffner = PlateRestPoint(webBracketPoint[i][0], webBracketPoint[i][1], 0, 0, stiffWidth)
-    result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.webThickness, [0, 1], dsi.scallopRadius, null, null, [])
+    result["webBracket" + i.toFixed(0)] = vPlateGen(stiffner, point, dsi.webThickness, [0, 1], dsi.scallopRadius, null, null, [], [1,2])
   }
 
   let webPlate = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
@@ -909,7 +910,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: upperPlate[3].x - dsi.bracketLength, y: upperPlate[3].y },
   { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y }];
 
-  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], 0, null, null, [])
+  result["webPlate"] = vPlateGen(webPlate, point, dsi.webThickness, [], 0, null, null, [], [2,3])
 
   let upperflange = [{ x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y },
   { x: upperPlate[0].x + dsi.bracketLength, y: upperPlate[0].y + dsi.flangeThickness },
@@ -921,7 +922,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
   { x: 0, y: - dsi.flangeWidth / 2 },
   { x: upperflangeL, y: - dsi.flangeWidth / 2 },
   { x: upperflangeL, y: dsi.flangeWidth / 2 }]
-  result["upperflange"] = hPlateGen(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0, 0, upperflange)
+  result["upperflange"] = hPlateGen(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0, 0, upperflange, true)
   // { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   let lowerflange = [{ x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y },
   { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y - dsi.flangeThickness },
@@ -1074,10 +1075,10 @@ export function DYdia1(webPoints, point, skew, uflangePoint, ds) {
   let upperPlateL = upperPlate[3].x - upperPlate[0].x
   let upperPlate2 = [{ x: 0, y: dsi.upperWidth / 2 }, { x: 0, y: -dsi.upperWidth / 2 }, { x: upperPlateL, y: - dsi.upperWidth / 2 }, { x: upperPlateL, y: dsi.upperWidth / 2 }];
   let uPoint = ToGlobalPoint(point, upperPlate[0]);
-  result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate)
+  result["upperPlate"] = hPlateGen(upperPlate2, uPoint, dsi.upperThickness, 0, point.skew, 0, 0, upperPlate, true)
 
   let centerPlate = [lowerPlate[0], lowerPlate[3], upperPlate[3], upperPlate[0]]
-  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [])
+  result["centerPlate"] = vPlateGen(centerPlate, point, dsi.centerThickness, [0, 1, 2, 3], dsi.scallopRadius, null, null, [], [2,3])
 
   let stiffnerPoint = [[bl, lowerPlate[1]],
   [br, lowerPlate[2]],
@@ -1774,6 +1775,7 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
   const cosec = 1 / Math.sin(skew * Math.PI / 180);
   const cot = - 1 / Math.tan(skew * Math.PI / 180);
   let cos = Math.cos(rotationY)
+  let cosx = Math.cos(rotationX)
   let resultPoints = [];
   let topView = null;
   points.forEach(pt => resultPoints.push({ x: pt.x, y: pt.x * cot + pt.y * cosec }))
@@ -1782,7 +1784,7 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
     if (rotationY < Math.PI / 2 && rotationY > -Math.PI / 2) {
       resultPoints.forEach(function (pt) {
         let gpt = ToGlobalPoint(centerPoint, {x:pt.x * cos, y:pt.y})
-        let th = pt.y;
+        let th = pt.y * cosx;
         let dx = centerPoint.normalSin * th;
         let dy = centerPoint.normalCos * th;
         topView.push({x:gpt.x - dx, y:gpt.y + dy})
