@@ -1025,7 +1025,7 @@ export function DYdia0(webPoints, point, skew, lflangePoint, ds) {
   stiffnerPoints.push(addedPoint[0], addedPoint[1])
   stiffnerPoints.push(...Fillet2D(addedPoint[1], addedPoint[2], stiffner[3], dsi.filletR, 4))
   stiffnerPoints.push(stiffner[3])
-  result["stiffner2"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [0,1],  dsi.scallopRadius, null, null, [], [1,2,9,0]);
+  result["stiffner2"] = vPlateGen(stiffnerPoints, point, dsi.stiffThickness, [0,1],  dsi.scallopRadius, null, null, [],null,[1,2,9,0]);
 
   return result
 }
