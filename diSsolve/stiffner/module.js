@@ -727,12 +727,12 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     { x: tl.x + dsi.bracketLength, y: tl.y + dsi.bracketLength * gradient + dsi.flangeThickness },
     { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient + dsi.flangeThickness },
     { x: tr.x - dsi.bracketLength, y: tr.y - dsi.bracketLength * gradient }];
-  let uPoint = ToGlobalPoint(point, upperflange[0])
+  let uPoint = ToGlobalPoint(point, {x:0, y : -gradient * tl.x + tl.y})
   let upperflangeL = Math.sqrt((upperflange[3].x - upperflange[0].x) ** 2 + (upperflange[3].y - upperflange[0].y) ** 2)
-  let upperflange2 = [{ x: 0, y: dsi.flangeWidth / 2 },
-  { x: 0, y: - dsi.flangeWidth / 2 },
-  { x: upperflangeL, y: - dsi.flangeWidth / 2 },
-  { x: upperflangeL, y: dsi.flangeWidth / 2 }]
+  let upperflange2 = [{ x: -upperflangeL /2, y: dsi.flangeWidth / 2 },
+  { x: -upperflangeL/2, y: - dsi.flangeWidth / 2 },
+  { x: upperflangeL/2, y: - dsi.flangeWidth / 2 },
+  { x: upperflangeL/2, y: dsi.flangeWidth / 2 }]
   result["upperflange"] = hPlateGen(upperflange2, uPoint, dsi.flangeThickness, 0, point.skew, 0, gradRadian, upperflange, true, [0,1])
   // result["upperflange"] = { points: upperflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
   let lowerflange = [
@@ -740,12 +740,12 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     { x: lowerPlate[0].x + dsi.bracketLength, y: lowerPlate[0].y + dsi.bracketLength * gradient },
     { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient },
     { x: lowerPlate[3].x - dsi.bracketLength, y: lowerPlate[3].y - dsi.bracketLength * gradient - dsi.flangeThickness }];
-  let lPoint = ToGlobalPoint(point, lowerflange[0])
+  let lPoint = ToGlobalPoint(point, {x:0, y : -gradient * lowerflange[0].x + lowerflange[0].y})
   let lowerflangeL = Math.sqrt((lowerflange[3].x - lowerflange[0].x) ** 2 + (lowerflange[3].y - lowerflange[0].y) ** 2)
-  let lowerflange2 = [{ x: 0, y: dsi.flangeWidth / 2 },
-  { x: 0, y: - dsi.flangeWidth / 2 },
-  { x: lowerflangeL, y: - dsi.flangeWidth / 2 },
-  { x: lowerflangeL, y: dsi.flangeWidth / 2 }]
+  let lowerflange2 = [{ x: -lowerflangeL/2, y: dsi.flangeWidth / 2 },
+  { x: -lowerflangeL/2, y: - dsi.flangeWidth / 2 },
+  { x: lowerflangeL/2, y: - dsi.flangeWidth / 2 },
+  { x: lowerflangeL/2, y: dsi.flangeWidth / 2 }]
   result["lowerflange"] = hPlateGen(lowerflange2, lPoint, dsi.flangeThickness, 0, point.skew, 0, gradRadian, lowerflange, false, [0,1])
   // result["lowerflange"] = { points: lowerflange, Thickness: dsi.flangeWidth, z: - dsi.flangeWidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [], }
 
