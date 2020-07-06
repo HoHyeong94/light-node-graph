@@ -98,7 +98,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     }
   }
 
-  let lPoint = { x: 0, y: - iSectionPoint.web[0][0].x * gradient + iSectionPoint.web[0][0].y };
+  let lPoint = { x: 0, y: iSectionPoint.web[0][0].y };
   centerPoint = ToGlobalPoint(iPoint, lPoint)
   if (iSectionPoint.uflange[2].length > 0) { //폐합
 
@@ -114,14 +114,14 @@ export function SplicePlate(iPoint, iSectionPoint) {
       P: - fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness}]
       let keyName = i === 0 ? "lBottom" : "rBottom";
       let side2D = i===0? [0,1] : null;
-      result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - xs.lflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, true, side2D)
+      result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - xs.lflangeJointThickness, 90, Math.atan(iPoint.gradientX),0, null, true, side2D)
       result[keyName].bolt = BottomFlangeBolt;
       let TopFlange2 = [{ x: sign * (lx + iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
         { x: sign * (lx - sp.webThickness - xs.margin2), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: - xs.lflangeJointLength / 2 }]
       let TopFlange3 = [{ x: sign * (lx - xs.margin2), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx - xs.margin2), y: xs.lflangeJointLength / 2 },
           { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: - xs.lflangeJointLength / 2 }]
-      result[keyName + "2"] = hPlateGen(TopFlange2, centerPoint, xs.lflangeJointThickness,  sp.lflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, side2D)
-      result[keyName + "3"] = hPlateGen(TopFlange3, centerPoint, xs.lflangeJointThickness,  sp.lflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, null)
+      result[keyName + "2"] = hPlateGen(TopFlange2, centerPoint, xs.lflangeJointThickness,  sp.lflangeThickness, 90, Math.atan(iPoint.gradientX), 0, null, false, side2D)
+      result[keyName + "3"] = hPlateGen(TopFlange3, centerPoint, xs.lflangeJointThickness,  sp.lflangeThickness, 90, Math.atan(iPoint.gradientX), 0, null, false, null)
     }
   }
 
