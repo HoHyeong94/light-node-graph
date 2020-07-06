@@ -65,12 +65,13 @@ export function SplicePlate(iPoint, iSectionPoint) {
   if (iSectionPoint.uflange[2].length > 0){ //폐합
 
   } else { // 개구
-   let TopFlange = [{ x: - iSectionPoint.input.buf , y: -xs.uflangeJointLength / 2 }, { x: - iSectionPoint.input.buf, y: xs.uflangeJointLength / 2 }, 
-    { x: - iSectionPoint.input.buf + iSectionPoint.input.wuf, y: xs.uflangeJointLength / 2 }, { x: - iSectionPoint.input.buf + iSectionPoint.input.wuf, y: - xs.uflangeJointLength / 2 }]
+   let cp = {x : 0, y :- iSectionPoint.web[0][1].x * gradient + iSectionPoint.web[0][1].y};
+   let lx = Math.sqrt((iSectionPoint.web[0][1].x - cp.x)**2 + (iSectionPoint.web[0][1].y - cp.y)**2)
+   let TopFlange = [{ x: - lx - iSectionPoint.input.buf , y: -xs.uflangeJointLength / 2 }, { x: - lx- iSectionPoint.input.buf, y: xs.uflangeJointLength / 2 }, 
+    { x: - lx- iSectionPoint.input.buf + iSectionPoint.input.wuf, y: xs.uflangeJointLength / 2 }, { x: - lx - iSectionPoint.input.buf + iSectionPoint.input.wuf, y: - xs.uflangeJointLength / 2 }]
    let TopFlangeBolt = [{startPoint: { x:  TopFlange[2].x - fBolt.margin, y: TopFlange[2].y - fBolt.margin }, 
                         P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: xs.uflangeJointThickness + sp.uflangeThickness },]
-   let centerPoint = ToGlobalPoint(iPoint, iSectionPoint.web[0][1])
-   console.log("check", TopFlange, TopFlangeBolt)
+   let centerPoint = ToGlobalPoint(iPoint, cp)
      result["lTop"] = hPlateGen(TopFlange, centerPoint, xs.uflangeJointThickness, sp.uflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, true, [0,1])
      result["lTop"].bolt = TopFlangeBolt;
   }
