@@ -13,11 +13,11 @@ export function SplicePlate(iPoint, iSectionPoint) {
   }
   let xs = {
     webJointThickness: 20,
-    webJointWidth: 500,
+    webJointWidth: 600,
     webJointHeight: 1800,
     flangeJointThickness: 14,
     // flangeJointLength: 500,
-    flangeJointWidth: 500,
+    flangeJointWidth: 600,
   }
 
   let wBolt = {
@@ -56,34 +56,12 @@ export function SplicePlate(iPoint, iSectionPoint) {
     let centerPoint = ToGlobalPoint(iPoint, { x: (iNode.x + jNode.x) / 2, y: (iNode.y + jNode.y) / 2 })
     let lWebAngle = Math.PI - Math.atan((jNode.y - iNode.y) / (jNode.x - iNode.x))
     let partName = i===0? "lWeb" : "rWeb";
-    result[partName] = hPlateGen(Web, centerPoint, xs.webJointThickness, sp.webThickness, 90, 0, lWebAngle, null, false, true)
+    let side2D = i===0? true:false;
+    result[partName] = hPlateGen(Web, centerPoint, xs.webJointThickness, sp.webThickness, 90, 0, lWebAngle, null, false, side2D)
     result[partName].bolt = WebBolt;
     result[partName + "2"] = hPlateGen(Web, centerPoint, xs.webJointThickness, - xs.webJointThickness, 90, 0, lWebAngle, null, false, false)
   }
-  // points: Web, point: centerPoint,
-  //   Thickness: 20, z: -20, rotationX: 0, rotationY: lWebAngle, hole: []
-  // }
-
-  // iNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[0])
-  // jNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1])
-  // centerPoint = {
-  //   x: (iNode.x + jNode.x) / 2,
-  //   y: (iNode.y + jNode.y) / 2,
-  //   z: (iNode.z + jNode.z) / 2,
-  //   normalCos: iPoint.normalCos,
-  //   normalSin: iPoint.normalSin,
-  // }
-  // let rWebAngle = Math.PI - Math.atan((iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y) / (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x))
-
-  // result["rWeb"] = {
-  //   points: Web, point: centerPoint,
-  //   Thickness: 20, z: 14, rotationX: 0, rotationY: rWebAngle, hole: [], bolt: WebBolt
-  // }
-  // result["rWeb2"] = {
-  //   points: Web, point: centerPoint,
-  //   Thickness: 20, z: -20, rotationX: 0, rotationY: rWebAngle, hole: []
-  // }
-
+  
   // iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1])
   // centerPoint = {
   //   ...iNode,
