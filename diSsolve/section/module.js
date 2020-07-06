@@ -115,8 +115,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                     B3: 3500,  //바닥판 콘크리트 폭                      //슬래브에 대한 정보는 외부에서 받아와야 함
                     wlw: Point2DLength(lw1, lw2),                       //좌측웹 폭
                     wrw: Point2DLength(rw1, rw2),                       //우측웹 폭
-                    wuf: tl2.x < tr1.x ? ps.uFlangeW : tr2.x - tl1.x,       //상부플랜지 폭
-                    wlf: b2.x - b1.x,                                 //하부플랜지 
+                    wuf: newtl2.x < newtr2.x ? ps.uFlangeW : newtr1.x - newtl1.x,       //상부플랜지 폭
+                    wlf: newbl2.x < newbr2.x ? ps.lFlangeW : newbr1.x - newbl1.x,       //하부플랜지 
                     gradient :gradient,                           //상부플랜지 기울기
                     H: bottomY - topY,                           //강거더 높이
                     tlf: ps.lFlangeThk,                                //하부플랜지 두께
@@ -125,8 +125,8 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                     Tcu: ps.slabThickness,                              //바닥판콘크리트 두께          
                     Th: slabInfo.haunchHeight,                                   //헌치두께
                     Tcl: 0,                       //지점콘크리트 두께     //지점콘크리트에 대한 입력 변수 추가
-                    blf: (sectionInfo.C1 + sectionInfo.D1) / 2,            //하부플랜지 외부폭
-                    buf: (sectionInfo.C + sectionInfo.D) / 2,             //상부플랜지 외부폭
+                    blf: ps.lflangeC,            //하부플랜지 외부폭
+                    buf: ps.uflangeC,             //상부플랜지 외부폭
                     Urib: { thickness: ps.uRibThk, height: ps.uRibH, layout: ps.uRibLO },
                     Lrib: { thickness: ps.lRibThk, height: ps.lRibH, layout: ps.lRibLO },
                     horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
