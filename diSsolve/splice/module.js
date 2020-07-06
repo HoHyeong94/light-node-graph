@@ -98,7 +98,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     }
   }
 
-  let lPoint = { x: 0, y: - iSectionPoint.web[0][1].x * gradient + iSectionPoint.web[0][1].y };
+  let lPoint = { x: 0, y: - iSectionPoint.web[0][0].x * gradient + iSectionPoint.web[0][0].y };
   centerPoint = ToGlobalPoint(iPoint, lPoint)
   if (iSectionPoint.uflange[2].length > 0) { //폐합
 
