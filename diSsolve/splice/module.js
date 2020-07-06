@@ -15,9 +15,9 @@ export function SplicePlate(iPoint, iSectionPoint) {
     webJointThickness: 20,
     webJointWidth: 600,
     webJointHeight: 1800,
-    flangeJointThickness: 14,
+    uflangeJointThickness: 20,
     // flangeJointLength: 500,
-    flangeJointWidth: 600,
+    uflangeJointLength: 600,
   }
 
   let wBolt = {
@@ -31,14 +31,15 @@ export function SplicePlate(iPoint, iSectionPoint) {
   }
 
   let fBolt = {
-    P: 170,
+    P: 75,
     G: 75,
     pNum: 2,
-    gNum: 3,
+    gNum: 6,
     size: 37,
     t: 14,
+    margin : 100.
   }
-
+  let gradient = (iSectionPoint.web[1][1].y - iSectionPoint.web[0][1].y) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x)
 
   let Web = [{ x: -xs.webJointHeight / 2, y: - xs.webJointWidth / 2 },
   { x: -xs.webJointHeight / 2, y: xs.webJointWidth / 2 },
@@ -61,8 +62,18 @@ export function SplicePlate(iPoint, iSectionPoint) {
     result[partName].bolt = WebBolt;
     result[partName + "2"] = hPlateGen(Web, centerPoint, xs.webJointThickness, - xs.webJointThickness, 90, 0, lWebAngle, null, false, false)
   }
-  
-  // iNode = ToGlobalPoint(iPoint, iSectionPoint.lWeb[1])
+  if (iSectionPoint.uflange[2].length > 0){ //폐합
+
+  } else { // 개구
+   let TopFlange = [{ x: - iSectionPoint.input.buf , y: -xs.uflangeJointLength / 2 }, { x: - iSectionPoint.input.buf, y: xs.uflangeJointLength / 2 }, 
+    { x: - iSectionPoint.input.buf + iSectionPoint.input.wuf, y: xs.uflangeJointLength / 2 }, { x: - iSectionPoint.input.buf + iSectionPoint.input.wuf, y: - xs.uflangeJointLength / 2 }]
+   let TopFlangeBolt = [{ x: { startPoint: TopFlange[2].x - fBolt.margin, y: TopFlange[2].y - fBolt.margin }, 
+                        P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: xs.uflangeJointThickness + sp.uflangeThickness },]
+   let centerPoint = ToGlobalPoint(iPoint, iSectionPoint.Web[0][1])
+     result["lTop"] = hPlateGen(TopFlange, centerPoint, xs.uflangeJointThickness, sp.uflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, true, [0,1])
+     result["lTop"].bolt = TopFlangeBolt;
+  }
+  // iNode = ToGlobalPoint(iPoint, iSectionPoint.Web[0][1])
   // centerPoint = {
   //   ...iNode,
   //   normalCos: iPoint.normalCos,
