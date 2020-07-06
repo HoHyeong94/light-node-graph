@@ -1799,9 +1799,9 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
       let x2 = points[side2D[1]].y
       let X = centerPoint.girderStation;
       let Y = centerPoint.z + z;
-      let pts = [{ x: X + x1, y: Y }, { x: X + x2, y: Y },
-      { x: X + x2, y: Y + Thickness }, { x: X + x1, y: Y + Thickness }]
-      pts.forEach(pt => sideView.push({ x: pt.x * cos - pt.y * sin, y: pt.x * sin + pt.y * cos }))
+      let pts = [{ x: X + x1 * cos, y: Y + x1 * sin }, { x: X + x2 * cos, y: Y + x1 * sin},
+      { x: X + x2 * cos - Thickness * sin, y: Y + x2 * sin + Thickness * cos }, { x: X + x1 * cos - Thickness * sin, y: Y + x1 * sin + Thickness * cos }]
+      pts.forEach(pt => sideView.push(pt))
 
     } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
       // let sign = rotationY > 0 ? 1 : -1
