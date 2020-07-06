@@ -3,7 +3,7 @@ import { vPlateGen, hPlateGen, } from "../stiffner/module"
 
 export function SplicePlate(iPoint, iSectionPoint) {
   let result = {}
-  
+
   let sp = {
     webThickness: iSectionPoint.input.tw,
     uflangeWidth: iSectionPoint.input.wuf,
@@ -27,7 +27,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     gNum: 17,
     size: 37,
     t: 14,
-    margin : 100,
+    margin: 100,
   }
 
   let fBolt = {
@@ -40,28 +40,26 @@ export function SplicePlate(iPoint, iSectionPoint) {
   }
 
 
-  let iNode = iSectionPoint.web[0][0]
-  let jNode = iSectionPoint.web[0][1]
-  let centerPoint = ToGlobalPoint(iPoint, { x: (iNode.x + jNode.x) / 2, y: (iNode.y + jNode.y) / 2})
-  let lWebAngle = Math.PI - Math.atan((jNode.y - iNode.y) / (jNode.x - iNode.x))
-
-  let Web = [{ x: -xs.webJointHeight / 2, y: - xs.webJointWidth / 2 }, 
-            { x: -xs.webJointHeight / 2, y: xs.webJointWidth / 2 }, 
-            { x: xs.webJointHeight / 2, y: xs.webJointWidth / 2 }, 
-            { x: xs.webJointHeight / 2, y: - xs.webJointWidth / 2 }]
-  let WebBolt = [{ startPoint: { x: xs.webJointHeight / 2 - wBolt.margin, y: xs.webJointWidth / 2 - wBolt.margin }, 
+  let Web = [{ x: -xs.webJointHeight / 2, y: - xs.webJointWidth / 2 },
+  { x: -xs.webJointHeight / 2, y: xs.webJointWidth / 2 },
+  { x: xs.webJointHeight / 2, y: xs.webJointWidth / 2 },
+  { x: xs.webJointHeight / 2, y: - xs.webJointWidth / 2 }]
+  let WebBolt = [{
+    startPoint: { x: xs.webJointHeight / 2 - wBolt.margin, y: xs.webJointWidth / 2 - wBolt.margin },
     P: wBolt.P, G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + sp.webThickness },
-    { startPoint: { x: xs.webJointHeight / 2 - wBolt.margin, y: - xs.webJointWidth / 2 + wBolt.margin }, 
-    P: - wBolt.P, G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + sp.webThickness }]
-  
-  result["lWeb"] = hPlateGen(Web,centerPoint, xs.webJointThickness, sp.webThickness, 90, 0, lWebAngle, null, false, true)
-  result["lWeb"].bolt = WebBolt;
-  // {
-  //   points: Web, point: centerPoint,
-  //   Thickness: 20, z: 14, rotationX: 0, rotationY: lWebAngle, hole: [], bolt: WebBolt
-  // }
-  result["lWeb2"] = hPlateGen(Web,centerPoint, xs.webJointThickness, - xs.webJointThickness, 90, 0, lWebAngle, null, false, false)
-    
+  { startPoint: { x: xs.webJointHeight / 2 - wBolt.margin, y: - xs.webJointWidth / 2 + wBolt.margin },
+    P: - wBolt.P, G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + sp.webThickness}]
+
+  for (let i = 0; i < 2; i++) {
+    let iNode = iSectionPoint.web[i][0]
+    let jNode = iSectionPoint.web[i][1]
+    let centerPoint = ToGlobalPoint(iPoint, { x: (iNode.x + jNode.x) / 2, y: (iNode.y + jNode.y) / 2 })
+    let lWebAngle = Math.PI - Math.atan((jNode.y - iNode.y) / (jNode.x - iNode.x))
+    let partName = i===0? "lWeb" : "rWeb";
+    result[partName] = hPlateGen(Web, centerPoint, xs.webJointThickness, sp.webThickness, 90, 0, lWebAngle, null, false, true)
+    result[partName].bolt = WebBolt;
+    result[partName + "2"] = hPlateGen(Web, centerPoint, xs.webJointThickness, - xs.webJointThickness, 90, 0, lWebAngle, null, false, false)
+  }
   // points: Web, point: centerPoint,
   //   Thickness: 20, z: -20, rotationX: 0, rotationY: lWebAngle, hole: []
   // }
@@ -76,7 +74,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
   //   normalSin: iPoint.normalSin,
   // }
   // let rWebAngle = Math.PI - Math.atan((iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y) / (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x))
-  
+
   // result["rWeb"] = {
   //   points: Web, point: centerPoint,
   //   Thickness: 20, z: 14, rotationX: 0, rotationY: rWebAngle, hole: [], bolt: WebBolt
@@ -246,14 +244,14 @@ export function IbeamJoint(webPoints, centerPoint, xs, wBolt, fBolt) {
   let uPoint1 = ToGlobalPoint(centerPoint, webPoints[3])
   let uPoint2 = ToGlobalPoint(centerPoint, webPoints[2])
 
-  result["upperJoint1"] = hPlateGen(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad, 
+  result["upperJoint1"] = hPlateGen(joint1, uPoint1, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad,
     TranslatePoints(webPoints[3], joint2D, xs.flangeThickness, -uRad), true);
   result["upperJoint1"].bolt = flangeBolt
   result["upperJoint2"] = hPlateGen(joint2, uPoint1, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad,
     TranslatePoints(webPoints[3], joint2D, - xs.flangeJointThickness, -uRad));
   result["upperJoint3"] = hPlateGen(joint3, uPoint1, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad);
   result["upperJoint11"] = hPlateGen(joint1, uPoint2, xs.flangeJointThickness, xs.flangeThickness, centerPoint.skew, 0, uRad,
-    TranslatePoints(webPoints[2], joint2D, xs.flangeThickness, -uRad),true);
+    TranslatePoints(webPoints[2], joint2D, xs.flangeThickness, -uRad), true);
   result["upperJoint11"].bolt = flangeBolt
   result["upperJoint22"] = hPlateGen(joint2, uPoint2, xs.flangeJointThickness, - xs.flangeJointThickness, centerPoint.skew, 0, uRad,
     TranslatePoints(webPoints[2], joint2D, - xs.flangeJointThickness, -uRad));
@@ -280,14 +278,14 @@ export function IbeamJoint(webPoints, centerPoint, xs, wBolt, fBolt) {
 
 export function TranslatePoints(origin, points, yoffset, radian) {
   let result = [];
-  let yoff = yoffset? yoffset : 0
-    if (radian) {
-      let cos = Math.cos(radian)
-      let sin = Math.sin(radian)
-      points.forEach(pt => result.push({ x: origin.x + cos * pt.x - sin * (pt.y + yoff), y: origin.y + sin * pt.x + cos * (pt.y + yoff) }))
-    } else {
-      points.forEach(pt => result.push({ x: origin.x + pt.x, y: origin.y + (pt.y + yoff)}))
-    }
-  
+  let yoff = yoffset ? yoffset : 0
+  if (radian) {
+    let cos = Math.cos(radian)
+    let sin = Math.sin(radian)
+    points.forEach(pt => result.push({ x: origin.x + cos * pt.x - sin * (pt.y + yoff), y: origin.y + sin * pt.x + cos * (pt.y + yoff) }))
+  } else {
+    points.forEach(pt => result.push({ x: origin.x + pt.x, y: origin.y + (pt.y + yoff) }))
+  }
+
   return result
 }
