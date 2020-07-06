@@ -104,7 +104,7 @@ PartGeneralView.prototype.on3DExecute = function() {
   let group = PartGeneralDraw(this.getInputData(0),this.getInputData(1),this.getInputData(2))
   let layer = this.getInputData(2).layer;
   let key = this.getInputData(2).key;
-  console.log("check", layer,key)
+  // console.log("check", layer,key)
   sceneAdder({layer:layer, mesh:group},key);
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
 };

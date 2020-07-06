@@ -1788,7 +1788,7 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
         topView.push({ x: gpt.x - dx + dx2, y: gpt.y + dy + dy2 })
       }
     }
-    console.log("check", topView)
+    // console.log("check", topView)
   }
   if (side2D) {
     let cos = Math.cos(rotationX);

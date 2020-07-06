@@ -1069,7 +1069,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                 let mesh = sectionMesh(newPt, green)
                 mesh.position.set(0, -index * girderOffset, 0);
                 group.add(mesh)
-                console.log("check", mesh)
+                // console.log("check", mesh)
             }
             if (diaDict[i][key].sideView){
                 let newPt = [];
