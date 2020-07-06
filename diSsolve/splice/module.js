@@ -40,8 +40,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
   }
 
 
-  let iNode = iSectionPoint.Web[0][0]
-  let jNode = iSectionPoint.Web[0][1]
+  let iNode = iSectionPoint.web[0][0]
+  let jNode = iSectionPoint.web[0][1]
   let centerPoint = ToGlobalPoint(iPoint, { x: (iNode.x + jNode.x) / 2, y: (iNode.y + jNode.y) / 2})
   let lWebAngle = Math.PI - Math.atan((jNode.y - iNode.y) / (jNode.x - iNode.x))
 
