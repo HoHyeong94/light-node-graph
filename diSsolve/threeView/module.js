@@ -516,6 +516,7 @@ export function boltView(spliceDict, initPoint) {
             let yNum = 0;
             let yEnd = 0;
             let xEnd = 0;
+            let dx, dy
             for (let k in bolt) {
                 if (spliceAxis === "x") {
                     ly = ly / 2
