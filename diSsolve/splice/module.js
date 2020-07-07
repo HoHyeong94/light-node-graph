@@ -62,7 +62,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
   let jNode = [iSectionPoint.web[0][1], iSectionPoint.web[1][1]];
   let lcp = { x: (iNode[0].x + jNode[0].x) / 2, y: (iNode[0].y + jNode[0].y) / 2 };
   let rcp = { x: (iNode[1].x + jNode[1].x) / 2, y: (iNode[1].y + jNode[1].y) / 2 };
-  let cp = - gradeint / 2 * lcp.x + lcp.y
+  let cp = - gradient / 2 * lcp.x + lcp.y
 
   for (let i = 0; i < 2; i++) {
     // let iNode = iSectionPoint.web[i][0]
