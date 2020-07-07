@@ -74,9 +74,14 @@ export function SplicePlate(iPoint, iSectionPoint) {
 
   let uPoint = { x: 0, y: - iSectionPoint.web[0][1].x * gradient + iSectionPoint.web[0][1].y };
   let centerPoint = ToGlobalPoint(iPoint, uPoint)
+  let TopFlangeBolt = [{
+    P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
+    spliceAxis : "x", isUpper : false },]
+
   if (iSectionPoint.uflange[2].length > 0) { //폐합
     let lx1 = Math.sqrt((iSectionPoint.web[0][1].x - uPoint.x) ** 2 + (iSectionPoint.web[0][1].y - uPoint.y) ** 2)
     let lx2 = Math.sqrt((iSectionPoint.web[1][1].x - uPoint.x) ** 2 + (iSectionPoint.web[1][1].y - uPoint.y) ** 2)
+    let sec =  (lx1 + lx2) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x) 
     let TopFlange = [{ x: (lx1 + iSectionPoint.input.buf), y: -xs.uflangeJointLength / 2 }, 
                      { x: (lx1 + iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
                      { x: (lx2 + iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
@@ -87,8 +92,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
     let xList = [lx1 - iSectionPoint.input.buf, lx1 - sp.webThickness - xs.margin2,
       lx1 + xs.margin2];
     for (let i in iSectionPoint.input.Urib.layout){
-      xList.push(iSectionPoint.input.Urib.layout[i] - iSectionPoint.input.Urib.thickness / 2 - xs.margin2);
-      xList.push(iSectionPoint.input.Urib.layout[i] + iSectionPoint.input.Urib.thickness / 2 + xs.margin2)
+      xList.push( (iSectionPoint.input.Urib.layout[i] - iSectionPoint.input.Urib.thickness / 2) * sec - xs.margin2);
+      xList.push( (iSectionPoint.input.Urib.layout[i] + iSectionPoint.input.Urib.thickness / 2) * sec + xs.margin2)
     };
     xList.push( lx2 - xs.margin2, lx2 + sp.webThickness + xs.margin2, lx2 + iSectionPoint.input.buf);
     for (let i =0; i< xList.length; i+=2){
@@ -104,10 +109,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
       let sign = i === 0 ? -1 : 1;
       let TopFlange = [{ x: sign * (lx + iSectionPoint.input.buf), y: -xs.uflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
       { x: sign * (lx + iSectionPoint.input.buf - iSectionPoint.input.wuf), y: xs.uflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.buf - iSectionPoint.input.wuf), y: - xs.uflangeJointLength / 2 }]
-      let TopFlangeBolt = [{
-        startPoint: { x: TopFlange[2].x + sign * fBolt.margin, y: TopFlange[2].y - fBolt.margin },
-        P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
-        spliceAxis : "x", isUpper : false },]
+
       let keyName = i === 0 ? "lTop" : "rTop";
       let side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(TopFlange, centerPoint, xs.uflangeJointThickness, sp.uflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, true, side2D)
