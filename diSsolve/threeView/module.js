@@ -525,9 +525,18 @@ export function boltView(spliceDict, initPoint) {
                 }
                 yNum = Math.floor(ly / bolt[k].P)
                 xNum = Math.floor(lx / bolt[k].G)
-                yEnd = (bolt[k].P + ly % bolt[k].P) / 2
-                xEnd = (bolt[k].G + lx % bolt[k].G) / 2
-                console.log("boltCheck", xNum, yNum)
+                if ( xNum < 1){ 
+                    xNum +=1;
+                    xEnd = (lx % bolt[k].G) / 2;
+                }else{ 
+                    xEnd = (bolt[k].G + lx % bolt[k].G) / 2;
+                }
+                if ( yNum < 1){
+                    yNum +=1;
+                    yEnd = (ly % bolt[k].P) / 2;
+                }else{
+                    yEnd = (bolt[k].P + ly % bolt[k].P) / 2;
+                }
                 for (let i = 0; i < xNum; i++) {
                     for (let j = 0; j < yNum; j++) {
                         for (let l = 0; l < 2; l++) {
@@ -540,7 +549,7 @@ export function boltView(spliceDict, initPoint) {
                             }
                             let xtranslate = cp.x + dx + lx / 2 - xEnd - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
                             let ytranslate = cp.y + dy + ly / 2 - yEnd - j * bolt[k].P
-                            let boltZ = bolt.isUpper? zPosition + Thickness - bolt[k].l / 2 : zPosition + bolt[k].l / 2
+                            let boltZ = bolt[k].isUpper? zPosition + Thickness - bolt[k].l / 2 : zPosition + bolt[k].l / 2
 
                             group.add(boltMesh(point, bolt[k], boltZ, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
                             // dummyList.push(instancedBoltMesh(point, bolt[k], boltZ, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
