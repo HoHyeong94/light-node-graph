@@ -70,7 +70,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     let centerPoint = i===0? ToGlobalPoint(iPoint, lcp) : ToGlobalPoint(iPoint, rcp)
     let lWebAngle = Math.PI - Math.atan((jNode[i].y - iNode[i].y) / (jNode[i].x - iNode[i].x))
     let partName = i === 0 ? "lWeb" : "rWeb";
-    let side2D = i === 0 ? (cp.y - lcp.y) : false;
+    let side2D = i === 0 ? (cp - lcp.y) : false;
     result[partName] = hPlateGen(Web, centerPoint, xs.webJointThickness, sp.webThickness, 90, 0, lWebAngle, null, false, side2D)
     result[partName].bolt = WebBolt;
     result[partName + "2"] = hPlateGen(Web, centerPoint, xs.webJointThickness, - xs.webJointThickness, 90, 0, lWebAngle, null, false, false)
