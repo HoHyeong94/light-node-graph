@@ -536,7 +536,7 @@ export function boltView(spliceDict, initPoint) {
                                 dy = l ==0 ? ly / 2 : - ly / 2
                             } else {
                                 dx = l === 0 ? lx / 2 : - lx / 2;
-                                dy = l === 0 ? ly / 2 : - ly / 2
+                                dy = 0;
                             }
                             let xtranslate = cp.x + dx + lx / 2 - xEnd - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
                             let ytranslate = cp.y + dy + ly / 2 - yEnd - j * bolt[k].P
