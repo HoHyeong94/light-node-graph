@@ -99,7 +99,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     for (let i =0; i< xList.length; i+=2){
       keyName = "cTop" + i;
       let TopFlange2 = [{x: xList[i], y: -xs.uflangeJointLength / 2}, {x: xList[i], y: xs.uflangeJointLength / 2},
-      {x: xList[i+1], y: -xs.uflangeJointLength / 2}, {x: xList[i+1], y: -xs.uflangeJointLength / 2}]
+      {x: xList[i+1], y: xs.uflangeJointLength / 2}, {x: xList[i+1], y: -xs.uflangeJointLength / 2}]
       side2D = i === 0? [0, 1]: null;
       result[keyName] = hPlateGen(TopFlange2, centerPoint, xs.uflangeJointThickness, - xs.uflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, side2D)
     }
