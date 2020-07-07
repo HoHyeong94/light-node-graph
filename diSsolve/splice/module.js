@@ -85,7 +85,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
       let TopFlangeBolt = [{
         startPoint: { x: TopFlange[2].x + sign * fBolt.margin, y: TopFlange[2].y - fBolt.margin },
         P: fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
-        spliceAxis : "x", isUpper : true },
+        spliceAxis : "x", isUpper : false },
       {
         startPoint: { x: TopFlange[3].x + sign * fBolt.margin, y: TopFlange[3].y + fBolt.margin },
         P: - fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness
@@ -119,7 +119,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
       let BottomFlangeBolt = [{
         startPoint: { x: BottomFlange[2].x + sign * fBolt.margin, y: BottomFlange[2].y - fBolt.margin },
         P: fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
-        spliceAxis : "x", isUpper : false },
+        spliceAxis : "x", isUpper : true },
       {
         startPoint: { x: BottomFlange[3].x + sign * fBolt.margin, y: BottomFlange[3].y + fBolt.margin },
         P: - fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness
