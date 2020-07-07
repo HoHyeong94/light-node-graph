@@ -75,7 +75,15 @@ export function SplicePlate(iPoint, iSectionPoint) {
   let uPoint = { x: 0, y: - iSectionPoint.web[0][1].x * gradient + iSectionPoint.web[0][1].y };
   let centerPoint = ToGlobalPoint(iPoint, uPoint)
   if (iSectionPoint.uflange[2].length > 0) { //폐합
-
+    let lx1 = Math.sqrt((iSectionPoint.web[0][1].x - uPoint.x) ** 2 + (iSectionPoint.web[0][1].y - uPoint.y) ** 2)
+    let lx2 = Math.sqrt((iSectionPoint.web[1][1].x - uPoint.x) ** 2 + (iSectionPoint.web[1][1].y - uPoint.y) ** 2)
+    let TopFlange = [{ x: (lx1 + iSectionPoint.input.buf), y: -xs.uflangeJointLength / 2 }, 
+                     { x: (lx1 + iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
+                     { x: (lx2 + iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
+                     { x: (lx2 + iSectionPoint.input.buf), y: -xs.uflangeJointLength / 2 },]
+    let side2D = [0, 1];
+    let keyName = "cTop";
+    result[keyName] = hPlateGen(TopFlange, centerPoint, xs.uflangeJointThickness, sp.uflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, true, side2D)
   } else { // 개구
     for (let i = 0; i < 2; i++) {
       let lx = Math.sqrt((iSectionPoint.web[i][1].x - uPoint.x) ** 2 + (iSectionPoint.web[i][1].y - uPoint.y) ** 2)
