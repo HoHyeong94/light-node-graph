@@ -84,6 +84,20 @@ export function SplicePlate(iPoint, iSectionPoint) {
     let side2D = [0, 1];
     let keyName = "cTop";
     result[keyName] = hPlateGen(TopFlange, centerPoint, xs.uflangeJointThickness, sp.uflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, true, side2D)
+    let xList = [lx1 - iSectionPoint.input.buf, lx1 - sp.webThickness - xs.margin2,
+      lx1 + xs.margin2];
+    for (let i in iSectionPoint.input.Urib.layout){
+      xList.push(iSectionPoint.input.Urib.layout[i] - iSectionPoint.input.Urib.thickness / 2 - xs.margin2);
+      xList.push(iSectionPoint.input.Urib.layout[i] + iSectionPoint.input.Urib.thickness / 2 + xs.margin2)
+    };
+    xList.push( lx2 - xs.margin2, lx2 + sp.webThickness + xs.margin2, lx2 + iSectionPoint.input.buf);
+    for (let i =0; i< xList.length; i+=2){
+      keyName = "cTop" + i;
+      let TopFlange2 = [{x: xList[i], y: -xs.uflangeJointLength / 2}, {x: xList[i], y: xs.uflangeJointLength / 2},
+      {x: xList[i+1], y: -xs.uflangeJointLength / 2}, {x: xList[i+1], y: -xs.uflangeJointLength / 2}]
+      side2D = i === 0? [0, 1]: null;
+      result[keyName] = hPlateGen(TopFlange2, centerPoint, xs.uflangeJointThickness, - xs.uflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, side2D)
+    }
   } else { // 개구
     for (let i = 0; i < 2; i++) {
       let lx = Math.sqrt((iSectionPoint.web[i][1].x - uPoint.x) ** 2 + (iSectionPoint.web[i][1].y - uPoint.y) ** 2)
