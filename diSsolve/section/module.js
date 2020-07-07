@@ -118,6 +118,7 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                     wuf: newtl2.x < newtr2.x ? ps.uFlangeW : newtr1.x - newtl1.x,       //상부플랜지 폭
                     wlf: newbl2.x < newbr2.x ? ps.lFlangeW : newbr1.x - newbl1.x,       //하부플랜지 
                     gradient :gradient,                           //상부플랜지 기울기
+                    gradientlf : ps.lFalngeGradient,
                     H: bottomY - topY,                           //강거더 높이
                     tlf: ps.lFlangeThk,                                //하부플랜지 두께
                     tuf: ps.uFlangeThk,                                 //상부플랜지두께
@@ -154,6 +155,7 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
         lFlangeC: 0,//캘틸레버길이를 의미함
         lFlangeW: 0,//
         lFlangeThk: 0,
+        lFalngeGradient:0,
         webThk: 0,
         uRibH: 0,
         uRibThk: 0,
@@ -172,6 +174,7 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
         lFlangeC: 0,//캘틸레버길이를 의미함
         lFlangeW: 0,//
         lFlangeThk: 0,
+        lFalngeGradient:0,
         webThk: 0,
         uRibH: 0,
         uRibThk: 0,
@@ -198,22 +201,28 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
                     R = Math.abs((L ** 2 + deltaH ** 2) / 2 / deltaH)
                     x1 = ep.masterStationNumber - station;
                     height = girderBaseInfo.height[i][3] + (R - Math.sqrt(R ** 2 - x1 ** 2));
+                    forward.lFalngeGradient = x1 / Math.sqrt(R ** 2 - x1 ** 2);
                 } else if (deltaH < 0) {
                     R = Math.abs((L ** 2 + deltaH ** 2) / 2 / deltaH)
                     x1 = station - sp.masterStationNumber;
                     height = girderBaseInfo.height[i][2] + (R - Math.sqrt(R ** 2 - x1 ** 2))
+                    forward.lFalngeGradient = - x1 / Math.sqrt(R ** 2 - x1 ** 2);
                 } else {
                     height = girderBaseInfo.height[i][2]
+                    forward.lFalngeGradient = 0;
                 }
             } else if (girderBaseInfo.height[i][4] == "parabola") {
                 if (deltaH > 0) {
                     x1 = ep.masterStationNumber - station;
                     height = girderBaseInfo.height[i][3] + deltaH / L ** 2 * x1 ** 2;
+                    forward.lFalngeGradient = deltaH / L ** 2 * x1 * 2 ;
                 } else if (deltaH < 0) {
                     x1 = station - sp.masterStationNumber;
                     height = girderBaseInfo.height[i][2] - deltaH / L ** 2 * x1 ** 2;
+                    forward.lFalngeGradient = - deltaH / L ** 2 * x1 * 2 ;
                 } else {
                     height = girderBaseInfo.height[i][2]
+                    forward.lFalngeGradient = 0;
                 }
             } else {  //straight
                 x1 = station - sp.masterStationNumber;
@@ -229,22 +238,28 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
                     R = Math.abs((L ** 2 + deltaH ** 2) / 2 / deltaH)
                     x1 = ep.masterStationNumber - station;
                     heightb = girderBaseInfo.height[i][3] + (R - Math.sqrt(R ** 2 - x1 ** 2));
+                    backward.lFalngeGradient = x1 / Math.sqrt(R ** 2 - x1 ** 2);
                 } else if (deltaH < 0) {
                     R = Math.abs((L ** 2 + deltaH ** 2) / 2 / deltaH)
                     x1 = station - sp.masterStationNumber;
                     heightb = girderBaseInfo.height[i][2] + (R - Math.sqrt(R ** 2 - x1 ** 2))
+                    backward.lFalngeGradient = - x1 / Math.sqrt(R ** 2 - x1 ** 2);
                 } else {
                     heightb = girderBaseInfo.height[i][2]
+                    backward.lFalngeGradient = 0;
                 }
             } else if (girderBaseInfo.height[i][4] == "parabola") {
                 if (deltaH > 0) {
                     x1 = ep.masterStationNumber - station;
                     heightb = girderBaseInfo.height[i][3] + deltaH / L ** 2 * x1 ** 2;
+                    backward.lFalngeGradient = deltaH / L ** 2 * x1 * 2 ;
                 } else if (deltaH < 0) {
                     x1 = station - sp.masterStationNumber;
                     heightb = girderBaseInfo.height[i][2] - deltaH / L ** 2 * x1 ** 2;
+                    backward.lFalngeGradient = - deltaH / L ** 2 * x1 * 2 ;
                 } else {
                     heightb = girderBaseInfo.height[i][2]
+                    backward.lFalngeGradient = 0;
                 }
             } else {  //straight
                 x1 = station - sp.masterStationNumber;

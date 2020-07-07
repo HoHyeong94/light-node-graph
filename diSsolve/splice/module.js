@@ -131,6 +131,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
   let BottomFlangeBolt = [{
      P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
     spliceAxis : "x", isUpper : true },]
+  let bXRad = Math.atan(iPoint.gradientX + iSectionPoint.input.gradientlf)
 
   if (iSectionPoint.uflange[2].length > 0) { //폐합
     let lx1 = Math.sqrt((iSectionPoint.web[0][0].x - lPoint.x) ** 2 + (iSectionPoint.web[0][0].y - lPoint.y) ** 2)
@@ -142,7 +143,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
                      { x: (lx2 + iSectionPoint.input.blf), y: -xs.uflangeJointLength / 2 },]
     let side2D = [0, 1];
     let keyName = "cBottom";
-    result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, Math.atan(iPoint.gradientX), 0, null, false, side2D)
+    result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, 
+      bXRad, 0, null, false, side2D)
     let xList = [-lx1 - iSectionPoint.input.blf, -lx1 - sp.webThickness - xs.margin2,
       -lx1 + xs.margin2];
     for (let i in iSectionPoint.input.Lrib.layout){
@@ -155,7 +157,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
       let BottomFlange2 = [{x: xList[i], y: -xs.uflangeJointLength / 2}, {x: xList[i], y: xs.uflangeJointLength / 2},
       {x: xList[i+1], y: xs.uflangeJointLength / 2}, {x: xList[i+1], y: -xs.uflangeJointLength / 2}]
       side2D = i === 0? [0, 1]: null;
-      result[keyName] = hPlateGen(BottomFlange2, centerPoint, xs.uflangeJointThickness, 0, 90, Math.atan(iPoint.gradientX), 0, null, false, side2D)
+      result[keyName] = hPlateGen(BottomFlange2, centerPoint, xs.uflangeJointThickness, 0, 90, bXRad, 0, null, false, side2D)
       result[keyName].bolt = BottomFlangeBolt;
     }
   } else { // 개구
@@ -170,14 +172,14 @@ export function SplicePlate(iPoint, iSectionPoint) {
         spliceAxis : "x", isUpper : true },]
       let keyName = i === 0 ? "lBottom" : "rBottom";
       let side2D = i === 0 ? [0, 1] : null;
-      result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, Math.atan(iPoint.gradientX), 0, null, true, side2D)
+      result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, bXRad, 0, null, true, side2D)
       let TopFlange2 = [{ x: sign * (lx + iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
       { x: sign * (lx + sp.webThickness + xs.margin2), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + sp.webThickness + xs.margin2), y: - xs.lflangeJointLength / 2 }]
       let TopFlange3 = [{ x: sign * (lx - xs.margin2), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx - xs.margin2), y: xs.lflangeJointLength / 2 },
       { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: - xs.lflangeJointLength / 2 }]
-      result[keyName + "2"] = hPlateGen(TopFlange2, centerPoint, xs.lflangeJointThickness, 0, 90, Math.atan(iPoint.gradientX), 0, null, false, side2D)
+      result[keyName + "2"] = hPlateGen(TopFlange2, centerPoint, xs.lflangeJointThickness, 0, 90, bXRad, 0, null, false, side2D)
       result[keyName + "2"].bolt = BottomFlangeBolt;
-      result[keyName + "3"] = hPlateGen(TopFlange3, centerPoint, xs.lflangeJointThickness, 0, 90, Math.atan(iPoint.gradientX), 0, null, false, null)
+      result[keyName + "3"] = hPlateGen(TopFlange3, centerPoint, xs.lflangeJointThickness, 0, 90, bXRad, 0, null, false, null)
       result[keyName + "3"].bolt = BottomFlangeBolt;
     }
   }
