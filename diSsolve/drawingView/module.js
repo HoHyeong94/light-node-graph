@@ -347,7 +347,8 @@ export function LineDrawView(masterLine, slaveLines) {  //평면선형 그리기
 function LabelInsert(label, textMaterial, layer) {
     let group = new THREE.Group()
     var loader = new THREE.FontLoader();
-    loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+    // loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+        loader.load('fonts/noto_sans_kr_regular.json', function (font) {
         // console.log(font)
         // var font = {generateShapes:(messagem , num)=>{}}
         for (let i in label) {
