@@ -504,7 +504,7 @@ export function boltView(spliceDict, initPoint) {
             let point = spliceDict[partkey].point
             let bolt = spliceDict[partkey].bolt
             // 볼트배치 자동계산 모듈 // 2020.7.7 by drlim
-            let spliceAxis = "x"
+            let spliceAxis = bolt.spliceAxis //"x"
             let cp = {
                 x: (spliceDict[partkey].points[0].x + spliceDict[partkey].points[2].x) / 2,
                 y: (spliceDict[partkey].points[0].y + spliceDict[partkey].points[2].y) / 2
@@ -540,8 +540,10 @@ export function boltView(spliceDict, initPoint) {
                             }
                             let xtranslate = cp.x + dx + lx / 2 - xEnd - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
                             let ytranslate = cp.y + dy + ly / 2 - yEnd - j * bolt[k].P
-                            group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
-                            // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
+                            let boltZ = bolt.isUpper? zPosition + Thickness - bolt[k].l / 2 : zPosition + bolt[k].l / 2
+
+                            group.add(boltMesh(point, bolt[k], boltZ, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
+                            // dummyList.push(instancedBoltMesh(point, bolt[k], boltZ, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                             boltIs = true
                         }
                     }
@@ -582,7 +584,7 @@ export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtransla
     mesh.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
     mesh.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
     mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
-    mesh.translateY(zPosition - bolt.l / 2)
+    mesh.translateY(zPosition)
     mesh.translateX(XYtranslate[1])
     mesh.translateZ(XYtranslate[0])
     return mesh
@@ -594,7 +596,7 @@ export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, 
     dummy.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
     dummy.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
     dummy.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
-    dummy.translateY(zPosition - bolt.l / 2)
+    dummy.translateY(zPosition)
     dummy.translateX(XYtranslate[1])
     dummy.translateZ(XYtranslate[0])
     dummy.updateMatrix();
