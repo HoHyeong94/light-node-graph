@@ -113,12 +113,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
       { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: - xs.lflangeJointLength / 2 }]
       let BottomFlangeBolt = [{
         startPoint: { x: BottomFlange[2].x + sign * fBolt.margin, y: BottomFlange[2].y - fBolt.margin },
-        P: fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
-        spliceAxis : "x", isUpper : true },
-      {
-        startPoint: { x: BottomFlange[3].x + sign * fBolt.margin, y: BottomFlange[3].y + fBolt.margin },
-        P: - fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness
-      }]
+        P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+        spliceAxis : "x", isUpper : true },]
       let keyName = i === 0 ? "lBottom" : "rBottom";
       let side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, Math.atan(iPoint.gradientX), 0, null, true, side2D)
