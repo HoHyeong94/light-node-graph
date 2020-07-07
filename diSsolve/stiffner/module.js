@@ -1807,8 +1807,10 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
 
     } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
       // let sign = rotationY > 0 ? 1 : -1
+      let dz = 0
+      if (typeof(side2D) ==="number") { dz = side2D}
       let X = centerPoint.girderStation;
-      let Y = centerPoint.z;
+      let Y = centerPoint.z + dz;
       points.forEach(pt => sideView.push({x: X + pt.y, y: Y + pt.x * Math.sin(rotationY)}))
     }
   }

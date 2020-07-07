@@ -57,14 +57,20 @@ export function SplicePlate(iPoint, iSectionPoint) {
     startPoint: { x: xs.webJointHeight / 2 - wBolt.margin, y: - xs.webJointWidth / 2 + wBolt.margin },
     P: - wBolt.P, G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + sp.webThickness
   }]
+  
+  let iNode = [iSectionPoint.web[0][0], iSectionPoint.web[1][0]];
+  let jNode = [iSectionPoint.web[0][1], iSectionPoint.web[1][1]];
+  let lcp = { x: (iNode[0].x + jNode[0].x) / 2, y: (iNode[0].y + jNode[0].y) / 2 };
+  let rcp = { x: (iNode[1].x + jNode[1].x) / 2, y: (iNode[1].y + jNode[1].y) / 2 };
+  let cp = - gradeint / 2 * lcp.x + lcp.y
 
   for (let i = 0; i < 2; i++) {
     let iNode = iSectionPoint.web[i][0]
     let jNode = iSectionPoint.web[i][1]
-    let centerPoint = ToGlobalPoint(iPoint, { x: (iNode.x + jNode.x) / 2, y: (iNode.y + jNode.y) / 2 })
-    let lWebAngle = Math.PI - Math.atan((jNode.y - iNode.y) / (jNode.x - iNode.x))
+    let centerPoint = i===0? ToGlobalPoint(iPoint, lcp) : ToGlobalPoint(iPoint, rcp)
+    let lWebAngle = Math.PI - Math.atan((jNode[i].y - iNode[i].y) / (jNode[i].x - iNode[i].x))
     let partName = i === 0 ? "lWeb" : "rWeb";
-    let side2D = i === 0 ? true : false;
+    let side2D = i === 0 ? (cp.y - lcp.y) : false;
     result[partName] = hPlateGen(Web, centerPoint, xs.webJointThickness, sp.webThickness, 90, 0, lWebAngle, null, false, side2D)
     result[partName].bolt = WebBolt;
     result[partName + "2"] = hPlateGen(Web, centerPoint, xs.webJointThickness, - xs.webJointThickness, 90, 0, lWebAngle, null, false, false)
