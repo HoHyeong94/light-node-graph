@@ -503,17 +503,46 @@ export function boltView(spliceDict, initPoint) {
             let rotationX = spliceDict[partkey].rotationX
             let point = spliceDict[partkey].point
             let bolt = spliceDict[partkey].bolt
-            for (let k in bolt) {
-                for (let i = 0; i < bolt[k].gNum; i++) {
-                    for (let j = 0; j < bolt[k].pNum; j++) {
-                        let xtranslate = bolt[k].startPoint.x - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
-                        let ytranslate = bolt[k].startPoint.y - j * bolt[k].P
+            // 볼트배치 자동계산 모듈 // 2020.7.7 by drlim
+            let spliceAxis = "x"
+            let cp = { x : (spliceDict[partkey].points[0].x + spliceDict[partkey].points[2].x) / 2, 
+                y : (spliceDict[partkey].points[0].y + spliceDict[partkey].points[2].y) / 2};
+            let lx = Math.abs(spliceDict[partkey].points[2].x - spliceDict[partkey].points[0].x)
+            let ly = Math.abs(spliceDict[partkey].points[2].y - spliceDict[partkey].points[0].y)
+            let xNum = 0;
+            let yNum = 0;
+            for (let k in bolt){
+                if (spliceAxis === "x"){
+                    ly = ly / 2
+                } else {
+                    lx = lx / 2
+                }   
+                yNum = Math.floor(ly / bolt[k].P)
+                xNum = Math.floor(lx / bolt[k].G)
+                yEnd = (bolt[k].P + ly % bolt[k].P) / 2
+                xEnd = (bolt[k].G + lx % bolt[k].G) / 2
+                for (let i = 0; i < bolt[k].xNum; i++) {
+                    for (let j = 0; j < bolt[k].yNum; j++) {
+                        let xtranslate = cp.x + lx / 2 - xEnd - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
+                        let ytranslate = cp.y + ly / 2 - yEnd - j * bolt[k].P
                         group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
                         // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                         boltIs = true
                     }
                 }
             }
+
+            // for (let k in bolt) {
+            //     for (let i = 0; i < bolt[k].gNum; i++) {
+            //         for (let j = 0; j < bolt[k].pNum; j++) {
+            //             let xtranslate = bolt[k].startPoint.x - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
+            //             let ytranslate = bolt[k].startPoint.y - j * bolt[k].P
+            //             group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
+            //             // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
+            //             boltIs = true
+            //         }
+            //     }
+            // }
         }
     }
     // }
