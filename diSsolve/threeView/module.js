@@ -504,7 +504,7 @@ export function boltView(spliceDict, initPoint) {
             let point = spliceDict[partkey].point
             let bolt = spliceDict[partkey].bolt
             // 볼트배치 자동계산 모듈 // 2020.7.7 by drlim
-            let spliceAxis = bolt.spliceAxis //"x"
+            
             let cp = {
                 x: (spliceDict[partkey].points[0].x + spliceDict[partkey].points[2].x) / 2,
                 y: (spliceDict[partkey].points[0].y + spliceDict[partkey].points[2].y) / 2
@@ -518,6 +518,7 @@ export function boltView(spliceDict, initPoint) {
             // let xEnd = 0;
             let dx, dy, xNum, yNum, yEnd, xEnd;
             for (let k in bolt) {
+                let spliceAxis = bolt[k].spliceAxis //"x"
                 if (spliceAxis === "x") {
                     ly = ly / 2
                 } else {

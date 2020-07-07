@@ -133,8 +133,8 @@ export function SplicePlate(iPoint, iSectionPoint) {
     spliceAxis : "x", isUpper : true },]
 
   if (iSectionPoint.uflange[2].length > 0) { //폐합
-    let lx1 = Math.sqrt((iSectionPoint.web[0][0].x - uPoint.x) ** 2 + (iSectionPoint.web[0][0].y - uPoint.y) ** 2)
-    let lx2 = Math.sqrt((iSectionPoint.web[1][0].x - uPoint.x) ** 2 + (iSectionPoint.web[1][0].y - uPoint.y) ** 2)
+    let lx1 = Math.sqrt((iSectionPoint.web[0][0].x - lPoint.x) ** 2 + (iSectionPoint.web[0][0].y - lPoint.y) ** 2)
+    let lx2 = Math.sqrt((iSectionPoint.web[1][0].x - lPoint.x) ** 2 + (iSectionPoint.web[1][0].y - lPoint.y) ** 2)
     let sec =  (lx1 + lx2) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x) 
     let BottomFlange = [{ x: (-lx1 - iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, 
                      { x: (-lx1 - iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
