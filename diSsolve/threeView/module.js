@@ -524,7 +524,7 @@ export function boltView(spliceDict, initPoint) {
                 xNum = Math.floor(lx / bolt[k].G)
                 yEnd = (bolt[k].P + ly % bolt[k].P) / 2
                 xEnd = (bolt[k].G + lx % bolt[k].G) / 2
-                // console.log("boltCheck", cp, lx, ly)
+                console.log("boltCheck", xNum, yNum)
                 for (let i = 0; i < xNum; i++) {
                     for (let j = 0; j < yNum; j++) {
                         let xtranslate = cp.x + lx / 2 - xEnd - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
