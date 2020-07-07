@@ -85,11 +85,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
       let TopFlangeBolt = [{
         startPoint: { x: TopFlange[2].x + sign * fBolt.margin, y: TopFlange[2].y - fBolt.margin },
         P: fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
-        spliceAxis : "x", isUpper : false },
-      {
-        startPoint: { x: TopFlange[3].x + sign * fBolt.margin, y: TopFlange[3].y + fBolt.margin },
-        P: - fBolt.P, G: - sign * fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness
-      }]
+        spliceAxis : "x", isUpper : false },]
       let keyName = i === 0 ? "lTop" : "rTop";
       let side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(TopFlange, centerPoint, xs.uflangeJointThickness, sp.uflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, true, side2D)
