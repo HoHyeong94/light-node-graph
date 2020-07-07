@@ -512,11 +512,11 @@ export function boltView(spliceDict, initPoint) {
             let lx = Math.abs(spliceDict[partkey].points[2].x - spliceDict[partkey].points[0].x)
             let ly = Math.abs(spliceDict[partkey].points[2].y - spliceDict[partkey].points[0].y)
 
-            let xNum = 0;
-            let yNum = 0;
-            let yEnd = 0;
-            let xEnd = 0;
-            let dx, dy
+            // let xNum = 0;
+            // let yNum = 0;
+            // let yEnd = 0;
+            // let xEnd = 0;
+            let dx, dy, xNum, yNum, yEnd, xEnd;
             for (let k in bolt) {
                 if (spliceAxis === "x") {
                     ly = ly / 2
@@ -538,8 +538,8 @@ export function boltView(spliceDict, initPoint) {
                                 dx = l === 0 ? lx / 2 : - lx / 2;
                                 dy = l === 0 ? ly / 2 : - ly / 2
                             }
-                            let xtranslate = cp.x + lx / 2 - xEnd - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
-                            let ytranslate = cp.y + ly / 2 - yEnd - j * bolt[k].P
+                            let xtranslate = cp.x + dx + lx / 2 - xEnd - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
+                            let ytranslate = cp.y + dy + ly / 2 - yEnd - j * bolt[k].P
                             group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
                             // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                             boltIs = true
