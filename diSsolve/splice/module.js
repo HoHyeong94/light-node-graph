@@ -128,7 +128,37 @@ export function SplicePlate(iPoint, iSectionPoint) {
 
   let lPoint = { x: 0, y: iSectionPoint.web[0][0].y };
   centerPoint = ToGlobalPoint(iPoint, lPoint)
+  let BottomFlangeBolt = [{
+     P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+    spliceAxis : "x", isUpper : true },]
+
   if (iSectionPoint.uflange[2].length > 0) { //폐합
+    let lx1 = Math.sqrt((iSectionPoint.web[0][0].x - uPoint.x) ** 2 + (iSectionPoint.web[0][0].y - uPoint.y) ** 2)
+    let lx2 = Math.sqrt((iSectionPoint.web[1][0].x - uPoint.x) ** 2 + (iSectionPoint.web[1][0].y - uPoint.y) ** 2)
+    let sec =  (lx1 + lx2) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x) 
+    let BottomFlange = [{ x: (-lx1 - iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, 
+                     { x: (-lx1 - iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
+                     { x: (lx2 + iSectionPoint.input.blf), y: xs.uflangeJointLength / 2 },
+                     { x: (lx2 + iSectionPoint.input.blf), y: -xs.uflangeJointLength / 2 },]
+    let side2D = [0, 1];
+    let keyName = "cBottom";
+    result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, Math.atan(iPoint.gradientX), 0, null, false, side2D)
+    let xList = [-lx1 - iSectionPoint.input.blf, -lx1 - sp.webThickness - xs.margin2,
+      -lx1 + xs.margin2];
+    for (let i in iSectionPoint.input.Lrib.layout){
+      xList.push( (iSectionPoint.input.Lrib.layout[i] - iSectionPoint.input.Lrib.thickness / 2) * sec - xs.margin2);
+      xList.push( (iSectionPoint.input.Lrib.layout[i] + iSectionPoint.input.Lrib.thickness / 2) * sec + xs.margin2)
+    };
+    xList.push( lx2 - xs.margin2, lx2 + sp.webThickness + xs.margin2, lx2 + iSectionPoint.input.blf);
+    for (let i =0; i< xList.length; i+=2){
+      keyName = "cBottom" + i;
+      let BottomFlange2 = [{x: xList[i], y: -xs.uflangeJointLength / 2}, {x: xList[i], y: xs.uflangeJointLength / 2},
+      {x: xList[i+1], y: xs.uflangeJointLength / 2}, {x: xList[i+1], y: -xs.uflangeJointLength / 2}]
+      side2D = i === 0? [0, 1]: null;
+      result[keyName] = hPlateGen(BottomFlange2, centerPoint, xs.uflangeJointThickness, 0, 90, Math.atan(iPoint.gradientX), 0, null, false, side2D)
+      result[keyName].bolt = BottomFlangeBolt;
+    }
+
 
   } else { // 개구
     for (let i = 0; i < 2; i++) {
