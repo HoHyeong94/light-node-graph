@@ -1048,10 +1048,12 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
     let red = new THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
     let boltSize = 22; // 추후 외부변수와 통합해야함
-
     let initPoint = [];
     let endPoint = [];
     let rotate = [];
+    let boltlocate = [];
+
+
     for (let i in girderStation) {
         initPoint.push(girderStation[i][0].point)
         endPoint.push(girderStation[i][girderStation[i].length - 1].point)
@@ -1091,7 +1093,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
             }
 
             if (diaDict[i][key].bolt) {
-                if (diaDict[i][key].bolt.isUpper === false) {
+                if (diaDict[i][key].bolt.isUpper === false) { //복부에 위치하는 볼트의 경우 모두 상단기준면임을 근거로 함. 2020.7.7 by drlim
                     let pts = [];
                     let newPt = [];
                     let points = [];
@@ -1114,6 +1116,12 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                         points.push({ x: pt.x - (boltSize) * scale, y: pt.y });
                         points.push({ x: pt.x, y: pt.y + (boltSize) * scale });
                         points.push({ x: pt.x, y: pt.y - (boltSize) * scale });
+                    })
+                    points.forEach(function(pt){
+                        let dummy = new THREE.Object3D();
+                        dummy.position.set(pt.x, pt.y, 0)
+                        dummy.updateMatrix();
+                        boltlocate.push(dummy)
                     })
                     let mesh = LineSegMesh(points, red, 0)
                     mesh.position.set(0, -index * girderOffset, 0);
@@ -1147,6 +1155,18 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     }
 
 
+    let circle = new THREE.EllipseCurve(0, 0, boltSize/2, boltSize/2);
+    // let cp = circle.getPoints(16);
+    // let circlegeo = new THREE.Geometry().setFromPoints(cp);
+    // let boltCircle = new THREE.Line(circlegeo, green);
+
+    let mesh = new THREE.InstancedMesh(circle, green, boltlocate.length)
+    mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
+    for (let i in boltlocate){
+        mesh.setMatrixAt(i,boltlocate[i].matrix)
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+    group.add(mesh)
     return group
 }
 
