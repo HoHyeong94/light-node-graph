@@ -1067,6 +1067,8 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
             let centerPoint = diaDict[i][key].point;
             let cos = Math.cos(diaDict[i][key].rotationY)
             let cosx = Math.cos(diaDict[i][key].rotationX)
+            let rot = Math.atan2(centerPoint.normalCos, - centerPoint.normalSin) + rotate[index];
+
             if (diaDict[i][key].topView) {
                 let newPt = [];
                 diaDict[i][key].topView.forEach(function (pt) {
@@ -1125,6 +1127,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                     })
                     let mesh = LineSegMesh(points, red, 0)
                     mesh.position.set(0, -index * girderOffset, 0);
+                    mesh.rotateZ(rot)
                     group.add(mesh)
                 }
                 if (diaDict[i][key].sideView) {
@@ -1133,7 +1136,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                     } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
                         let dz = 0
                         let points = [];
-                        if (typeof side2D === "number") { dz = side2D }
+                        if (typeof side2D === "number") { dz = side2D } // 해당내용은 실행이 안될수밖에 없음
                         let X = (centerPoint.girderStation) * scale;
                         let Y = (centerPoint.z + dz - initPoint[index].z) * scale;
                         for (let k in diaDict[i][key].bolt.layout) {
