@@ -1053,6 +1053,9 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     let rotate = [];
     let boltlocate = [];
 
+    let circle = new THREE.EllipseCurve(0, 0, boltSize/2, boltSize/2);
+    let cp = circle.getPoints(16);
+    let circlegeo = new THREE.Geometry().setFromPoints(cp);
 
     for (let i in girderStation) {
         initPoint.push(girderStation[i][0].point)
@@ -1122,10 +1125,9 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                         points.push({ x: pt.x + (lsin * boltSize) * scale, y: pt.y - (lcos * boltSize) * scale });
                     })
                     points.forEach(function(pt){
-                        let dummy = new THREE.Object3D();
-                        dummy.position.set(pt.x, pt.y, 0)
-                        dummy.updateMatrix();
-                        boltlocate.push(dummy)
+                        let boltCircle = new THREE.Line(circlegeo, green);
+                        boltCircle.position.set(pt.x, pt.y -index * girderOffset, 0);
+                        group.add(boltCircle)
                     })
                     let mesh = LineSegMesh(points, red, 0)
                     mesh.position.set(0, -index * girderOffset, 0);
@@ -1157,20 +1159,6 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
             }
         }
     }
-
-
-    let circle = new THREE.EllipseCurve(0, 0, boltSize/2, boltSize/2);
-    // let cp = circle.getPoints(16);
-    // let circlegeo = new THREE.Geometry().setFromPoints(cp);
-    // let boltCircle = new THREE.Line(circlegeo, green);
-
-    let mesh = new THREE.InstancedMesh(circle, green, boltlocate.length)
-    mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
-    for (let i in boltlocate){
-        mesh.setMatrixAt(i,boltlocate[i].matrix)
-    }
-    mesh.instanceMatrix.needsUpdate = true;
-    group.add(mesh)
     return group
 }
 
