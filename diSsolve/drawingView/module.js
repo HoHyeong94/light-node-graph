@@ -1045,13 +1045,14 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     let sideViewOffset = -8000 * scale;
     let sectionViewOffset = 16000 * scale;
     let gridMark_width = 1500; // unit : mm
-    
+
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
-    
+    let red = new THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
+
     let initPoint = [];
     let endPoint = [];
     let rotate = [];
-    for (let i in girderStation){
+    for (let i in girderStation) {
         initPoint.push(girderStation[i][0].point)
         endPoint.push(girderStation[i][girderStation[i].length - 1].point)
         rotate.push(Math.PI - Math.atan((endPoint[i].y - initPoint[i].y) / (endPoint[i].x - initPoint[i].x)))
@@ -1059,10 +1060,12 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
 
     for (let i in diaDict) {
         for (let key in diaDict[i]) {
-            let index = i.substr(1,1) * 1 -1;
+            let index = i.substr(1, 1) * 1 - 1;
+            let rotationY = diaDict[i][key].rotationY;
+            let centerPoint = diaDict[i][key].point;
             if (diaDict[i][key].topView) {
                 let newPt = [];
-                diaDict[i][key].topView.forEach(function(pt){
+                diaDict[i][key].topView.forEach(function (pt) {
                     let x = (pt.x - initPoint[index].x) * scale
                     let y = (pt.y - initPoint[index].y) * scale
                     newPt.push({ x: Math.cos(rotate[index]) * x - Math.sin(rotate[index]) * y, y: Math.cos(rotate[index]) * y + Math.sin(rotate[index]) * x })
@@ -1072,16 +1075,45 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                 group.add(mesh)
                 // console.log("check", mesh)
             }
-            if (diaDict[i][key].sideView){
+            if (diaDict[i][key].sideView) {
                 let newPt = [];
-                diaDict[i][key].sideView.forEach(function(pt){
+                diaDict[i][key].sideView.forEach(function (pt) {
                     let x = (pt.x) * scale
                     let y = (pt.y - initPoint[index].z) * scale
-                    newPt.push({ x , y});
+                    newPt.push({ x, y });
                 })
                 let mesh = sectionMesh(newPt, green)
                 mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
                 group.add(mesh)
+
+                if (diaDict[i][key].bolt) {
+                    let boltSize = 22;
+                    if (rotationY < Math.PI / 4 && rotationY > -Math.PI / 4) {
+
+                    } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
+                        let dz = 0
+                        let points = [];
+                        if (typeof side2D === "number") { dz = side2D }
+                        let X = (centerPoint.girderStation)* scale;
+                        let Y = (centerPoint.z + dz - initPoint[index].z)*scale;
+                        for (let k in diaDict[i][key].bolt.layout){
+                            let y = diaDict[i][key].bolt.layout[k][0];
+                            let x = diaDict[i][key].bolt.layout[k][1];
+                            points.push({x : X + (x + boltSize * 2) * scale , y: Y + (y * Math.sin(rotationY))*scale});
+                            points.push({x : X + (x - boltSize * 2) * scale , y: Y + (y * Math.sin(rotationY))*scale});
+                            points.push({x : X + (x ) * scale , y: Y + (y * Math.sin(rotationY)+ boltSize * 2)*scale});
+                            points.push({x : X + (x ) * scale , y: Y + (y * Math.sin(rotationY)- boltSize * 2)*scale});
+                        }
+                        let mesh = LineSegMesh(points, red, 0)
+                        mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
+                        group.add(mesh)
+                        
+                    }
+                }
+
+
+
+
             }
         }
     }
@@ -1209,6 +1241,19 @@ export function LineMesh(point0, lineMaterial, z) {
     result.computeLineDistances();
     return result
 }
+
+export function LineSegMesh(point0, lineMaterial, z) {
+    let points = []
+    let z1 = z ? z : 0;
+    for (let i in point0) {
+        points.push(new THREE.Vector3(point0[i].x, point0[i].y, z1))
+    }
+    let geometry = new THREE.Geometry().setFromPoints(points)
+    let result = new THREE.LineSegments(geometry, lineMaterial)
+    result.computeLineDistances();
+    return result
+}
+
 
 function sectionMesh(point0, lineMaterial) {
     let points = []
