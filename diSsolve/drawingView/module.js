@@ -1445,7 +1445,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
         points.push({ x: pt.x - (boltSize), y: pt.y });
         points.push({ x: pt.x, y: pt.y + (boltSize) });
         points.push({ x: pt.x, y: pt.y - (boltSize) });
-        let boltCircle = new THREE.Line(circlegeo, green);
+        let boltCircle = new THREE.Line(boltcirclegeo, green);
         boltCircle.position.set(pt.x, pt.y, 0);
         group.add(boltCircle)
     })
