@@ -1076,34 +1076,6 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                 mesh.position.set(0, -index * girderOffset, 0);
                 group.add(mesh)
                 // console.log("check", mesh)
-                if (diaDict[i][key].bolt) {
-                    let pts = [];
-                    let newPt = [];
-                    let points = [];
-                    for ( let k in diaDict[i][key].bolt.layout){
-                        let x = diaDict[i][key].bolt.layout[k][0];
-                        let y = diaDict[i][key].bolt.layout[k][1];
-                        let gpt = ToGlobalPoint(centerPoint, { x: x * cos, y: 0 })
-                        let th = y * cosx;
-                        let dx = centerPoint.normalSin * th;
-                        let dy = centerPoint.normalCos * th;
-                        pts.push({ x: gpt.x - dx, y: gpt.y + dy })
-                    }
-                    pts.forEach(function(pt){
-                        let x = (pt.x - initPoint[index].x) * scale
-                        let y = (pt.y - initPoint[index].y) * scale
-                        newPt.push({ x: Math.cos(rotate[index]) * x - Math.sin(rotate[index]) * y, y: Math.cos(rotate[index]) * y + Math.sin(rotate[index]) * x })
-                    })
-                    newPt.forEach(function(pt){
-                        points.push({x : pt.x + (boltSize) * scale , y: pt.y});
-                        points.push({x : pt.x - (boltSize) * scale , y: pt.y});
-                        points.push({x : pt.x, y: pt.y + (boltSize)*scale});
-                        points.push({x : pt.x, y: pt.y - (boltSize)*scale});
-                    })
-                    let mesh = LineSegMesh(points, red, 0)
-                    mesh.position.set(0, -index * girderOffset, 0);
-                    group.add(mesh)
-                }
             }
             if (diaDict[i][key].sideView) {
                 let newPt = [];
@@ -1116,33 +1088,60 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                 mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
                 group.add(mesh)
 
-                if (diaDict[i][key].bolt) {
+            }
+
+            if (diaDict[i][key].bolt) {
+                if (diaDict[i][key].bolt.isUpper === false) {
+                    let pts = [];
+                    let newPt = [];
+                    let points = [];
+                    for (let k in diaDict[i][key].bolt.layout) {
+                        let x = diaDict[i][key].bolt.layout[k][0];
+                        let y = diaDict[i][key].bolt.layout[k][1];
+                        let gpt = ToGlobalPoint(centerPoint, { x: x * cos, y: 0 })
+                        let th = y * cosx;
+                        let dx = centerPoint.normalSin * th;
+                        let dy = centerPoint.normalCos * th;
+                        pts.push({ x: gpt.x - dx, y: gpt.y + dy })
+                    }
+                    pts.forEach(function (pt) {
+                        let x = (pt.x - initPoint[index].x) * scale
+                        let y = (pt.y - initPoint[index].y) * scale
+                        newPt.push({ x: Math.cos(rotate[index]) * x - Math.sin(rotate[index]) * y, y: Math.cos(rotate[index]) * y + Math.sin(rotate[index]) * x })
+                    })
+                    newPt.forEach(function (pt) {
+                        points.push({ x: pt.x + (boltSize) * scale, y: pt.y });
+                        points.push({ x: pt.x - (boltSize) * scale, y: pt.y });
+                        points.push({ x: pt.x, y: pt.y + (boltSize) * scale });
+                        points.push({ x: pt.x, y: pt.y - (boltSize) * scale });
+                    })
+                    let mesh = LineSegMesh(points, red, 0)
+                    mesh.position.set(0, -index * girderOffset, 0);
+                    group.add(mesh)
+                }
+                if (diaDict[i][key].sideView) {
                     if (rotationY < Math.PI / 4 && rotationY > -Math.PI / 4) {
 
                     } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
                         let dz = 0
                         let points = [];
                         if (typeof side2D === "number") { dz = side2D }
-                        let X = (centerPoint.girderStation)* scale;
-                        let Y = (centerPoint.z + dz - initPoint[index].z)*scale;
-                        for (let k in diaDict[i][key].bolt.layout){
+                        let X = (centerPoint.girderStation) * scale;
+                        let Y = (centerPoint.z + dz - initPoint[index].z) * scale;
+                        for (let k in diaDict[i][key].bolt.layout) {
                             let y = diaDict[i][key].bolt.layout[k][0];
                             let x = diaDict[i][key].bolt.layout[k][1];
-                            points.push({x : X + (x + boltSize) * scale , y: Y + (y * Math.sin(rotationY))*scale});
-                            points.push({x : X + (x - boltSize) * scale , y: Y + (y * Math.sin(rotationY))*scale});
-                            points.push({x : X + (x ) * scale , y: Y + (y * Math.sin(rotationY)+ boltSize)*scale});
-                            points.push({x : X + (x ) * scale , y: Y + (y * Math.sin(rotationY)- boltSize)*scale});
+                            points.push({ x: X + (x + boltSize) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
+                            points.push({ x: X + (x - boltSize) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
+                            points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) + boltSize) * scale });
+                            points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) - boltSize) * scale });
                         }
                         let mesh = LineSegMesh(points, red, 0)
                         mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
                         group.add(mesh)
-                        
+
                     }
                 }
-
-
-
-
             }
         }
     }
