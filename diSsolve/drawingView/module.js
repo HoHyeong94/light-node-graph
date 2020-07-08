@@ -1170,7 +1170,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
         mesh.setMatrixAt(i,boltlocate[i].matrix)
     }
     mesh.instanceMatrix.needsUpdate = true;
-    // group.add(mesh)
+    group.add(mesh)
     return group
 }
 
