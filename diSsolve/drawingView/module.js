@@ -1067,6 +1067,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
             let centerPoint = diaDict[i][key].point;
             let cos = Math.cos(diaDict[i][key].rotationY)
             let cosx = Math.cos(diaDict[i][key].rotationX)
+            console.log("check", centerPoint, centerPoint.normalCos)
             // let rot = Math.atan2(centerPoint.normalCos, - centerPoint.normalSin) + rotate[index];
 
             if (diaDict[i][key].topView) {
