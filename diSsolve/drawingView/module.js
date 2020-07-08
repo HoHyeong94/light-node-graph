@@ -1446,11 +1446,10 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
         points.push({ x: pt.x, y: pt.y + (boltSize) });
         points.push({ x: pt.x, y: pt.y - (boltSize) });
         let boltCircle = new THREE.Line(circlegeo, green);
-        boltCircle.position.set(pt.x, pt.y - index * girderOffset, 0);
+        boltCircle.position.set(pt.x, pt.y, 0);
         group.add(boltCircle)
     })
     let mesh = LineSegMesh(points, red, 0)
-    mesh.position.set(0, -index * girderOffset, 0);
     group.add(mesh)
 
     //     if (diaPoint[key].size) {
