@@ -26,39 +26,29 @@ export function SplicePlate(iPoint, iSectionPoint) {
   let wBolt = {
     P: 100,
     G: 100,
-    pNum: 2,
-    gNum: 17,
     size: 37,
     t: 14,
-    margin: 100,
   }
 
   let fBolt = {
     P: 75,
     G: 75,
-    pNum: 2,
-    gNum: 6,
     size: 37,
     t: 14,
-    margin: 100,  // 볼트의 연단거리
-
   }
-  let gradient = (iSectionPoint.web[1][1].y - iSectionPoint.web[0][1].y) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x)
+  let gradient = (iSectionPoint.web[1][1].y - iSectionPoint.web[0][1].y) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x);
 
   let Web = [{ x: -xs.webJointHeight / 2, y: - xs.webJointWidth / 2 },
   { x: -xs.webJointHeight / 2, y: xs.webJointWidth / 2 },
   { x: xs.webJointHeight / 2, y: xs.webJointWidth / 2 },
-  { x: xs.webJointHeight / 2, y: - xs.webJointWidth / 2 }]
-  let WebBolt = [{
-    startPoint: { x: xs.webJointHeight / 2 - wBolt.margin, y: xs.webJointWidth / 2 - wBolt.margin },
-    P: wBolt.P, G: wBolt.G, pNum: wBolt.pNum, gNum: wBolt.gNum, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + sp.webThickness,
-    spliceAxis : "x", isUpper : true },  ]
-
+  { x: xs.webJointHeight / 2, y: - xs.webJointWidth / 2 }];
+  let WebBolt = {P: wBolt.P, G: wBolt.G, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + sp.webThickness, 
+    layout: BoltLayout(wBolt.G, wBolt.P, "x", Web), isUpper: true};
   let iNode = [iSectionPoint.web[0][0], iSectionPoint.web[1][0]];
   let jNode = [iSectionPoint.web[0][1], iSectionPoint.web[1][1]];
   let lcp = { x: (iNode[0].x + jNode[0].x) / 2, y: (iNode[0].y + jNode[0].y) / 2 };
   let rcp = { x: (iNode[1].x + jNode[1].x) / 2, y: (iNode[1].y + jNode[1].y) / 2 };
-  let cp = - gradient / 2 * lcp.x + lcp.y
+  let cp = - gradient / 2 * lcp.x + lcp.y;
 
   for (let i = 0; i < 2; i++) {
     // let iNode = iSectionPoint.web[i][0]
@@ -74,35 +64,33 @@ export function SplicePlate(iPoint, iSectionPoint) {
 
   let uPoint = { x: 0, y: - iSectionPoint.web[0][1].x * gradient + iSectionPoint.web[0][1].y };
   let centerPoint = ToGlobalPoint(iPoint, uPoint)
-  let TopFlangeBolt = [{
-    P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
-    spliceAxis : "x", isUpper : false },]
 
   if (iSectionPoint.uflange[2].length > 0) { //폐합
     let lx1 = Math.sqrt((iSectionPoint.web[0][1].x - uPoint.x) ** 2 + (iSectionPoint.web[0][1].y - uPoint.y) ** 2)
     let lx2 = Math.sqrt((iSectionPoint.web[1][1].x - uPoint.x) ** 2 + (iSectionPoint.web[1][1].y - uPoint.y) ** 2)
-    let sec =  (lx1 + lx2) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x) 
-    let TopFlange = [{ x: (-lx1 - iSectionPoint.input.buf), y: -xs.uflangeJointLength / 2 }, 
-                     { x: (-lx1 - iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
-                     { x: (lx2 + iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
-                     { x: (lx2 + iSectionPoint.input.buf), y: -xs.uflangeJointLength / 2 },]
+    let sec = (lx1 + lx2) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x)
+    let TopFlange = [{ x: (-lx1 - iSectionPoint.input.buf), y: -xs.uflangeJointLength / 2 },
+    { x: (-lx1 - iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
+    { x: (lx2 + iSectionPoint.input.buf), y: xs.uflangeJointLength / 2 },
+    { x: (lx2 + iSectionPoint.input.buf), y: -xs.uflangeJointLength / 2 },]
     let side2D = [0, 1];
     let keyName = "cTop";
     result[keyName] = hPlateGen(TopFlange, centerPoint, xs.uflangeJointThickness, sp.uflangeThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, true, side2D)
     let xList = [-lx1 - iSectionPoint.input.buf, -lx1 - sp.webThickness - xs.margin2,
-      -lx1 + xs.margin2];
-    for (let i in iSectionPoint.input.Urib.layout){
-      xList.push( (iSectionPoint.input.Urib.layout[i] - iSectionPoint.input.Urib.thickness / 2) * sec - xs.margin2);
-      xList.push( (iSectionPoint.input.Urib.layout[i] + iSectionPoint.input.Urib.thickness / 2) * sec + xs.margin2)
+    -lx1 + xs.margin2];
+    for (let i in iSectionPoint.input.Urib.layout) {
+      xList.push((iSectionPoint.input.Urib.layout[i] - iSectionPoint.input.Urib.thickness / 2) * sec - xs.margin2);
+      xList.push((iSectionPoint.input.Urib.layout[i] + iSectionPoint.input.Urib.thickness / 2) * sec + xs.margin2)
     };
-    xList.push( lx2 - xs.margin2, lx2 + sp.webThickness + xs.margin2, lx2 + iSectionPoint.input.buf);
-    for (let i =0; i< xList.length; i+=2){
+    xList.push(lx2 - xs.margin2, lx2 + sp.webThickness + xs.margin2, lx2 + iSectionPoint.input.buf);
+    for (let i = 0; i < xList.length; i += 2) {
       keyName = "cTop" + i;
-      let TopFlange2 = [{x: xList[i], y: -xs.uflangeJointLength / 2}, {x: xList[i], y: xs.uflangeJointLength / 2},
-      {x: xList[i+1], y: xs.uflangeJointLength / 2}, {x: xList[i+1], y: -xs.uflangeJointLength / 2}]
-      side2D = i === 0? [0, 1]: null;
+      let TopFlange2 = [{ x: xList[i], y: -xs.uflangeJointLength / 2 }, { x: xList[i], y: xs.uflangeJointLength / 2 },
+      { x: xList[i + 1], y: xs.uflangeJointLength / 2 }, { x: xList[i + 1], y: -xs.uflangeJointLength / 2 }]
+      side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(TopFlange2, centerPoint, xs.uflangeJointThickness, - xs.uflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, side2D)
-      result[keyName].bolt = TopFlangeBolt;
+      result[keyName].bolt =  { P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
+        layout: BoltLayout(fBolt.G, fBolt.P, "x", TopFlange2), isUpper: false };
     }
   } else { // 개구
     for (let i = 0; i < 2; i++) {
@@ -120,46 +108,50 @@ export function SplicePlate(iPoint, iSectionPoint) {
       { x: sign * (lx + iSectionPoint.input.buf - iSectionPoint.input.wuf), y: xs.uflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.buf - iSectionPoint.input.wuf), y: - xs.uflangeJointLength / 2 }]
 
       result[keyName + "2"] = hPlateGen(TopFlange2, centerPoint, xs.uflangeJointThickness, - xs.uflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, side2D)
-      result[keyName + "2"].bolt = TopFlangeBolt;
+      result[keyName + "2"].bolt = { P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
+        layout: BoltLayout(fBolt.G, fBolt.P, "x", TopFlange2), isUpper: false };
       result[keyName + "3"] = hPlateGen(TopFlange3, centerPoint, xs.uflangeJointThickness, - xs.uflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, null)
-      result[keyName + "3"].bolt = TopFlangeBolt;
+      result[keyName + "3"].bolt = { P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
+        layout: BoltLayout(fBolt.G, fBolt.P, "x", TopFlange3), isUpper: false };
     }
   }
 
   let lPoint = { x: 0, y: iSectionPoint.web[0][0].y };
   centerPoint = ToGlobalPoint(iPoint, lPoint)
-  let BottomFlangeBolt = [{
-     P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
-    spliceAxis : "x", isUpper : true },]
+  // let BottomFlangeBolt = {
+  //   P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+  //   spliceAxis: "x", isUpper: true
+  // }
   let bXRad = Math.atan(iPoint.gradientX + iSectionPoint.input.gradientlf)
-  console.log("check", bXRad)
+  // console.log("check", bXRad)
 
   if (iSectionPoint.uflange[2].length > 0) { //폐합
     let lx1 = Math.sqrt((iSectionPoint.web[0][0].x - lPoint.x) ** 2 + (iSectionPoint.web[0][0].y - lPoint.y) ** 2)
     let lx2 = Math.sqrt((iSectionPoint.web[1][0].x - lPoint.x) ** 2 + (iSectionPoint.web[1][0].y - lPoint.y) ** 2)
-    let sec =  (lx1 + lx2) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x) 
-    let BottomFlange = [{ x: (-lx1 - iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, 
-                     { x: (-lx1 - iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
-                     { x: (lx2 + iSectionPoint.input.blf), y: xs.uflangeJointLength / 2 },
-                     { x: (lx2 + iSectionPoint.input.blf), y: -xs.uflangeJointLength / 2 },]
+    let sec = (lx1 + lx2) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x)
+    let BottomFlange = [{ x: (-lx1 - iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 },
+    { x: (-lx1 - iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
+    { x: (lx2 + iSectionPoint.input.blf), y: xs.uflangeJointLength / 2 },
+    { x: (lx2 + iSectionPoint.input.blf), y: -xs.uflangeJointLength / 2 },]
     let side2D = [0, 1];
     let keyName = "cBottom";
-    result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, 
+    result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90,
       bXRad, 0, null, false, side2D)
     let xList = [-lx1 - iSectionPoint.input.blf, -lx1 - sp.webThickness - xs.margin2,
-      -lx1 + xs.margin2];
-    for (let i in iSectionPoint.input.Lrib.layout){
-      xList.push( (iSectionPoint.input.Lrib.layout[i] - iSectionPoint.input.Lrib.thickness / 2) * sec - xs.margin2);
-      xList.push( (iSectionPoint.input.Lrib.layout[i] + iSectionPoint.input.Lrib.thickness / 2) * sec + xs.margin2)
+    -lx1 + xs.margin2];
+    for (let i in iSectionPoint.input.Lrib.layout) {
+      xList.push((iSectionPoint.input.Lrib.layout[i] - iSectionPoint.input.Lrib.thickness / 2) * sec - xs.margin2);
+      xList.push((iSectionPoint.input.Lrib.layout[i] + iSectionPoint.input.Lrib.thickness / 2) * sec + xs.margin2)
     };
-    xList.push( lx2 - xs.margin2, lx2 + sp.webThickness + xs.margin2, lx2 + iSectionPoint.input.blf);
-    for (let i =0; i< xList.length; i+=2){
+    xList.push(lx2 - xs.margin2, lx2 + sp.webThickness + xs.margin2, lx2 + iSectionPoint.input.blf);
+    for (let i = 0; i < xList.length; i += 2) {
       keyName = "cBottom" + i;
-      let BottomFlange2 = [{x: xList[i], y: -xs.uflangeJointLength / 2}, {x: xList[i], y: xs.uflangeJointLength / 2},
-      {x: xList[i+1], y: xs.uflangeJointLength / 2}, {x: xList[i+1], y: -xs.uflangeJointLength / 2}]
-      side2D = i === 0? [0, 1]: null;
+      let BottomFlange2 = [{ x: xList[i], y: -xs.uflangeJointLength / 2 }, { x: xList[i], y: xs.uflangeJointLength / 2 },
+      { x: xList[i + 1], y: xs.uflangeJointLength / 2 }, { x: xList[i + 1], y: -xs.uflangeJointLength / 2 }]
+      side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(BottomFlange2, centerPoint, xs.uflangeJointThickness, 0, 90, bXRad, 0, null, false, side2D)
-      result[keyName].bolt = BottomFlangeBolt;
+      result[keyName].bolt = { P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+        layout : BoltLayout(fBolt.G, fBolt.P, "x", BottomFlange2), isUpper: true}
     }
   } else { // 개구
     for (let i = 0; i < 2; i++) {
@@ -170,20 +162,71 @@ export function SplicePlate(iPoint, iSectionPoint) {
       let BottomFlangeBolt = [{
         startPoint: { x: BottomFlange[2].x + sign * fBolt.margin, y: BottomFlange[2].y - fBolt.margin },
         P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
-        spliceAxis : "x", isUpper : true },]
+        spliceAxis: "x", isUpper: true
+      },]
       let keyName = i === 0 ? "lBottom" : "rBottom";
       let side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, bXRad, 0, null, true, side2D)
-      let TopFlange2 = [{ x: sign * (lx + iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
+      let BottomFlange2 = [{ x: sign * (lx + iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
       { x: sign * (lx + sp.webThickness + xs.margin2), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + sp.webThickness + xs.margin2), y: - xs.lflangeJointLength / 2 }]
-      let TopFlange3 = [{ x: sign * (lx - xs.margin2), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx - xs.margin2), y: xs.lflangeJointLength / 2 },
+      let BottomFlange3 = [{ x: sign * (lx - xs.margin2), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx - xs.margin2), y: xs.lflangeJointLength / 2 },
       { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: - xs.lflangeJointLength / 2 }]
-      result[keyName + "2"] = hPlateGen(TopFlange2, centerPoint, xs.lflangeJointThickness, 0, 90, bXRad, 0, null, false, side2D)
-      result[keyName + "2"].bolt = BottomFlangeBolt;
-      result[keyName + "3"] = hPlateGen(TopFlange3, centerPoint, xs.lflangeJointThickness, 0, 90, bXRad, 0, null, false, null)
-      result[keyName + "3"].bolt = BottomFlangeBolt;
+      result[keyName + "2"] = hPlateGen(BottomFlange2, centerPoint, xs.lflangeJointThickness, 0, 90, bXRad, 0, null, false, side2D)
+      result[keyName + "2"].bolt = { P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+        layout : BoltLayout(fBolt.G, fBolt.P, "x", BottomFlange2), isUpper: true};
+      result[keyName + "3"] = hPlateGen(BottomFlange3, centerPoint, xs.lflangeJointThickness, 0, 90, bXRad, 0, null, false, null)
+      result[keyName + "3"].bolt = { P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+        layout : BoltLayout(fBolt.G, fBolt.P, "x", BottomFlange3), isUpper: true};
     }
   }
+  return result
+}
+export function BoltLayout(x, y, axis, platePoints) {
+  let result = [];
+  // 볼트배치 자동계산 모듈 // 2020.7.7 by drlim
+  let cp = {
+    x: (platePoints[0].x + platePoints[2].x) / 2,
+    y: (platePoints[0].y + platePoints[2].y) / 2
+  };
+  let lx = Math.abs(platePoints[2].x - platePoints[0].x)
+  let ly = Math.abs(platePoints[2].y - platePoints[0].y)
+  let dx, dy, xNum, yNum, yEnd, xEnd;
+    
+    if (axis === "x") {
+      ly = ly / 2
+    } else {
+      lx = lx / 2
+    }
+    yNum = Math.floor(ly / y)
+    xNum = Math.floor(lx / x)
+    if (xNum < 1) {
+      xNum += 1;
+      xEnd = (lx % x) / 2;
+    } else {
+      xEnd = (x + lx % x) / 2;
+    }
+    if (yNum < 1) {
+      yNum += 1;
+      yEnd = (ly % y) / 2;
+    } else {
+      yEnd = (y + ly % y) / 2;
+    }
+    for (let i = 0; i < xNum; i++) {
+      for (let j = 0; j < yNum; j++) {
+        for (let l = 0; l < 2; l++) {
+          if (axis === "x") {
+            dx = 0;
+            dy = l == 0 ? ly / 2 : - ly / 2
+          } else {
+            dx = l === 0 ? lx / 2 : - lx / 2;
+            dy = 0;
+          }
+          let xtranslate = cp.x + dx + lx / 2 - xEnd - i * x // pitch와 gage개념 다시 확인(분절면을 기준으로)
+          let ytranslate = cp.y + dy + ly / 2 - yEnd - j * y
+          result.push([xtranslate, ytranslate]);
+        }
+      }
+    }
   return result
 }
 
