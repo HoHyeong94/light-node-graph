@@ -1137,11 +1137,11 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                     if (rotationY < Math.PI / 4 && rotationY > -Math.PI / 4) {
 
                     } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
-                        let dz = 0
+                        // let dz = 0
                         let points = [];
-                        if (typeof side2D === "number") { dz = side2D } // 해당내용은 실행이 안될수밖에 없음
+                        // if (typeof side2D === "number") { dz = side2D } // 해당내용은 실행이 안될수밖에 없음
                         let X = (centerPoint.girderStation) * scale;
-                        let Y = (centerPoint.z + dz - initPoint[index].z) * scale;
+                        let Y = ((diaDict[i][key].sideView[0].y + diaDict[i][key].sideView[2].y)/2 - initPoint[index].z) * scale;
                         for (let k in diaDict[i][key].bolt.layout) {
                             let y = diaDict[i][key].bolt.layout[k][0];
                             let x = diaDict[i][key].bolt.layout[k][1];
