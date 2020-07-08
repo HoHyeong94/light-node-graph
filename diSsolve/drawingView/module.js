@@ -1391,7 +1391,8 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     //     }
     //     // text.position.z = 0;
     // });
-
+    LabelInsert()
+    group.add(LabelInsert(label, textMaterial, 1))  //layer number is 1
     return group
 }
 

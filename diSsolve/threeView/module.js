@@ -508,77 +508,10 @@ export function boltView(spliceDict, initPoint) {
             if (bolt.layout){
                 for (let i in bolt.layout){
                     group.add(boltMesh(point, bolt, boltZ, rotationX, rotationY, bolt.layout[i], initPoint, meshMaterial))
-                    // dummyList.push(instancedBoltMesh(point, bolt[k], boltZ, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
+                    // dummyList.push(instancedBoltMesh(point, bolt, boltZ, rotationX, rotationY,bolt.layout[i], initPoint))
                 }
                 boltIs = true
             }
-
-        //     let cp = {
-        //         x: (spliceDict[partkey].points[0].x + spliceDict[partkey].points[2].x) / 2,
-        //         y: (spliceDict[partkey].points[0].y + spliceDict[partkey].points[2].y) / 2
-        //     };
-        //     let lx = Math.abs(spliceDict[partkey].points[2].x - spliceDict[partkey].points[0].x)
-        //     let ly = Math.abs(spliceDict[partkey].points[2].y - spliceDict[partkey].points[0].y)
-
-        //     // let xNum = 0;
-        //     // let yNum = 0;
-        //     // let yEnd = 0;
-        //     // let xEnd = 0;
-        //     let dx, dy, xNum, yNum, yEnd, xEnd;
-        //     for (let k in bolt) {
-        //         let spliceAxis = bolt[k].spliceAxis //"x"
-        //         if (spliceAxis === "x") {
-        //             ly = ly / 2
-        //         } else {
-        //             lx = lx / 2
-        //         }
-        //         yNum = Math.floor(ly / bolt[k].P)
-        //         xNum = Math.floor(lx / bolt[k].G)
-        //         if ( xNum < 1){ 
-        //             xNum +=1;
-        //             xEnd = (lx % bolt[k].G) / 2;
-        //         }else{ 
-        //             xEnd = (bolt[k].G + lx % bolt[k].G) / 2;
-        //         }
-        //         if ( yNum < 1){
-        //             yNum +=1;
-        //             yEnd = (ly % bolt[k].P) / 2;
-        //         }else{
-        //             yEnd = (bolt[k].P + ly % bolt[k].P) / 2;
-        //         }
-        //         for (let i = 0; i < xNum; i++) {
-        //             for (let j = 0; j < yNum; j++) {
-        //                 for (let l = 0; l < 2; l++) {
-        //                     if (spliceAxis === "x"){
-        //                         dx = 0;
-        //                         dy = l ==0 ? ly / 2 : - ly / 2
-        //                     } else {
-        //                         dx = l === 0 ? lx / 2 : - lx / 2;
-        //                         dy = 0;
-        //                     }
-        //                     let xtranslate = cp.x + dx + lx / 2 - xEnd - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
-        //                     let ytranslate = cp.y + dy + ly / 2 - yEnd - j * bolt[k].P
-        //                     let boltZ = bolt[k].isUpper? zPosition + Thickness - bolt[k].l / 2 : zPosition + bolt[k].l / 2
-
-        //                     group.add(boltMesh(point, bolt[k], boltZ, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
-        //                     // dummyList.push(instancedBoltMesh(point, bolt[k], boltZ, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
-        //                     boltIs = true
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        //     // for (let k in bolt) {
-        //     //     for (let i = 0; i < bolt[k].gNum; i++) {
-        //     //         for (let j = 0; j < bolt[k].pNum; j++) {
-        //     //             let xtranslate = bolt[k].startPoint.x - i * bolt[k].G // pitch와 gage개념 다시 확인(분절면을 기준으로)
-        //     //             let ytranslate = bolt[k].startPoint.y - j * bolt[k].P
-        //     //             group.add(boltMesh(point, bolt[k], zPosition + Thickness, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
-        //     //             // dummyList.push(instancedBoltMesh(point, bolt[k], zPosition+Thickness, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
-        //     //             boltIs = true
-        //     //         }
-        //     //     }
-        //     // }
         }
     }
     // }
