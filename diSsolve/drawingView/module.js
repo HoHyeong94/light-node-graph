@@ -1124,7 +1124,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                         points.push({ x: pt.x - (lsin * boltSize) * scale, y: pt.y + (lcos * boltSize) * scale });
                         points.push({ x: pt.x + (lsin * boltSize) * scale, y: pt.y - (lcos * boltSize) * scale });
                     })
-                    points.forEach(function(pt){
+                    newPt.forEach(function(pt){
                         let boltCircle = new THREE.Line(circlegeo, green);
                         boltCircle.position.set(pt.x, pt.y -index * girderOffset, 0);
                         group.add(boltCircle)
@@ -1149,6 +1149,9 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                             points.push({ x: X + (x - boltSize) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
                             points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) + boltSize) * scale });
                             points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) - boltSize) * scale });
+                            let boltCircle = new THREE.Line(circlegeo, green);
+                            boltCircle.position.set(X + x * scale, Y + (y * Math.sin(rotationY)) * scale + sideViewOffset - index * girderOffset, 0);
+                            group.add(boltCircle)
                         }
                         let mesh = LineSegMesh(points, red, 0)
                         mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
