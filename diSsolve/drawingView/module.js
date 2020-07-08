@@ -1053,7 +1053,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     let rotate = [];
     let boltlocate = [];
 
-    let circle = new THREE.EllipseCurve(0, 0, boltSize/2, boltSize/2);
+    let circle = new THREE.EllipseCurve(0, 0, boltSize / 2, boltSize / 2);
     let cp = circle.getPoints(16);
     let circlegeo = new THREE.Geometry().setFromPoints(cp);
 
@@ -1119,14 +1119,14 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                         newPt.push({ x: Math.cos(rotate[index]) * x - Math.sin(rotate[index]) * y, y: Math.cos(rotate[index]) * y + Math.sin(rotate[index]) * x })
                     })
                     newPt.forEach(function (pt) {
-                        points.push({ x: pt.x + (lcos * boltSize) * scale, y: pt.y + (lsin * boltSize) * scale});
+                        points.push({ x: pt.x + (lcos * boltSize) * scale, y: pt.y + (lsin * boltSize) * scale });
                         points.push({ x: pt.x - (lcos * boltSize) * scale, y: pt.y - (lsin * boltSize) * scale });
                         points.push({ x: pt.x - (lsin * boltSize) * scale, y: pt.y + (lcos * boltSize) * scale });
                         points.push({ x: pt.x + (lsin * boltSize) * scale, y: pt.y - (lcos * boltSize) * scale });
                     })
-                    newPt.forEach(function(pt){
+                    newPt.forEach(function (pt) {
                         let boltCircle = new THREE.Line(circlegeo, green);
-                        boltCircle.position.set(pt.x, pt.y -index * girderOffset, 0);
+                        boltCircle.position.set(pt.x, pt.y - index * girderOffset, 0);
                         group.add(boltCircle)
                     })
                     let mesh = LineSegMesh(points, red, 0)
@@ -1141,7 +1141,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                         let points = [];
                         // if (typeof side2D === "number") { dz = side2D } // 해당내용은 실행이 안될수밖에 없음
                         let X = (centerPoint.girderStation) * scale;
-                        let Y = ((diaDict[i][key].sideView[0].y + diaDict[i][key].sideView[2].y)/2 - initPoint[index].z) * scale;
+                        let Y = ((diaDict[i][key].sideView[0].y + diaDict[i][key].sideView[2].y) / 2 - initPoint[index].z) * scale;
                         for (let k in diaDict[i][key].bolt.layout) {
                             let y = diaDict[i][key].bolt.layout[k][0];
                             let x = diaDict[i][key].bolt.layout[k][1];
@@ -1383,6 +1383,15 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     let textMesh;
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+    let red = new THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
+    let green = new THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
+    
+    let boltSize = 22; // 추후 외부에서 가져와야함, 20200708 by drlim 
+    let boltcircle = new THREE.EllipseCurve(0, 0, boltSize / 2, boltSize / 2);
+    let boltcp = boltcircle.getPoints(16);
+    let boltcirclegeo = new THREE.Geometry().setFromPoints(boltcp);
+
+
 
     label.push({    //sectiontitle
         text: sectionName,
@@ -1412,30 +1421,51 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
 
 
 
-
+    let pts = [];
+    let points = [];
     for (var key in diaPoint) {
         if (diaPoint[key].points2D) {
             group.add(sectionMesh(diaPoint[key].points2D, lineMaterial))
+
+            if (diaPoint[key].bolt && diaPoint[key].rotationX === Math.PI / 2) {
+                let cp = { x: (diaPoint[key].points2D[0].x + diaPoint[key].points2D[2].x) / 2, y: (diaPoint[key].points2D[0].y + diaPoint[key].points2D[2].y) / 2 }
+                for (let k in diaPoint[key].bolt.layout) {
+                    let x = diaPoint[key].bolt.layout[k][0];
+                    let y = diaPoint[key].bolt.layout[k][1];
+                    pts.push({ x: cp.x + x, y: cp.y + y })
+                }
+            }
         }
         if (diaPoint[key].hole) {
             group.add(sectionMesh(diaPoint[key].hole, lineMaterial))
         }
-
-        //     if (diaPoint[key].size) {
-        //         label.push({
-        //             text: diaPoint[key].size.Label,
-        //             anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0],
-        //             rotation: Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1]) / (diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
-        //             fontSize: labelSize
-        //         })
-        //     }
-        //     if (diaPoint[key].welding) {
-        //         for (let i in diaPoint[key].welding) {
-        //             weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
-        //         }
-        //     }
     }
+    pts.forEach(function (pt) {
+        points.push({ x: pt.x + (boltSize), y: pt.y });
+        points.push({ x: pt.x - (boltSize), y: pt.y });
+        points.push({ x: pt.x, y: pt.y + (boltSize) });
+        points.push({ x: pt.x, y: pt.y - (boltSize) });
+        let boltCircle = new THREE.Line(circlegeo, green);
+        boltCircle.position.set(pt.x, pt.y - index * girderOffset, 0);
+        group.add(boltCircle)
+    })
+    let mesh = LineSegMesh(points, red, 0)
+    mesh.position.set(0, -index * girderOffset, 0);
+    group.add(mesh)
 
+    //     if (diaPoint[key].size) {
+    //         label.push({
+    //             text: diaPoint[key].size.Label,
+    //             anchor: [(diaPoint[key].anchor[0][0] + diaPoint[key].anchor[1][0]) / 2, (diaPoint[key].anchor[0][1] + diaPoint[key].anchor[1][1]) / 2, 0],
+    //             rotation: Math.atan((diaPoint[key].anchor[1][1] - diaPoint[key].anchor[0][1]) / (diaPoint[key].anchor[1][0] - diaPoint[key].anchor[0][0])),
+    //             fontSize: labelSize
+    //         })
+    //     }
+    //     if (diaPoint[key].welding) {
+    //         for (let i in diaPoint[key].welding) {
+    //             weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
+    //         }
+    //     }
     // let dims = [];
     // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 1))   //top1
     // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.leftTopPlate[2], sectionPoint.rightTopPlate[2], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 0)) //top2
@@ -1457,29 +1487,6 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     //     weldings[i].labels.forEach(function (elem) { label.push(elem) })
     // }
 
-    // var loader = new THREE.FontLoader();
-    // loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-    //     // console.log(font)
-    //     // var font = {generateShapes:(messagem , num)=>{}}
-    //     for (let i in label) {
-    //         var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-    //         var geometry = new THREE.ShapeBufferGeometry(shapes);
-    //         var xMid
-    //         geometry.computeBoundingBox();
-    //         xMid = - 0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-    //         geometry.translate(xMid, -label[i].fontSize / 2, 0);
-    //         if (label[i].rotation) {
-    //             geometry.rotateZ(label[i].rotation)
-    //         }
-    //         geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
-    //         // make shape ( N.B. edge view not visible )
-    //         textMesh = new THREE.Mesh(geometry, textMaterial);
-    //         textMesh.layers.set(1)
-    //         group.add(textMesh);
-    //     }
-    //     // text.position.z = 0;
-    // });
-    LabelInsert()
     group.add(LabelInsert(label, textMaterial, 1))  //layer number is 1
     return group
 }
