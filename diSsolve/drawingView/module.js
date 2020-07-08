@@ -1095,6 +1095,9 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
 
             if (diaDict[i][key].bolt) {
                 if (diaDict[i][key].bolt.isUpper === false) { //복부에 위치하는 볼트의 경우 모두 상단기준면임을 근거로 함. 2020.7.7 by drlim
+                    let rot = Math.atan2(centerPoint.normalCos, - centerPoint.normalSin) + rotate[index];
+                    let lcos = Math.cos(rot)
+                    let lsin = Math.sin(rot)
                     let pts = [];
                     let newPt = [];
                     let points = [];
@@ -1113,10 +1116,10 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                         newPt.push({ x: Math.cos(rotate[index]) * x - Math.sin(rotate[index]) * y, y: Math.cos(rotate[index]) * y + Math.sin(rotate[index]) * x })
                     })
                     newPt.forEach(function (pt) {
-                        points.push({ x: pt.x + (boltSize) * scale, y: pt.y });
-                        points.push({ x: pt.x - (boltSize) * scale, y: pt.y });
-                        points.push({ x: pt.x, y: pt.y + (boltSize) * scale });
-                        points.push({ x: pt.x, y: pt.y - (boltSize) * scale });
+                        points.push({ x: pt.x + (lcos * boltSize) * scale, y: pt.y + (lsin * boltSize) * scale});
+                        points.push({ x: pt.x - (lcos * boltSize) * scale, y: pt.y - (lsin * boltSize) * scale });
+                        points.push({ x: pt.x - (lsin * boltSize) * scale, y: pt.y + (lcos * boltSize) * scale });
+                        points.push({ x: pt.x + (lsin * boltSize) * scale, y: pt.y - (lcos * boltSize) * scale });
                     })
                     points.forEach(function(pt){
                         let dummy = new THREE.Object3D();
@@ -1126,8 +1129,6 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                     })
                     let mesh = LineSegMesh(points, red, 0)
                     mesh.position.set(0, -index * girderOffset, 0);
-                    let rot = Math.atan2(centerPoint.normalCos, - centerPoint.normalSin) + rotate[index];
-                    mesh.rotateZ(rot)
                     group.add(mesh)
                 }
                 if (diaDict[i][key].sideView) {
