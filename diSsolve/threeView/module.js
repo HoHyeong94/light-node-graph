@@ -507,7 +507,7 @@ export function boltView(spliceDict, initPoint) {
             let boltZ = bolt.isUpper? zPosition + Thickness - bolt.l / 2 : zPosition + bolt.l / 2
             if (bolt.layout){
                 for (let i in bolt.layout){
-                    group.add(boltMesh(point, bolt[k], boltZ, rotationX, rotationY, [xtranslate, ytranslate], initPoint, meshMaterial))
+                    group.add(boltMesh(point, bolt, boltZ, rotationX, rotationY, bolt.layout[i], initPoint, meshMaterial))
                     // dummyList.push(instancedBoltMesh(point, bolt[k], boltZ, rotationX, rotationY,[xtranslate,ytranslate], initPoint))
                 }
                 boltIs = true
