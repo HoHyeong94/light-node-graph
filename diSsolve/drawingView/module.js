@@ -1101,7 +1101,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                         points.push({x : pt.x, y: pt.y - (boltSize)*scale});
                     })
                     let mesh = LineSegMesh(points, red, 0)
-                    mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
+                    mesh.position.set(0, -index * girderOffset, 0);
                     group.add(mesh)
                 }
             }
