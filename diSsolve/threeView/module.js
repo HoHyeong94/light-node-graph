@@ -594,9 +594,7 @@ export function boltView(spliceDict, initPoint) {
     return result
 }
 
-export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint, 
-    
-    ) {
+export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint, meshMaterial) {
     var radius = bolt.size / 2
     var geometry = new THREE.CylinderBufferGeometry(radius, radius, bolt.t * 2 + bolt.l, 6, 1)
     var mesh = new THREE.Mesh(geometry, meshMaterial);
