@@ -1067,7 +1067,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
             let centerPoint = diaDict[i][key].point;
             let cos = Math.cos(diaDict[i][key].rotationY)
             let cosx = Math.cos(diaDict[i][key].rotationX)
-            let rot = Math.atan2(centerPoint.normalCos, - centerPoint.normalSin) + rotate[index];
+            // let rot = Math.atan2(centerPoint.normalCos, - centerPoint.normalSin) + rotate[index];
 
             if (diaDict[i][key].topView) {
                 let newPt = [];
@@ -1127,7 +1127,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                     })
                     let mesh = LineSegMesh(points, red, 0)
                     mesh.position.set(0, -index * girderOffset, 0);
-                    mesh.rotateZ(rot)
+                    // mesh.rotateZ(rot)
                     group.add(mesh)
                 }
                 if (diaDict[i][key].sideView) {
