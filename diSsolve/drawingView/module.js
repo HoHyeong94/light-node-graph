@@ -1053,16 +1053,18 @@ export function XbeamSection(xbeamDict, girderStation, layout) {
     for (let j = 0; j < supportNum; j++) {
         for (let i = 0; i < girderNum - 1; i++) {
             let key = ("G" + (i + 1) + "S" + (j + 1)) + "G" + (i + 2) + "S" + (j + 1)
-            if (xbeamDict[key].point.offset) {
-                if (i === 0) { initZ.push(xbeamDict[key].point.z) }
-                let offset = xbeamDict[key].point.offset
-                let diaMesh = DiaSectionMesh(xbeamDict[key], lineMaterial)
-                diaMesh.forEach(function (mesh) {
-                    mesh.translateX(offset + j * xoffset);
-                    mesh.translateY(sectionViewOffset + xbeam.point.z - initZ[j]);
-                    // position.set(offset + j * xoffset, sectionViewOffset + girderPoint.point.z - initZ[j], 0)
-                    group.add(mesh)
-                })
+            if (xbeamDict[key]) {
+                if (xbeamDict[key].point["offset"]) {
+                    if (i === 0) { initZ.push(xbeamDict[key].point.z) }
+                    let offset = xbeamDict[key].point.offset
+                    let diaMesh = DiaSectionMesh(xbeamDict[key], lineMaterial)
+                    diaMesh.forEach(function (mesh) {
+                        mesh.translateX(offset + j * xoffset);
+                        mesh.translateY(sectionViewOffset + xbeam.point.z - initZ[j]);
+                        // position.set(offset + j * xoffset, sectionViewOffset + girderPoint.point.z - initZ[j], 0)
+                        group.add(mesh)
+                    })
+                }
             }
         }
     }
