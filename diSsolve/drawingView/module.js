@@ -1411,10 +1411,10 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     let red = new THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
     let green = new THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
 
-    let boltSize = 22; // 추후 외부에서 가져와야함, 20200708 by drlim 
-    let boltcircle = new THREE.EllipseCurve(0, 0, boltSize / 2, boltSize / 2);
-    let boltcp = boltcircle.getPoints(16);
-    let boltcirclegeo = new THREE.Geometry().setFromPoints(boltcp);
+    // let boltSize = 22; // 추후 외부에서 가져와야함, 20200708 by drlim 
+    // let boltcircle = new THREE.EllipseCurve(0, 0, boltSize / 2, boltSize / 2);
+    // let boltcp = boltcircle.getPoints(16);
+    // let boltcirclegeo = new THREE.Geometry().setFromPoints(boltcp);
 
 
 
@@ -1444,38 +1444,39 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
         // }
     }
 
+    let diaMesh = DiaSectionMesh(diaPoint, lineMaterial)
+    diaMesh.forEach(mesh=> group.add(mesh));
 
+    // let pts = [];
+    // let points = [];
+    // for (var key in diaPoint) {
+    //     if (diaPoint[key].points2D) {
+    //         group.add(sectionMesh(diaPoint[key].points2D, lineMaterial))
 
-    let pts = [];
-    let points = [];
-    for (var key in diaPoint) {
-        if (diaPoint[key].points2D) {
-            group.add(sectionMesh(diaPoint[key].points2D, lineMaterial))
-
-            if (diaPoint[key].bolt && diaPoint[key].rotationX === Math.PI / 2) {
-                let cp = { x: (diaPoint[key].points2D[0].x + diaPoint[key].points2D[2].x) / 2, y: (diaPoint[key].points2D[0].y + diaPoint[key].points2D[2].y) / 2 }
-                for (let k in diaPoint[key].bolt.layout) {
-                    let x = diaPoint[key].bolt.layout[k][0];
-                    let y = diaPoint[key].bolt.layout[k][1];
-                    pts.push({ x: cp.x + x, y: cp.y + y })
-                }
-            }
-        }
-        if (diaPoint[key].hole) {
-            group.add(sectionMesh(diaPoint[key].hole, lineMaterial))
-        }
-    }
-    pts.forEach(function (pt) {
-        points.push({ x: pt.x + (boltSize), y: pt.y });
-        points.push({ x: pt.x - (boltSize), y: pt.y });
-        points.push({ x: pt.x, y: pt.y + (boltSize) });
-        points.push({ x: pt.x, y: pt.y - (boltSize) });
-        let boltCircle = new THREE.Line(boltcirclegeo, green);
-        boltCircle.position.set(pt.x, pt.y, 0);
-        group.add(boltCircle)
-    })
-    let mesh = LineSegMesh(points, red, 0)
-    group.add(mesh)
+    //         if (diaPoint[key].bolt && diaPoint[key].rotationX === Math.PI / 2) {
+    //             let cp = { x: (diaPoint[key].points2D[0].x + diaPoint[key].points2D[2].x) / 2, y: (diaPoint[key].points2D[0].y + diaPoint[key].points2D[2].y) / 2 }
+    //             for (let k in diaPoint[key].bolt.layout) {
+    //                 let x = diaPoint[key].bolt.layout[k][0];
+    //                 let y = diaPoint[key].bolt.layout[k][1];
+    //                 pts.push({ x: cp.x + x, y: cp.y + y })
+    //             }
+    //         }
+    //     }
+    //     if (diaPoint[key].hole) {
+    //         group.add(sectionMesh(diaPoint[key].hole, lineMaterial))
+    //     }
+    // }
+    // pts.forEach(function (pt) {
+    //     points.push({ x: pt.x + (boltSize), y: pt.y });
+    //     points.push({ x: pt.x - (boltSize), y: pt.y });
+    //     points.push({ x: pt.x, y: pt.y + (boltSize) });
+    //     points.push({ x: pt.x, y: pt.y - (boltSize) });
+    //     let boltCircle = new THREE.Line(boltcirclegeo, green);
+    //     boltCircle.position.set(pt.x, pt.y, 0);
+    //     group.add(boltCircle)
+    // })
+    // let mesh = LineSegMesh(points, red, 0)
+    // group.add(mesh)
 
     //     if (diaPoint[key].size) {
     //         label.push({
