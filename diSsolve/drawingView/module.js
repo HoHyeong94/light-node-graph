@@ -1077,7 +1077,9 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
             if (diaDict[girderPoint.key]) {
                 let diaMesh = DiaSectionMesh(diaDict[girderPoint.key], lineMaterial)
                 diaMesh.forEach(function (mesh) {
-                    mesh.position.set(offset + j * xoffset, sectionViewOffset + girderPoint.point.z - initZ[j], 0)
+                    mesh.translateX(offset + j * xoffset);
+                    mesh.translateY(sectionViewOffset + girderPoint.point.z - initZ[j]);
+                    // position.set(offset + j * xoffset, sectionViewOffset + girderPoint.point.z - initZ[j], 0)
                     group.add(mesh)
                 })
             }
@@ -1549,8 +1551,9 @@ function DiaSectionMesh(diaPoint, lineMaterial) {
         points.push({ x: pt.x, y: pt.y + (boltSize) });
         points.push({ x: pt.x, y: pt.y - (boltSize) });
         let boltCircle = new THREE.Line(boltcirclegeo, green);
-        boltCircle.translateX(pt.x)
-        boltCircle.translateY(pt.y)
+        boltCircle.position.set(pt.x, pt.y, 0)
+        // boltCircle.translateX(pt.x)
+        // boltCircle.translateY(pt.y)
         meshes.push(boltCircle)
 
     })
