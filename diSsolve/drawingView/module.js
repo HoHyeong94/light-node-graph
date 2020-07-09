@@ -1061,21 +1061,28 @@ export function XbeamSection(xbeamDict, girderStation, layout) {
         for (let i = 0; i < girderNum - 1; i++) {
             let key = ("G" + (i + 1) + "S" + (j + 1)) + "G" + (i + 2) + "S" + (j + 1)
             if (xbeamDict[key]) {
+                let centerPoint
                 for (let k in xbeamDict[key]) {
-                    let offset = xbeamDict[key][k].point.offset ? xbeamDict[key][k].point.offset : 0
-                    let mesh = sectionMesh(xbeamDict[key][k].points2D, lineMaterial)
-                    mesh.translateX(offset + j * xoffset);
-                    mesh.translateY(sectionViewOffset + xbeamDict[key][k].point.z - initZ[j]);
+                    if (xbeamDict[key][k].point.offset) {
+                        centerPoint = xbeamDict[key][k].point
+                        break;
+                    }
+                }
+                let meshes = DiaSectionMesh(xbeamDict[key], lineMaterial);
+                meshes.forEach(function (mesh) {
+                    mesh.translateX(centerPoint.offset + j * xoffset);
+                    mesh.translateY(sectionViewOffset + centerPoint.z - initZ[j]);
                     // position.set(offset + j * xoffset, sectionViewOffset + girderPoint.point.z - initZ[j], 0)
                     group.add(mesh)
+                })
 
-                }
             }
         }
     }
-
     return group
 }
+
+
 
 
 export function PartGeneralDraw(diaDict, girderStation, layout) {
