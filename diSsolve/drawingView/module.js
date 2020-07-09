@@ -1066,6 +1066,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     let initZ = [];
     let supportNum = 3;
     let xoffset = 20000;
+    let girderNum = girderStation.length
 
     for (let j = 0; j < supportNum; j++) {
         for (let i = 0; i < girderNum; i++) {
