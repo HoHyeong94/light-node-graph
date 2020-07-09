@@ -1515,7 +1515,12 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
 
 
 function DiaSectionMesh(diaPoint, lineMaterial) {
-    let boltSize = 22; // bolt 속성으로부터 가져와야 함.
+    let boltSize = 22; // 추후 외부에서 가져와야함, 20200708 by drlim 
+    let boltcircle = new THREE.EllipseCurve(0, 0, boltSize / 2, boltSize / 2);
+    let boltcp = boltcircle.getPoints(16);
+    let boltcirclegeo = new THREE.Geometry().setFromPoints(boltcp);
+
+
     let red = new THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
     let green = new THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
 
