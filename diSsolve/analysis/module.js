@@ -435,9 +435,9 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     let section = frameInput.section;
     let material = frameInput.material;
     let selfWeight = frameInput.selfWeight;
-    let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "slab", data: [] }
-    let pavement = { command: "LOAD", type: "Distributed Span", Name: "pavement", data: [] }
-    let barrier = { command: "LOAD", type: "Concentrated Span", Name: "barrier", data: [] }
+    let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "sb", data: [] }
+    let pavement = { command: "LOAD", type: "Distributed Span", Name: "pv", data: [] }
+    let barrier = { command: "LOAD", type: "Concentrated Span", Name: "br", data: [] }
     let lane = {};
     let laneList = []
     let elemNum = frame.data.length + 1;

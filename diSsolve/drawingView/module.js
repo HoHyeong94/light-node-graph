@@ -1515,6 +1515,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
 
 
 function DiaSectionMesh(diaPoint, lineMaterial) {
+    let boltSize = 22; // bolt 속성으로부터 가져와야 함.
     let red = new THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
     let green = new THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
 
