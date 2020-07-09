@@ -1045,6 +1045,7 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     let sideViewOffset = -8000 * scale;
     let sectionViewOffset = 16000 * scale;
     let gridMark_width = 1500; // unit : mm
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
     let red = new THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
     let boltSize = 22; // 추후 외부변수와 통합해야함
