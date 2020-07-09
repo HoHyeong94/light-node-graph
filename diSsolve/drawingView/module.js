@@ -1065,9 +1065,9 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     }
 
     let initZ = [];
-    let supportNum = 3;
+    let supportNum = 3; // layout 변수안에서 자동계산되어야 함. 
     let xoffset = 20000;
-    let girderNum = girderStation.length
+    let girderNum = girderStation.length // layout 변수안에서 자동계산되어야 함. 
 
     for (let j = 0; j < supportNum; j++) {
         for (let i = 0; i < girderNum; i++) {
@@ -1549,7 +1549,7 @@ function DiaSectionMesh(diaPoint, lineMaterial) {
         points.push({ x: pt.x, y: pt.y + (boltSize) });
         points.push({ x: pt.x, y: pt.y - (boltSize) });
         let boltCircle = new THREE.Line(boltcirclegeo, green);
-        boltCircle.position.set(pt.x, pt.y, 0);
+        boltCircle.translate(pt.x, pt.y, 0);
         meshes.push(boltCircle)
     })
     let mesh = LineSegMesh(points, red, 0)
