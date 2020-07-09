@@ -1051,11 +1051,17 @@ export function XbeamSection(xbeamDict, girderStation, layout) {
     let girderNum = girderStation.length // layout 변수안에서 자동계산되어야 함. 
 
     for (let j = 0; j < supportNum; j++) {
+        for (let i = 0; i < girderNum; i++) {
+            let girderPoint = girderStation[i].find(obj => obj.key.includes("G" + (i + 1) + "S" + (j + 1)))
+            if (i === 0) { initZ.push(girderPoint.point.z) }
+        }
+    }
+
+    for (let j = 0; j < supportNum; j++) {
         for (let i = 0; i < girderNum - 1; i++) {
             let key = ("G" + (i + 1) + "S" + (j + 1)) + "G" + (i + 2) + "S" + (j + 1)
             if (xbeamDict[key]) {
                 for (let k in xbeamDict[key]) {
-                    if (i === 0) { initZ.push(xbeamDict[key][k].point.z) }
                     let offset = xbeamDict[key][k].point.offset ? xbeamDict[key][k].point.offset : 0
                     let mesh = sectionMesh(xbeamDict[key][k].points2D, lineMaterial)
                     mesh.translateX(offset + j * xoffset);
