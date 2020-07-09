@@ -1548,8 +1548,8 @@ function DiaSectionMesh(diaPoint, lineMaterial) {
         points.push({ x: pt.x - (boltSize), y: pt.y });
         points.push({ x: pt.x, y: pt.y + (boltSize) });
         points.push({ x: pt.x, y: pt.y - (boltSize) });
+        boltcirclegeo.translate(pt.x, pt.y, 0);
         let boltCircle = new THREE.Line(boltcirclegeo, green);
-        boltCircle.translate(pt.x, pt.y, 0);
         meshes.push(boltCircle)
     })
     let mesh = LineSegMesh(points, red, 0)
