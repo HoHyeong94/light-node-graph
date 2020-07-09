@@ -27,6 +27,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     P: 100,
     G: 100,
     size: 37,
+    dia : 22,
     t: 14,
   }
 
@@ -34,6 +35,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
     P: 75,
     G: 75,
     size: 37,
+    dia : 22,
     t: 14,
   }
   let gradient = (iSectionPoint.web[1][1].y - iSectionPoint.web[0][1].y) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x);
@@ -43,7 +45,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
   { x: xs.webJointHeight / 2, y: xs.webJointWidth / 2 },
   { x: xs.webJointHeight / 2, y: - xs.webJointWidth / 2 }];
   let WebBolt = {
-    P: wBolt.P, G: wBolt.G, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + sp.webThickness,
+    P: wBolt.P, G: wBolt.G, size: wBolt.size, dia: wBolt.dia, t: wBolt.t, l: xs.webJointThickness * 2 + sp.webThickness,
     layout: BoltLayout(wBolt.G, wBolt.P, "x", Web), isUpper: true
   };
   let iNode = [iSectionPoint.web[0][0], iSectionPoint.web[1][0]];
@@ -92,7 +94,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
       side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(TopFlange2, centerPoint, xs.uflangeJointThickness, - xs.uflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, side2D)
       result[keyName].bolt = {
-        P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
+        P: fBolt.P, G: fBolt.G, size: fBolt.size, dia: fBolt.dia, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
         layout: BoltLayout(fBolt.G, fBolt.P, "x", TopFlange2), isUpper: false
       };
     }
@@ -113,12 +115,12 @@ export function SplicePlate(iPoint, iSectionPoint) {
 
       result[keyName + "2"] = hPlateGen(TopFlange2, centerPoint, xs.uflangeJointThickness, - xs.uflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, side2D)
       result[keyName + "2"].bolt = {
-        P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
+        P: fBolt.P, G: fBolt.G, size: fBolt.size, dia: fBolt.dia, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
         layout: BoltLayout(fBolt.G, fBolt.P, "x", TopFlange2), isUpper: false
       };
       result[keyName + "3"] = hPlateGen(TopFlange3, centerPoint, xs.uflangeJointThickness, - xs.uflangeJointThickness, 90, Math.atan(iPoint.gradientX), -Math.atan(gradient), null, false, null)
       result[keyName + "3"].bolt = {
-        P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
+        P: fBolt.P, G: fBolt.G, size: fBolt.size, dia: fBolt.dia, t: fBolt.t, l: 2 * xs.uflangeJointThickness + sp.uflangeThickness,
         layout: BoltLayout(fBolt.G, fBolt.P, "x", TopFlange3), isUpper: false
       };
     }
@@ -159,7 +161,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
       side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(BottomFlange2, centerPoint, xs.uflangeJointThickness, 0, 90, bXRad, 0, null, false, side2D)
       result[keyName].bolt = {
-        P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+        P: fBolt.P, G: fBolt.G, size: fBolt.size, dia: fBolt.dia, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
         layout: BoltLayout(fBolt.G, fBolt.P, "x", BottomFlange2), isUpper: true
       }
     }
@@ -169,11 +171,6 @@ export function SplicePlate(iPoint, iSectionPoint) {
       let sign = i === 0 ? -1 : 1;
       let BottomFlange = [{ x: sign * (lx + iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
       { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: - xs.lflangeJointLength / 2 }]
-      let BottomFlangeBolt = [{
-        startPoint: { x: BottomFlange[2].x + sign * fBolt.margin, y: BottomFlange[2].y - fBolt.margin },
-        P: fBolt.P, G: fBolt.G, pNum: fBolt.pNum, gNum: fBolt.gNum, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
-        spliceAxis: "x", isUpper: true
-      },]
       let keyName = i === 0 ? "lBottom" : "rBottom";
       let side2D = i === 0 ? [0, 1] : null;
       result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, bXRad, 0, null, true, side2D)
@@ -183,12 +180,12 @@ export function SplicePlate(iPoint, iSectionPoint) {
       { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: - xs.lflangeJointLength / 2 }]
       result[keyName + "2"] = hPlateGen(BottomFlange2, centerPoint, xs.lflangeJointThickness, 0, 90, bXRad, 0, null, false, side2D)
       result[keyName + "2"].bolt = {
-        P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+        P: fBolt.P, G: fBolt.G, size: fBolt.size,  dia: fBolt.dia, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
         layout: BoltLayout(fBolt.G, fBolt.P, "x", BottomFlange2), isUpper: true
       };
       result[keyName + "3"] = hPlateGen(BottomFlange3, centerPoint, xs.lflangeJointThickness, 0, 90, bXRad, 0, null, false, null)
       result[keyName + "3"].bolt = {
-        P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
+        P: fBolt.P, G: fBolt.G, size: fBolt.size,  dia: fBolt.dia, t: fBolt.t, l: 2 * xs.lflangeJointThickness + sp.lflangeThickness,
         layout: BoltLayout(fBolt.G, fBolt.P, "x", BottomFlange3), isUpper: true
       };
     }
@@ -295,7 +292,7 @@ export function IbeamJoint(webPoints, centerPoint, xs, wBolt, fBolt) {
   { x: - xs.webJointWidth / 2, y: xs.webJointHeight / 2 }];
   let webJoint2D1 = TranslatePoints(origin1, webJoint1);
   let WebBolt = {
-    P: wBolt.P, G: wBolt.G, size: wBolt.size, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness,
+    P: wBolt.P, G: wBolt.G, size: wBolt.size, dia: wBolt.dia, t: wBolt.t, l: xs.webJointThickness * 2 + xs.webThickness,
     layout: BoltLayout(wBolt.G, wBolt.P, "Y", webJoint1), isUpper: true
   };
   result["webJoint1"] = hPlateGen(webJoint1, webPoint1, xs.webJointThickness, xs.webThickness / 2, centerPoint.skew, Math.PI / 2, rotationY, webJoint2D1)
@@ -323,19 +320,19 @@ export function IbeamJoint(webPoints, centerPoint, xs, wBolt, fBolt) {
   { x: - xs.flangeJointLength / 2, y: xs.flangeWidth / 2 - xs.flangeJointWidth }]
 
   let uflangeBolt = {
-    P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness,
+    P: fBolt.P, G: fBolt.G, size: fBolt.size, dia: fBolt.dia, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness,
     layout: BoltLayout(fBolt.G, fBolt.P, "y", joint2), isUpper: false
   };
   let uflangeBolt2 = {
-    P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness,
+    P: fBolt.P, G: fBolt.G, size: fBolt.size, dia: fBolt.dia, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness,
     layout: BoltLayout(fBolt.G, fBolt.P, "y", joint3), isUpper: false
   };
   let lflangeBolt = {
-    P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness,
+    P: fBolt.P, G: fBolt.G, size: fBolt.size, dia: fBolt.dia, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness,
     layout: BoltLayout(fBolt.G, fBolt.P, "y", joint2), isUpper: true
   };
   let lflangeBolt2 = {
-    P: fBolt.P, G: fBolt.G, size: fBolt.size, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness,
+    P: fBolt.P, G: fBolt.G, size: fBolt.size, dia: fBolt.dia, t: fBolt.t, l: xs.flangeJointThickness * 2 + xs.flangeThickness,
     layout: BoltLayout(fBolt.G, fBolt.P, "y", joint3), isUpper: true
   };
 

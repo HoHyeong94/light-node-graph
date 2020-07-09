@@ -634,6 +634,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     G: 75,
     pNum: 5,
     gNum: 2,
+    dia : 22,
     size: 37,
     t: 14,
   }
@@ -642,6 +643,7 @@ export function DYdia3(webPoints, point, skew, uflange, ds) {
     G: 75,
     pNum: 2,
     gNum: 3,
+    dia : 22,
     size: 37,
     t: 14,
   }
@@ -799,6 +801,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     pNum: 5,
     gNum: 2,
     size: 37,
+    dia : 22,
     t: 14,
   }
   let fBolt = {
@@ -806,6 +809,7 @@ export function DYdia2(webPoints, point, skew, uflangePoint, ds) {
     G: 75,
     pNum: 2,
     gNum: 3,
+    dia : 22,
     size: 37,
     t: 14,
   }

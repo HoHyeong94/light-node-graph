@@ -1038,6 +1038,38 @@ export function GirderGeneralDraw1(girderStation, layerNum) {
     return group
 }
 
+export function XbeamSection(xbeamDict, girderStation, layout) {
+    let group = new THREE.Group();
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+    let scale = 1; //layout.scale
+    let girderOffset = 24000;
+    let sideViewOffset = -8000 * scale;
+    let sectionViewOffset = 16000 * scale;
+    let initZ = [];
+    let supportNum = 3; // layout 변수안에서 자동계산되어야 함. 
+    let xoffset = 20000;
+    let girderNum = girderStation.length // layout 변수안에서 자동계산되어야 함. 
+
+    for (let j = 0; j < supportNum; j++) {
+        for (let i = 0; i < girderNum - 1; i++) {
+            let key = ("G" + (i + 1) + "S" + (j + 1)) + "G" + (i + 2) + "S" + (j + 1)
+            if (xbeamDict[key].point.offset) {
+                if (i === 0) { initZ.push(xbeamDict[key].point.z) }
+                let offset = xbeamDict[key].point.offset
+                let diaMesh = DiaSectionMesh(xbeamDict[key], lineMaterial)
+                diaMesh.forEach(function (mesh) {
+                    mesh.translateX(offset + j * xoffset);
+                    mesh.translateY(sectionViewOffset + xbeam.point.z - initZ[j]);
+                    // position.set(offset + j * xoffset, sectionViewOffset + girderPoint.point.z - initZ[j], 0)
+                    group.add(mesh)
+                })
+            }
+        }
+    }
+    return group
+}
+
+
 export function PartGeneralDraw(diaDict, girderStation, layout) {
     let group = new THREE.Group();
     let scale = 1; //layout.scale
@@ -1408,15 +1440,8 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     let textMesh;
     let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
-    let red = new THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
-    let green = new THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
-
-    // let boltSize = 22; // 추후 외부에서 가져와야함, 20200708 by drlim 
-    // let boltcircle = new THREE.EllipseCurve(0, 0, boltSize / 2, boltSize / 2);
-    // let boltcp = boltcircle.getPoints(16);
-    // let boltcirclegeo = new THREE.Geometry().setFromPoints(boltcp);
-
-
+    // let red = new THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
+    // let green = new THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
 
     label.push({    //sectiontitle
         text: sectionName,
@@ -1445,38 +1470,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     }
 
     let diaMesh = DiaSectionMesh(diaPoint, lineMaterial)
-    diaMesh.forEach(mesh=> group.add(mesh));
-
-    // let pts = [];
-    // let points = [];
-    // for (var key in diaPoint) {
-    //     if (diaPoint[key].points2D) {
-    //         group.add(sectionMesh(diaPoint[key].points2D, lineMaterial))
-
-    //         if (diaPoint[key].bolt && diaPoint[key].rotationX === Math.PI / 2) {
-    //             let cp = { x: (diaPoint[key].points2D[0].x + diaPoint[key].points2D[2].x) / 2, y: (diaPoint[key].points2D[0].y + diaPoint[key].points2D[2].y) / 2 }
-    //             for (let k in diaPoint[key].bolt.layout) {
-    //                 let x = diaPoint[key].bolt.layout[k][0];
-    //                 let y = diaPoint[key].bolt.layout[k][1];
-    //                 pts.push({ x: cp.x + x, y: cp.y + y })
-    //             }
-    //         }
-    //     }
-    //     if (diaPoint[key].hole) {
-    //         group.add(sectionMesh(diaPoint[key].hole, lineMaterial))
-    //     }
-    // }
-    // pts.forEach(function (pt) {
-    //     points.push({ x: pt.x + (boltSize), y: pt.y });
-    //     points.push({ x: pt.x - (boltSize), y: pt.y });
-    //     points.push({ x: pt.x, y: pt.y + (boltSize) });
-    //     points.push({ x: pt.x, y: pt.y - (boltSize) });
-    //     let boltCircle = new THREE.Line(boltcirclegeo, green);
-    //     boltCircle.position.set(pt.x, pt.y, 0);
-    //     group.add(boltCircle)
-    // })
-    // let mesh = LineSegMesh(points, red, 0)
-    // group.add(mesh)
+    diaMesh.forEach(mesh => group.add(mesh));
 
     //     if (diaPoint[key].size) {
     //         label.push({

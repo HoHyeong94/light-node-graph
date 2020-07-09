@@ -1,5 +1,6 @@
 import { sceneAdder, THREE } from "global";
-import { sectionView, topDraw, sideDraw, LineDrawView, LineSideView, GirderLayoutView, GirderGeneralDraw1, GirderGeneralDraw2, PartGeneralDraw } from "./module"
+import { sectionView, topDraw, sideDraw, LineDrawView, LineSideView, GirderLayoutView, 
+  XbeamSection,  GirderGeneralDraw1, GirderGeneralDraw2, PartGeneralDraw } from "./module"
 // import { LineToThree } from "../line/module";
 
 export function SectionViewer(){
@@ -108,6 +109,27 @@ PartGeneralView.prototype.on3DExecute = function() {
   sceneAdder({layer:layer, mesh:group},key);
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
 };
+
+
+export function XbeamGeneralView(){
+  this.addInput("diaDict","diaDict");
+  this.addInput("girderStation","girderStation");
+  this.addInput("layout","layout");
+}
+
+XbeamGeneralView.prototype.onExecute = function() {
+}
+
+XbeamGeneralView.prototype.on3DExecute = function() {
+  let group = XbeamSection(this.getInputData(0),this.getInputData(1),this.getInputData(2))
+  let layer = this.getInputData(2).layer;
+  let key = this.getInputData(2).key;
+  // console.log("check", layer,key)
+  sceneAdder({layer:layer, mesh:group},key);
+  // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
+};
+
+
 // export function SideViewer(){
 //   this.addInput("steelBoxDict","steelBoxDict");
 //   this.addInput("hBracingDict","hBracingDict");
