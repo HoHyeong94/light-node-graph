@@ -1824,7 +1824,7 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
 }
 
 export function hPlateSide2D(x1, x2, t, cp, rot, th1, th2) {
-  let result
+  let result = [];
   // x1, x2, cp에 대한 rot 회전이전의 상대좌표 x값
   // t 판의 두께, th1, th2, x1,x2 꼭지점의 내각, rot는 시계방향
   // 판의 두께는 항상 양수의 값을 가져야 함
