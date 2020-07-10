@@ -501,10 +501,7 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
 
 
 
-  let bracketPoint = [ToGlobalPoint(centerPoint, lstiff[0]),
-  ToGlobalPoint(centerPoint, rstiff[0]),
-  ToGlobalPoint(centerPoint, ufl),
-  ToGlobalPoint(centerPoint, ufr)];
+  let bracketPoint = [lstiff[0], rstiff[0], ufl, ufr];
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
     let grad = i < 2 ? lRad : uRad;
