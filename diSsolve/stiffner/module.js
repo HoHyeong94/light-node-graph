@@ -1832,7 +1832,7 @@ export function hPlateSide2D(x1, x2, t, z, cp, rot, th1, th2) {
   let cos = Math.cos(-rot);
   let sin = Math.sin(-rot);
   let pts = [{x: x1, y:z},{x: x2, y:z}, 
-    {x : x2 - t / Math.tan(th2) , y: t+z}, {x : x1 + t / Math.tan(th1), y: t+z} ];
+    {x : x2 + t / Math.tan(th2) , y: t+z}, {x : x1 + t / Math.tan(th1), y: t+z} ];
   pts.forEach(pt => result.push({x: cp.x + pt.x * cos - pt.y * sin, y: cp.y + pt.x * sin + pt.y * cos}))
   return result
 }

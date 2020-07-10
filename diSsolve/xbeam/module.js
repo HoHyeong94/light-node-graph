@@ -514,17 +514,19 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
     lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], xs.bracketFilletR, 4),
     lowerbracket1[6], lowerbracket1[7]];
-    result["bracket" + i.toFixed(0)] = {
-      points: bracketShape,
-      Thickness: xs.flangeThickness,
-      z: 0,
-      rotationX: 0,
-      rotationY: grad, 
-      hole: [],
-      point: bracketPoint[i],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    }
+    result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint,bracketPoint[i]), xs.flangeThickness, 0, centerPoint.skew, 0, grad, 
+      hPlateSide2D( 0, bracketLength / Math.cos(grad), xs.flangeThickness,0, brackentPoint, grad, Math.PI/2 + grad,Math.PI/2 + grad),false, false)
+    // {
+    //   points: bracketShape,
+    //   Thickness: xs.flangeThickness,
+    //   z: 0,
+    //   rotationX: 0,
+    //   rotationY: grad, 
+    //   hole: [],
+    //   point: bracketPoint[i],
+    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    // }
   }
   let webPlate = [lwebPlate[2], rwebPlate[2], rwebPlate[3], lwebPlate[3]]
   result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2,3],[0,1,2,3]);
