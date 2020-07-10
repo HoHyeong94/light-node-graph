@@ -537,7 +537,7 @@ export function DYXbeam2(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let ll = Math.sqrt((lwebPlate[2].x - rwebPlate[2].x) ** 2 + (lwebPlate[2].y - rwebPlate[2].y) ** 2)
   let lflangePlate = [{ x: 0, y: xs.flangeWidth / 2 }, { x: 0, y: -xs.flangeWidth / 2 }, { x: ll, y: -xs.flangeWidth / 2 }, { x: ll, y: xs.flangeWidth / 2 }];
   result["lflange"] = hPlateGen(lflangePlate, lPoint, xs.flangeThickness, -xs.flangeThickness, uPoint.skew, 0, lRad,
-    hPlateSide2D( 0, ll, xs.flangeThickness,0, lwebPlate[2], lRad, Math.PI/2 + lRad, Math.PI/2 + lRad), false, [0,1]);
+    hPlateSide2D( 0, ll, xs.flangeThickness,-xs.flangeThickness, lwebPlate[2], lRad, Math.PI/2 + lRad, Math.PI/2 + lRad), false, [0,1]);
 
   let joint = IbeamJoint(webPlate, centerPoint, xs, wBolt, fBolt)
   for (let i in joint) { result[i] = joint[i] }
