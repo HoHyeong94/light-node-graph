@@ -1822,3 +1822,16 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
   let result = { points2D: points2D, points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint, topView, sideView }
   return result
 }
+
+export function hPlateSide2D(x1, x2, t, cp, rot, th1, th2) {
+  let result
+  // x1, x2, cp에 대한 rot 회전이전의 상대좌표 x값
+  // t 판의 두께, th1, th2, x1,x2 꼭지점의 내각, rot는 시계방향
+  // 판의 두께는 항상 양수의 값을 가져야 함
+  let cos = Math.cos(-rot);
+  let sin = Math.sin(-rot);
+  let pts = [{x: x1, y:0},{x: x2, y:0}, 
+    {x : x2 - t / Math.tan(th2) , y: t}, {x : x1 + t / Math.tan(th1), y: t} ];
+  pts.forEach(pt => result.push({x: cp.x + pt.x * cos - pt.y * sin, y: cp.y + pt.x * sin + pt.y * cos}))
+  return result
+}
