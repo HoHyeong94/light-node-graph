@@ -335,7 +335,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
         plate2[k].forEach(element => result[k].push(element));
       }
     }
-    if ((!FisB && (Math.abs(former3 - latter3) > 100))) {
+    if (!FisB && (Math.abs(former3 - latter3) > 100) && (Math.abs(former3 - latter3) < 1000)) {
       for (let k in uf2) {
         if (uf2[k].length > 0) {
           let thickness = Math.abs(uf2[k][0].y - uf2[k][3].y);
@@ -487,18 +487,16 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
             }
           }
           else {
-            let indent = L2[0].y - L3[0].y // bottom point of web
-            wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
-            // if (indent < 100) {
-            //   wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
-            // } else {
-            //   console.log("chcek", pk1,pk2)
-            //   let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR, 8);
-            //   let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR, 8);
-            //   for (let l in fpt) {
-            //     steelBoxDict[keyname]["points"][2].push(fpt[l], wplate2[1], wplate2[2], fpt3[l])
-            //   }
-            // }
+            let indent = Math.abs(L2[0].y - L3[0].y) // bottom point of web
+            if (indent < 100) {
+              wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
+            } else {
+              let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR, 8);
+              let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR, 8);
+              for (let l in fpt) {
+                steelBoxDict[keyname]["points"][2].push(fpt[l], wplate2[1], wplate2[2], fpt3[l])
+              }
+            }
           }
         }
       }
