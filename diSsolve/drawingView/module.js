@@ -1334,7 +1334,7 @@ export function PartSideMesh(Part, scale, initPoint, rotate){
         })
         let mesh = sectionMesh(newPt, green)
         // mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
-        meshes.add(mesh)
+        meshes.push(mesh)
 
         if (Part.bolt) {
             let boltDia = Part.bolt.dia;
