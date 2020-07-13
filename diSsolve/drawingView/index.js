@@ -43,6 +43,7 @@ export function TopViewer(){
   this.addInput("hBracingDict","hBracingDict");
   this.addInput("diaDict","diaDict");
   this.addInput("vstiffDict","diaDict");
+  this.addInput("xbeamDict","diaDict");
   this.addInput("gridPoint","gridPoint");
   this.addInput("initPoint","point");
   this.addInput("girderStation","girderStation");
@@ -53,7 +54,7 @@ TopViewer.prototype.onExecute = function() {
 
 TopViewer.prototype.on3DExecute = function() {
   let offset = 5000;
-  let group = topDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5),this.getInputData(6))
+  let group = topDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5),this.getInputData(6), this.getInputData(7))
   // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
   group.position.set(0,-offset,0)
   sceneAdder({layer:6, mesh:group},"topView");
