@@ -513,7 +513,6 @@ UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
     let ps = pointSectionInfo.forward.uFlangeW === 0 ? pointSectionInfo.backward : pointSectionInfo.forward;
     const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
     let topY = slabToGirder ? ps.slabThickness + slabInfo.haunchHeight : centerThickness;
-    console.log(topY, pointSectionInfo)
     const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
     const lwt = { x: - sectionInfo.UL, y: - centerThickness };
     const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
@@ -528,6 +527,7 @@ UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
     let hpt = [];
     let wpt = [];
     const constant = [-3, 3, 3, -3]; //루프계산을 위한 계수 모음, 헌치의 기울기 : 밑변/높이비
+    console.log(gradient, wx)
     for (let i = 0; i < wx.length; i++) {
         hpt.push({ x: wx[i] + hl[i] * constant[i], y: - ps.slabThickness + girderPoint.gradientY * (wx[i] + hl[i] * constant[i]) })
         wpt.push({ x: wx[i], y: - topY + gradient * (wx[i]) })
