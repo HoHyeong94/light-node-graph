@@ -508,11 +508,12 @@ UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout) {
     let gradient = isFlat ? 0 : girderPoint.gradientY;
     let skew = girderPoint.skew;
     let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict) // slabThickness만 필요한 경우에는 흠...
+    
     let sectionInfo = girderBaseInfo.section
     let ps = pointSectionInfo.forward.uFlangeW === 0 ? pointSectionInfo.backward : pointSectionInfo.forward;
     const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
     let topY = slabToGirder ? ps.slabThickness + slabInfo.haunchHeight : centerThickness;
-
+    console.log(topY, pointSectionInfo)
     const lwb = { x: - sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
     const lwt = { x: - sectionInfo.UL, y: - centerThickness };
     const rwb = { x: sectionInfo.B / 2, y: -sectionInfo.H - centerThickness };
