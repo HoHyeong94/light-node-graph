@@ -1138,15 +1138,23 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     for (let i in diaDict) {
         for (let key in diaDict[i]) {
             let index = i.substr(1, 1) * 1 - 1; //거더번호
-            let rotationY = diaDict[i][key].rotationY;
-            let centerPoint = diaDict[i][key].point;
-            let cos = Math.cos(diaDict[i][key].rotationY)
-            let cosx = Math.cos(diaDict[i][key].rotationX)
+            // let rotationY = diaDict[i][key].rotationY;
+            // let centerPoint = diaDict[i][key].point;
+            // let cos = Math.cos(diaDict[i][key].rotationY)
+            // let cosx = Math.cos(diaDict[i][key].rotationX)
+
             let TopMesh = PartTopMesh(diaDict[i][key], scale, initPoint[index],rotate[index])
             TopMesh.forEach(function(mesh){
                 mesh.translateY(-index * girderOffset)
                 group.add(mesh)
             });
+
+            let sideMesh = PartSideMesh(diaDict[i][key], scale, initPoint[index])
+            sideMesh.forEach(function(mesh){
+                mesh.translateY(sideViewOffset - index * girderOffset)
+                group.add(mesh)
+            });
+
             // if (diaDict[i][key].topView) {
             //     let newPt = [];
             //     diaDict[i][key].topView.forEach(function (pt) {
@@ -1159,20 +1167,21 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
             //     group.add(mesh)
             //     // console.log("check", mesh)
             // }
-            if (diaDict[i][key].sideView) {
-                let newPt = [];
-                diaDict[i][key].sideView.forEach(function (pt) {
-                    let x = (pt.x) * scale
-                    let y = (pt.y - initPoint[index].z) * scale
-                    newPt.push({ x, y });
-                })
-                let mesh = sectionMesh(newPt, green)
-                mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
-                group.add(mesh)
 
-            }
+            // if (diaDict[i][key].sideView) {
+            //     let newPt = [];
+            //     diaDict[i][key].sideView.forEach(function (pt) {
+            //         let x = (pt.x) * scale
+            //         let y = (pt.y - initPoint[index].z) * scale
+            //         newPt.push({ x, y });
+            //     })
+            //     let mesh = sectionMesh(newPt, green)
+            //     mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
+            //     group.add(mesh)
 
-            if (diaDict[i][key].bolt) {
+            // }
+
+            // if (diaDict[i][key].bolt) {
                 // if (diaDict[i][key].bolt.isUpper === false) { //복부에 위치하는 볼트의 경우 모두 상단기준면임을 근거로 함. 2020.7.7 by drlim
                 //     let rot = Math.atan2(centerPoint.normalCos, - centerPoint.normalSin) + rotate[index];
                 //     let lcos = Math.cos(rot)
@@ -1209,33 +1218,33 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
                 //     mesh.position.set(0, -index * girderOffset, 0);
                 //     group.add(mesh)
                 // }
-                if (diaDict[i][key].sideView) {
-                    if (rotationY < Math.PI / 4 && rotationY > -Math.PI / 4) {
+            //     if (diaDict[i][key].sideView) {
+            //         if (rotationY < Math.PI / 4 && rotationY > -Math.PI / 4) {
 
-                    } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
-                        // let dz = 0
-                        let points = [];
-                        // if (typeof side2D === "number") { dz = side2D } // 해당내용은 실행이 안될수밖에 없음
-                        let X = (centerPoint.girderStation) * scale;
-                        let Y = ((diaDict[i][key].sideView[0].y + diaDict[i][key].sideView[2].y) / 2 - initPoint[index].z) * scale;
-                        for (let k in diaDict[i][key].bolt.layout) {
-                            let y = diaDict[i][key].bolt.layout[k][0];
-                            let x = diaDict[i][key].bolt.layout[k][1];
-                            points.push({ x: X + (x + boltSize) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
-                            points.push({ x: X + (x - boltSize) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
-                            points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) + boltSize) * scale });
-                            points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) - boltSize) * scale });
-                            let boltCircle = new THREE.Line(circlegeo, green);
-                            boltCircle.position.set(X + x * scale, Y + (y * Math.sin(rotationY)) * scale + sideViewOffset - index * girderOffset, 0);
-                            group.add(boltCircle)
-                        }
-                        let mesh = LineSegMesh(points, red, 0)
-                        mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
-                        group.add(mesh)
+            //         } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
+            //             // let dz = 0
+            //             let points = [];
+            //             // if (typeof side2D === "number") { dz = side2D } // 해당내용은 실행이 안될수밖에 없음
+            //             let X = (centerPoint.girderStation) * scale;
+            //             let Y = ((diaDict[i][key].sideView[0].y + diaDict[i][key].sideView[2].y) / 2 - initPoint[index].z) * scale;
+            //             for (let k in diaDict[i][key].bolt.layout) {
+            //                 let y = diaDict[i][key].bolt.layout[k][0];
+            //                 let x = diaDict[i][key].bolt.layout[k][1];
+            //                 points.push({ x: X + (x + boltSize) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
+            //                 points.push({ x: X + (x - boltSize) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
+            //                 points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) + boltSize) * scale });
+            //                 points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) - boltSize) * scale });
+            //                 let boltCircle = new THREE.Line(circlegeo, green);
+            //                 boltCircle.position.set(X + x * scale, Y + (y * Math.sin(rotationY)) * scale + sideViewOffset - index * girderOffset, 0);
+            //                 group.add(boltCircle)
+            //             }
+            //             let mesh = LineSegMesh(points, red, 0)
+            //             mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
+            //             group.add(mesh)
 
-                    }
-                }
-            }
+            //         }
+            //     }
+            // }
         }
     }
     return group
@@ -1243,8 +1252,12 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
 
 export function PartTopMesh(Part, scale, initPoint, rotate) {
     let meshes = [];
-    let index = i.substr(1, 1) * 1 - 1; //거더번호
-    let rotationY = Part.rotationY;
+    let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+    let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+    let red = new THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
+
+    // let index = i.substr(1, 1) * 1 - 1; //거더번호
+    // let rotationY = Part.rotationY;
     let centerPoint = Part.point;
     let cos = Math.cos(Part.rotationY)
     let cosx = Math.cos(Part.rotationX)
@@ -1299,9 +1312,60 @@ export function PartTopMesh(Part, scale, initPoint, rotate) {
         }
         // }
     }
-
-
     return meshes
+}
+
+export function PartSideMesh(Part, scale, initPoint, rotate){
+    let meshes = [];
+    // let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+    let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+    let red = new THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
+    let rotationY = Part.rotationY;
+    let centerPoint = Part.point;
+    // let cos = Math.cos(Part.rotationY)
+    // let cosx = Math.cos(Part.rotationX)
+
+    if (Part.sideView) {
+        let newPt = [];
+        Part.sideView.forEach(function (pt) {
+            let x = (pt.x) * scale
+            let y = (pt.y - initPoint.z) * scale
+            newPt.push({ x, y });
+        })
+        let mesh = sectionMesh(newPt, green)
+        // mesh.position.set(0, sideViewOffset - index * girderOffset, 0);
+        meshes.add(mesh)
+
+        if (Part.bolt) {
+            let boltDia = Part.bolt.dia;
+            let circle = new THREE.EllipseCurve(0, 0, boltDia / 2, boltDia / 2);
+            let cp = circle.getPoints(16);
+            let circlegeo = new THREE.Geometry().setFromPoints(cp);
+
+                if (rotationY > Math.PI / 4 || rotationY < -Math.PI / 4) {
+                   // let dz = 0
+                    let points = [];
+                    // if (typeof side2D === "number") { dz = side2D } // 해당내용은 실행이 안될수밖에 없음
+                    let X = (centerPoint.girderStation) * scale;
+                    let Y = ((Part.sideView[0].y + Part.sideView[2].y) / 2 - initPoint.z) * scale;
+                    for (let k in Part.bolt.layout) {
+                        let y = Part.bolt.layout[k][0];
+                        let x = Part.bolt.layout[k][1];
+                        points.push({ x: X + (x + boltDia) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
+                        points.push({ x: X + (x - boltDia) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
+                        points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) + boltDia) * scale });
+                        points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) - boltDia) * scale });
+                        let boltCircle = new THREE.Line(circlegeo, green);
+                        boltCircle.position.set(X + x * scale, Y + (y * Math.sin(rotationY)) * scale, 0);
+                        meshes.push(boltCircle)
+                    }
+                    let mesh = LineSegMesh(points, red, 0)
+                    meshes.push(mesh)
+                }
+            }
+    }
+
+ return meshes   
 }
 
 export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layerNum) {
