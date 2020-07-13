@@ -448,7 +448,7 @@ export function DeckSectionPoint(
         let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
         let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
         if (centerLineStations[i].key.substr(0, 3) !== "CRN" && centerLineStations[i].key !== "CRK0" && centerLineStations[i].key !== "CRK7") {
-            let key = centerLineStations[i].key.substr(2);
+            let key = centerLineStations[i].key.substr(2); // deckLineDict는 합성후 해석모델 단면정보에 들어감.
             deckLineDict[0].push({ key: "LD" + key, point: leftPoint, endT });
             deckLineDict[1].push({ key: "RD" + key, point: rightPoint, endT });
         }
@@ -462,7 +462,18 @@ export function DeckSectionPoint(
             // let gridName = "G" + (j * 1 + 1) + slabLayout[i].position.substr(2, 2)
             let girderLine = girderLayout.girderLine[j];
             let girderPoint = LineMatch2(masterPoint, masterLine, girderLine);
-            let lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+            let lw = [];
+            
+            if (centerLineStations[i].key !== "CRK0"){
+                let dummyPoint = LineMatch2(pointDict["CRK1"], masterLine, girderLine);
+                lw = UflangePoint(dummyPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+            } else if (centerLineStations[i].key !== "CRK7"){
+                let dummyPoint = LineMatch2(pointDict["CRK6"], masterLine, girderLine);
+                lw = UflangePoint(dummyPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+            } else {
+                lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+            }
+
             lw.forEach(elem => glw.push({ x: elem.x + girderPoint.offset, y: elem.y + girderPoint.z }))
             //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
             //추후 three.js union함수를 통한 바닥판 계산을 하는것은 어떨지 고민중

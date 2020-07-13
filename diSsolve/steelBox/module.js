@@ -335,7 +335,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
         plate2[k].forEach(element => result[k].push(element));
       }
     }
-    if (!FisB && (Math.abs(former3 - latter3) > 100) && (Math.abs(former3 - latter3) < 1000)) {
+    if (!FisB && (Math.abs(former3 - latter3) > 100) && (Math.abs(former3 - latter3) < 1000)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
       for (let k in uf2) {
         if (uf2[k].length > 0) {
           let thickness = Math.abs(uf2[k][0].y - uf2[k][3].y);
