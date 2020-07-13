@@ -168,10 +168,17 @@ export function DYXbeam4(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   const rotationY = (centerPoint.skew - 90) * Math.PI / 180
 
   //폐합시를 고려하여 예외처리 필요
-  let ufl = { x: iSectionPoint.uflange[1][0].x - dOffset, y: iSectionPoint.uflange[1][0].y - dz };
-  let ufr = { x: jSectionPoint.uflange[0][0].x + dOffset, y: jSectionPoint.uflange[0][0].y + dz };
-  // let lfl = { x: iSectionPoint.lflange[1][0].x - dOffset, y: iSectionPoint.lflange[1][0].y - dz };
-  // let lfr = { x: jSectionPoint.lflange[0][0].x + dOffset, y: jSectionPoint.lflange[0][0].y + dz };
+  let ufl, ufr
+  if (iSectionPoint.uflange[2].length > 0) {
+    ufl = { x: iSectionPoint.uflange[2][1].x - dOffset, y: iSectionPoint.uflange[2][1].y - dz };
+  } else {
+    ufl = { x: iSectionPoint.uflange[1][0].x - dOffset, y: iSectionPoint.uflange[1][0].y - dz };
+  }
+  if (jSectionPoint.uflange[2].length > 0) {
+    ufr = { x: jSectionPoint.uflange[2][0].x + dOffset, y: jSectionPoint.uflange[2][0].y + dz };
+  } else {
+    ufr = { x: jSectionPoint.uflange[0][0].x + dOffset, y: jSectionPoint.uflange[0][0].y + dz };
+  }
 
   let tl = { x: iSectionPoint.web[1][2].x - dOffset, y: iSectionPoint.web[1][2].y - dz };
   let tr = { x: jSectionPoint.web[0][2].x + dOffset, y: jSectionPoint.web[0][2].y + dz };
@@ -184,60 +191,61 @@ export function DYXbeam4(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lRad = -Math.atan(lGradient)
 
   let lwebPlate = PlateRestPoint({ x: bl.x, y: bl.y + xs.lflangeHeight }, { x: bl.x, y: bl.y + xs.webHeight + xs.lflangeHeight }, lGradient, lGradient, xs.bracketLength)
-  result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
+  result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0,3], [0,3,2,1]);
   let lstiff = PlateRestPoint({ x: bl.x, y: bl.y + xs.lflangeHeight - xs.flangeThickness }, bl, lGradient, 0, xs.stiffWidth);
-  let lstiff2 = PlateRestPoint({ x: bl.x, y: bl.y + xs.lflangeHeight + xs.webHeight + xs.flangeThickness }, tl, lGradient, 0, xs.stiffWidth);
+  let lstiff2 = PlateRestPoint({ x: bl.x, y: bl.y + xs.lflangeHeight + xs.webHeight + xs.flangeThickness }, tl, lGradient, uGradient, xs.stiffWidth);
   result["lstiff"] = vPlateGen(lstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
   result["lstiff2"] = vPlateGen(lstiff2, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
 
   let rwebPlate = PlateRestPoint({ x: br.x, y: br.y + xs.lflangeHeight }, { x: br.x, y: br.y + xs.webHeight + xs.lflangeHeight }, lGradient, lGradient, -xs.bracketLength)
-  result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
+  result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0,3], [0,3,2,1]);
   let rstiff = PlateRestPoint({ x: br.x, y: br.y + xs.lflangeHeight - xs.flangeThickness }, br, lGradient, 0, -xs.stiffWidth);
-  let rstiff2 = PlateRestPoint({ x: br.x, y: br.y + xs.lflangeHeight + xs.webHeight + xs.flangeThickness }, tr, lGradient, 0, -xs.stiffWidth);
+  let rstiff2 = PlateRestPoint({ x: br.x, y: br.y + xs.lflangeHeight + xs.webHeight + xs.flangeThickness }, tr, lGradient, uGradient, -xs.stiffWidth);
   result["rstiff"] = vPlateGen(rstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
   result["rstiff2"] = vPlateGen(rstiff2, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
 
 
-  let bracketPoint = [ToGlobalPoint(centerPoint, lwebPlate[0]),
-  ToGlobalPoint(centerPoint, rwebPlate[0]),
-  ToGlobalPoint(centerPoint, lwebPlate[1]),
-  ToGlobalPoint(centerPoint, rwebPlate[1])];
+  let bracketPoint = [lwebPlate[0], rwebPlate[0], lwebPlate[1], rwebPlate[1]];
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
     let grad = lRad;
     let bracketLength = xs.bracketLength;
     let z = i < 2 ? - xs.flangeThickness : 0;
+    let thickness = i < 2? xs.flangeThickness : - xs.flangeThickness
     let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
     { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
     lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], xs.bracketFilletR, 4),
     lowerbracket1[6], lowerbracket1[7]];
-    result["bracket" + i.toFixed(0)] = {
-      points: bracketShape,
-      Thickness: xs.flangeThickness,
-      z: z,
-      rotationX: 0,
-      rotationY: grad,
-      hole: [],
-      point: bracketPoint[i],
-      // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-      // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    }
+    result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint, bracketPoint[i]), xs.flangeThickness, z, centerPoint.skew, 0, grad,
+          hPlateSide2D(0, sign * bracketLength / Math.cos(grad), thickness, 0, bracketPoint[i], grad, Math.PI / 2 + grad, Math.PI / 2 + grad), false, false)
+    
+    // result["bracket" + i.toFixed(0)] = {
+    //   points: bracketShape,
+    //   Thickness: xs.flangeThickness,
+    //   z: z,
+    //   rotationX: 0,
+    //   rotationY: grad,
+    //   hole: [],
+    //   point: bracketPoint[i],
+    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
+    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
+    // }
   }
   let webPlate = [lwebPlate[3], rwebPlate[3], rwebPlate[2], lwebPlate[2]]
-  result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
+  result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2,3], [0,1,2,3]);
   let uPoint = ToGlobalPoint(centerPoint, lwebPlate[2])
   let l = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x) ** 2 + (lwebPlate[3].y - rwebPlate[3].y) ** 2)
   let uflangePlate = [{ x: 0, y: xs.flangeWidth / 2 }, { x: 0, y: -xs.flangeWidth / 2 }, { x: l, y: -xs.flangeWidth / 2 }, { x: l, y: xs.flangeWidth / 2 }];
-  result["uflange"] = hPlateGen(uflangePlate, uPoint, xs.flangeThickness, 0, uPoint.skew, 0, lRad);
+  result["uflange"] = hPlateGen(uflangePlate, uPoint, xs.flangeThickness, 0, uPoint.skew, 0, lRad,
+    hPlateSide2D(0, l, xs.flangeThickness, 0, lwebPlate[2], lRad, Math.PI / 2 + lRad, Math.PI / 2 + lRad), true, [0, 1]);
   let lPoint = ToGlobalPoint(centerPoint, lwebPlate[3])
   let ll = Math.sqrt((lwebPlate[2].x - rwebPlate[2].x) ** 2 + (lwebPlate[2].y - rwebPlate[2].y) ** 2)
   let lflangePlate = [{ x: 0, y: xs.flangeWidth / 2 }, { x: 0, y: -xs.flangeWidth / 2 }, { x: ll, y: -xs.flangeWidth / 2 }, { x: ll, y: xs.flangeWidth / 2 }];
-  result["lflange"] = hPlateGen(lflangePlate, lPoint, xs.flangeThickness, -xs.flangeThickness, uPoint.skew, 0, lRad);
-
+  result["lflange"] = hPlateGen(lflangePlate, lPoint, xs.flangeThickness, -xs.flangeThickness, uPoint.skew, 0, lRad,
+    hPlateSide2D(0, ll, -xs.flangeThickness, 0, lwebPlate[3], lRad, Math.PI / 2 + lRad, Math.PI / 2 + lRad), false, [0, 1]);
   let joint = IbeamJoint(webPlate, centerPoint, xs, wBolt, fBolt)
   for (let i in joint) { result[i] = joint[i] }
-
   let data = [ToGlobalPoint(centerPoint, { x: (lwebPlate[0].x + lwebPlate[1].x) / 2, y: (lwebPlate[0].y + lwebPlate[1].y) / 2, z: (lwebPlate[0].z + lwebPlate[1].z) / 2 }),
   ToGlobalPoint(centerPoint, { x: (rwebPlate[0].x + rwebPlate[1].x) / 2, y: (rwebPlate[0].y + rwebPlate[1].y) / 2, z: (rwebPlate[0].z + rwebPlate[1].z) / 2 })];
   let section = [xs.flangeWidth, xs.flangeThickness, xs.flangeWidth, xs.flangeThickness, xs.webHeight, xs.webThickness];
@@ -324,10 +332,6 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   } else {
     lfr = { x: jSectionPoint.lflange[0][0].x + dOffset, y: jSectionPoint.lflange[0][0].y + dz };
   }
-  // let ufl = { x: iSectionPoint.uflange[1][0].x - dOffset, y: iSectionPoint.uflange[1][0].y - dz };
-  // let ufr = { x: jSectionPoint.uflange[0][0].x + dOffset, y: jSectionPoint.uflange[0][0].y + dz };
-  // let lfl = { x: iSectionPoint.lflange[1][0].x - dOffset, y: iSectionPoint.lflange[1][0].y - dz };
-  // let lfr = { x: jSectionPoint.lflange[0][0].x + dOffset, y: jSectionPoint.lflange[0][0].y + dz };
 
   let tl = { x: iSectionPoint.web[1][2].x - dOffset, y: iSectionPoint.web[1][2].y - dz };
   let tr = { x: jSectionPoint.web[0][2].x + dOffset, y: jSectionPoint.web[0][2].y + dz };
@@ -384,18 +388,6 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     lowerbracket1[6], lowerbracket1[7]];
     result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint, bracketPoint[i]), xs.flangeThickness, z, centerPoint.skew, 0, grad,
           hPlateSide2D(0, sign * bracketLength / Math.cos(grad), thickness, 0, bracketPoint[i], grad, Math.PI / 2 + grad, Math.PI / 2 + grad), false, false)
-
-    // result["bracket" + i.toFixed(0)] = {
-    //   points: bracketShape,
-    //   Thickness: xs.flangeThickness,
-    //   z: z,
-    //   rotationX: 0,
-    //   rotationY: grad,
-    //   hole: [],
-    //   point: bracketPoint[i],
-    //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
-    //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    // }
   }
   let webPlate = [lwebPlate[3], rwebPlate[3], rwebPlate[4], lwebPlate[4]]
   result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2,3],[0, 1, 2, 3]);
