@@ -488,16 +488,17 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           }
           else {
             let indent = L2[0].y - L3[0].y // bottom point of web
-            if (indent < 100) {
-              wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
-            } else {
-              console.log("chcek", pk1,pk2)
-              let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR, 8);
-              let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR, 8);
-              for (let l in fpt) {
-                steelBoxDict[keyname]["points"][2].push(fpt[l], wplate2[1], wplate2[2], fpt3[l])
-              }
-            }
+            wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
+            // if (indent < 100) {
+            //   wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
+            // } else {
+            //   console.log("chcek", pk1,pk2)
+            //   let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR, 8);
+            //   let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR, 8);
+            //   for (let l in fpt) {
+            //     steelBoxDict[keyname]["points"][2].push(fpt[l], wplate2[1], wplate2[2], fpt3[l])
+            //   }
+            // }
           }
         }
       }
