@@ -303,7 +303,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   const rotationY = (centerPoint.skew - 90) * Math.PI / 180
 
   //폐합시를 고려하여 예외처리 필요
-  let ufl, ufr
+  let ufl, ufr, lfl, lfr
   if (iSectionPoint.uflange[2].length > 0) {
     ufl = { x: iSectionPoint.uflange[2][1].x - dOffset, y: iSectionPoint.uflange[2][1].y - dz };
   } else {
