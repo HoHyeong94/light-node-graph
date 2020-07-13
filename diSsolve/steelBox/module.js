@@ -260,7 +260,7 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
   return result
 }
 
-export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey, splicer,endCutFilletR) {
+export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, plateKey, splicer, endCutFilletR) {
   // 박스형 거더의 상하부플레이트 개구와 폐합에 대한 필렛을 위해 개발되었으며, 개구->폐합, 폐합->개구에 대해서만 가능하다, 
   // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
 
@@ -284,7 +284,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
 
   let former3 = uf2[0][0] ? uf2[0][0].y : uf2[2][0].y
   let latter3 = uf3[0][0] ? uf3[0][0].y : uf3[2][0].y
-  
+
 
   for (let k in uf1) {
     uf0[k].forEach(element => plate0[k].push(ToGlobalPoint(point1, element)));
@@ -330,26 +330,26 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   } else {
     let spCheck = false
     splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
-    if (spCheck ) {  //형고 높이가 100mm 이상인 경우에만 반영
+    if (spCheck) {  //형고 높이가 100mm 이상인 경우에만 반영
       for (let k in uf2) {
         plate2[k].forEach(element => result[k].push(element));
       }
     }
-    if ((!FisB && (Math.abs(former3 - latter3) > 100))){
-      for (let k in uf2){
-        if (uf2[k].length >0){
+    if ((!FisB && (Math.abs(former3 - latter3) > 100))) {
+      for (let k in uf2) {
+        if (uf2[k].length > 0) {
           let thickness = Math.abs(uf2[k][0].y - uf2[k][3].y);
-          let npt2 = DividingPoint(plate2[k][2],plate1[k][2],thickness);
-          let npt3 = DividingPoint(plate2[k][3],plate1[k][3],thickness);
-          let nplate1 = [plate2[k][0],plate2[k][1],npt2, npt3];
-          let nplate2 = [plate3[k][3],plate3[k][2],{x:npt2.x, y:npt2.y, z : plate3[k][2].z},{x:npt3.x, y:npt3.y, z : plate3[k][3].z}];
-          let filletList = [[],[],[],[]];
-          for(let l = 0; l<4; l++){
-            let radius = l<2? endCutFilletR: endCutFilletR - thickness;
-           filletList[l].push(...fillet3D(plate1[k][l],nplate1[l],nplate2[l],radius,8));
+          let npt2 = DividingPoint(plate2[k][2], plate1[k][2], thickness);
+          let npt3 = DividingPoint(plate2[k][3], plate1[k][3], thickness);
+          let nplate1 = [plate2[k][0], plate2[k][1], npt2, npt3];
+          let nplate2 = [plate3[k][3], plate3[k][2], { x: npt2.x, y: npt2.y, z: plate3[k][2].z }, { x: npt3.x, y: npt3.y, z: plate3[k][3].z }];
+          let filletList = [[], [], [], []];
+          for (let l = 0; l < 4; l++) {
+            let radius = l < 2 ? endCutFilletR : endCutFilletR - thickness;
+            filletList[l].push(...fillet3D(plate1[k][l], nplate1[l], nplate2[l], radius, 8));
           }
-          for (let l in filletList[0]){
-            result[k].push(filletList[0][l],filletList[1][l],filletList[2][l],filletList[3][l]);
+          for (let l in filletList[0]) {
+            result[k].push(filletList[0][l], filletList[1][l], filletList[2][l], filletList[3][l]);
           }
           // result[k].push(plate2[k][0],plate2[k][1],npt2, npt3)
           result[k].push(...nplate2);
@@ -420,7 +420,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       sideKeyname = "G" + (i * 1 + 1).toString() + "TopSide" + UFi
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
       splicer = ["TF", "SP", "K6"]
-      let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer,endCutFilletR)
+      let uflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "uflange", splicer, endCutFilletR)
       for (let k in uflangePoint) {
         uflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
       }
@@ -437,7 +437,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       sideKeyname = "G" + (i * 1 + 1).toString() + "BottomSide" + Bi
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
       splicer = ["BF", "SP", "K6"]
-      let lflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflange", splicer,endCutFilletR)
+      let lflangePoint = steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, "lflange", splicer, endCutFilletR)
       for (let k in lflangePoint) {
         lflangePoint[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
       }
@@ -454,15 +454,15 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       for (let k in webSide) {
         webSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
-      
+
       for (let l = 0; l < 2; l++) {
-        
-        keyname = l===0? "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi : keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
+
+        keyname = l === 0 ? "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi : keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
         if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
         L1 = sectionPointDict[pk1].forward.web[l]
         L2 = sectionPointDict[pk2].backward.web[l]
         L3 = sectionPointDict[pk2].forward.web[l]
-        
+
         let wplate1 = [];
         let wplate2 = [];
         let wplate3 = [];
@@ -488,13 +488,14 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
           }
           else {
             let indent = L2[0].y - L3[0].y // bottom point of web
-            if (indent < 100){
-            wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
-            }else {
-              let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR,8);
-              let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR,8);
-              for (let l in fpt){
-                steelBoxDict[keyname]["points"][2].push(fpt[l],wplate2[1],wplate2[2],fpt3[l])
+            if (indent < 100) {
+              wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
+            } else {
+              console.log("chcek", pk1,pk2)
+              let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR, 8);
+              let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR, 8);
+              for (let l in fpt) {
+                steelBoxDict[keyname]["points"][2].push(fpt[l], wplate2[1], wplate2[2], fpt3[l])
               }
             }
           }
