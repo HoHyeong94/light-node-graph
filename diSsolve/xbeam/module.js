@@ -346,7 +346,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let lstiffPoint = [tl, { x: bl.x, y: bl.y + xs.webHeight + xs.flangeThickness }, { x: bl.x + xs.stiffWidth2, y: bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2 },
     { x: bl.x + xs.stiffWidth2, y: bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2 + 50 },
     { x: bl.x + xs.stiffWidth, y: bl.y + xs.webHeight + xs.flangeThickness + uGradient * xs.stiffWidth2 + (xs.stiffWidth2 - xs.stiffWidth) + 50 },
-    { x: tl.x + xs.stiffWidth, y: tl.y + uGradient * xs.stiffWidth }]
+    { x: tl.x + xs.stiffWidth, y: tl.y + tGradient * xs.stiffWidth }]
   let lstiff = [];
   lstiff.push(...scallop(lstiffPoint[5], lstiffPoint[0], lstiffPoint[1], xs.scallopRadius, 4))
   lstiff.push(...scallop(lstiffPoint[0], lstiffPoint[1], lstiffPoint[2], xs.scallopRadius, 4))
@@ -361,7 +361,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   let rstiffPoint = [tr, { x: br.x, y: br.y + xs.webHeight + xs.flangeThickness }, { x: br.x - xs.stiffWidth2, y: br.y + xs.webHeight + xs.flangeThickness - uGradient * xs.stiffWidth2 },
     { x: br.x - xs.stiffWidth2, y: br.y + xs.webHeight + xs.flangeThickness - uGradient * xs.stiffWidth2 + 50 },
     { x: br.x - xs.stiffWidth, y: br.y + xs.webHeight + xs.flangeThickness - uGradient * xs.stiffWidth2 + (xs.stiffWidth2 - xs.stiffWidth) + 50 },
-    { x: tr.x - xs.stiffWidth, y: tr.y - uGradient * xs.stiffWidth }]
+    { x: tr.x - xs.stiffWidth, y: tr.y - tGradient * xs.stiffWidth }]
   let rstiff = [];
   rstiff.push(...scallop(rstiffPoint[5], rstiffPoint[0], rstiffPoint[1], xs.scallopRadius, 4))
   rstiff.push(...scallop(rstiffPoint[0], rstiffPoint[1], rstiffPoint[2], xs.scallopRadius, 4))
@@ -370,10 +370,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
   rstiff.push(rstiffPoint[5])
   result["rstiff"] = vPlateGen(rstiff, centerPoint, xs.stiffThickness, [], 0, null, null, []);
 
-  let bracketPoint = [ToGlobalPoint(centerPoint, lwebPlate[0]),
-  ToGlobalPoint(centerPoint, rwebPlate[0]),
-  ToGlobalPoint(centerPoint, lfl),
-  ToGlobalPoint(centerPoint, lfr)];
+  let bracketPoint = [lwebPlate[0], rwebPlate[0], lfl, lfr];
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
     let grad = i < 2 ? uRad : lRad;
