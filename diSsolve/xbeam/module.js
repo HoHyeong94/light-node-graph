@@ -375,7 +375,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     let sign = i % 2 === 0 ? 1 : -1;
     let grad = i < 2 ? uRad : lRad;
     let z = i < 2 ? 0 : -xs.flangeThickness;
-    let th1 = i < 2 ? Math.PI / 2 + grad : Math.PI / 2
+    let thickness = i < 2? xs.flangeThickness : - xs.flangeThickness
     let bracketLength = i < 2 ? xs.bracketLength : i === 2 ? xs.bracketLength - (ufl.x - tl.x) : xs.bracketLength - (tr.x - ufr.x);
     let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
     { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
@@ -383,7 +383,7 @@ export function DYXbeam3(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSect
     lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], xs.bracketFilletR, 4),
     lowerbracket1[6], lowerbracket1[7]];
     result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint, bracketPoint[i]), xs.flangeThickness, z, centerPoint.skew, 0, grad,
-      hPlateSide2D(0, sign * bracketLength / Math.cos(grad), xs.flangeThickness, z, bracketPoint[i], grad, th1, Math.PI / 2 + grad), false, false)
+          hPlateSide2D(0, sign * bracketLength / Math.cos(grad), thickness, 0, bracketPoint[i], grad, Math.PI / 2 + grad, Math.PI / 2 + grad), false, false)
 
     // result["bracket" + i.toFixed(0)] = {
     //   points: bracketShape,
