@@ -273,7 +273,7 @@ export function SupportGenerator(supportFixed, supportData, gridPoint) {
         type = supportData[index][1] //.type
         let offset = supportData[index][2] //.offset
         point = gridPoint[name]
-        console.log(name, point)
+        // console.log(name, point)
         let skew = point.skew * Math.PI / 180
         let newPoint = {
             x: point.x - (Math.cos(skew) * (-1) * point.normalSin - Math.sin(skew) * point.normalCos) * offset,
@@ -675,7 +675,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             elemNum++
         }
     }
-    console.log("new", frameInput.girderElemList)
+    // console.log("new", frameInput.girderElemList)
     return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
 }
 

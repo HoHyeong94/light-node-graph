@@ -240,7 +240,7 @@ export function AnalysisModel(node, frame) {
         }
     }
 
-    console.log("newSapOutput", analysisOutput)
+    // console.log("newSapOutput", analysisOutput)
 
 
     return { group, analysisOutput }

@@ -1231,7 +1231,6 @@ export function PartTopMesh(Part, scale, initPoint, rotate) {
                 points.push({ x: pt.x - (lsin * boltDia) * scale, y: pt.y + (lcos * boltDia) * scale });
                 points.push({ x: pt.x + (lsin * boltDia) * scale, y: pt.y - (lcos * boltDia) * scale });
             })
-            console.log("newpt", newPt)
             newPt.forEach(function (pt) {
                 let boltCircle = new THREE.Line(circlegeo, green);
                 boltCircle.position.set(pt.x, pt.y, 0);
