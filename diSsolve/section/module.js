@@ -464,10 +464,10 @@ export function DeckSectionPoint(
             let girderPoint = LineMatch2(masterPoint, masterLine, girderLine);
             let lw = [];
             
-            if (centerLineStations[i].key !== "CRK0"){
+            if (centerLineStations[i].key === "CRK0"){
                 let gridName = "G" + (j * 1 + 1) + "K1"
                 lw = UflangePoint(pointDict[gridName], pointDict, girderBaseInfo[j], slabInfo, slabLayout);
-            } else if (centerLineStations[i].key !== "CRK7"){
+            } else if (centerLineStations[i].key === "CRK7"){
                 let dummyPoint = LineMatch2(pointDict["CRK6"], masterLine, girderLine);
                 lw = UflangePoint(dummyPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
             } else {
