@@ -1045,22 +1045,28 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, xbeamDict, 
     return group
 }
 
-export function GirderGeneralDraw1(girderStation, layerNum) {
+export function GirderGeneralDraw1(girderStation, layout) {
+    // let layout = {
+    //     layer : 5,
+    //     scale : 1,
+    //     girderOffset : 24000,
+    //     gridMarkWidth : 1500,
+    // }
     let group = new THREE.Group();
     // let layerNum = 5;
-    let scale = 1;
-    let girderOffset = 24000;
-    let gridMark_width = 1500; // unit : mm
+    let scale = layout.scale
+    let girderOffset = layout.girderOffset * scale;
+    let gridMarkWidth = layout.gridMarkWidth * scale; // unit : mm
     for (let i = 0; i < girderStation.length; i++) {
         let initPoint = girderStation[i][0].point
         let endPoint = girderStation[i][girderStation[i].length - 1].point
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
-        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
+        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMarkWidth, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh);
         });
-        let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum)
+        let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layout.layer)
         label.position.set(0, -i * girderOffset, 0);
         group.add(label)
     }
@@ -1115,11 +1121,21 @@ export function XbeamSection(xbeamDict, girderStation, layout) {
 
 
 export function PartGeneralDraw(diaDict, girderStation, layout) {
+    
     let group = new THREE.Group();
-    let scale = 1; //layout.scale
-    let girderOffset = 24000;
-    let sideViewOffset = -8000 * scale;
-    let sectionViewOffset = 16000 * scale;
+    // let layerNum = 5;
+        // let layout = {
+    //     layer : 5,
+    //     scale : 1,
+    //     girderOffset : 24000,
+    //     sideViewOffset : -8000,
+    //     sectionViewOffset : 16000
+    //     gridMarkWidth : 1500,
+    // }
+    let scale = layout.scale; //layout.scale
+    let girderOffset = layout.girderOffset * scale;
+    let sideViewOffset = layout.sideViewOffset * scale;
+    let sectionViewOffset = layout.sectionViewOffset * scale;
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
     let initPoint = [];
     let endPoint = [];
@@ -1296,14 +1312,24 @@ export function PartSideMesh(Part, scale, initPoint, rotate) {
     return meshes
 }
 
-export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layerNum) {
+export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layout) {
+    
     let group = new THREE.Group();
     // let layerNum = 5;
-    let scale = 1;
-    let girderOffset = 24000;
-    let sideViewOffset = -8000 * scale;
-    let sectionViewOffset = 16000 * scale;
-    let gridMark_width = 1500; // unit : mm
+        // let layout = {
+    //     layer : 5,
+    //     scale : 1,
+    //     girderOffset : 24000,
+    //     sideViewOffset : -8000,
+    //     sectionViewOffset : 16000
+    //     gridMarkWidth : 1500,
+    // }
+    let scale = layout.scale;
+    let girderOffset = layout.girderOffset * scale;
+    let sideViewOffset = layout.sideViewOffset * scale;
+    let sectionViewOffset = layout.sectionViewOffset * scale;
+    let gridMarkWidth = layout.gridMarkWidth * scale; // unit : mm
+
     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
     let white = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -1343,13 +1369,13 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
             // mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
             group.add(mesh)
         });
-        group.add(LabelInsert(girderSection.labels, white, layerNum));
-        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
+        group.add(LabelInsert(girderSection.labels, white, layout.layer));
+        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMarkWidth, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh);
         });
-        let label = LabelInsert(gridMark.labels, white, layerNum)
+        let label = LabelInsert(gridMark.labels, white, layout.layer)
         label.position.set(0, -i * girderOffset, 0);
         group.add(label)
     }

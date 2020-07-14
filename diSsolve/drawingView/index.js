@@ -63,7 +63,7 @@ TopViewer.prototype.on3DExecute = function() {
 
 export function GirderGeneralView1(){
   this.addInput("girderStation","girderStation");
-  this.addInput("layerNumber","number");
+  this.addInput("layout","layout");
 }
 
 GirderGeneralView1.prototype.onExecute = function() {
@@ -80,7 +80,7 @@ export function GirderGeneralView2(){
   this.addInput("girderStation","girderStation");
   this.addInput("steelBoxDict","steelBoxDict");
   this.addInput("deckPointDict","deckPointDict");
-  this.addInput("layerNumber","number");
+  this.addInput("layout","layout");
 }
 
 GirderGeneralView2.prototype.onExecute = function() {
@@ -97,6 +97,7 @@ export function PartGeneralView(){
   this.addInput("diaDict","diaDict");
   this.addInput("girderStation","girderStation");
   this.addInput("layout","layout");
+  this.addInput("key","key");
 }
 
 PartGeneralView.prototype.onExecute = function() {
@@ -105,7 +106,7 @@ PartGeneralView.prototype.onExecute = function() {
 PartGeneralView.prototype.on3DExecute = function() {
   let group = PartGeneralDraw(this.getInputData(0),this.getInputData(1),this.getInputData(2))
   let layer = this.getInputData(2).layer;
-  let key = this.getInputData(2).key;
+  let key = this.getInputData(3);
   // console.log("check", layer,key)
   sceneAdder({layer:layer, mesh:group},key);
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
@@ -116,6 +117,7 @@ export function XbeamGeneralView(){
   this.addInput("diaDict","diaDict");
   this.addInput("girderStation","girderStation");
   this.addInput("layout","layout");
+  this.addInput("key","key");
 }
 
 XbeamGeneralView.prototype.onExecute = function() {
@@ -124,7 +126,7 @@ XbeamGeneralView.prototype.onExecute = function() {
 XbeamGeneralView.prototype.on3DExecute = function() {
   let group = XbeamSection(this.getInputData(0),this.getInputData(1),this.getInputData(2))
   let layer = this.getInputData(2).layer;
-  let key = this.getInputData(2).key;
+  let key = this.getInputData(3);
   // console.log("check", layer,key)
   sceneAdder({layer:layer, mesh:group},key);
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
