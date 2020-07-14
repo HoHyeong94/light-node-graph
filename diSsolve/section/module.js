@@ -104,14 +104,11 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                 if (newtl2.x < newtr2.x) { //양측의 플렌지가 서로 중첩될 경우
                     uflange[0] = [newtl1, newtl2, {x : newtl2.x - sin * ps.uFlangeThk, y: newtl2.y + cos * ps.uFlangeThk}, 
                                 {x : newtl1.x - sin * ps.uFlangeThk, y: newtl1.y + cos * ps.uFlangeThk}]
-                    // PlateRestPoint(newtl1, newtl2, tan, tan, ps.uFlangeThk);//gradient가 0인 경우, inf에 대한 예외처리 필요
                     uflange[1] = [newtr1, newtr2, {x : newtr2.x - sin * ps.uFlangeThk, y: newtr2.y + cos * ps.uFlangeThk}, 
                         {x : newtr1.x - sin * ps.uFlangeThk, y: newtr1.y + cos * ps.uFlangeThk}]
-                    // ]PlateRestPoint(newtr1, newtr2, tan, tan, ps.uFlangeThk);;
                 } else {
                     uflange[2] = [newtl1, newtr1, {x : newtr1.x - sin * ps.uFlangeThk, y: newtr1.y + cos * ps.uFlangeThk}, 
                         {x : newtl1.x - sin * ps.uFlangeThk, y: newtl1.y + cos * ps.uFlangeThk}]
-                    // PlateRestPoint(newtl1, newtr1, tan, tan, ps.uFlangeThk);;
                 }
                 let uflangeSide = [-topY, -topY + ps.uFlangeThk]
                 let lflangeSide = [-bottomY, -bottomY - ps.lFlangeThk]
