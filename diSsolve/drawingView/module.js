@@ -1588,8 +1588,8 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     //     }
     let dims = [];
     if (sectionPoint.uflange[0].length >0){
-        dims.push(Dimension([sectionPoint.uflange[0][0], sectionPoint.uflange[1][0]], 0, sc, 1, true, true, 1))   //top1
-        dims.push(Dimension([sectionPoint.uflange[0][0], sectionPoint.uflange[0][1], sectionPoint.uflange[1][1], sectionPoint.uflange[1][0]], 0, sc, 1, true, true, 0)) //top2
+        dims.push(Dimension([sectionPoint.uflange[0][0], sectionPoint.uflange[1][0]], 0, sc, 1, true, true, 2))   //top1
+        dims.push(Dimension([sectionPoint.uflange[0][0], sectionPoint.uflange[0][1], sectionPoint.uflange[1][1], sectionPoint.uflange[1][0]], 0, sc, 1, true, true, 1)) //top2
     } else {
         dims.push(Dimension([sectionPoint.uflange[2][0], sectionPoint.uflange[2][1]], 0, sc, 1, true, true, 1))   //top1
     }
@@ -1598,8 +1598,12 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     // dims.push(Dimension([sectionPoint.lWeb[0], sectionPoint.lWeb[1]], 1, sc, 1, false, false, 2)) //left1
     // dims.push(Dimension([sectionPoint.lWeb[0], diaPoint.lowerTopShape.points[0], diaPoint.lowerTopShape.points[1], diaPoint.leftTopPlateShape.points[3], diaPoint.leftTopPlateShape.points[0], sectionPoint.lWeb[1]], 5, sc, 1, false, false, 1)) // left2
     // dims.push(Dimension([sectionPoint.bottomPlate[3], sectionPoint.lWeb[0], sectionPoint.rWeb[0], sectionPoint.bottomPlate[2]], 0, sc, 1, true, false, 0)) //bottom1
-    // dims.push(Dimension([sectionPoint.bottomPlate[3], sectionPoint.bottomPlate[2]], 0, sc, 1, true, false, 1)) //botoom2
-
+    if (sectionPoint.lflange[0].length > 0){
+        dims.push(Dimension([sectionPoint.lflange[0][0], sectionPoint.lflange[1][0]], 0, sc, 1, true, false, 2)) //botoom2
+        dims.push(Dimension([sectionPoint.lflange[0][0], sectionPoint.lflange[0][1], sectionPoint.lflange[1][1], sectionPoint.lflange[1][0]], 0, sc, 1, true, false, 1)) //botoom2
+    } else {
+        dims.push(Dimension([sectionPoint.lflange[2][0], sectionPoint.lflange[2][0]], 0, sc, 1, true, false, 1)) //botoom2
+    }
     // // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
 
     for (let i in dims) {
