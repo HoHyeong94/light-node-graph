@@ -751,7 +751,7 @@ export function PointToDraw(point, scale, initPoint, rotate, xOffset, yOffset) {
     return { x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 }
 }
 
-export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
+export function GridMarkView(girderStation, scale, initPoint, rotate, layout, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
@@ -768,7 +768,8 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let dummy3 = {};
     let dummy4 = {};
     let dummy5 = {};
-    let sideViewOffset = -8000 * scale;
+    let sideViewOffset = layout.sideViewOffset * scale;
+    let markOffset = layout.gridMarkWidth
     let segLength = 0;
     let totalLength = 0;
     let dummyLength = 0;
@@ -1061,7 +1062,7 @@ export function GirderGeneralDraw1(girderStation, layout) {
         let initPoint = girderStation[i][0].point
         let endPoint = girderStation[i][girderStation[i].length - 1].point
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
-        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMarkWidth, i + 1)
+        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, layout, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh);
@@ -1370,14 +1371,14 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
             group.add(mesh)
         });
         group.add(LabelInsert(girderSection.labels, white, layout.layer));
-        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMarkWidth, i + 1)
-        gridMark.meshes.forEach(function (mesh) {
-            mesh.position.set(0, -i * girderOffset, 0);
-            group.add(mesh);
-        });
-        let label = LabelInsert(gridMark.labels, white, layout.layer)
-        label.position.set(0, -i * girderOffset, 0);
-        group.add(label)
+        // let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, layout, i + 1)
+        // gridMark.meshes.forEach(function (mesh) {
+        //     mesh.position.set(0, -i * girderOffset, 0);
+        //     group.add(mesh);
+        // });
+        // let label = LabelInsert(gridMark.labels, white, layout.layer)
+        // label.position.set(0, -i * girderOffset, 0);
+        // group.add(label)
     }
     return group
 }
