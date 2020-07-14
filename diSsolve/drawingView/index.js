@@ -97,7 +97,7 @@ export function PartGeneralView(){
   this.addInput("diaDict","diaDict");
   this.addInput("girderStation","girderStation");
   this.addInput("layout","layout");
-  this.addInput("key","text");
+  this.addInput("key","string");
 }
 
 PartGeneralView.prototype.onExecute = function() {
@@ -117,7 +117,7 @@ export function XbeamGeneralView(){
   this.addInput("diaDict","diaDict");
   this.addInput("girderStation","girderStation");
   this.addInput("layout","layout");
-  this.addInput("key","text");
+  this.addInput("key","string");
 }
 
 XbeamGeneralView.prototype.onExecute = function() {
