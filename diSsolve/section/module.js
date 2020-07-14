@@ -83,7 +83,7 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                     lflange[2] = PlateRestPoint(newbl1, newbr1, null, null, -ps.lFlangeThk);;
                 }
 
-                let tan = gradient === 0 ? null : -1 / gradient;
+                let tan = gradient === 0 ? null : Math.abs(-1 / gradient);
                 // TopPlate
                 let tl1 = { x: lw2.x - sectionInfo.C, y: lw2.y + gradient * (- sectionInfo.C) };
                 let tl2 = { x: lw2.x - sectionInfo.C + ps.uFlangeW, y: lw2.y + gradient * (- sectionInfo.C + ps.uFlangeW) };

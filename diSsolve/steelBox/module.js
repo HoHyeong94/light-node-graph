@@ -415,7 +415,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       // let R3 = sectionPointDict[pk2].forward.rightTopPlate
       let FisB = true;  //forward is backward?  
 
-      keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi
+      keyname = "G" + (i * 1 + 1).toString() + "TopPlate" + UFi 
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
       sideKeyname = "G" + (i * 1 + 1).toString() + "TopSide" + UFi
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
@@ -432,7 +432,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       // pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
 
 
-      keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi
+      keyname = "G" + (i * 1 + 1).toString() + "BottomPlate" + Bi 
       if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
       sideKeyname = "G" + (i * 1 + 1).toString() + "BottomSide" + Bi
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
