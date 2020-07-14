@@ -1329,7 +1329,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
     let girderOffset = layout.girderOffset * scale;
     let sideViewOffset = layout.sideViewOffset * scale;
     let sectionViewOffset = layout.sectionViewOffset * scale;
-    let gridMarkWidth = layout.gridMarkWidth * scale; // unit : mm
+    // let gridMarkWidth = layout.gridMarkWidth * scale; // unit : mm
 
     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
@@ -1586,8 +1586,8 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     //             weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
     //         }
     //     }
-    // let dims = [];
-    // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 1))   //top1
+    let dims = [];
+    dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 1))   //top1
     // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.leftTopPlate[2], sectionPoint.rightTopPlate[2], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 0)) //top2
     // dims.push(Dimension([sectionPoint.rWeb[0], sectionPoint.rWeb[1]], 1, sc, 1, false, true, 2)) //right1
     // dims.push(Dimension([sectionPoint.rWeb[0], diaPoint.lowerTopShape.points[3], diaPoint.lowerTopShape.points[2], diaPoint.rightTopPlateShape.points[3], diaPoint.rightTopPlateShape.points[0], sectionPoint.rWeb[1]], 5, sc, 1, false, true, 1)) //right2
@@ -1598,10 +1598,10 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
 
     // // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
 
-    // for (let i in dims) {
-    //     dims[i].meshes.forEach(function (mesh) { group.add(mesh) })
-    //     dims[i].labels.forEach(function (elem) { label.push(elem) })
-    // }
+    for (let i in dims) {
+        dims[i].meshes.forEach(function (mesh) { group.add(mesh) })
+        dims[i].labels.forEach(function (elem) { label.push(elem) })
+    }
     // for (let i in weldings) {
     //     weldings[i].meshes.forEach(function (mesh) { group.add(mesh) })
     //     weldings[i].labels.forEach(function (elem) { label.push(elem) })
