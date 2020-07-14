@@ -71,7 +71,7 @@ GirderGeneralView1.prototype.onExecute = function() {
 
 GirderGeneralView1.prototype.on3DExecute = function() {
   let group = GirderGeneralDraw1(this.getInputData(0),this.getInputData(1))
-  sceneAdder({layer:this.getInputData(1), mesh:group},"GirderGeneralView1");
+  sceneAdder({layer:this.getInputData(1).layer, mesh:group},"GirderGeneralView1");
   // sceneAdder(group, [this.getInputData(1), "GirderGeneralView1", "total"] );
 };
 
@@ -88,7 +88,7 @@ GirderGeneralView2.prototype.onExecute = function() {
 
 GirderGeneralView2.prototype.on3DExecute = function() {
   let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2), this.getInputData(3), this.getInputData(4))
-  sceneAdder({layer:this.getInputData(4), mesh:group},"GirderGeneralView2");
+  sceneAdder({layer:this.getInputData(4).layer, mesh:group},"GirderGeneralView2");
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
 };
 
