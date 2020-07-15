@@ -34,7 +34,7 @@ export function DeckRebarPoint(
         let sp = pointDict[rebar1[rNum][start]];
         let ep = pointDict[rebar1[rNum][end]];
         let station = sp.masterStationNumber + rebar1[rNum][startOffset];
-        let zOffset = slabInfo.slabThickness + slabInfo.haunchHeight
+        let zOffset = 0; //slabInfo.slabThickness + slabInfo.haunchHeight
         let iter = 0;
         while (station <= ep.masterStationNumber + rebar1[rNum][endOffset]) {
             let mp1 = MasterPointGenerator(station, masterLine);
