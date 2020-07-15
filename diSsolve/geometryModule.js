@@ -218,7 +218,6 @@ export function ZOffsetLine(points, z) {
         result.push(ZMove(points[i + 1], z / cos[i]));
       }
     } else {
-      console.log("chcek",costheta)
       if (costheta){
         let sinHalftheta = Math.sqrt((1 - costheta) / 2);
         let z2 = sinHalftheta === 0 ? z : z / sinHalftheta;
@@ -230,7 +229,6 @@ export function ZOffsetLine(points, z) {
   }
 
   result.push(ZMove(points[points.length - 1], z / cos[cos.length - 1]));
-  console.log("check", points, vec, cos)
   return result
 }
 

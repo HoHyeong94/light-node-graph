@@ -98,7 +98,6 @@ export function DeckRebarPoint(
             lrebar.push(InterPolation2(bPts[i], rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
         }
         lrebar.push(InterPolation2(ept, rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
-        console.log("rebar",lrebar)
         for (let i = 0; i < lrebar[0].length; i++) {
             let pts = []
             for (let j = 0; j < lrebar.length; j++) {
@@ -173,7 +172,6 @@ export function DeckRebarPoint(
         }
     }
 
-    console.log("rebar", r1,r2)
     return { r1, r2, }
 }
 
@@ -228,8 +226,6 @@ export function InterPolation2(points, spacing, leftCover, rightCover, variables
         // result.push(points[points.length-1])
     }
     if (result.length < 1 ){
-        console.log("check1", points, spacing, leftCover, rightCover, variables);
-        console.log("check2", distanceList)
     }
     return result
 }
