@@ -262,7 +262,7 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
       let npt2 = DividingPoint(plate2[2][0], plate1[2][0], thickness);
       let npt3 = DividingPoint(plate2[2][1], plate1[2][1], thickness);
       let nplate1 = plate3[2][1]
-      let nplate2 = { x: npt2.x, y: plate3[2][1], z: 0 };
+      let nplate2 = { x: npt2.x, y: plate3[2][1].y, z: 0 };
       let filletList = [[], []];
       let radius = endCutFilletR;
       filletList[0].push(...fillet3D(plate1[2][0], plate2[2][0], nplate1, radius, 8));
