@@ -460,55 +460,55 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             geometry.faces.push(new THREE.Face3(i * pNum + k, (i + 1) * pNum + k, (i + 1) * pNum + j));
         }
         if (i === 0) {
-            let numList = []
-            for (let i = 0; i < pNum; i++) { numList.push(i) }
-            let br = 0;
-            let v1 = new THREE.Vector3(geometry.vertices[0].x - geometry.vertices[pNum - 1].x, geometry.vertices[0].y - geometry.vertices[pNum - 1].y, geometry.vertices[0].z - geometry.vertices[pNum - 1].z)
-            let v2 = new THREE.Vector3(geometry.vertices[1].x - geometry.vertices[0].x, geometry.vertices[1].y - geometry.vertices[0].y, geometry.vertices[1].z - geometry.vertices[0].z)
-            v1.cross(v2)
+            // let numList = []
+            // for (let i = 0; i < pNum; i++) { numList.push(i) }
+            // let br = 0;
+            // let v1 = new THREE.Vector3(geometry.vertices[0].x - geometry.vertices[pNum - 1].x, geometry.vertices[0].y - geometry.vertices[pNum - 1].y, geometry.vertices[0].z - geometry.vertices[pNum - 1].z)
+            // let v2 = new THREE.Vector3(geometry.vertices[1].x - geometry.vertices[0].x, geometry.vertices[1].y - geometry.vertices[0].y, geometry.vertices[1].z - geometry.vertices[0].z)
+            // v1.cross(v2)
             // console.log("check", v1, pNum, numList)
             // geometry.faces.push(new THREE.Face3(pNum - 1, 0, 1));
-            while (numList.length > 2) {
-                let eraseList = [];
-                // numList.forEach(num => dummy.push[num])
-                for (let j = 0; j < numList.length - 2; j += 2) {
-                    let a1 = geometry.vertices[numList[j]];
-                    let a2 = geometry.vertices[numList[j + 1]];
-                    let a3 = geometry.vertices[numList[j + 2]];
-                    let b1 = new THREE.Vector3(a2.x - a1.x, a2.y - a1.y, a2.z - a1.z);
-                    let b2 = new THREE.Vector3(a3.x - a2.x, a3.y - a2.y, a3.z - a2.z);
-                    b1.cross(b2)
-                    console.log("check", b1, b1.length(), v1, v1.length())
-                    if (b1.length() < 10) {
-                        eraseList.push(numList[j + 1])
-                    } else {
-                        let dotp = b1.dot(v1)
-                        if (dotp > 0) {
-                            geometry.faces.push(new THREE.Face3(numList[j + 2], numList[j + 1], numList[j]));
-                            eraseList.push(numList[j + 1])
-                        }
-                    }
+            // while (numList.length > 2) {
+            //     let eraseList = [];
+            //     // numList.forEach(num => dummy.push[num])
+            //     for (let j = 0; j < numList.length - 2; j += 2) {
+            //         let a1 = geometry.vertices[numList[j]];
+            //         let a2 = geometry.vertices[numList[j + 1]];
+            //         let a3 = geometry.vertices[numList[j + 2]];
+            //         let b1 = new THREE.Vector3(a2.x - a1.x, a2.y - a1.y, a2.z - a1.z);
+            //         let b2 = new THREE.Vector3(a3.x - a2.x, a3.y - a2.y, a3.z - a2.z);
+            //         b1.cross(b2)
+            //         console.log("check", b1, b1.length(), v1, v1.length())
+            //         if (b1.length() < 10) {
+            //             eraseList.push(numList[j + 1])
+            //         } else {
+            //             let dotp = b1.dot(v1)
+            //             if (dotp > 0) {
+            //                 geometry.faces.push(new THREE.Face3(numList[j + 2], numList[j + 1], numList[j]));
+            //                 eraseList.push(numList[j + 1])
+            //             }
+            //         }
 
-                }
-                eraseList.forEach(num => numList.splice(numList.indexOf(num), 1))
-                if (br > 100) { 
-                    console.log("check", br)
-                    break; }
-                br++;
-            }
-            // geometry.faces.push(new THREE.Face3(0, pNum - 1, 1));
-            // geometry.faces.push(new THREE.Face3(1, 3, 2));
-            // for (let j = 1; j < pNum - 3; j++) {
-            //     geometry.faces.push(new THREE.Face3(pNum - j, pNum - j - 1, 1));
+            //     }
+            //     eraseList.forEach(num => numList.splice(numList.indexOf(num), 1))
+            //     if (br > 100) { 
+            //         console.log("check", br)
+            //         break; }
+            //     br++;
             // }
+            geometry.faces.push(new THREE.Face3(0, pNum - 1, 1));
+            geometry.faces.push(new THREE.Face3(1, 3, 2));
+            for (let j = 1; j < pNum - 3; j++) {
+                geometry.faces.push(new THREE.Face3(pNum - j, pNum - j - 1, 1));
+            }
         }
-        // else if (i === deckPointDict.length - 2) {
-        //     geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + 1, (i + 2) * pNum - 1));
-        //     geometry.faces.push(new THREE.Face3((i + 1) * pNum + 1, (i + 1) * pNum + 2, (i + 1) * pNum + 3));
-        //     for (let j = 1; j < pNum - 3; j++) {
-        //         geometry.faces.push(new THREE.Face3((i + 2) * pNum - j, (i + 1) * pNum + 1, (i + 2) * pNum - j - 1));
-        //     }
-        // }
+        else if (i === deckPointDict.length - 2) {
+            geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + 1, (i + 2) * pNum - 1));
+            geometry.faces.push(new THREE.Face3((i + 1) * pNum + 1, (i + 1) * pNum + 2, (i + 1) * pNum + 3));
+            for (let j = 1; j < pNum - 3; j++) {
+                geometry.faces.push(new THREE.Face3((i + 2) * pNum - j, (i + 1) * pNum + 1, (i + 2) * pNum - j - 1));
+            }
+        }
     }
     geometry.computeFaceNormals();
     group.add(new THREE.Mesh(geometry, meshMaterial));
