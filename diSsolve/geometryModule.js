@@ -218,11 +218,14 @@ export function ZOffsetLine(points, z) {
         result.push(ZMove(points[i + 1], z / cos[i]));
       }
     } else {
-      let sinHalftheta = Math.sqrt((1 - costheta) / 2);
-      let z2 = sinHalftheta === 0 ? z : z / sinHalftheta;
-      let vecSum = { x: (vec[i + 1].x - vec[i].x), y: (vec[i + 1].y - vec[i].y), z: (vec[i + 1].z - vec[i].z) }
-      let l2 = Math.sqrt(vecSum.x ** 2 + vecSum.y ** 2 + vecSum.z ** 2)
-      result.push({ x: points[i + 1].x + vecSum.x / l2 * z2, y: points[i + 1].y + vecSum.y / l2 * z2, z: points[i + 1].z + vecSum.z / l2 * z2 });
+      console.log("chcek",costheta)
+      if (costheta){
+        let sinHalftheta = Math.sqrt((1 - costheta) / 2);
+        let z2 = sinHalftheta === 0 ? z : z / sinHalftheta;
+        let vecSum = { x: (vec[i + 1].x - vec[i].x), y: (vec[i + 1].y - vec[i].y), z: (vec[i + 1].z - vec[i].z) }
+        let l2 = Math.sqrt(vecSum.x ** 2 + vecSum.y ** 2 + vecSum.z ** 2)
+        result.push({ x: points[i + 1].x + vecSum.x / l2 * z2, y: points[i + 1].y + vecSum.y / l2 * z2, z: points[i + 1].z + vecSum.z / l2 * z2 });
+      }
     }
   }
 
