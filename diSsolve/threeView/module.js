@@ -462,11 +462,20 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
         }
         if (i === 0) {
             let br = 0;
+            let v1 = new THREE.Vector3(geometry.vertices[1].x - geometry.vertices[0].x, geometry.vertices[1].y - geometry.vertices[0].y, geometry.vertices[1].z - geometry.vertices[0].z )
+            let v2 = new THREE.Vector3(geometry.vertices[2].x - geometry.vertices[1].x, geometry.vertices[2].y - geometry.vertices[1].y, geometry.vertices[2].z - geometry.vertices[1].z )
+            v1.cross(v2)
             while (numList.length > 2){
                 let eraseList = [];
                 // numList.forEach(num => dummy.push[num])
                 for (let j = 0; j<numList.length-1; j+=2){
-                    if (true){
+                    let a1 = geometry.vertices[numList[j]];
+                    let a2 = geometry.vertices[numList[j+1]];
+                    let a3 = geometry.vertices[numList[j+2]];
+                    let b1 = new THREE.Vector3(a2.x - a1.x, a2.y - a1.y, a2.z - a1.z);
+                    let b2 = new THREE.Vector3(a3.x - a2.x, a3.y - a2.y, a3.z - a2.z);
+                    b1.cross(b2)
+                    if (b1.dot(v1)>0){
                         geometry.faces.push(new THREE.Face3(numList[j], numList[j+1], numList[j+2]));
                         eraseList.push(numList[j+1])
                     }
