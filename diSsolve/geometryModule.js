@@ -225,7 +225,9 @@ export function ZOffsetLine(points, z) {
       result.push({ x: points[i + 1].x + vecSum.x / l2 * z2, y: points[i + 1].y + vecSum.y / l2 * z2, z: points[i + 1].z + vecSum.z / l2 * z2 });
     }
   }
+
   result.push(ZMove(points[points.length - 1], z / cos[cos.length - 1]));
+  console.log("check", points, vec, cos)
   return result
 }
 
