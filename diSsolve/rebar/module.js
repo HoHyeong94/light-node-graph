@@ -99,13 +99,13 @@ export function DeckRebarPoint(
         }
         lrebar.push(InterPolation2(ept, rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
         console.log("rebar",lrebar)
-        // for (let i = 0; i < lrebar[0].length; i++) {
-        //     let pts = []
-        //     for (let j = 0; j < lrebar.length; j++) {
-        //         pts.push(lrebar[j][i])
-        //     }
-        //     r2.push(pts)
-        // }
+        for (let i = 0; i < lrebar[0].length; i++) {
+            let pts = []
+            for (let j = 0; j < lrebar.length; j++) {
+                pts.push(lrebar[j][i])
+            }
+            r2.push(pts)
+        }
     }
 
 
