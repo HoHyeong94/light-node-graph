@@ -102,7 +102,9 @@ export function DeckRebarPoint(
         for (let i = 0; i < lrebar[0].length; i++) {
             let pts = []
             for (let j = 0; j < lrebar.length; j++) {
-                pts.push(lrebar[j][i])
+                if (lrebar[j][i]){
+                    pts.push(lrebar[j][i])
+                 }
             }
             r2.push(pts)
         }
