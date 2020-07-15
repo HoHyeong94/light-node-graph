@@ -478,10 +478,10 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
                     console.log("check", b1, v1)
                     let dotp = b1.dot(v1)
                     console.log("check", dotp)
-                    if (dotp>0){
-                        geometry.faces.push(new THREE.Face3(numList[j], numList[j+1], numList[j+2]));
+                    // if (dotp>0){
+                    //     geometry.faces.push(new THREE.Face3(numList[j], numList[j+1], numList[j+2]));
                         eraseList.push(numList[j+1])
-                    }
+                    // }
                 }
                 eraseList.forEach(num => numList.splice(numList.indexOf(num),1))
                 if (br > 100){ break;}
