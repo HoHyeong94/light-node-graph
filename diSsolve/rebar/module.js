@@ -69,44 +69,44 @@ export function DeckRebarPoint(
         }
     }
 
-    // let tSlab = [];
-    // let bSlab = [];
-    // deckSection.forEach(function(elem){
-    //     tSlab.push({name : elem.name, points : elem.slabUpperPoints});
-    //     bSlab.push({name : elem.name, points : elem.slabLowerPoints});
-    // })
+    let tSlab = [];
+    let bSlab = [];
+    deckSection.forEach(function(elem){
+        tSlab.push({name : elem.name, points : elem.slabUpperPoints});
+        bSlab.push({name : elem.name, points : elem.slabLowerPoints});
+    })
 
-    // for (let rNum in rebar2) {
-    //     let bPts = []
-    //     let lrebar = [];
-    //     let slabLine = rebar2[rNum][isUpper] ? tSlab : bSlab;
-    //     let sp = pointDict[rebar2[rNum][start]].masterStationNumber;
-    //     let ep = pointDict[rebar2[rNum][end]].masterStationNumber;
-    //     let cov = rebar2[rNum][isUpper] ? -rebar2[rNum][cover] : rebar2[rNum][cover];
-    //     slabLine.forEach(function (elem) {
-    //         if (elem.name >= sp && elem.name <= ep) {
-    //             bPts.push(ZOffsetLine(elem.points, cov))
-    //         }
-    //     })
+    for (let rNum in rebar2) {
+        let bPts = []
+        let lrebar = [];
+        let slabLine = rebar2[rNum][isUpper] ? tSlab : bSlab;
+        let sp = pointDict[rebar2[rNum][start]].masterStationNumber;
+        let ep = pointDict[rebar2[rNum][end]].masterStationNumber;
+        let cov = rebar2[rNum][isUpper] ? -rebar2[rNum][cover] : rebar2[rNum][cover];
+        slabLine.forEach(function (elem) {
+            if (elem.name >= sp && elem.name <= ep) {
+                bPts.push(ZOffsetLine(elem.points, cov))
+            }
+        })
 
-    //     // console.log(ZOffsetLine(deckSection.slab2[18].points,70))
-    //     let iMax = bPts.length - 1
-    //     let spt = longiRebarEndPoints(bPts[0], bPts[1], rebar2[rNum][startOffset], true)
-    //     let ept = longiRebarEndPoints(bPts[iMax - 1], bPts[iMax], rebar2[rNum][endOffset], false)
-    //     lrebar.push(InterPolation2(spt, rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
-    //     for (let i = 1; i < iMax; i++) {
-    //         lrebar.push(InterPolation2(bPts[i], rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
-    //     }
-    //     lrebar.push(InterPolation2(ept, rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
+        // console.log(ZOffsetLine(deckSection.slab2[18].points,70))
+        let iMax = bPts.length - 1
+        let spt = longiRebarEndPoints(bPts[0], bPts[1], rebar2[rNum][startOffset], true)
+        let ept = longiRebarEndPoints(bPts[iMax - 1], bPts[iMax], rebar2[rNum][endOffset], false)
+        lrebar.push(InterPolation2(spt, rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
+        for (let i = 1; i < iMax; i++) {
+            lrebar.push(InterPolation2(bPts[i], rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
+        }
+        lrebar.push(InterPolation2(ept, rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
 
-    //     for (let i = 0; i < lrebar[0].length; i++) {
-    //         let pts = []
-    //         for (let j = 0; j < lrebar.length; j++) {
-    //             pts.push(lrebar[j][i])
-    //         }
-    //         r2.push(pts)
-    //     }
-    // }
+        for (let i = 0; i < lrebar[0].length; i++) {
+            let pts = []
+            for (let j = 0; j < lrebar.length; j++) {
+                pts.push(lrebar[j][i])
+            }
+            r2.push(pts)
+        }
+    }
 
 
     // let isLeft = 3;
