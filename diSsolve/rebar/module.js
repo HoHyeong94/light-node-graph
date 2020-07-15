@@ -227,6 +227,10 @@ export function InterPolation2(points, spacing, leftCover, rightCover, variables
         x = remainder > 0 && (i === 0 || i === Math.floor(W / spacing)) ? x + remainder / 2 + spacing / 2 : x + spacing;
         // result.push(points[points.length-1])
     }
+    if (result.length < 1 ){
+        console.log("check1", points, spacing, leftCover, rightCover, variables);
+        console.log("check2", distanceList)
+    }
     return result
 }
 
