@@ -182,7 +182,7 @@ export function webEntrance2D(wplate1, wplate2, isForward) {
 
 
 
-export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer) {
+export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer, endCutFilletR) {
   let result = [[], [], []];
   let uf1 = sectionPointDict[pk1].forward[sideKey];
   let uf2 = sectionPointDict[pk2].backward[sideKey];
