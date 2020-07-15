@@ -470,7 +470,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             while (numList.length > 2){
                 let eraseList = [];
                 // numList.forEach(num => dummy.push[num])
-                for (let j = 0; j<numList.length-1; j+=2){
+                for (let j = 0; j<numList.length-2; j+=2){
                     let a1 = geometry.vertices[numList[j]];
                     let a2 = geometry.vertices[numList[j+1]];
                     let a3 = geometry.vertices[numList[j+2]];
