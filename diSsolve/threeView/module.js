@@ -467,7 +467,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             let v2 = new THREE.Vector3(geometry.vertices[2].x - geometry.vertices[1].x, geometry.vertices[2].y - geometry.vertices[1].y, geometry.vertices[2].z - geometry.vertices[1].z )
             v1.cross(v2)
             console.log("check", v1,pNum, numList)
-            geometry.faces.push(new THREE.Face3(0, 1, 2));
+            geometry.faces.push(new THREE.Face3(pNum-1, 0, 1));
             while (numList.length > 2){
                 let eraseList = [];
                 // numList.forEach(num => dummy.push[num])
