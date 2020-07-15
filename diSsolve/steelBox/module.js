@@ -293,9 +293,9 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
         result[2].push(filletList[0][l], filletList[1][l]);
       }
       result[2].push(nplate1, nplate2);
-      console.log("check", npt2, npt3, nplate1, nplate2)
-      console.log("check", filletList)
-      console.log("check2", result)
+      // console.log("check", npt2, npt3, nplate1, nplate2)
+      // console.log("check", filletList)
+      // console.log("check2", result)
     } else {
       for (let k in plate2) {
         plate2[k].forEach(element => result[k].push(element));
