@@ -271,7 +271,7 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
       for (let l in filletList[0]) {
         result[2].push([filletList[0][l], filletList[1][l]]);
       }
-      result[k].push([nplate1, nplate2]);
+      result[2].push([nplate1, nplate2]);
 
     } else {
       for (let k in plate2) {
