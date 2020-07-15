@@ -264,6 +264,23 @@ export function LineView(linepoints, initPoint, color) {
     return group
 }
 
+export function LineMesh(linepoints, initPoint, color) {
+    let geometry = new THREE.Geometry();
+    const xInit = initPoint.x
+    const yInit = initPoint.y
+    const zInit = initPoint.z
+    for (let i = 0; i < linepoints.length; i++) {
+        geometry.vertices.push(
+            new THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
+    }
+    let colorCode = color ? color : 0xffff00  //  : 
+    let line = new THREE.Line(
+        geometry, new THREE.LineBasicMaterial({ color: parseInt(colorCode, 16) })
+    );
+    return line
+}
+
+
 export function SteelBoxView(steelBoxDict, initPoint) {
     let group = new THREE.Group();
     // var meshMaterial = new THREE.MeshLambertMaterial( {

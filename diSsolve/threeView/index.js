@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import {LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView, BarrierPointView, StudMeshView, AnalysisModel } from "./module"
+import {LineMesh, LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView, BarrierPointView, StudMeshView, AnalysisModel } from "./module"
 import { LineToThree } from "../line/module";
 
 export function LineViewer(){
@@ -133,14 +133,19 @@ export function HorBracingView(){
   
   RebarView.prototype.onExecute = function() {
     const deckRebar= this.getInputData(0)
+    let group1 = new THREE.Group()
+    let group2 = new THREE.Group()
+    
     for (let i in deckRebar.r1){
-      sceneAdder({ layer : 0, mesh : LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff)}, "rebar1" + i)
+      group1.add(LineMesh(deckRebar.r1[i], this.getInputData(1),0xff00ff))
       // sceneAdder(LineView(deckRebar.r1[i], this.getInputData(1),0xff00ff), [0, "rebar1", i])
     }
     for (let i in deckRebar.r2){
-      sceneAdder({ layer : 0, mesh : LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00)}, "rebar2" + i)
+      group2.add(LineMesh(deckRebar.r2[i], this.getInputData(1),0x00ff00))
       // sceneAdder(LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00), [0, "rebar2", i])
     }
+    sceneAdder({ layer : 0, mesh : group1}, "rebar1")
+    sceneAdder({ layer : 0, mesh : group2}, "rebar2")
 
   }
   
