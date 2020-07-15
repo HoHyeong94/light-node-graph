@@ -268,11 +268,13 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
       filletList[0].push(...fillet3D(plate1[2][0], plate2[2][0], nplate1, radius, 8));
       radius = endCutFilletR - thickness;
       filletList[1].push(...fillet3D(plate1[2][1], npt3, nplate2, radius, 8));
+
       for (let l in filletList[0]) {
         result[2].push([filletList[0][l], filletList[1][l]]);
       }
       result[2].push([nplate1, nplate2]);
-
+      console.log("check", filletList)
+      console.log("check2", result)
     } else {
       for (let k in plate2) {
         plate2[k].forEach(element => result[k].push(element));
