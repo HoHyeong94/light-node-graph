@@ -451,19 +451,37 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
         })
     }
+    let numList = []
+    for (let i = 0; i < pNum; i++){ numList.push[i]}
+    
     for (let i = 0; i < deckPointDict.length - 1; i++) {
         for (let j = 0; j < pNum; j++) {
             let k = j === pNum - 1 ? 0 : j + 1;
             geometry.faces.push(new THREE.Face3(i * pNum + j, i * pNum + k, (i + 1) * pNum + j));
             geometry.faces.push(new THREE.Face3(i * pNum + k, (i + 1) * pNum + k, (i + 1) * pNum + j));
         }
-        // if (i === 0) {
-        //     geometry.faces.push(new THREE.Face3(i * pNum, (i + 1) * pNum - 1, i * pNum + 1));
-        //     geometry.faces.push(new THREE.Face3(i * pNum + 1, i * pNum + 3, i * pNum + 2));
-        //     for (let j = 1; j < pNum - 3; j++) {
-        //         geometry.faces.push(new THREE.Face3((i + 1) * pNum - j, (i + 1) * pNum - j - 1, i * pNum + 1));
-        //     }
-        // } else if (i === deckPointDict.length - 2) {
+        if (i === 0) {
+            let br = 0;
+            while (numList.length > 2){
+                let eraseList = [];
+                // numList.forEach(num => dummy.push[num])
+                for (let j = 0; j<numList.length-1; j+=2){
+                    if (true){
+                        geometry.faces.push(new THREE.Face3(numList[j], numList[j+1], numList[j+2]));
+                        eraseList.push(numList[j+1])
+                    }
+                }
+                eraseList.forEach(num => numList.splice(numList.indexOf(num),1))
+                if (br > 100){ break;}
+                br++;
+            }
+            geometry.faces.push(new THREE.Face3(0, pNum - 1, 1));
+            geometry.faces.push(new THREE.Face3(1, 3, 2));
+            for (let j = 1; j < pNum - 3; j++) {
+                geometry.faces.push(new THREE.Face3(pNum - j, pNum - j - 1, 1));
+            }
+        } 
+        // else if (i === deckPointDict.length - 2) {
         //     geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + 1, (i + 2) * pNum - 1));
         //     geometry.faces.push(new THREE.Face3((i + 1) * pNum + 1, (i + 1) * pNum + 2, (i + 1) * pNum + 3));
         //     for (let j = 1; j < pNum - 3; j++) {
