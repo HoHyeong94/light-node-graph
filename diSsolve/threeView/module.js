@@ -475,7 +475,10 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
                     let b1 = new THREE.Vector3(a2.x - a1.x, a2.y - a1.y, a2.z - a1.z);
                     let b2 = new THREE.Vector3(a3.x - a2.x, a3.y - a2.y, a3.z - a2.z);
                     b1.cross(b2)
-                    if (b1.dot(v1)>0){
+                    console.log("check", b1, v1)
+                    let dotp = b1.dot(v1)
+                    console.log("check", dotp)
+                    if (dotp>0){
                         geometry.faces.push(new THREE.Face3(numList[j], numList[j+1], numList[j+2]));
                         eraseList.push(numList[j+1])
                     }
