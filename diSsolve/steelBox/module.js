@@ -213,7 +213,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
     { x: point2.girderStation, y: point2.z + uf3[1], z: 0 }
   ]];
 
-  if (pk1.substr(2, 2) === "K1") {
+  if (pk1.substr(2, 2) === "K1" && entrance.add) {
     let ent = webEntrance2D(plate1[2], plate2[2], true, entrance)
     for (let k in ent) {
       ent[k].forEach(element => result[k].push(element));
@@ -224,7 +224,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
     }
   }
   if (!FisB || spCheck) {
-    if (pk2.substr(2, 2) === "K6") {
+    if (pk2.substr(2, 2) === "K6" && entrance.add) {
       let ent = webEntrance2D(plate2[2], plate1[2], false, entrance)
       for (let k in ent) {
         ent[k].forEach(element => result[k].push(element));
