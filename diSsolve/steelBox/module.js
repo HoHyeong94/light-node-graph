@@ -273,11 +273,17 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
   // 개구->폐합->개구로 2단계의 경우에는 오류가 발생할 수 있음, 2020.05.25 by drlim
   let result = [[], [], []];
   // let uf0 = sectionPointDict[pk1].backward["input"];
+  let uf0 = sectionPointDict[pk1].backward[sideKey];
   let uf1 = sectionPointDict[pk1].forward[sideKey];
   let uf2 = sectionPointDict[pk2].backward[sideKey];
   let uf3 = sectionPointDict[pk2].forward[sideKey];
   let FisB = uf2[0] === uf3[0]; //기준높이가 변화하는 경우
+  // let FisB0 = uf0[0] === uf1[0]; //기준높이가 변화하는 경우
 
+  let plate0 = [[], [], [
+    { x: point1.girderStation, y: point1.z + uf0[0], z: 0 },
+    { x: point1.girderStation, y: point1.z + uf0[1], z: 0 }
+  ]];
   let plate1 = [[], [], [
     { x: point1.girderStation, y: point1.z + uf1[0], z: 0 },
     { x: point1.girderStation, y: point1.z + uf1[1], z: 0 }
@@ -291,8 +297,25 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
     { x: point2.girderStation, y: point2.z + uf3[1], z: 0 }
   ]];
 
-  for (let k in plate1) {
-    plate1[k].forEach(element => result[k].push(element));
+  if ((uf1[0] - uf0[0]) > 100 && (uf1[0] - uf0[0]) < 700) {
+    let thickness = Math.abs(uf1[0] - uf1[1]);
+    let npt2 = DividingPoint(plate1[2][0], plate2[2][0], thickness);
+    let npt3 = DividingPoint(plate1[2][1], plate2[2][1], thickness);
+    let nplate1 = plate0[2][1]
+    let nplate2 = { x: npt2.x, y: plate0[2][1].y, z: 0 };
+    let filletList = [[], []];
+    let radius = endCutFilletR;
+    filletList[0].push(...fillet3D(nplate1, plate1[2][0], plate2[2][0], radius, 8));
+    radius = endCutFilletR - thickness;
+    filletList[1].push(...fillet3D(nplate2, npt3, plate2[2][1], radius, 8));
+    result[2].push(nplate1, nplate2);
+    for (let l in filletList[0]) {
+      result[2].push(filletList[0][l], filletList[1][l]);
+    }
+  } else {
+    for (let k in plate1) {
+      plate1[k].forEach(element => result[k].push(element));
+    }
   }
   let spCheck = false
   splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
@@ -393,7 +416,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
     if (!FisB0 && ((latter0 - former0) > 100) && ((latter0 - former0) < 700)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
       for (let k in uf1) {
         if (uf1[k].length > 0) {
-          console.log("check",pk1, former0, latter0)
+          console.log("check", pk1, former0, latter0)
           let thickness = Math.abs(uf1[k][0].y - uf1[k][3].y);
           let npt2 = DividingPoint(plate1[k][2], plate2[k][2], thickness);
           let npt3 = DividingPoint(plate1[k][3], plate2[k][3], thickness);
