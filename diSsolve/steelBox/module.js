@@ -88,12 +88,16 @@ export function plateCompare(plate1, plate2) {
   return result
 }
 
-export function webEntrance(wplate1, wplate2, isForward) {
+export function webEntrance(wplate1, wplate2, isForward, entrance) {
   let result = [[], [], []]
-  let b1 = 300;
-  let h1 = 1100;
-  let d1 = 250;
-  let r = 150;
+  // let b1 = 300;
+  // let h1 = 1100;
+  // let d1 = 250;
+  // let r = 150;
+  let b1 = entrance.b1;
+  let h1 = entrance.h1;
+  let d1 = entrance.d1;
+  let r = entrance.r;
   let smoothness = 8;
   // let wplate1 = [];
   // let wplate2 = [];
@@ -134,12 +138,17 @@ export function webEntrance(wplate1, wplate2, isForward) {
   return result
 }
 
-export function webEntrance2D(wplate1, wplate2, isForward) {
+export function webEntrance2D(wplate1, wplate2, isForward, entrance) {
   let result = [[], [], []]
-  let b1 = 300;
-  let h1 = 1100;
-  let d1 = 250;
-  let r = 150;
+  // let b1 = 300;
+  // let h1 = 1100;
+  // let d1 = 250;
+  // let r = 150;
+  let b1 = entrance.b1;
+  let h1 = entrance.h1;
+  let d1 = entrance.d1;
+  let r = entrance.r;
+
   let smoothness = 8;
   // let wplate1 = [];
   // let wplate2 = [];
@@ -182,7 +191,7 @@ export function webEntrance2D(wplate1, wplate2, isForward) {
 
 
 
-export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer, endCutFilletR) {
+export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer, endCutFilletR, entrance) {
   let result = [[], [], []];
   let uf1 = sectionPointDict[pk1].forward[sideKey];
   let uf2 = sectionPointDict[pk2].backward[sideKey];
@@ -205,7 +214,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
   ]];
 
   if (pk1.substr(2, 2) === "K1") {
-    let ent = webEntrance2D(plate1[2], plate2[2], true)
+    let ent = webEntrance2D(plate1[2], plate2[2], true, entrance)
     for (let k in ent) {
       ent[k].forEach(element => result[k].push(element));
     }
@@ -216,7 +225,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
   }
   if (!FisB || spCheck) {
     if (pk2.substr(2, 2) === "K6") {
-      let ent = webEntrance2D(plate2[2], plate1[2], false)
+      let ent = webEntrance2D(plate2[2], plate1[2], false, entrance)
       for (let k in ent) {
         ent[k].forEach(element => result[k].push(element));
       }
@@ -433,7 +442,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   return result
 }
 
-export function SteelBoxDict2(girderStationList, sectionPointDict) {
+export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
   let steelBoxDict = {};
   let pk1 = "";
   let pk2 = "";
@@ -498,7 +507,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
       sideKeyname = "G" + (i * 1 + 1).toString() + "WebSide" + Wi
       if (!steelBoxDict[sideKeyname]) { steelBoxDict[sideKeyname] = { points: [[], [], []] }; }
       splicer = ["WF", "SP", "K6"]
-      let webSide = sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, "webSide", splicer, endCutFilletR)
+      let webSide = sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, "webSide", splicer, endCutFilletR, entrance)
       for (let k in webSide) {
         webSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
@@ -517,8 +526,8 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
         L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
         L3.forEach(element => wplate3.push(ToGlobalPoint(point2, element)))
-        if (pk1.substr(2, 2) === "K1") {
-          let ent = webEntrance(wplate1, wplate2, true)
+        if (pk1.substr(2, 2) === "K1" && entrance.add) {
+          let ent = webEntrance(wplate1, wplate2, true, entrance)
           for (let k in ent) {
             ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
           }
@@ -528,8 +537,8 @@ export function SteelBoxDict2(girderStationList, sectionPointDict) {
         FisB = true;
         for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
         if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-          if (pk2.substr(2, 2) === "K6") {
-            let ent = webEntrance(wplate2, wplate1, false)
+          if (pk2.substr(2, 2) === "K6"  && entrance.add) {
+            let ent = webEntrance(wplate2, wplate1, false, entrance)
             for (let k in ent) {
               ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
             }
