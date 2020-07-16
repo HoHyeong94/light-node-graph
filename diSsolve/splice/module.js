@@ -14,7 +14,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
   let xs = {
     webJointThickness: 20,
     webJointWidth: 600,
-    webJointHeight: 1800,
+    webJointHeight: iSectionPoint.input.H - 100,
     uflangeJointThickness: 20,
     lflangeJointThickness: 20,
     // flangeJointLength: 500,
