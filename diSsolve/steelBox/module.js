@@ -464,6 +464,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
       pk1 = girderStationList[i][j].key
       pk2 = girderStationList[i][j + 1].key
 
+      let L0 = [];
       let L1 = []; //sectionPointDict[pk1].forward.leftTopPlate
       let L2 = []; //sectionPointDict[pk2].backward.leftTopPlate
       let L3 = []; //sectionPointDict[pk2].forward.leftTopPlate
@@ -516,13 +517,16 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
 
         keyname = l === 0 ? "G" + (i * 1 + 1).toString() + "LeftWeB" + Wi : keyname = "G" + (i * 1 + 1).toString() + "RightWeB" + Wi
         if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; }
-        L1 = sectionPointDict[pk1].forward.web[l]
-        L2 = sectionPointDict[pk2].backward.web[l]
-        L3 = sectionPointDict[pk2].forward.web[l]
+        L0 = sectionPointDict[pk1].backward.web[l];
+        L1 = sectionPointDict[pk1].forward.web[l];
+        L2 = sectionPointDict[pk2].backward.web[l];
+        L3 = sectionPointDict[pk2].forward.web[l];
 
+        let wplate0 = [];
         let wplate1 = [];
         let wplate2 = [];
         let wplate3 = [];
+        L0.forEach(element => wplate0.push(ToGlobalPoint(point1, element)))
         L1.forEach(element => wplate1.push(ToGlobalPoint(point1, element)))
         L2.forEach(element => wplate2.push(ToGlobalPoint(point2, element)))
         L3.forEach(element => wplate3.push(ToGlobalPoint(point2, element)))
@@ -532,7 +536,20 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
             ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
           }
         } else {
-          L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
+          let indent =(L1[0].y - L0[0].y) // bottom point of web
+          if (indent > 100 && indent < 700) {
+            let fpt = fillet3D(wplate0[0], wplate1[0], wplate2[0], endCutFilletR, 8);
+            let fpt3 = fillet3D(wplate0[3], wplate1[3], wplate2[3], endCutFilletR, 8);
+            for (let l in fpt) {
+              steelBoxDict[keyname]["points"][2].push(fpt[l], wplate1[1], wplate1[2], fpt3[l])
+            }              
+          } else {
+            // L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
+            wplate1.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
+          }
+
+
+          
         }
         FisB = true;
         for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
@@ -544,15 +561,15 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
             }
           }
           else {
-            let indent = Math.abs(L2[0].y - L3[0].y) // bottom point of web
-            if (indent < 100) {
-              wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
-            } else {
+            let indent =(L2[0].y - L3[0].y) // bottom point of web
+            if (indent > 100 && indent < 700) {
               let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR, 8);
               let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR, 8);
               for (let l in fpt) {
                 steelBoxDict[keyname]["points"][2].push(fpt[l], wplate2[1], wplate2[2], fpt3[l])
-              }
+              }              
+            } else {
+              wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
             }
           }
         }
