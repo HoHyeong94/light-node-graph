@@ -193,6 +193,7 @@ export function webEntrance2D(wplate1, wplate2, isForward, entrance) {
 
 export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sideKey, splicer, endCutFilletR, entrance) {
   let result = [[], [], []];
+  let uf0 = sectionPointDict[pk1].backward[sideKey];
   let uf1 = sectionPointDict[pk1].forward[sideKey];
   let uf2 = sectionPointDict[pk2].backward[sideKey];
   let uf3 = sectionPointDict[pk2].forward[sideKey];
@@ -200,6 +201,10 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
   let spCheck = false
   splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
 
+  let plate0 = [[], [], [
+    { x: point1.girderStation, y: point1.z + uf0[0], z: 0 },
+    { x: point1.girderStation, y: point1.z + uf0[1], z: 0 }
+  ]];
   let plate1 = [[], [], [
     { x: point1.girderStation, y: point1.z + uf1[0], z: 0 },
     { x: point1.girderStation, y: point1.z + uf1[1], z: 0 }
@@ -219,9 +224,21 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
       ent[k].forEach(element => result[k].push(element));
     }
   } else {
-    for (let k in plate1) {
-      plate1[k].forEach(element => result[k].push(element));
+    if (uf1[0] - uf0[0] > 100 && uf1[0] - uf0[0] < 700) {
+      let filletList = [];
+      let radius = endCutFilletR;
+      filletList.push(...fillet3D(plate0[2][0], plate1[2][0], plate2[2][0], radius, 8));
+
+      for (let l in filletList) {
+        result[2].push(filletList[l], plate1[2][1]);
+      }
+      // result[2].push(plate3[2][0], plate3[2][1]);
+    } else {
+      for (let k in plate1) {
+        plate1[k].forEach(element => result[k].push(element));
+      }
     }
+
   }
   if (!FisB || spCheck) {
     if (pk2.substr(2, 2) === "K6" && entrance.add) {
@@ -232,11 +249,6 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
     }
     else {
       if (uf2[0] - uf3[0] > 100 && uf2[0] - uf3[0] < 700) {
-        // let thickness = Math.abs(uf2[0] - uf2[1]);
-        // let npt2 = DividingPoint(plate2[2][0], plate1[2][0], thickness);
-        // let npt3 = DividingPoint(plate2[2][1], plate1[2][1], thickness);
-        // let nplate1 = plate3[2][1]
-        // let nplate2 = { x: npt2.x, y: plate3[2][1].y, z: 0 };
         let filletList = [];
         let radius = endCutFilletR;
         filletList.push(...fillet3D(plate1[2][0], plate2[2][0], plate3[2][0], radius, 8));
@@ -244,7 +256,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
         for (let l in filletList) {
           result[2].push(filletList[l], plate3[2][1]);
         }
-        result[2].push(plate3[2][0], plate3[2][1]);
+        // result[2].push(plate3[2][0], plate3[2][1]);
       } else {
         for (let k in plate1) {
           plate2[k].forEach(element => result[k].push(element));
@@ -536,38 +548,38 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
             ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
           }
         } else {
-          let indent =(L1[0].y - L0[0].y) // bottom point of web
+          let indent = (L1[0].y - L0[0].y) // bottom point of web
           if (indent > 100 && indent < 700) {
             let fpt = fillet3D(wplate0[0], wplate1[0], wplate2[0], endCutFilletR, 8);
             let fpt3 = fillet3D(wplate0[3], wplate1[3], wplate2[3], endCutFilletR, 8);
             for (let l in fpt) {
               steelBoxDict[keyname]["points"][2].push(fpt[l], wplate1[1], wplate1[2], fpt3[l])
-            }              
+            }
           } else {
             // L1.forEach(element => steelBoxDict[keyname]["points"][2].push(ToGlobalPoint(point1, element)))
             wplate1.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
           }
 
 
-          
+
         }
         FisB = true;
         for (let i in L2) { if (L2[i] !== L3[i]) { FisB = false } }
         if (!FisB || pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
-          if (pk2.substr(2, 2) === "K6"  && entrance.add) {
+          if (pk2.substr(2, 2) === "K6" && entrance.add) {
             let ent = webEntrance(wplate2, wplate1, false, entrance)
             for (let k in ent) {
               ent[k].forEach(element => steelBoxDict[keyname]["points"][k].push(element));
             }
           }
           else {
-            let indent =(L2[0].y - L3[0].y) // bottom point of web
+            let indent = (L2[0].y - L3[0].y) // bottom point of web
             if (indent > 100 && indent < 700) {
               let fpt = fillet3D(wplate1[0], wplate2[0], wplate3[0], endCutFilletR, 8);
               let fpt3 = fillet3D(wplate1[3], wplate2[3], wplate3[3], endCutFilletR, 8);
               for (let l in fpt) {
                 steelBoxDict[keyname]["points"][2].push(fpt[l], wplate2[1], wplate2[2], fpt3[l])
-              }              
+              }
             } else {
               wplate2.forEach(element => steelBoxDict[keyname]["points"][2].push(element));
             }
