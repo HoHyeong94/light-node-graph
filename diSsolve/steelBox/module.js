@@ -231,7 +231,7 @@ export function sideWebGenerator(sectionPointDict, pk1, pk2, point1, point2, sid
       }
     }
     else {
-      if (Math.abs(uf2[0] - uf3[0]) > 100 && Math.abs(uf2[0] - uf3[0]) < 1000) {
+      if (uf2[0] - uf3[0] > 100 && uf2[0] - uf3[0] < 700) {
         // let thickness = Math.abs(uf2[0] - uf2[1]);
         // let npt2 = DividingPoint(plate2[2][0], plate1[2][0], thickness);
         // let npt3 = DividingPoint(plate2[2][1], plate1[2][1], thickness);
@@ -285,7 +285,7 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
   let spCheck = false
   splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { spCheck = true } })
   if (!FisB || spCheck) {  //형고 높이가 100mm 이상인 경우에만 반영
-    if (Math.abs(uf2[0] - uf3[0]) > 100 && Math.abs(uf2[0] - uf3[0]) < 1000) {
+    if ((uf2[0] - uf3[0]) > 100 && (uf2[0] - uf3[0]) < 700) {
 
       let thickness = Math.abs(uf2[0] - uf2[1]);
       let npt2 = DividingPoint(plate2[2][0], plate1[2][0], thickness);
@@ -392,7 +392,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
         plate2[k].forEach(element => result[k].push(element));
       }
     }
-    if (!FisB && (Math.abs(former3 - latter3) > 100) && (Math.abs(former3 - latter3) < 1000)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
+    if (!FisB && ((former3 - latter3) > 100) && ((former3 - latter3) < 700)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
       for (let k in uf2) {
         if (uf2[k].length > 0) {
           let thickness = Math.abs(uf2[k][0].y - uf2[k][3].y);
