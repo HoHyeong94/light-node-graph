@@ -341,6 +341,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   let uf2 = sectionPointDict[pk2].backward[plateKey];
   let uf3 = sectionPointDict[pk2].forward[plateKey];
   let FisB = plateCompare(uf2, uf3);  //forward is backward?  
+  let FisB0 = plateCompare(uf0, uf1);  //forward is backward?  
   let plate0 = [[], [], []];
   let plate1 = [[], [], []];
   let plate2 = [[], [], []];
@@ -389,7 +390,7 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
     result[0].push(...filletPoints[0])
     result[1].push(...filletPoints[1])
   } else {
-    if (!FisB && ((latter0 - former0) > 100) && ((latter0 - former0) < 700)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
+    if (!FisB0 && ((latter0 - former0) > 100) && ((latter0 - former0) < 700)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
       for (let k in uf1) {
         if (uf1[k].length > 0) {
           console.log("check",pk1, former0, latter0)
