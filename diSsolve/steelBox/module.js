@@ -353,7 +353,8 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
 
   let former3 = uf2[0][0] ? uf2[0][0].y : uf2[2][0].y
   let latter3 = uf3[0][0] ? uf3[0][0].y : uf3[2][0].y
-
+  let former0 = uf0[0][0] ? uf0[0][0].y : uf0[2][0].y
+  let latter0 = uf1[0][0] ? uf1[0][0].y : uf1[2][0].y
 
   for (let k in uf1) {
     uf0[k].forEach(element => plate0[k].push(ToGlobalPoint(point1, element)));
@@ -388,8 +389,31 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
     result[0].push(...filletPoints[0])
     result[1].push(...filletPoints[1])
   } else {
-    for (let k in uf1) {
-      plate1[k].forEach(element => result[k].push(element));
+
+    if (!FisB && ((latter0 - former0) > 100) && ((latter0 - former0) < 700)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
+      for (let k in uf1) {
+        if (uf1[k].length > 0) {
+          let thickness = Math.abs(uf1[k][0].y - uf1[k][3].y);
+          let npt2 = DividingPoint(plate1[k][2], plate2[k][2], thickness);
+          let npt3 = DividingPoint(plate1[k][3], plate2[k][3], thickness);
+          let nplate1 = [plate1[k][0], plate1[k][1], npt2, npt3];
+          let nplate2 = [plate0[k][3], plate0[k][2], { x: npt2.x, y: npt2.y, z: plate0[k][2].z }, { x: npt3.x, y: npt3.y, z: plate0[k][3].z }];
+          let filletList = [[], [], [], []];
+          for (let l = 0; l < 4; l++) {
+            let radius = l < 2 ? endCutFilletR : endCutFilletR - thickness;
+            filletList[l].push(...fillet3D(nplate2[l], nplate1[l], plate2[k][l], radius, 8));
+          }
+          result[k].push(...nplate2);
+          for (let l in filletList[0]) {
+            result[k].push(filletList[0][l], filletList[1][l], filletList[2][l], filletList[3][l]);
+          }
+          // result[k].push(plate2[k][0],plate2[k][1],npt2, npt3)
+        }
+      }
+    } else {
+      for (let k in uf1) {
+        plate1[k].forEach(element => result[k].push(element));
+      }
     }
   }
   if (uf2[2].length === 0 && uf3[2].length > 0) {
