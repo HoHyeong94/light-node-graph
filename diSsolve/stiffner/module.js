@@ -1794,7 +1794,7 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
     }
     // console.log("check", topView)
   }
-  if (side2D) {
+  if (side2D || side2D === 0) {
     let cos = Math.cos(rotationX);
     let sin = Math.sin(rotationX);
     sideView = [];
