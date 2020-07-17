@@ -751,7 +751,7 @@ export function PointToDraw(point, scale, initPoint, rotate, xOffset, yOffset) {
     return { x: Math.cos(rotate) * x0 - Math.sin(rotate) * y0, y: Math.cos(rotate) * y0 + Math.sin(rotate) * x0 }
 }
 
-export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
+export function GridMarkView(girderStation, scale, initPoint, rotate, layout, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 });
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
@@ -768,7 +768,8 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, markOffset
     let dummy3 = {};
     let dummy4 = {};
     let dummy5 = {};
-    let sideViewOffset = -8000 * scale;
+    let sideViewOffset = layout.sideViewOffset * scale;
+    let markOffset = layout.gridMarkWidth
     let segLength = 0;
     let totalLength = 0;
     let dummyLength = 0;
@@ -1045,22 +1046,28 @@ export function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, xbeamDict, 
     return group
 }
 
-export function GirderGeneralDraw1(girderStation, layerNum) {
+export function GirderGeneralDraw1(girderStation, layout) {
+    // let layout = {
+    //     layer : 5,
+    //     scale : 1,
+    //     girderOffset : 24000,
+    //     gridMarkWidth : 1500,
+    // }
     let group = new THREE.Group();
     // let layerNum = 5;
-    let scale = 1;
-    let girderOffset = 24000;
-    let gridMark_width = 1500; // unit : mm
+    let scale = layout.scale
+    let girderOffset = layout.girderOffset * scale;
+    let gridMarkWidth = layout.gridMarkWidth * scale; // unit : mm
     for (let i = 0; i < girderStation.length; i++) {
         let initPoint = girderStation[i][0].point
         let endPoint = girderStation[i][girderStation[i].length - 1].point
         let rotate = Math.PI - Math.atan((endPoint.y - initPoint.y) / (endPoint.x - initPoint.x))
-        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
+        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, layout, i + 1)
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh);
         });
-        let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layerNum)
+        let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layout.layer)
         label.position.set(0, -i * girderOffset, 0);
         group.add(label)
     }
@@ -1115,11 +1122,21 @@ export function XbeamSection(xbeamDict, girderStation, layout) {
 
 
 export function PartGeneralDraw(diaDict, girderStation, layout) {
+    
     let group = new THREE.Group();
-    let scale = 1; //layout.scale
-    let girderOffset = 24000;
-    let sideViewOffset = -8000 * scale;
-    let sectionViewOffset = 16000 * scale;
+    // let layerNum = 5;
+        // let layout = {
+    //     layer : 5,
+    //     scale : 1,
+    //     girderOffset : 24000,
+    //     sideViewOffset : -8000,
+    //     sectionViewOffset : 16000
+    //     gridMarkWidth : 1500,
+    // }
+    let scale = layout.scale; //layout.scale
+    let girderOffset = layout.girderOffset * scale;
+    let sideViewOffset = layout.sideViewOffset * scale;
+    let sectionViewOffset = layout.sectionViewOffset * scale;
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
     let initPoint = [];
     let endPoint = [];
@@ -1296,14 +1313,24 @@ export function PartSideMesh(Part, scale, initPoint, rotate) {
     return meshes
 }
 
-export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layerNum) {
+export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layout) {
+    
     let group = new THREE.Group();
     // let layerNum = 5;
-    let scale = 1;
-    let girderOffset = 24000;
-    let sideViewOffset = -8000 * scale;
-    let sectionViewOffset = 16000 * scale;
-    let gridMark_width = 1500; // unit : mm
+        // let layout = {
+    //     layer : 5,
+    //     scale : 1,
+    //     girderOffset : 24000,
+    //     sideViewOffset : -8000,
+    //     sectionViewOffset : 16000
+    //     gridMarkWidth : 1500,
+    // }
+    let scale = layout.scale;
+    let girderOffset = layout.girderOffset * scale;
+    let sideViewOffset = layout.sideViewOffset * scale;
+    let sectionViewOffset = layout.sectionViewOffset * scale;
+    // let gridMarkWidth = layout.gridMarkWidth * scale; // unit : mm
+
     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
     let white = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -1343,15 +1370,15 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
             // mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
             group.add(mesh)
         });
-        group.add(LabelInsert(girderSection.labels, white, layerNum));
-        let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, gridMark_width, i + 1)
-        gridMark.meshes.forEach(function (mesh) {
-            mesh.position.set(0, -i * girderOffset, 0);
-            group.add(mesh);
-        });
-        let label = LabelInsert(gridMark.labels, white, layerNum)
-        label.position.set(0, -i * girderOffset, 0);
-        group.add(label)
+        group.add(LabelInsert(girderSection.labels, white, layout.layer));
+        // let gridMark = GridMarkView(girderStation[i], scale, initPoint, rotate, layout, i + 1)
+        // gridMark.meshes.forEach(function (mesh) {
+        //     mesh.position.set(0, -i * girderOffset, 0);
+        //     group.add(mesh);
+        // });
+        // let label = LabelInsert(gridMark.labels, white, layout.layer)
+        // label.position.set(0, -i * girderOffset, 0);
+        // group.add(label)
     }
     return group
 }
@@ -1559,22 +1586,32 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     //             weldings.push(weldingMark(diaPoint[key].welding[i], 0.8, sc, 200, true, true, false, false))
     //         }
     //     }
-    // let dims = [];
-    // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 1))   //top1
-    // dims.push(Dimension([sectionPoint.leftTopPlate[3], sectionPoint.leftTopPlate[2], sectionPoint.rightTopPlate[2], sectionPoint.rightTopPlate[3]], 0, sc, 1, true, true, 0)) //top2
-    // dims.push(Dimension([sectionPoint.rWeb[0], sectionPoint.rWeb[1]], 1, sc, 1, false, true, 2)) //right1
+    let dims = [];
+    if (sectionPoint.uflange[0].length >0){
+        dims.push(Dimension([sectionPoint.uflange[0][0], sectionPoint.uflange[1][0]], 0, sc, 1, true, true, 2))   //top1
+        dims.push(Dimension([sectionPoint.uflange[0][0], sectionPoint.uflange[0][1], sectionPoint.uflange[1][1], sectionPoint.uflange[1][0]], 0, sc, 1, true, true, 1)) //top2
+    } else {
+        dims.push(Dimension([sectionPoint.uflange[2][0], sectionPoint.uflange[2][1]], 0, sc, 1, true, true, 1))   //top1
+    }
+    dims.push(Dimension([sectionPoint.web[1][0], sectionPoint.web[1][1]], 1, sc, 1, false, true, 2)) //right1
     // dims.push(Dimension([sectionPoint.rWeb[0], diaPoint.lowerTopShape.points[3], diaPoint.lowerTopShape.points[2], diaPoint.rightTopPlateShape.points[3], diaPoint.rightTopPlateShape.points[0], sectionPoint.rWeb[1]], 5, sc, 1, false, true, 1)) //right2
-    // dims.push(Dimension([sectionPoint.lWeb[0], sectionPoint.lWeb[1]], 1, sc, 1, false, false, 2)) //left1
+    dims.push(Dimension([sectionPoint.web[0][0], sectionPoint.web[0][1]], 1, sc, 1, false, false, 2)) //left1
     // dims.push(Dimension([sectionPoint.lWeb[0], diaPoint.lowerTopShape.points[0], diaPoint.lowerTopShape.points[1], diaPoint.leftTopPlateShape.points[3], diaPoint.leftTopPlateShape.points[0], sectionPoint.lWeb[1]], 5, sc, 1, false, false, 1)) // left2
-    // dims.push(Dimension([sectionPoint.bottomPlate[3], sectionPoint.lWeb[0], sectionPoint.rWeb[0], sectionPoint.bottomPlate[2]], 0, sc, 1, true, false, 0)) //bottom1
-    // dims.push(Dimension([sectionPoint.bottomPlate[3], sectionPoint.bottomPlate[2]], 0, sc, 1, true, false, 1)) //botoom2
-
+    
+    if (sectionPoint.lflange[0].length > 0){
+        dims.push(Dimension([sectionPoint.lflange[0][0], sectionPoint.lflange[1][0]], 0, sc, 1, true, false, 3)) //botoom2
+        dims.push(Dimension([sectionPoint.lflange[0][0], sectionPoint.web[0][0], sectionPoint.web[1][0], sectionPoint.lflange[1][0]], 0, sc, 1, true, false, 2)) //bottom1
+        dims.push(Dimension([sectionPoint.lflange[0][0], sectionPoint.lflange[0][1], sectionPoint.lflange[1][1], sectionPoint.lflange[1][0]], 0, sc, 1, true, false, 1)) //botoom2
+    } else {
+        dims.push(Dimension([sectionPoint.lflange[2][0], sectionPoint.web[0][0], sectionPoint.web[1][0], sectionPoint.lflange[2][1]], 0, sc, 1, true, false, 1)) //bottom1
+        dims.push(Dimension([sectionPoint.lflange[2][0], sectionPoint.lflange[2][1]], 0, sc, 1, true, false, 2)) //botoom2
+    }
     // // layer coloers : aqua, black, blue, fuchsia, green, gray, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, yellow
 
-    // for (let i in dims) {
-    //     dims[i].meshes.forEach(function (mesh) { group.add(mesh) })
-    //     dims[i].labels.forEach(function (elem) { label.push(elem) })
-    // }
+    for (let i in dims) {
+        dims[i].meshes.forEach(function (mesh) { group.add(mesh) })
+        dims[i].labels.forEach(function (elem) { label.push(elem) })
+    }
     // for (let i in weldings) {
     //     weldings[i].meshes.forEach(function (mesh) { group.add(mesh) })
     //     weldings[i].labels.forEach(function (elem) { label.push(elem) })

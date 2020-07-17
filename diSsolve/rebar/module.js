@@ -34,7 +34,7 @@ export function DeckRebarPoint(
         let sp = pointDict[rebar1[rNum][start]];
         let ep = pointDict[rebar1[rNum][end]];
         let station = sp.masterStationNumber + rebar1[rNum][startOffset];
-        let zOffset = slabInfo.slabThickness + slabInfo.haunchHeight
+        let zOffset = 0; //slabInfo.slabThickness + slabInfo.haunchHeight
         let iter = 0;
         while (station <= ep.masterStationNumber + rebar1[rNum][endOffset]) {
             let mp1 = MasterPointGenerator(station, masterLine);
@@ -88,7 +88,7 @@ export function DeckRebarPoint(
                 bPts.push(ZOffsetLine(elem.points, cov))
             }
         })
-
+        
         // console.log(ZOffsetLine(deckSection.slab2[18].points,70))
         let iMax = bPts.length - 1
         let spt = longiRebarEndPoints(bPts[0], bPts[1], rebar2[rNum][startOffset], true)
@@ -98,11 +98,12 @@ export function DeckRebarPoint(
             lrebar.push(InterPolation2(bPts[i], rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
         }
         lrebar.push(InterPolation2(ept, rebar2[rNum][spacing], rebar2[rNum][leftCover], rebar2[rNum][rightCover], rebar2[rNum][Var]))
-
         for (let i = 0; i < lrebar[0].length; i++) {
             let pts = []
             for (let j = 0; j < lrebar.length; j++) {
-                pts.push(lrebar[j][i])
+                if (lrebar[j][i]){
+                    pts.push(lrebar[j][i])
+                 }
             }
             r2.push(pts)
         }
@@ -126,7 +127,7 @@ export function DeckRebarPoint(
         let sp = pointDict[rebar11[rNum][start]];
         let ep = pointDict[rebar11[rNum][end]];
         let station = sp.masterStationNumber + rebar11[rNum][startOffset];
-        let zOffset = slabInfo.slabThickness + slabInfo.haunchHeight
+        let zOffset = 0; //slabInfo.slabThickness + slabInfo.haunchHeight
         let iter = 0;
         while (station <= ep.masterStationNumber + rebar11[rNum][endOffset]) {
             let mp1 = MasterPointGenerator(station, masterLine);
@@ -170,7 +171,6 @@ export function DeckRebarPoint(
             station += rebar1[rNum].spacing;
         }
     }
-
 
     return { r1, r2, }
 }
@@ -224,6 +224,8 @@ export function InterPolation2(points, spacing, leftCover, rightCover, variables
         }
         x = remainder > 0 && (i === 0 || i === Math.floor(W / spacing)) ? x + remainder / 2 + spacing / 2 : x + spacing;
         // result.push(points[points.length-1])
+    }
+    if (result.length < 1 ){
     }
     return result
 }

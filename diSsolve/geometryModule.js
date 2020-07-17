@@ -78,6 +78,7 @@ export function PlateRestPoint(point1, point2, tan1, tan2, thickness){
   }else{
     let a = (point1.y - point2.y) / (point1.x - point2.x);
     let b = point1.y - a * point1.x;
+    let sign = a > 0 ? 1 : -1;
     let alpha = thickness * Math.sqrt(1 + 1/a**2);
     x3 = tan1 === null? point1.x:(-a * alpha + b + tan1 * point1.x - point1.y) / (tan1 - a)
     x4 = tan2 === null? point2.x:(-a * alpha + b + tan2 * point2.x - point2.y) / (tan2 - a);
@@ -124,8 +125,16 @@ export function scallop(point1,point2,point3,radius,smoothness){
 
 export function DividingPoint(point1, point2, length){
   //length is distance from point1 to new point in directing point2
-  let a = length / Math.sqrt((point1.x- point2.x)**2+(point1.y- point2.y)**2+(point1.z- point2.z)**2)
-  return {x:(1-a)*point1.x + a * point2.x, y:(1-a)*point1.y + a * point2.y,z:(1-a)*point1.z + a * point2.z}
+  let result = {};
+  if (point1.z && point2.z){
+    let a = length / Math.sqrt((point1.x- point2.x)**2+(point1.y- point2.y)**2+(point1.z- point2.z)**2);
+    result = {x:(1-a)*point1.x + a * point2.x, y:(1-a)*point1.y + a * point2.y,z:(1-a)*point1.z + a * point2.z};
+  } else {
+    let a = length / Math.sqrt((point1.x- point2.x)**2+(point1.y- point2.y)**2);
+    result = {x:(1-a)*point1.x + a * point2.x, y:(1-a)*point1.y + a * point2.y, z : 0 };
+  }
+  
+  return result
 }
 
 export function Fillet2D(point1, point2, point3, radius, smoothness){
@@ -209,13 +218,16 @@ export function ZOffsetLine(points, z) {
         result.push(ZMove(points[i + 1], z / cos[i]));
       }
     } else {
-      let sinHalftheta = Math.sqrt((1 - costheta) / 2);
-      let z2 = sinHalftheta === 0 ? z : z / sinHalftheta;
-      let vecSum = { x: (vec[i + 1].x - vec[i].x), y: (vec[i + 1].y - vec[i].y), z: (vec[i + 1].z - vec[i].z) }
-      let l2 = Math.sqrt(vecSum.x ** 2 + vecSum.y ** 2 + vecSum.z ** 2)
-      result.push({ x: points[i + 1].x + vecSum.x / l2 * z2, y: points[i + 1].y + vecSum.y / l2 * z2, z: points[i + 1].z + vecSum.z / l2 * z2 });
+      if (costheta){
+        let sinHalftheta = Math.sqrt((1 - costheta) / 2);
+        let z2 = sinHalftheta === 0 ? z : z / sinHalftheta;
+        let vecSum = { x: (vec[i + 1].x - vec[i].x), y: (vec[i + 1].y - vec[i].y), z: (vec[i + 1].z - vec[i].z) }
+        let l2 = Math.sqrt(vecSum.x ** 2 + vecSum.y ** 2 + vecSum.z ** 2)
+        result.push({ x: points[i + 1].x + vecSum.x / l2 * z2, y: points[i + 1].y + vecSum.y / l2 * z2, z: points[i + 1].z + vecSum.z / l2 * z2 });
+      }
     }
   }
+
   result.push(ZMove(points[points.length - 1], z / cos[cos.length - 1]));
   return result
 }
