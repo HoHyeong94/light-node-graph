@@ -21,7 +21,7 @@ GirderLayout.prototype.onExecute = function() {
   let girderNum = girderLayoutInput.getGirderList.length;
   this.setOutputData(0, result);
   this.setOutputData(1, supportNum);
-  this.setOutputData(1, girderNum);
+  this.setOutputData(2, girderNum);
 }
 
 // LiteGraph.registerNodeType("nexivil/Girder", Girder);
