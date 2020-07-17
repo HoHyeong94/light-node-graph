@@ -1077,14 +1077,14 @@ export function GirderGeneralDraw1(girderStation, layout) {
 export function XbeamSection(xbeamDict, girderStation, layout) {
     let group = new THREE.Group();
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
-    let scale = 1; //layout.scale
-    let girderOffset = 24000;
-    let sideViewOffset = -8000 * scale;
-    let sectionViewOffset = 16000 * scale;
+    let scale = layout.scale;
+    let girderOffset = layout.girderOffset * scale;  //24000;
+    let sideViewOffset = layout.sideViewOffset * scale; // -8000 * scale;
+    let sectionViewOffset = layout.sectionViewOffset * scale;; 
     let initZ = [];
-    let supportNum = 3; // layout 변수안에서 자동계산되어야 함. 
+    let supportNum = layout.supportNum; //3; // layout 변수안에서 자동계산되어야 함. 
     let xoffset = 20000;
-    let girderNum = girderStation.length // layout 변수안에서 자동계산되어야 함. 
+    let girderNum = layout.girderNum; //girderStation.length // layout 변수안에서 자동계산되어야 함. 
 
     for (let j = 0; j < supportNum; j++) {
         for (let i = 0; i < girderNum; i++) {
