@@ -8,14 +8,20 @@ export function GirderLayout(){
   this.addInput("girderlayoutInput","girderlayoutInput");
   
   this.addOutput("girderLayout","girderLayout");
+  this.addOutput("supportCount","number");
+  this.addOutput("girderCount","number");
 }
 
 GirderLayout.prototype.onExecute = function() {
   const masterLine = this.getInputData(0);
   const slaveLine = [this.getInputData(1)];
   const girderLayoutInput = this.getInputData(2);
-  const result = GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput)
-  this.setOutputData(0, result)
+  const result = GirderLayoutGenerator2(masterLine, slaveLine, girderLayoutInput);
+  let supportNum = girderLayoutInput.supportData.length -2;
+  let girderNum = girderLayoutInput.getGirderList.length;
+  this.setOutputData(0, result);
+  this.setOutputData(1, supportNum);
+  this.setOutputData(1, girderNum);
 }
 
 // LiteGraph.registerNodeType("nexivil/Girder", Girder);
