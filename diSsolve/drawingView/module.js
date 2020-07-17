@@ -1150,9 +1150,9 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     }
 
     let initZ = [];
-    let supportNum = 3; // layout 변수안에서 자동계산되어야 함. 
+    let supportNum = layout.supportNum; // layout 변수안에서 자동계산되어야 함. 
     let xoffset = 20000;
-    let girderNum = girderStation.length // layout 변수안에서 자동계산되어야 함. 
+    let girderNum = layout.girderNum // layout 변수안에서 자동계산되어야 함. 
 
     for (let j = 0; j < supportNum; j++) {
         for (let i = 0; i < girderNum; i++) {
