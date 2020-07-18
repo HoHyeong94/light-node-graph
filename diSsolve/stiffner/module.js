@@ -241,11 +241,11 @@ export function DYVstiff0(webPoints, point, skew, uflangePoint, ds) {
 
   let left = PlateRestPoint(lowerPoints[0], tl, 0, gradient, dsi.stiffWidth)
 
-  result["left"] = vPlateGen(left, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [], [1, 2], [1,2,4,0])
+  result["left"] = vPlateGen(left, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [], [1, 2], [1,2,3,0])
   
   let right = PlateRestPoint(lowerPoints[1], tr, 0, gradient, -dsi.stiffWidth)
   
-  result["right"] = vPlateGen(right, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [], [1, 2])
+  result["right"] = vPlateGen(right, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [], [1, 2], null)
   
   return result
 }
