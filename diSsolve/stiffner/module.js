@@ -238,7 +238,7 @@ export function jackup0(webPoints, point, jackupData) {
   let length = jackupData[2];
   let height = jackupData[3];
   let thickness = jackupData[4];
-  let chamfer = jackupData[4];jackupData[5];
+  let chamfer = jackupData[5];
    //  임시 입력변수
 
   const bl = webPoints[0][0];
