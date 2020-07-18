@@ -30,6 +30,7 @@ export function ToGlobalPoint2(Point, node2D){
   let newPoint = {
       x:0, y:0, z:0
   }
+  let skew = Point.skew? Point.skew : 90;
   const cos = Point.normalCos;
   const sin = Point.normalSin;
   // let skewCot = 0;
