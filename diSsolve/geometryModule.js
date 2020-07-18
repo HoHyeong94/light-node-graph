@@ -39,7 +39,7 @@ export function ToGlobalPoint2(Point, node2D){
   // };
   let X = node2D.x
   let Y = node2D.y
-  let Z = 0
+  let Z = Point.gradientX? Point.gradientX * node2D.y : 0
 
   newPoint.x = Point.x + X * cos - Y*sin 
   newPoint.y = Point.y + X * sin + Y*cos

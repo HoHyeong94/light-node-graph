@@ -278,7 +278,7 @@ export function jackup0(webPoints, point, jackupData) {
   leftPoints2.push(left1[1]);
   leftPoints2.push(...scallop(left1[1], left1[2], left1[3], chamfer, 1));
   leftPoints2.push(left1[3])
-  let right1 = PlateRestPoint(br2, upperPoints[3], 0, 0, -height)
+  let right1 = PlateRestPoint(br2, upperPoints[3], 0, 0, height)
   let rightPoints2 = [];
   rightPoints2.push(right1[0])
   rightPoints2.push(right1[1]);
