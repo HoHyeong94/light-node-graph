@@ -143,8 +143,10 @@ export function VstiffShapeDict(
     }
     else if (vStiffLayout[i][section] === "DYvStiff1") {
       result[gridkey] = DYVstiff1(webPoints, gridPoint[gridkey], skew, uflangePoints, vSection)
+    } else if (vStiffLayout[i][section] === "DYvStiff0") {
+      result[gridkey] = DYVstiff0(webPoints, gridPoint[gridkey], skew, uflangePoints, vSection)
     }
-    result[gridkey].point = gridPoint[gridkey]
+    result[gridkey].point = gridPoint[gridkey] // 추후 삭제필요
   }
 
   return result;
@@ -216,6 +218,38 @@ export function HBracingDict(
   return { hBracingDict, hBracingPlateDict };
 }
 
+export function DYVstiff0(webPoints, point, skew, uflangePoint, ds) {
+  //ds 입력변수
+  let result = {};
+  let dsi = {
+    stiffWidth: 150,
+    stiffThickness: 12,
+    scallopRadius: 35,
+    chamfer: 130,
+  } //  임시 입력변수
+
+  const bl = webPoints[0];
+  const tl = webPoints[1];
+  const br = webPoints[2];
+  const tr = webPoints[3];
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+
+  let lowerPoints = [
+    { x: bl.x, y: bl.y },
+    { x: br.x, y: br.y }
+  ];
+
+  let left = PlateRestPoint(lowerPoints[0], tl, 0, gradient, dsi.stiffWidth)
+
+  result["left"] = vPlateGen(left, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [], [1, 2], [1,2,4,0])
+  
+  let right = PlateRestPoint(lowerPoints[1], tr, 0, gradient, -dsi.stiffWidth)
+  
+  result["right"] = vPlateGen(right, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [], [1, 2])
+  
+  return result
+}
+
 
 export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   //ds 입력변수
@@ -250,7 +284,7 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   leftPoints.push(left[2])
   leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
-  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [], dsi.scallopRadius, null, null, [], [1, 2], [1,2,4,0])
+  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [1], dsi.scallopRadius, null, null, [], [1, 2], [1,2,4,0])
   // {
   //   points: leftPoints,
   //   Thickness: dsi.stiffThickness,
