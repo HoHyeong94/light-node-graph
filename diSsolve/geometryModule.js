@@ -44,6 +44,10 @@ export function ToGlobalPoint2(Point, node2D){
   newPoint.y = Point.y + X * sin + Y*cos
   newPoint.z = Point.z + Z
   newPoint.s = Point.masterStationNumber
+  newPoint.skew = skew;
+  newPoint.normalCos = cos;
+  newPoint.normalSin = sin;
+  newPoint.girderStation = Point.girderStation + Y;
   
   return newPoint
 }
