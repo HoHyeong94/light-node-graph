@@ -400,16 +400,19 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
           plate0[1] = [];
         }
       }
+      for (let k in uf1) {
+        plate0[k].forEach(element => result[k].push(element));
+      }
     }
-    for (let k in uf1) {
-      plate0[k].forEach(element => result[k].push(element));
-    }
+    
   }
   
   if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작 // 외측과 내측필렛이 같은요소에 작용하면 오류가 발생할 것으로 예상, 필렛이 없는 폐합요소에만 외측 챔퍼 적용
     let filletPoints = FilletPoints(plate1, plate2, false, filletR, smoothness)
+    
     result[0].push(...filletPoints[0])
     result[1].push(...filletPoints[1])
+    result[2].push(...plate0[2])
   } else {
     if (!FisB0 && ((latter0 - former0) > 100) && ((latter0 - former0) < 700)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
       for (let k in uf1) {

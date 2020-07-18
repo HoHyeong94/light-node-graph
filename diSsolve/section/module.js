@@ -293,7 +293,6 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     backward.slabThickness = slabThickness;
 
     var uFlange = girderBaseInfo.uFlange.filter(function (element) {
-        console.log("check", element[0])
         return (station >= pointDict[element[0]].masterStationNumber && station < pointDict[element[1]].masterStationNumber)
     })
     if (uFlange.length > 0) {
