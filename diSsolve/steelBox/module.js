@@ -337,9 +337,6 @@ export function sidePlateGenerator(sectionPointDict, pk1, pk2, point1, point2, s
         result[2].push(filletList[0][l], filletList[1][l]);
       }
       result[2].push(nplate1, nplate2);
-      // console.log("check", npt2, npt3, nplate1, nplate2)
-      // console.log("check", filletList)
-      // console.log("check2", result)
     } else {
       for (let k in plate2) {
         plate2[k].forEach(element => result[k].push(element));
@@ -410,7 +407,6 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
   }
   
   if (uf1[2].length === 0 && uf0[2].length > 0) {  //폐합에서 분할로 시작 // 외측과 내측필렛이 같은요소에 작용하면 오류가 발생할 것으로 예상, 필렛이 없는 폐합요소에만 외측 챔퍼 적용
-    console.log("check", pk1, pk2, plate1, plate2)
     let filletPoints = FilletPoints(plate1, plate2, false, filletR, smoothness)
     result[0].push(...filletPoints[0])
     result[1].push(...filletPoints[1])
@@ -418,7 +414,6 @@ export function steelPlateGenerator(sectionPointDict, pk1, pk2, point1, point2, 
     if (!FisB0 && ((latter0 - former0) > 100) && ((latter0 - former0) < 700)) { //단부에서 오류나는 내용 임시적으로 해결 2020.7.13 by dr.lim
       for (let k in uf1) {
         if (uf1[k].length > 0) {
-          // console.log("check", pk1, former0, latter0)
           let thickness = Math.abs(uf1[k][0].y - uf1[k][3].y);
           let npt2 = DividingPoint(plate1[k][2], plate2[k][2], thickness);
           let npt3 = DividingPoint(plate1[k][3], plate2[k][3], thickness);
@@ -548,7 +543,9 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
       for (let k in uflangeSide) {
         uflangeSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
-      splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { UFi += 1; return } })
+      splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { 
+        console.log("steelboxCheck", pk2)
+        UFi += 1; return } })
       // pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
 
 
@@ -677,7 +674,6 @@ function fillet3D(point1, point2, point3, radius, smoothness) {
   let ang
   let l1
 
-  //console.log(points[i].x);
   v1.subVectors(point1, point2).normalize();
   v2.subVectors(point3, point2).normalize();
   ang = Math.acos(v1.dot(v2))
