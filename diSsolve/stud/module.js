@@ -144,9 +144,11 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
                 if (startFlangePoints.length > 0 && endFlangePoints.length > 0) {
                     let startNode = startFlangePoints[3]
                     let endNode = endFlangePoints[3]
+                    let sign = p === 1? -1 : 1;
                     for (let k = 0; k < ts.minNum; k++) {
-                        spts.push({ x: startNode.x + ts.outSideMargin + k * ts.minDist, y: startNode.y + (ts.outSideMargin + k * ts.minDist) * gridPoints[j].gradientY });
-                        epts.push({ x: endNode.x + ts.outSideMargin + k * ts.minDist, y: endNode.y + (ts.outSideMargin + k * ts.minDist) * gridPoints[j + 1].gradientY });
+                        let dx = sign * ts.outSideMargin + sign * k * ts.minDist
+                        spts.push({ x: startNode.x + dx, y: startNode.y + dx * gridPoints[j].gradientY });
+                        epts.push({ x: endNode.x + dx, y: endNode.y + dx * gridPoints[j + 1].gradientY });
                     }
                 }
             }
