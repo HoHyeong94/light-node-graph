@@ -104,13 +104,14 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
             startOffset: topPlateStudLayout[i][2],
             endOffset: topPlateStudLayout[i][3],
             spacing: topPlateStudLayout[i][4],
-            outSideMargin: topPlateStudLayout[i][5],
-            inSideMargin: topPlateStudLayout[i][6],
-            minNum: topPlateStudLayout[i][7],
-            maxNum: topPlateStudLayout[i][8],
-            minDist: 100,  //라이트그래프 인풋변수 수정 필요
-            maxDist: topPlateStudLayout[i][9],
-            layout : [70,105,105]
+            layout : topPlateStudLayout[i][5],
+            // outSideMargin: topPlateStudLayout[i][5],
+            // inSideMargin: topPlateStudLayout[i][6],
+            // minNum: topPlateStudLayout[i][7],
+            // maxNum: topPlateStudLayout[i][8],
+            // minDist: 100,  //라이트그래프 인풋변수 수정 필요
+            // maxDist: topPlateStudLayout[i][9],
+            // layout : [70,105,105]
         };
 
         const sp = ts.start
