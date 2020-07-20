@@ -134,6 +134,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
         }
         let totalLength = 0;
         let segLength = 0;
+        let gradientY = 0;
         for (let j = 0; j < gridKeys.length - 1; j++) {
 
             let points = [];
@@ -144,6 +145,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
                 let startFlangePoints = sectionPointDict[gridKeys[j]].forward.uflange[p];
                 let endFlangePoints = sectionPointDict[gridKeys[j + 1]].backward.uflange[p];
                 if (startFlangePoints.length > 0 && endFlangePoints.length > 0) {
+                    gradientY = (startFlangePoints[3].y - startFlangePoints[2].y) / (startFlangePoints[3].x - startFlangePoints[2].x)
                     let startNode = startFlangePoints[3]
                     let endNode = endFlangePoints[3]
                     let sign = p === 1? -1 : 1;
@@ -156,8 +158,8 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
                     for (let k in layout) {
                         let sp = layout[k].trim() * sign
                         dx += sp
-                        spts.push({ x: startNode.x + dx, y: startNode.y + dx * gridPoints[j].gradientY });
-                        epts.push({ x: endNode.x + dx, y: endNode.y + dx * gridPoints[j + 1].gradientY });
+                        spts.push({ x: startNode.x + dx, y: startNode.y + dx * gradientY });
+                        epts.push({ x: endNode.x + dx, y: endNode.y + dx * gradientY });
                     }
                 }
             }
@@ -189,7 +191,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
                 }
             }
 
-            studList.push({ points: points, gradientX: 0, gradientY: gridPoints[j].gradientY, stud: studInfo })
+            studList.push({ points: points, gradientX: 0, gradientY: gradientY, stud: studInfo })
             // sectionPointDict[gridKeys[j]].backward.leftTopPlate[3]
         }
 
