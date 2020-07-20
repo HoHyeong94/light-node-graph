@@ -109,7 +109,8 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
             minNum: topPlateStudLayout[i][7],
             maxNum: topPlateStudLayout[i][8],
             minDist: 100,  //라이트그래프 인풋변수 수정 필요
-            maxDist: topPlateStudLayout[i][9]
+            maxDist: topPlateStudLayout[i][9],
+            layout : [70,105,105]
         };
 
         const sp = ts.start
@@ -145,8 +146,13 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
                     let startNode = startFlangePoints[3]
                     let endNode = endFlangePoints[3]
                     let sign = p === 1? -1 : 1;
-                    for (let k = 0; k < ts.minNum; k++) {
-                        let dx = sign * ts.outSideMargin + sign * k * ts.minDist
+                    // for (let k = 0; k < ts.minNum; k++) {
+                    //     let dx = sign * ts.outSideMargin + sign * k * ts.minDist
+                    //     spts.push({ x: startNode.x + dx, y: startNode.y + dx * gridPoints[j].gradientY });
+                    //     epts.push({ x: endNode.x + dx, y: endNode.y + dx * gridPoints[j + 1].gradientY });
+                    // }
+                    for (let k = 0; k < ts.layout; k++) {
+                        let dx = sign * ts.layout[k];
                         spts.push({ x: startNode.x + dx, y: startNode.y + dx * gridPoints[j].gradientY });
                         epts.push({ x: endNode.x + dx, y: endNode.y + dx * gridPoints[j + 1].gradientY });
                     }
