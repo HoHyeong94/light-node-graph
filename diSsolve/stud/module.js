@@ -151,7 +151,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
                     //     spts.push({ x: startNode.x + dx, y: startNode.y + dx * gridPoints[j].gradientY });
                     //     epts.push({ x: endNode.x + dx, y: endNode.y + dx * gridPoints[j + 1].gradientY });
                     // }
-                    dx = 0
+                    let dx = 0
                     for (let k in ts.layout) {
                         let sp = sign * ts.layout[k]
                         dx += sp
