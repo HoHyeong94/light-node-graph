@@ -179,68 +179,69 @@ export function AnalysisModel(node, frame) {
         // group.add(arrow)
     }
 
-    // test //
-    let maxValue = null;
-    let minValue = null;
+    // 해석결과 보기 함수
+    // // test //
+    // let maxValue = null;
+    // let minValue = null;
 
-    for (let elemNum in analysisOutput.force) {
-        for (let seg in analysisOutput.force[elemNum]) {
-            let newValue = analysisOutput.force[elemNum][seg]["STBOX"][5]
-            if (!maxValue || newValue > maxValue) {
-                maxValue = newValue
-            }
-            if (!minValue || newValue < minValue) {
-                minValue = newValue
-            }
-        }
-    }
-    let scaler = 5000 / Math.max(Math.abs(maxValue), Math.abs(minValue))
-    for (let elemNum in analysisOutput.force) {
-        let ivec = geometry.vertices[elemDict[elemNum][0]]
-        let jvec = geometry.vertices[elemDict[elemNum][1]]
-        let geo = new THREE.Geometry();
-        for (let seg in analysisOutput.force[elemNum]) {
-            let a = seg * 1;
-            let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
-            let izload = analysisOutput.force[elemNum][seg]["STBOX"][5] * scaler
-            if (seg === "0.00000") {
-                geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
-            }
-            geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
-            if (seg === "1.00000") {
-                geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
-            }
-            group.add(new THREE.Line(geo, redLine));
-        }
-    }
+    // for (let elemNum in analysisOutput.force) {
+    //     for (let seg in analysisOutput.force[elemNum]) {
+    //         let newValue = analysisOutput.force[elemNum][seg]["STBOX"][5]
+    //         if (!maxValue || newValue > maxValue) {
+    //             maxValue = newValue
+    //         }
+    //         if (!minValue || newValue < minValue) {
+    //             minValue = newValue
+    //         }
+    //     }
+    // }
+    // let scaler = 5000 / Math.max(Math.abs(maxValue), Math.abs(minValue))
+    // for (let elemNum in analysisOutput.force) {
+    //     let ivec = geometry.vertices[elemDict[elemNum][0]]
+    //     let jvec = geometry.vertices[elemDict[elemNum][1]]
+    //     let geo = new THREE.Geometry();
+    //     for (let seg in analysisOutput.force[elemNum]) {
+    //         let a = seg * 1;
+    //         let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+    //         let izload = analysisOutput.force[elemNum][seg]["STBOX"][5] * scaler
+    //         if (seg === "0.00000") {
+    //             geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
+    //         }
+    //         geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
+    //         if (seg === "1.00000") {
+    //             geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
+    //         }
+    //         group.add(new THREE.Line(geo, redLine));
+    //     }
+    // }
 
-    let influenceElem = "16"
+    // let influenceElem = "16"
 
-    for (let i in frame.laneList) {
-        let geo = new THREE.Geometry();
-        let geo2 = new THREE.Geometry();
-        for (let j in frame.laneList[i]) {
-            let loadData = frame[frame.laneList[i][j]].data[0]
-            let ivec = geometry.vertices[elemDict[loadData.elem][0]]
-            let jvec = geometry.vertices[elemDict[loadData.elem][1]]
-            let a = loadData.RD
-            let izload = analysisOutput.force[influenceElem]["0.00000"][frame.laneList[i][j]][5] * 1000000
-            let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
-            let nivec2 = new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload)
-            geo.vertices.push(nivec2)
-            geo2.vertices.push(nivec, nivec2)
-        }
-        group.add(new THREE.Line(geo, yellowLine));
-        group.add(new THREE.LineSegments(geo2, yellowLine));
-    }
-    delete analysisOutput.disp
-    for (let elem in analysisOutput.force) {
-        if (!frame.girderElemList.includes(elem * 1)) {
-            delete analysisOutput.force[elem]
-        }
-    }
+    // for (let i in frame.laneList) {
+    //     let geo = new THREE.Geometry();
+    //     let geo2 = new THREE.Geometry();
+    //     for (let j in frame.laneList[i]) {
+    //         let loadData = frame[frame.laneList[i][j]].data[0]
+    //         let ivec = geometry.vertices[elemDict[loadData.elem][0]]
+    //         let jvec = geometry.vertices[elemDict[loadData.elem][1]]
+    //         let a = loadData.RD
+    //         let izload = analysisOutput.force[influenceElem]["0.00000"][frame.laneList[i][j]][5] * 1000000
+    //         let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+    //         let nivec2 = new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload)
+    //         geo.vertices.push(nivec2)
+    //         geo2.vertices.push(nivec, nivec2)
+    //     }
+    //     group.add(new THREE.Line(geo, yellowLine));
+    //     group.add(new THREE.LineSegments(geo2, yellowLine));
+    // }
+    // delete analysisOutput.disp
+    // for (let elem in analysisOutput.force) {
+    //     if (!frame.girderElemList.includes(elem * 1)) {
+    //         delete analysisOutput.force[elem]
+    //     }
+    // }
 
-    // console.log("newSapOutput", analysisOutput)
+    // // console.log("newSapOutput", analysisOutput)
 
 
     return { group, analysisOutput }

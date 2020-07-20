@@ -547,7 +547,6 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
         uflangeSide[k].forEach(element => steelBoxDict[sideKeyname]["points"][k].push(element));
       }
       splicer.forEach(function (sp) { if (pk2.substr(2, 2) === sp) { 
-        console.log("steelboxCheck", pk2)
         UFi += 1; return } })
       // pk2.substr(2, 2) === "TF" || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") { UFi += 1 }
 

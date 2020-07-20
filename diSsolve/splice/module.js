@@ -63,7 +63,6 @@ export function SplicePlate(iPoint, iSectionPoint) {
     let side2D = i === 0 ? (cp - lcp.y) : false;
     result[partName] = hPlateGen(Web, centerPoint, xs.webJointThickness, sp.webThickness, 90, 0, lWebAngle, null, false, side2D)
     result[partName].bolt = WebBolt;
-    console.log("side2d", partName, side2D, result[partName])
     result[partName + "2"] = hPlateGen(Web, centerPoint, xs.webJointThickness, - xs.webJointThickness, 90, 0, lWebAngle, null, false, false)
   }
 
