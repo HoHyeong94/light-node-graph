@@ -113,7 +113,7 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
             // maxDist: topPlateStudLayout[i][9],
             // layout : [70,105,105]
         };
-
+        let layout = ts.layout.split(',')
         const sp = ts.start
         let girderIndex = sp.substr(1, 1) * 1 - 1
         let gridKeys = []
@@ -153,8 +153,8 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
                     //     epts.push({ x: endNode.x + dx, y: endNode.y + dx * gridPoints[j + 1].gradientY });
                     // }
                     let dx = 0
-                    for (let k in ts.layout) {
-                        let sp = sign * ts.layout[k]
+                    for (let k in layout) {
+                        let sp = layout[k].trim() * sign
                         dx += sp
                         spts.push({ x: startNode.x + dx, y: startNode.y + dx * gridPoints[j].gradientY });
                         epts.push({ x: endNode.x + dx, y: endNode.y + dx * gridPoints[j + 1].gradientY });
