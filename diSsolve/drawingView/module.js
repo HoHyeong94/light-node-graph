@@ -934,7 +934,11 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
 
 
         if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
-            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset);
+        let markTop = markOffset    
+        if (gridObj.key.substr(2, 1) === "S" || gridObj.key.substr(2, 1) === "V" || gridObj.key.substr(2, 1) === "D"){
+            markTop = markOffset + 300
+        }
+            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markTop);
             meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
@@ -942,7 +946,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
                 rotation: rot,
                 fontSize: fontSize * scale
             });
-            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset - 100);
+            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markTop - 100);
             let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - markOffset + 100);
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
