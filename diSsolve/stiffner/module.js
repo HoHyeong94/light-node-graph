@@ -226,7 +226,7 @@ export function JackupStiffDict(gridPoint,
   for (let i in jackupData){
     let gridkey = jackupData[i][0]
     let webPoints = sectionPointDict[gridkey].forward.web
-    result[gridkey] = jackup0(webPoints, gridPoint[gridkey], jackupData[i])
+    result[gridkey + i] = jackup0(webPoints, gridPoint[gridkey], jackupData[i])
   }
   return result
 }
