@@ -961,7 +961,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
                 rotation: 0,
                 fontSize: fontSize * scale
             });
-            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 200 * scale, z: 0 };
+            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (200 + markTop) * scale, z: 0 };
             pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 };
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
@@ -981,7 +981,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
     // meshes.push(LineMesh(dimWF, redLine,0))
     // dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
     // }
-    let segLine = new THREE.LineSegments(geo, redDotLine);
+    let segLine = new THREE.LineSegments(geo, redLine);
     segLine.computeLineDistances();
     let dimSegLine = new THREE.LineSegments(dimgeo, redLine);
     meshes.push(segLine);
