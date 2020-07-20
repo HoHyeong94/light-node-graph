@@ -934,11 +934,11 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
 
 
         if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
-        let markTop = markOffset    
-        if (gridObj.key.substr(2, 1) === "S" || gridObj.key.substr(2, 1) === "V" || gridObj.key.substr(2, 1) === "D"){
-            markTop = markOffset + 300
+        let markTop = 0
+        if (gridObj.key.substr(2, 1) === "S" || gridObj.key.substr(2, 1) === "V" || gridObj.key.substr(2, 1) === "D" || gridObj.key.substr(2, 1) === "T" ){
+            markTop = 300
         }
-            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markTop);
+            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset + markTop);
             meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
@@ -946,14 +946,14 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
                 rotation: rot,
                 fontSize: fontSize * scale
             });
-            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markTop - 100);
+            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset + markTop - 100);
             let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - markOffset + 100);
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
                 new THREE.Vector3(pt2.x, pt2.y, 0));
 
             // side View gridMark
-            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 300 * scale, z: 0 };
+            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (300 + markTop) * scale, z: 0 };
             meshes.push(roundedRect(position.x, position.y, 0, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
