@@ -187,16 +187,11 @@ export function StudPoint(girderStation, sectionPointDict, topPlateStudLayout) {
                         y: x / segLength * globalSpts[l].y + (segLength - x) / segLength * globalEpts[l].y,
                         z: x / segLength * globalSpts[l].z + (segLength - x) / segLength * globalEpts[l].z
                     })
-
                 }
             }
-
             studList.push({ points: points, gradientX: 0, gradientY: gradientY, stud: studInfo })
             // sectionPointDict[gridKeys[j]].backward.leftTopPlate[3]
         }
-
-
-
     }
 
 
