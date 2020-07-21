@@ -3238,8 +3238,8 @@
           L3 = sectionPointDict[pk2].forward[Ribkey];
           L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
           FisB = true;
-          for (let i in L2[0]) { FisB = L3[0] ? (L2[0][i] !== L3[0][i] ? false : true) : false; }
-          console.log("check", pk1, pk2, FisB, L3[0]);
+          for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false; }
+          console.log("check", pk1, pk2, FisB, L3);
           if (!FisB || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
             L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
             Ribi += 1;
