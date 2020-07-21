@@ -464,7 +464,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
 
-    section.data.generalSectionList.push({ NAME: "dummy", Mat: material.data[0].NAME, A: 100, I: [1000, 1000], J: 1000 })
+    section.data.generalSectionList.push({ NAME: "dummy", Mat: material.data[0].NAME, A: 1000, I: [1000000, 1000000], J: 1000000 })
     section.data.generalSectionList.push({ NAME: "slab", Mat: material.data[0].NAME, A: 270000, I: [1640250000, 1640250000], J: 1640250000 }) //temparary
 
 
