@@ -637,15 +637,34 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
       }
       if (pk2.substr(2, 2) === "WF" || pk2.substr(2, 2) === "SP") { Wi += 1 }
 
-      let RibList = [];
+      let lRibList = [];
+      let uRibList = [];
       for (let ii in sectionPointDict[pk1].forward) {
-        if (ii.includes("Rib"))
-          RibList.push(ii);
+        if (ii.includes("lRib")){
+          lRibList.push(ii);
+        } else if (ii.includes("uRib")){
+          uRibList.push(ii);
+        }
       }
 
 
-      for (let Ribkey of RibList) {
+      for (let Ribkey of lRibList) {
         keyname = "G" + (i * 1 + 1).toString() + "lRib" + Ribi
+        if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; };
+        L1 = sectionPointDict[pk1].forward[Ribkey];
+        L2 = sectionPointDict[pk2].backward[Ribkey];
+        L3 = sectionPointDict[pk2].forward[Ribkey];
+        L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
+        FisB = true;
+        for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false }
+        if (!FisB || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+          L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
+          Ribi += 1;
+        }
+      }
+      Ribi = 1;
+      for (let Ribkey of uRibList) {
+        keyname = "G" + (i * 1 + 1).toString() + "uRib" + Ribi
         if (!steelBoxDict[keyname]) { steelBoxDict[keyname] = { points: [[], [], []] }; };
         L1 = sectionPointDict[pk1].forward[Ribkey];
         L2 = sectionPointDict[pk2].backward[Ribkey];
