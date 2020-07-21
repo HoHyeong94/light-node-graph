@@ -681,7 +681,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
         L1 = sectionPointDict[pk1].forward.URib;
         L2 = sectionPointDict[pk2].backward.URib;
         L3 = sectionPointDict[pk2].forward.URib;
-        if (!steelBoxDict[keyname]) { 
+        if (!steelBoxDict[keyname] && L1.length > 0) { 
           steelBoxDict[keyname] = { points: [] }; 
           L1.forEach( elem => steelBoxDict[keyname].points.push([]) )
         };
