@@ -678,7 +678,8 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
         }
     }
     // console.log("new", frameInput.girderElemList)
-    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
+    // return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
+    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, girderElemList : frameInput.girderElemList }
 }
 
 

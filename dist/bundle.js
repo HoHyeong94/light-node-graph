@@ -10033,7 +10033,6 @@
       let slabWeight = { command: "LOAD", type: "Distributed Span", Name: "sb", data: [] };
       let pavement = { command: "LOAD", type: "Distributed Span", Name: "pv", data: [] };
       let barrier = { command: "LOAD", type: "Concentrated Span", Name: "br", data: [] };
-      let lane = {};
       let laneList = [];
       let elemNum = frame.data.length + 1;
       let w1 = slabInfo.w1; //헌치돌출길이
@@ -10263,8 +10262,6 @@
                       let x1 = (laneOffset[k] - currentPoints[j].offset) / L;
                       let name = "LN" + (k * 1 + 1) + "P" + pNum;
                       laneList[k].push(name); //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
-                      lane[name] = { command: "LOAD", type: "Concentrated Span", Name: name, data:
-                                  [{ elem: elemNum, RD: x1, Uz: -1000 }] }; //향후 차륜의 개수만큼 확장가능함. by drlim, 200625
                       pNum++;
 
                   }
@@ -10273,7 +10270,8 @@
           }
       }
       // console.log("new", frameInput.girderElemList)
-      return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
+      // return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
+      return { frame, section, material, selfWeight, slabWeight, pavement, barrier, girderElemList : frameInput.girderElemList }
   }
 
 
