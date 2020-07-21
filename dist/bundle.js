@@ -2037,7 +2037,7 @@
 
 
                   let URib = {};
-                  for (let j in ps.lRibLO) {
+                  for (let j in ps.uRibLO) {
                       let uRib = [{ x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY + (ps.uRibLO[j] - ps.uRibThk / 2) * gradient },
                       { x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j] * gradient },
                       { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j] * gradient },
@@ -9103,7 +9103,7 @@
               mesh.position.set(0, -i * girderOffset, 0);
               group.add(mesh);
           });
-          let Urib = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "uRib"], 4, true, scale, initPoint, rotate, green);
+          let Urib = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "uRib"], 4, 0, 1, scale, initPoint, rotate, aqua);
           Urib.forEach(function (mesh) {
               mesh.position.set(0, -i * girderOffset, 0);
               group.add(mesh);
