@@ -1499,7 +1499,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
             let offset = girderPoint.point.offset
             let sectionPoint = sectionPointDict[girderPoint.key]
             for (let key in sectionPoint.forward) {
-                if (key === "uflange" || key === "lflange" || key === "web") {
+                if (key === "uflange" || key === "lflange" || key === "web" || key === "URib" || key === "LRib") {
                     // console.log("check",sectionPoint)
                     for (let k in sectionPoint.forward[key]) {
                         if (sectionPoint.forward[key][k].length > 0) {
@@ -1570,7 +1570,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     group.add(titleCircle)
 
     for (var key in sectionPoint) {
-        if (key === "uflange" || key === "lflange" || key === "web") {
+        if (key === "uflange" || key === "lflange" || key === "web" || key === "URib" || key === "LRib") {
             // console.log("check",sectionPoint)
             for (let k in sectionPoint[key]) {
                 if (sectionPoint[key][k].length > 0) {
