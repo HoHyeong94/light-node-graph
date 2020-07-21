@@ -3240,7 +3240,7 @@
           // FisB = true;
           // for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false }
           // console.log("check", pk1, pk2, FisB, L3)
-          if (!L3 || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
+          if (L3 == false || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
             L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
             Ribi += 1;
           }
@@ -3254,7 +3254,7 @@
           L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)));
           // FisB = true;
           // for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false }
-          if (!L3 || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
+          if (L3 == false || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6") {
             L2.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point2, element)));
             Ribi += 1;
           }
