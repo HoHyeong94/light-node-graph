@@ -9088,6 +9088,7 @@
       let aqua = new global.THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
       let green = new global.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
       let white = new global.THREE.MeshBasicMaterial({ color: 0xffffff });
+      let magenta = new global.THREE.MeshBasicMaterial({ color: 0xff00ff });
 
       for (let i = 0; i < girderStation.length; i++) {
           let initPoint = girderStation[i][0].point;
@@ -9103,7 +9104,7 @@
               mesh.position.set(0, -i * girderOffset, 0);
               group.add(mesh);
           });
-          let Urib = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "uRib"], 4, 0, 1, scale, initPoint, rotate, aqua);
+          let Urib = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "uRib"], 4, 0, 1, scale, initPoint, rotate, magenta);
           Urib.forEach(function (mesh) {
               mesh.position.set(0, -i * girderOffset, 0);
               group.add(mesh);
