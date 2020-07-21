@@ -378,17 +378,37 @@ export function SapJointGenerator(girderStation, supportNode, xbeamData) {//gird
                 nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum
                 nodeNum++
             }
-            rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P3"]] })
-            rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P2"]] })
+            let rigidIndex = rigid.data.findIndex(elem => elem.master === nodeNumDict[xbeamData[i].inode])
+            if (rigidIndex > -1){
+                rigid.data[rigidIndex].slave.push(nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P3"])    
+            } else {
+                rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P3"]] })
+            }
+            rigidIndex = rigid.data.findIndex(elem => elem.master === nodeNumDict[xbeamData[i].jnode])
+            if (rigidIndex > -1){
+                rigid.data[rigidIndex].slave.push(nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P2"])    
+            } else {
+                rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P2"]] })
+            }
+            
         } else { //i형 가로보
             for (let j in xbeamData[i].data) {
                 node.data.push({ nodeNum: nodeNum, coord: [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z] });
                 nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum
                 nodeNum++
             }
-            rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"]] })
-            rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"]] })
-
+            let rigidIndex = rigid.data.findIndex(elem => elem.master === nodeNumDict[xbeamData[i].inode])
+            if (rigidIndex > -1){
+                rigid.data[rigidIndex].slave.push(nodeNumDict[xbeamData[i].key + "P0"])    
+            } else {
+                rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"]] })
+            }
+            rigidIndex = rigid.data.findIndex(elem => elem.master === nodeNumDict[xbeamData[i].jnode])
+            if (rigidIndex > -1){
+                rigid.data[rigidIndex].slave.push(nodeNumDict[xbeamData[i].key + "P1"])    
+            } else {
+                rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"]] })
+            }
         }
 
 
