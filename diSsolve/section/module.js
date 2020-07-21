@@ -38,23 +38,25 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                 let bottomY = ps.height + centerThickness;
                 let topY = slabToGirder ? ps.slabThickness + slabInfo.haunchHeight : centerThickness;
 
-                let LRib = {}
+                let LRib = []
                 for (let j in ps.lRibLO) {
                     let lRib = [{ x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY }, { x: ps.lRibLO[j] - ps.lRibThk / 2, y: -bottomY + ps.lRibH },
                     { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY + ps.lRibH }, { x: ps.lRibLO[j] + ps.lRibThk / 2, y: -bottomY }]
-                    let keyname = "lRib" + j
-                    LRib[keyname] = lRib
+                    // let keyname = "lRib" + j
+                    // LRib[keyname] = lRib
+                    LRib.push(lRib);
                 }
 
 
-                let URib = {}
+                let URib = []
                 for (let j in ps.uRibLO) {
                     let uRib = [{ x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY + (ps.uRibLO[j] - ps.uRibThk / 2) * gradient },
                     { x: ps.uRibLO[j] - ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j] * gradient },
                     { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY - ps.uRibH + ps.uRibLO[j] * gradient },
                     { x: ps.uRibLO[j] + ps.uRibThk / 2, y: -topY + (ps.uRibLO[j] + ps.uRibThk / 2) * gradient }]
-                    let keyname = "uRib" + j
-                    URib[keyname] = uRib
+                    // let keyname = "uRib" + j
+                    // URib[keyname] = uRib
+                    URib.push(uRib)
                 }
 
                 // leftWeb
@@ -139,9 +141,9 @@ export function SectionPointDict(pointDict, girderBaseInfo, slabInfo, slabLayout
                     horizontal_bracing: { d0: 2500, vbArea: 50, dbArea: 50 }, //수직보강재 간격, 수평브레이싱 수직, 사재 단면적
                 }
                 if (i === 0) {
-                    forward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...LRib, ...URib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide }
+                    forward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, LRib, URib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide }
                 } else {
-                    backward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, ...LRib, ...URib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide }
+                    backward = { input: baseInput, skew, bottomPlate: bottomPlate, leftTopPlate: topPlate1, rightTopPlate: topPlate2, lWeb: lWeb, rWeb: rWeb, LRib, URib, uflange, lflange, web: [lWeb, rWeb], uflangeSide, lflangeSide, webSide }
                 }
             }
             result[k] = { forward, backward }
