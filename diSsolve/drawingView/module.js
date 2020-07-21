@@ -1353,7 +1353,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh)
         });
-        let Urib = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "URib"], 4, true, scale, initPoint, rotate, green)
+        let Urib = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "uRib"], 4, true, scale, initPoint, rotate, green)
         Urib.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh)
