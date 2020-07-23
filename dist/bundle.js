@@ -7101,8 +7101,10 @@
       let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
       let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
       let elemDict = {};
-
-      const analysisOutput = output.data;
+      let analysisOutput = null;
+      if (output.data){
+          analysisOutput = output.data;
+      }
 
       for (let i in node.node.data) {
           let pt = new global.THREE.Vector3(

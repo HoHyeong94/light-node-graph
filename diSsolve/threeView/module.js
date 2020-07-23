@@ -193,8 +193,10 @@ export function AnalysisResult(node, frame, output,loadCase, forceNum ){
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 })
     let elemDict = {};
-
-    const analysisOutput = output.data;
+    let analysisOutput = null
+    if (output.data){
+        analysisOutput = output.data;
+    }
 
     for (let i in node.node.data) {
         let pt = new THREE.Vector3(
