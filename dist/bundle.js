@@ -7090,7 +7090,7 @@
       return group
   }
 
-  function AnalysisResult(node, frame, analysisOutput,loadCase, forceNum ){
+  function AnalysisResult(node, frame, output,loadCase, forceNum ){
       let group = new global.THREE.Group();
       let geometry = new global.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
       let initPoint = node.node.data[0].coord;
@@ -7101,6 +7101,9 @@
       let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
       let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
       let elemDict = {};
+
+      const analysisOutput = output.data;
+
       for (let i in node.node.data) {
           let pt = new global.THREE.Vector3(
               node.node.data[i].coord[0] - initPoint[0],
@@ -7815,7 +7818,7 @@
   function AnalysisResultView() {
     this.addInput("nodeInput", "nodeInput");
     this.addInput("frameInput", "frameInput");
-    this.addInput("femResult", "femResult");
+    this.addInput("femResult", "object");
     this.addInput("loadCase", "string");
     this.addInput("forceNum", "number");
   }

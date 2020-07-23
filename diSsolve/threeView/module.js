@@ -182,7 +182,7 @@ export function AnalysisModel(node, frame) {
     return group
 }
 
-export function AnalysisResult(node, frame, analysisOutput,loadCase, forceNum ){
+export function AnalysisResult(node, frame, output,loadCase, forceNum ){
     let group = new THREE.Group();
     let geometry = new THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
     let initPoint = node.node.data[0].coord
@@ -193,6 +193,9 @@ export function AnalysisResult(node, frame, analysisOutput,loadCase, forceNum ){
     let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 })
     let elemDict = {};
+
+    const analysisOutput = output.data;
+
     for (let i in node.node.data) {
         let pt = new THREE.Vector3(
             node.node.data[i].coord[0] - initPoint[0],

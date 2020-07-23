@@ -179,7 +179,7 @@ AnalysisView.prototype.onExecute = function () {
 export function AnalysisResultView() {
   this.addInput("nodeInput", "nodeInput");
   this.addInput("frameInput", "frameInput");
-  this.addInput("femResult", "femResult");
+  this.addInput("femResult", "object");
   this.addInput("loadCase", "string");
   this.addInput("forceNum", "number");
 }
