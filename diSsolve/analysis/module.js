@@ -652,7 +652,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
             for (let k = 0; k < xList.length - 1; k += inc) {
                 slabWeight.data.push({
                     elem: elemNum, RD: [xList[k], xList[k + inc]],
-                    Uzp: [wList[k] * ((1 - xList[k]) * br[j] + xList[k] * br[j + 1]), wList[k + inc] * ((1 - xList[k + inc]) * br[j] + xList[k + inc] * br[j + 1])]
+                    Uzp: [-1 * wList[k] * ((1 - xList[k]) * br[j] + xList[k] * br[j + 1]), wList[k + inc] * ((1 - xList[k + inc]) * br[j] + xList[k + inc] * br[j + 1])]
                 })
             }
             for (let k in barrierOffset) {
