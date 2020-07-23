@@ -7090,6 +7090,98 @@
       return group
   }
 
+  function AnalysisResult(node, frame, analysisOutput,loadCase, forceNum ){
+      let group = new global.THREE.Group();
+      let geometry = new global.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
+      let initPoint = node.node.data[0].coord;
+      let greenLine = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });
+      let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
+      let yellowLine = new global.THREE.LineBasicMaterial({ color: 0xffff00 });
+      let circleMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffff00 });
+      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
+      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let elemDict = {};
+      for (let i in node.node.data) {
+          let pt = new global.THREE.Vector3(
+              node.node.data[i].coord[0] - initPoint[0],
+              node.node.data[i].coord[1] - initPoint[1],
+              node.node.data[i].coord[2] - initPoint[2]);
+          geometry.vertices.push(pt);
+      }
+
+      for (let i in frame.frame.data) {
+          let iNum = frame.frame.data[i].iNode - 1;
+          let jNum = frame.frame.data[i].jNode - 1;
+          elemDict[frame.frame.data[i].number] = [iNum, jNum];
+      }
+
+
+      // 해석결과 보기 함수
+      // test //
+      let maxValue = null;
+      let minValue = null;
+
+      for (let elemNum in analysisOutput.force) {
+          for (let seg in analysisOutput.force[elemNum]) {
+              let newValue = analysisOutput.force[elemNum][seg][loadCase][forceNum];
+              if (!maxValue || newValue > maxValue) {
+                  maxValue = newValue;
+              }
+              if (!minValue || newValue < minValue) {
+                  minValue = newValue;
+              }
+          }
+      }
+      let scaler = 5000 / Math.max(Math.abs(maxValue), Math.abs(minValue));
+      for (let elemNum in analysisOutput.force) {
+          let ivec = geometry.vertices[elemDict[elemNum][0]];
+          let jvec = geometry.vertices[elemDict[elemNum][1]];
+          let geo = new global.THREE.Geometry();
+          for (let seg in analysisOutput.force[elemNum]) {
+              let a = seg * 1;
+              let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
+              let izload = analysisOutput.force[elemNum][seg][loadCase][forceNum] * scaler;
+              if (seg === "0.00000") {
+                  geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z));
+              }
+              geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload));
+              if (seg === "1.00000") {
+                  geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z));
+              }
+              group.add(new global.THREE.Line(geo, redLine));
+          }
+      }
+
+      // let influenceElem = "16"
+
+      // for (let i in frame.laneList) {
+      //     let geo = new THREE.Geometry();
+      //     let geo2 = new THREE.Geometry();
+      //     for (let j in frame.laneList[i]) {
+      //         let loadData = frame[frame.laneList[i][j]].data[0]
+      //         let ivec = geometry.vertices[elemDict[loadData.elem][0]]
+      //         let jvec = geometry.vertices[elemDict[loadData.elem][1]]
+      //         let a = loadData.RD
+      //         let izload = analysisOutput.force[influenceElem]["0.00000"][frame.laneList[i][j]][5] * 1000000
+      //         let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+      //         let nivec2 = new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload)
+      //         geo.vertices.push(nivec2)
+      //         geo2.vertices.push(nivec, nivec2)
+      //     }
+      //     group.add(new THREE.Line(geo, yellowLine));
+      //     group.add(new THREE.LineSegments(geo2, yellowLine));
+      // }
+      // delete analysisOutput.disp
+      // for (let elem in analysisOutput.force) {
+      //     if (!frame.girderElemList.includes(elem * 1)) {
+      //         delete analysisOutput.force[elem]
+      //     }
+      // }
+
+      // console.log("newSapOutput", analysisOutput)
+      return group
+  }
+
   function LineView(linepoints, initPoint, color) {
       var group = new global.THREE.Group();
       var geometry = new global.THREE.Geometry();
@@ -7716,6 +7808,21 @@
   AnalysisView.prototype.onExecute = function () {
     let result = AnalysisModel(this.getInputData(0),this.getInputData(1));
     global.sceneAdder({ layer : 2, mesh : result}, "analysisModel");
+    // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
+    // this.setOutputData(0, result.analysisOutput)
+  };
+
+  function AnalysisResultView() {
+    this.addInput("nodeInput", "nodeInput");
+    this.addInput("frameInput", "frameInput");
+    this.addInput("femResult", "femResult");
+    this.addInput("loadCase", "string");
+    this.addInput("forceNum", "number");
+  }
+
+  AnalysisResultView.prototype.onExecute = function () {
+    let result = AnalysisResult(this.getInputData(0),this.getInputData(1),this.getInputData(2),this.getInputData(3),this.getInputData(4));
+    global.sceneAdder({ layer : 2, mesh : result}, "Result" + this.getInputData(3) + this.getInputData(4));
     // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
     // this.setOutputData(0, result.analysisOutput)
   };
@@ -11069,6 +11176,7 @@
   global.LiteGraph.registerNodeType("3DVIEW/RebarView", RebarView);
   global.LiteGraph.registerNodeType("3DVIEW/StudView", StudView);
   global.LiteGraph.registerNodeType("3DVIEW/AnalysisView", AnalysisView);
+  global.LiteGraph.registerNodeType("3DVIEW/AnalysisResultView", AnalysisResultView);
 
   global.LiteGraph.registerNodeType("Drawing/SectionView", SectionViewer );
   global.LiteGraph.registerNodeType("Drawing/TopView", TopViewer );
