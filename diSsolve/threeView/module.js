@@ -194,7 +194,7 @@ export function AnalysisResult(node, frame, output,loadCase, forceNum ){
     let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 })
     let elemDict = {};
     let analysisOutput = null
-    if (output.data){
+    if (output){
         analysisOutput = output.data;
     }
 
