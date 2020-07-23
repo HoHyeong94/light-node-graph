@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import {LineMesh, LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView, BarrierPointView, StudMeshView, AnalysisModel } from "./module"
+import {LineMesh, LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView, BarrierPointView, StudMeshView, AnalysisModel, AnalysisResult } from "./module"
 import { LineToThree } from "../line/module";
 
 export function LineViewer(){
@@ -166,12 +166,27 @@ InitPoint.prototype.onExecute = function() {
 export function AnalysisView() {
   this.addInput("nodeInput", "nodeInput");
   this.addInput("frameInput", "frameInput");
-  this.addOutput("temOut", "temOut");
+  // this.addOutput("temOut", "temOut");
 }
 
 AnalysisView.prototype.onExecute = function () {
   let result = AnalysisModel(this.getInputData(0),this.getInputData(1))
-  sceneAdder({ layer : 2, mesh : result.group}, "analysis");
+  sceneAdder({ layer : 2, mesh : result}, "analysisModel");
   // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
-  this.setOutputData(0, result.analysisOutput)
+  // this.setOutputData(0, result.analysisOutput)
+}
+
+export function AnalysisResultView() {
+  this.addInput("nodeInput", "nodeInput");
+  this.addInput("frameInput", "frameInput");
+  this.addInput("femResult", "femResult");
+  this.addInput("loadCase", "string");
+  this.addInput("forceNum", "number");
+}
+
+AnalysisResultView.prototype.onExecute = function () {
+  let result = AnalysisResult(this.getInputData(0),this.getInputData(1),this.getInputData(2),this.getInputData(3),this.getInputData(4))
+  sceneAdder({ layer : 2, mesh : result}, "Result" + this.getInputData(3) + this.getInputData(4));
+  // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
+  // this.setOutputData(0, result.analysisOutput)
 }

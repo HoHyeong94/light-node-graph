@@ -1,5 +1,5 @@
 import { THREE, SpriteText } from "global";
-import { analysisOutput } from "../DB/module"
+// import { analysisOutput } from "../DB/module"
 
 export function AnalysisModel(node, frame) {
     let group = new THREE.Group();
@@ -179,41 +179,70 @@ export function AnalysisModel(node, frame) {
         // group.add(arrow)
     }
 
-    // 해석결과 보기 함수
-    // // test //
-    // let maxValue = null;
-    // let minValue = null;
+    return group
+}
 
-    // for (let elemNum in analysisOutput.force) {
-    //     for (let seg in analysisOutput.force[elemNum]) {
-    //         let newValue = analysisOutput.force[elemNum][seg]["STBOX"][5]
-    //         if (!maxValue || newValue > maxValue) {
-    //             maxValue = newValue
-    //         }
-    //         if (!minValue || newValue < minValue) {
-    //             minValue = newValue
-    //         }
-    //     }
-    // }
-    // let scaler = 5000 / Math.max(Math.abs(maxValue), Math.abs(minValue))
-    // for (let elemNum in analysisOutput.force) {
-    //     let ivec = geometry.vertices[elemDict[elemNum][0]]
-    //     let jvec = geometry.vertices[elemDict[elemNum][1]]
-    //     let geo = new THREE.Geometry();
-    //     for (let seg in analysisOutput.force[elemNum]) {
-    //         let a = seg * 1;
-    //         let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
-    //         let izload = analysisOutput.force[elemNum][seg]["STBOX"][5] * scaler
-    //         if (seg === "0.00000") {
-    //             geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
-    //         }
-    //         geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
-    //         if (seg === "1.00000") {
-    //             geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
-    //         }
-    //         group.add(new THREE.Line(geo, redLine));
-    //     }
-    // }
+export function AnalysisResult(node, frame, analysisOutput,loadCase, forceNum ){
+    let group = new THREE.Group();
+    let geometry = new THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
+    let initPoint = node.node.data[0].coord
+    let greenLine = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+    let aquaLine = new THREE.LineBasicMaterial({ color: 0x00ffff })
+    let yellowLine = new THREE.LineBasicMaterial({ color: 0xffff00 })
+    let circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    let redDotLine = new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
+    let redLine = new THREE.LineBasicMaterial({ color: 0xff0000 })
+    let elemDict = {};
+    for (let i in node.node.data) {
+        let pt = new THREE.Vector3(
+            node.node.data[i].coord[0] - initPoint[0],
+            node.node.data[i].coord[1] - initPoint[1],
+            node.node.data[i].coord[2] - initPoint[2])
+        geometry.vertices.push(pt)
+    }
+
+    for (let i in frame.frame.data) {
+        let iNum = frame.frame.data[i].iNode - 1
+        let jNum = frame.frame.data[i].jNode - 1
+        elemDict[frame.frame.data[i].number] = [iNum, jNum]
+    }
+
+
+    // 해석결과 보기 함수
+    // test //
+    let maxValue = null;
+    let minValue = null;
+
+    for (let elemNum in analysisOutput.force) {
+        for (let seg in analysisOutput.force[elemNum]) {
+            let newValue = analysisOutput.force[elemNum][seg][loadCase][forceNum]
+            if (!maxValue || newValue > maxValue) {
+                maxValue = newValue
+            }
+            if (!minValue || newValue < minValue) {
+                minValue = newValue
+            }
+        }
+    }
+    let scaler = 5000 / Math.max(Math.abs(maxValue), Math.abs(minValue))
+    for (let elemNum in analysisOutput.force) {
+        let ivec = geometry.vertices[elemDict[elemNum][0]]
+        let jvec = geometry.vertices[elemDict[elemNum][1]]
+        let geo = new THREE.Geometry();
+        for (let seg in analysisOutput.force[elemNum]) {
+            let a = seg * 1;
+            let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
+            let izload = analysisOutput.force[elemNum][seg][loadCase][forceNum] * scaler
+            if (seg === "0.00000") {
+                geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
+            }
+            geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
+            if (seg === "1.00000") {
+                geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
+            }
+            group.add(new THREE.Line(geo, redLine));
+        }
+    }
 
     // let influenceElem = "16"
 
@@ -241,10 +270,8 @@ export function AnalysisModel(node, frame) {
     //     }
     // }
 
-    // // console.log("newSapOutput", analysisOutput)
-
-
-    return { group, analysisOutput }
+    // console.log("newSapOutput", analysisOutput)
+    return group
 }
 
 export function LineView(linepoints, initPoint, color) {
