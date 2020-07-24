@@ -1,5 +1,5 @@
 import { THREE } from "global";
-import { ToGlobalPoint, PlateRestPoint, WebPoint, Kframe, scallop, Fillet2D, PlateSize, PlateSize2, PointLength } from "../geometryModule"
+import { ToGlobalPoint, ToGlobalPoint2 ,PlateRestPoint, WebPoint, Kframe, scallop, Fillet2D, PlateSize, PlateSize2, PointLength } from "../geometryModule"
 import { PTS } from "../DB/module"
 import { IbeamJoint } from "../splice/module"
 
@@ -143,8 +143,10 @@ export function VstiffShapeDict(
     }
     else if (vStiffLayout[i][section] === "DYvStiff1") {
       result[gridkey] = DYVstiff1(webPoints, gridPoint[gridkey], skew, uflangePoints, vSection)
+    } else if (vStiffLayout[i][section] === "DYvStiff0") {
+      result[gridkey] = DYVstiff0(webPoints, gridPoint[gridkey], skew, uflangePoints, vSection)
     }
-    result[gridkey].point = gridPoint[gridkey]
+    result[gridkey].point = gridPoint[gridkey] // 추후 삭제필요
   }
 
   return result;
@@ -216,6 +218,115 @@ export function HBracingDict(
   return { hBracingDict, hBracingPlateDict };
 }
 
+export function JackupStiffDict(gridPoint,
+  sectionPointDict,
+  jackupData, // position, layoutList, length, height, thickness, chamfer
+) {
+  let result = {}
+  for (let i in jackupData){
+    let gridkey = jackupData[i][0]
+    let webPoints = sectionPointDict[gridkey].forward.web
+    result[gridkey + i] = jackup0(webPoints, gridPoint[gridkey], jackupData[i])
+  }
+  return result
+}
+
+export function jackup0(webPoints, point, jackupData) {
+  //ds 입력변수
+  let result = {};
+  let layout = jackupData[1];
+  let length = jackupData[2];
+  let height = jackupData[3];
+  let thickness = jackupData[4];
+  let chamfer = jackupData[5];
+   //  임시 입력변수
+
+  const bl = webPoints[0][0];
+  const bl2 = webPoints[0][3];
+  const tl = webPoints[0][1];
+  const br = webPoints[1][0];
+  const br2 = webPoints[1][3];
+
+  const tr = webPoints[1][1];
+  const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
+  const rwCot = (tr.x - br.x) / (tr.y - br.y)
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+
+  let upperPoints = [
+    { x: bl.x + lwCot * length, y: bl.y + length },
+    { x: br.x + rwCot * length, y: br.y + length },
+    { x: bl2.x + lwCot * length, y: bl2.y + length },
+    { x: br2.x + rwCot * length, y: br2.y + length }
+
+  ];
+
+  let left = PlateRestPoint(bl, upperPoints[0], 0, 0, height)
+  let leftPoints = [];
+  leftPoints.push(left[0])
+  leftPoints.push(left[1]);
+  leftPoints.push(...scallop(left[1], left[2], left[3], chamfer, 1));
+  leftPoints.push(left[3])
+  let right = PlateRestPoint(br, upperPoints[1], 0, 0, -height)
+  let rightPoints = [];
+  rightPoints.push(right[0])
+  rightPoints.push(right[1]);
+  rightPoints.push(...scallop(right[1], right[2], right[3], chamfer, 1));
+  rightPoints.push(right[3])
+  let left1 = PlateRestPoint(bl2, upperPoints[2], 0, 0, -height)
+  let leftPoints2 = [];
+  leftPoints2.push(left1[0])
+  leftPoints2.push(left1[1]);
+  leftPoints2.push(...scallop(left1[1], left1[2], left1[3], chamfer, 1));
+  leftPoints2.push(left1[3])
+  let right1 = PlateRestPoint(br2, upperPoints[3], 0, 0, height)
+  let rightPoints2 = [];
+  rightPoints2.push(right1[0])
+  rightPoints2.push(right1[1]);
+  rightPoints2.push(...scallop(right1[1], right1[2], right1[3], chamfer, 1));
+  rightPoints2.push(right1[3])
+
+  for (let i in layout) { 
+    let newPoint = ToGlobalPoint2(point, {x : 0, y: layout[i]})
+    result["left1" + i] = vPlateGen(leftPoints, newPoint, thickness, [], 15, null, null, [], [3, 0], [1,2,4,0])
+    result["left2" + i] = vPlateGen(leftPoints2, newPoint, thickness, [], 15, null, null, [], [3, 0], null)
+    result["right1" + i] = vPlateGen(rightPoints, newPoint, thickness, [], 15, null, null, [], [3, 0], null)
+    result["right2" + i] = vPlateGen(rightPoints2, newPoint, thickness, [], 15, null, null, [], [3, 0], null)
+  }
+  return result
+}
+
+export function DYVstiff0(webPoints, point, skew, uflangePoint, ds) {
+  //ds 입력변수
+  let result = {};
+  let dsi = {
+    stiffWidth: 150,
+    stiffThickness: 12,
+    scallopRadius: 35,
+    chamfer: 130,
+  } //  임시 입력변수
+
+  const bl = webPoints[0];
+  const tl = webPoints[1];
+  const br = webPoints[2];
+  const tr = webPoints[3];
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+
+  let lowerPoints = [
+    { x: bl.x, y: bl.y },
+    { x: br.x, y: br.y }
+  ];
+
+  let left = PlateRestPoint(lowerPoints[0], tl, 0, gradient, dsi.stiffWidth)
+
+  result["left"] = vPlateGen(left, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [], [1, 2], [1,2,3,0])
+  
+  let right = PlateRestPoint(lowerPoints[1], tr, 0, gradient, -dsi.stiffWidth)
+  
+  result["right"] = vPlateGen(right, point, dsi.stiffThickness, [0,1], dsi.scallopRadius, null, null, [], [1, 2], null)
+  
+  return result
+}
+
 
 export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   //ds 입력변수
@@ -250,7 +361,7 @@ export function DYVstiff1(webPoints, point, skew, uflangePoint, ds) {
   leftPoints.push(left[2])
   leftPoints.push(...scallop(left[2], left[3], left[0], dsi.chamfer, 1));
 
-  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [], dsi.scallopRadius, null, null, [], [1, 2], [1,2,4,0])
+  result["left"] = vPlateGen(leftPoints, point, dsi.stiffThickness, [1], dsi.scallopRadius, null, null, [], [1, 2], [1,2,4,0])
   // {
   //   points: leftPoints,
   //   Thickness: dsi.stiffThickness,
@@ -1794,7 +1905,7 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
     }
     // console.log("check", topView)
   }
-  if (side2D) {
+  if (side2D || side2D === 0) {
     let cos = Math.cos(rotationX);
     let sin = Math.sin(rotationX);
     sideView = [];

@@ -30,6 +30,7 @@ export function ToGlobalPoint2(Point, node2D){
   let newPoint = {
       x:0, y:0, z:0
   }
+  let skew = Point.skew? Point.skew : 90;
   const cos = Point.normalCos;
   const sin = Point.normalSin;
   // let skewCot = 0;
@@ -38,12 +39,16 @@ export function ToGlobalPoint2(Point, node2D){
   // };
   let X = node2D.x
   let Y = node2D.y
-  let Z = 0
+  let Z = Point.gradientX? Point.gradientX * node2D.y : 0
 
   newPoint.x = Point.x + X * cos - Y*sin 
   newPoint.y = Point.y + X * sin + Y*cos
   newPoint.z = Point.z + Z
   newPoint.s = Point.masterStationNumber
+  newPoint.skew = skew;
+  newPoint.normalCos = cos;
+  newPoint.normalSin = sin;
+  newPoint.girderStation = Point.girderStation + Y;
   
   return newPoint
 }

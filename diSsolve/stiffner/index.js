@@ -1,5 +1,5 @@
 // import { LiteGraph, meshArr } from "global";
-import {DiaShapeDict, VstiffShapeDict, HBracingDict} from "./module"
+import {DiaShapeDict, VstiffShapeDict, HBracingDict, JackupStiffDict } from "./module"
 
 
 export function DiaDict(){
@@ -39,6 +39,7 @@ VstiffDict.prototype.onExecute = function() {
   this.setOutputData(0, result)
 }
 
+
 export function HBracing(){
     this.addInput("gridPoint","gridPoint");
     this.addInput("sectionPointDict","sectionPointDict");
@@ -56,3 +57,18 @@ export function HBracing(){
     const result = HBracingDict(gridPoint, sectionPointDict,hBracingLayout,hBracingSectionList,this.getInputData(4))
     this.setOutputData(0, result)
   }
+
+  export function JackupDict(){
+    this.addInput("gridPoint","gridPoint");
+  this.addInput("sectionPointDict","sectionPointDict");
+  this.addInput("jackupData","arr");
+  this.addOutput("diaDict","diaDict");
+}
+
+JackupDict.prototype.onExecute = function() {
+    const gridPoint = this.getInputData(0);
+    const sectionPointDict = this.getInputData(1);
+  const jackupData = this.getInputData(2);
+  const result = JackupStiffDict(gridPoint, sectionPointDict, jackupData)
+  this.setOutputData(0, result)
+}

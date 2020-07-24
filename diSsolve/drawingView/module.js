@@ -934,7 +934,11 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
 
 
         if (gridObj.key.substr(2, 1) !== "K" && !gridObj.key.includes("CR")) { //station.substr(0,2)==="G1" && 
-            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset);
+        let markTop = 0
+        if (gridObj.key.substr(2, 1) === "S" || gridObj.key.substr(2, 1) === "V" || gridObj.key.substr(2, 1) === "D" || gridObj.key.substr(2, 1) === "T" ){
+            markTop = 300
+        }
+            let position = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset + markTop);
             meshes.push(roundedRect(position.x, position.y, rot, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
@@ -942,14 +946,14 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
                 rotation: rot,
                 fontSize: fontSize * scale
             });
-            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset - 100);
+            let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset + markTop - 100);
             let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - markOffset + 100);
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
                 new THREE.Vector3(pt2.x, pt2.y, 0));
 
             // side View gridMark
-            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 300 * scale, z: 0 };
+            position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (300 + markTop) * scale, z: 0 };
             meshes.push(roundedRect(position.x, position.y, 0, 400 * scale, 200 * scale, 100 * scale, redLine));
             labels.push({
                 text: gridObj.key,
@@ -957,7 +961,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
                 rotation: 0,
                 fontSize: fontSize * scale
             });
-            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + 200 * scale, z: 0 };
+            pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (200 + markTop) * scale, z: 0 };
             pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 };
             geo.vertices.push(
                 new THREE.Vector3(pt1.x, pt1.y, 0),
@@ -977,7 +981,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
     // meshes.push(LineMesh(dimWF, redLine,0))
     // dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
     // }
-    let segLine = new THREE.LineSegments(geo, redDotLine);
+    let segLine = new THREE.LineSegments(geo, redLine);
     segLine.computeLineDistances();
     let dimSegLine = new THREE.LineSegments(dimgeo, redLine);
     meshes.push(segLine);
@@ -1077,14 +1081,14 @@ export function GirderGeneralDraw1(girderStation, layout) {
 export function XbeamSection(xbeamDict, girderStation, layout) {
     let group = new THREE.Group();
     let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
-    let scale = 1; //layout.scale
-    let girderOffset = 24000;
-    let sideViewOffset = -8000 * scale;
-    let sectionViewOffset = 16000 * scale;
+    let scale = layout.scale;
+    let girderOffset = layout.girderOffset * scale;  //24000;
+    let sideViewOffset = layout.sideViewOffset * scale; // -8000 * scale;
+    let sectionViewOffset = layout.sectionViewOffset * scale;; 
     let initZ = [];
-    let supportNum = 3; // layout 변수안에서 자동계산되어야 함. 
+    let supportNum = layout.supportNum; //3; // layout 변수안에서 자동계산되어야 함. 
     let xoffset = 20000;
-    let girderNum = girderStation.length // layout 변수안에서 자동계산되어야 함. 
+    let girderNum = layout.girderNum; //girderStation.length // layout 변수안에서 자동계산되어야 함. 
 
     for (let j = 0; j < supportNum; j++) {
         for (let i = 0; i < girderNum; i++) {
@@ -1150,9 +1154,9 @@ export function PartGeneralDraw(diaDict, girderStation, layout) {
     }
 
     let initZ = [];
-    let supportNum = 3; // layout 변수안에서 자동계산되어야 함. 
+    let supportNum = layout.supportNum; // layout 변수안에서 자동계산되어야 함. 
     let xoffset = 20000;
-    let girderNum = girderStation.length // layout 변수안에서 자동계산되어야 함. 
+    let girderNum = layout.girderNum // layout 변수안에서 자동계산되어야 함. 
 
     for (let j = 0; j < supportNum; j++) {
         for (let i = 0; i < girderNum; i++) {
@@ -1334,6 +1338,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
     let aqua = new THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
     let green = new THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
     let white = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    let magenta = new THREE.MeshBasicMaterial({ color: 0xff00ff });
 
     for (let i = 0; i < girderStation.length; i++) {
         let initPoint = girderStation[i][0].point
@@ -1349,6 +1354,14 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh)
         });
+        let Urib = GeneralPlanView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "uRib"], 4, 0, 3, scale, initPoint, rotate, magenta)
+        Urib.forEach(function (mesh) {
+            mesh.position.set(0, -i * girderOffset, 0);
+            group.add(mesh)
+        });
+
+
+
         let topSide = GirderSideView(steelBoxDict, ["G" + (i + 1).toFixed(0) + "TopSide"], 2, 0, 1, scale, initPoint, aqua)
         topSide.forEach(function (mesh) {
             mesh.position.set(0, sideViewOffset - i * girderOffset, 0);
@@ -1486,7 +1499,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
             let offset = girderPoint.point.offset
             let sectionPoint = sectionPointDict[girderPoint.key]
             for (let key in sectionPoint.forward) {
-                if (key === "uflange" || key === "lflange" || key === "web") {
+                if (key === "uflange" || key === "lflange" || key === "web" || key === "URib" || key === "LRib") {
                     // console.log("check",sectionPoint)
                     for (let k in sectionPoint.forward[key]) {
                         if (sectionPoint.forward[key][k].length > 0) {
@@ -1557,7 +1570,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
     group.add(titleCircle)
 
     for (var key in sectionPoint) {
-        if (key === "uflange" || key === "lflange" || key === "web") {
+        if (key === "uflange" || key === "lflange" || key === "web" || key === "URib" || key === "LRib") {
             // console.log("check",sectionPoint)
             for (let k in sectionPoint[key]) {
                 if (sectionPoint[key][k].length > 0) {

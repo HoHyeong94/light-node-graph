@@ -14,7 +14,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
   let xs = {
     webJointThickness: 20,
     webJointWidth: 600,
-    webJointHeight: 1800,
+    webJointHeight: iSectionPoint.input.H - 100,
     uflangeJointThickness: 20,
     lflangeJointThickness: 20,
     // flangeJointLength: 500,
@@ -173,7 +173,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
       { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf - iSectionPoint.input.wlf), y: - xs.lflangeJointLength / 2 }]
       let keyName = i === 0 ? "lBottom" : "rBottom";
       let side2D = i === 0 ? [0, 1] : null;
-      result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, bXRad, 0, null, true, side2D)
+      result[keyName] = hPlateGen(BottomFlange, centerPoint, xs.lflangeJointThickness, - sp.lflangeThickness - xs.lflangeJointThickness, 90, bXRad, 0, null, false, side2D)
       let BottomFlange2 = [{ x: sign * (lx + iSectionPoint.input.blf), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx + iSectionPoint.input.blf), y: xs.lflangeJointLength / 2 },
       { x: sign * (lx + sp.webThickness + xs.margin2), y: xs.lflangeJointLength / 2 }, { x: sign * (lx + sp.webThickness + xs.margin2), y: - xs.lflangeJointLength / 2 }]
       let BottomFlange3 = [{ x: sign * (lx - xs.margin2), y: -xs.lflangeJointLength / 2 }, { x: sign * (lx - xs.margin2), y: xs.lflangeJointLength / 2 },

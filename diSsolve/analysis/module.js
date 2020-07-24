@@ -378,17 +378,37 @@ export function SapJointGenerator(girderStation, supportNode, xbeamData) {//gird
                 nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum
                 nodeNum++
             }
-            rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P3"]] })
-            rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P2"]] })
+            let rigidIndex = rigid.data.findIndex(elem => elem.master === nodeNumDict[xbeamData[i].inode])
+            if (rigidIndex > -1){
+                rigid.data[rigidIndex].slave.push(nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P3"])    
+            } else {
+                rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"], nodeNumDict[xbeamData[i].key + "P3"]] })
+            }
+            rigidIndex = rigid.data.findIndex(elem => elem.master === nodeNumDict[xbeamData[i].jnode])
+            if (rigidIndex > -1){
+                rigid.data[rigidIndex].slave.push(nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P2"])    
+            } else {
+                rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"], nodeNumDict[xbeamData[i].key + "P2"]] })
+            }
+            
         } else { //i형 가로보
             for (let j in xbeamData[i].data) {
                 node.data.push({ nodeNum: nodeNum, coord: [xbeamData[i].data[j].x, xbeamData[i].data[j].y, xbeamData[i].data[j].z] });
                 nodeNumDict[xbeamData[i].key + "P" + j] = nodeNum
                 nodeNum++
             }
-            rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"]] })
-            rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"]] })
-
+            let rigidIndex = rigid.data.findIndex(elem => elem.master === nodeNumDict[xbeamData[i].inode])
+            if (rigidIndex > -1){
+                rigid.data[rigidIndex].slave.push(nodeNumDict[xbeamData[i].key + "P0"])    
+            } else {
+                rigid.data.push({ master: nodeNumDict[xbeamData[i].inode], slave: [nodeNumDict[xbeamData[i].key + "P0"]] })
+            }
+            rigidIndex = rigid.data.findIndex(elem => elem.master === nodeNumDict[xbeamData[i].jnode])
+            if (rigidIndex > -1){
+                rigid.data[rigidIndex].slave.push(nodeNumDict[xbeamData[i].key + "P1"])    
+            } else {
+                rigid.data.push({ master: nodeNumDict[xbeamData[i].jnode], slave: [nodeNumDict[xbeamData[i].key + "P1"]] })
+            }
         }
 
 
@@ -444,7 +464,7 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
     let w1 = slabInfo.w1; //헌치돌출길이
     let hh = slabInfo.haunchHeight; //헌치높이
 
-    section.data.generalSectionList.push({ NAME: "dummy", Mat: material.data[0].NAME, A: 100, I: [1000, 1000], J: 1000 })
+    section.data.generalSectionList.push({ NAME: "dummy", Mat: material.data[0].NAME, A: 1000, I: [1000000, 1000000], J: 1000000 })
     section.data.generalSectionList.push({ NAME: "slab", Mat: material.data[0].NAME, A: 270000, I: [1640250000, 1640250000], J: 1640250000 }) //temparary
 
 
@@ -456,35 +476,37 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
         laneList.push([]); //차선수만큼 리스트 개수 확보
     }
     const gridModelL = [
-        ["G1K1", "G2K1"],
-        ["G1K2", "G2K2"],
-        ["G1K3", "G2K3"],
-        ["G1K4", "G2K4"],
-        ["G1K5", "G2K5"],
-        ["G1K6", "G2K6"],
-        ["G1S1", "G2S1"],
-        ["G1S2", "G2S2"],
-        ["G1S3", "G2S3"],
-        ["G1D1", "G2D1"],
-        ["G1D2", "G2D2"],
-        ["G1D3", "G2D3"],
-        ["G1D4", "G2D4"],
-        ["G1D5", "G2D5"],
-        ["G1D6", "G2D6"],
-        ["G1D7", "G2D7"],
-        ["G1D8", "G2D8"],
-        ["G1D9", "G2D9"],
-        ["G1D10", "G2D10"],
-        ["G1D11", "G2D11"],
-        ["G1D12", "G2D12"],
-        ["G1D13", "G2D13"],
-        ["G1D14", "G2D14"],
-        ["G1D15", "G2D15"],
-        ["G1D16", "G2D16"],
-        ["G1D17", "G2D17"],
-        ["G1D18", "G2D18"],
-        ["G1D19", "G2D19"],
-        ["G1D20", "G2D20"],
+        ["G1K1","G2K1","G3K1"],
+        // ["G1K2","G2K2","G3K2"],
+        // ["G1K3","G2K3","G3K3"],
+        // ["G1K4","G2K4","G3K4"],
+        // ["G1K5","G2K5","G3K5"],
+        ["G1K6","G2K6","G3K6"],
+        ["G1S1","G2S1","G3S1"],
+        ["G1S2","G2S2","G3S2"],
+        ["G1S3","G2S3","G3S3"],
+        ["G1S4","G2S4","G3S4"],
+        ["G1D1","G2D1","G3D1"],
+        ["G1D2","G2D2","G3D2"],
+        ["G1D3","G2D3","G3D3"],
+        ["G1D4","G2D4","G3D4"],
+        ["G1D5","G2D5","G3D5"],
+        ["G1D6","G2D6","G3D6"],
+        ["G1D8","G2D8","G3D8"],
+        ["G1D11","G2D11","G3D11"],
+        ["G1D13","G2D13","G3D13"],
+        ["G1D14","G2D14","G3D14"],
+        ["G1D15","G2D15","G3D15"],
+        ["G1D16","G2D16","G3D16"],
+        ["G1D17","G2D17","G3D17"],
+        ["G1D19","G2D19","G3D19"],
+        ["G1D22","G2D22","G3D22"],
+        ["G1D24","G2D24","G3D24"],
+        ["G1D25","G2D25","G3D25"],
+        ["G1D26","G2D26","G3D26"],
+        ["G1D27","G2D27","G3D27"],
+        ["G1D28","G2D28","G3D28"],
+        ["G1D29","G2D29","G3D29"],
     ];
     gridModelL.sort(function (a, b) { return gridPoint[a[0]].masterStationNumber < gridPoint[b[0]].masterStationNumber ? -1 : 1; });
 
@@ -676,7 +698,8 @@ export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, section
         }
     }
     // console.log("new", frameInput.girderElemList)
-    return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
+    // return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
+    return { frame, section, material, selfWeight, slabWeight, pavement, barrier }
 }
 
 
