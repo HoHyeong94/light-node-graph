@@ -3373,9 +3373,6 @@
       return pts
   }
 
-  const analysisOutput = {
-  };
-
   function SplicePlate(iPoint, iSectionPoint) {
     let result = {};
 
@@ -6910,6 +6907,8 @@
 
     };
 
+  // import { analysisOutput } from "../DB/module"
+
   function AnalysisModel(node, frame) {
       let group = new global.THREE.Group();
       let layer = 2; //frame Layer
@@ -7088,41 +7087,75 @@
           // group.add(arrow)
       }
 
-      // 해석결과 보기 함수
-      // // test //
-      // let maxValue = null;
-      // let minValue = null;
+      return group
+  }
 
-      // for (let elemNum in analysisOutput.force) {
-      //     for (let seg in analysisOutput.force[elemNum]) {
-      //         let newValue = analysisOutput.force[elemNum][seg]["STBOX"][5]
-      //         if (!maxValue || newValue > maxValue) {
-      //             maxValue = newValue
-      //         }
-      //         if (!minValue || newValue < minValue) {
-      //             minValue = newValue
-      //         }
-      //     }
-      // }
-      // let scaler = 5000 / Math.max(Math.abs(maxValue), Math.abs(minValue))
-      // for (let elemNum in analysisOutput.force) {
-      //     let ivec = geometry.vertices[elemDict[elemNum][0]]
-      //     let jvec = geometry.vertices[elemDict[elemNum][1]]
-      //     let geo = new THREE.Geometry();
-      //     for (let seg in analysisOutput.force[elemNum]) {
-      //         let a = seg * 1;
-      //         let nivec = new THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a)
-      //         let izload = analysisOutput.force[elemNum][seg]["STBOX"][5] * scaler
-      //         if (seg === "0.00000") {
-      //             geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
-      //         }
-      //         geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
-      //         if (seg === "1.00000") {
-      //             geo.vertices.push(new THREE.Vector3(nivec.x, nivec.y, nivec.z))
-      //         }
-      //         group.add(new THREE.Line(geo, redLine));
-      //     }
-      // }
+  function AnalysisResult(node, frame, output,loadCase, forceNum ){
+      let group = new global.THREE.Group();
+      let geometry = new global.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
+      let initPoint = node.node.data[0].coord;
+      let greenLine = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });
+      let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
+      let yellowLine = new global.THREE.LineBasicMaterial({ color: 0xffff00 });
+      let circleMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffff00 });
+      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
+      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let elemDict = {};
+      let analysisOutput = {force : []};
+      if (output){
+          analysisOutput = output.data;
+      }
+
+      for (let i in node.node.data) {
+          let pt = new global.THREE.Vector3(
+              node.node.data[i].coord[0] - initPoint[0],
+              node.node.data[i].coord[1] - initPoint[1],
+              node.node.data[i].coord[2] - initPoint[2]);
+          geometry.vertices.push(pt);
+      }
+
+      for (let i in frame.frame.data) {
+          let iNum = frame.frame.data[i].iNode - 1;
+          let jNum = frame.frame.data[i].jNode - 1;
+          elemDict[frame.frame.data[i].number] = [iNum, jNum];
+      }
+
+
+      // 해석결과 보기 함수
+      // test //
+      let maxValue = null;
+      let minValue = null;
+
+      for (let elemNum in analysisOutput.force) {
+          for (let seg in analysisOutput.force[elemNum]) {
+              let newValue = analysisOutput.force[elemNum][seg][loadCase][forceNum];
+              if (!maxValue || newValue > maxValue) {
+                  maxValue = newValue;
+              }
+              if (!minValue || newValue < minValue) {
+                  minValue = newValue;
+              }
+          }
+      }
+      let scaler = 5000 / Math.max(Math.abs(maxValue), Math.abs(minValue));
+      for (let elemNum in analysisOutput.force) {
+          let ivec = geometry.vertices[elemDict[elemNum][0]];
+          let jvec = geometry.vertices[elemDict[elemNum][1]];
+          let geo = new global.THREE.Geometry();
+          for (let seg in analysisOutput.force[elemNum]) {
+              let a = seg * 1;
+              let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
+              let izload = analysisOutput.force[elemNum][seg][loadCase][forceNum] * scaler;
+              if (seg === "0.00000") {
+                  geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z));
+              }
+              geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload));
+              if (seg === "1.00000") {
+                  geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z));
+              }
+              group.add(new global.THREE.Line(geo, redLine));
+          }
+      }
 
       // let influenceElem = "16"
 
@@ -7150,10 +7183,8 @@
       //     }
       // }
 
-      // // console.log("newSapOutput", analysisOutput)
-
-
-      return { group, analysisOutput }
+      // console.log("newSapOutput", analysisOutput)
+      return group
   }
 
   function LineView(linepoints, initPoint, color) {
@@ -7782,14 +7813,29 @@
   function AnalysisView() {
     this.addInput("nodeInput", "nodeInput");
     this.addInput("frameInput", "frameInput");
-    this.addOutput("temOut", "temOut");
+    // this.addOutput("temOut", "temOut");
   }
 
   AnalysisView.prototype.onExecute = function () {
-    let result = AnalysisModel(this.getInputData(0), this.getInputData(1));
-    global.sceneAdder({ layer: 2, mesh: result.group }, "analysis");
+    let result = AnalysisModel(this.getInputData(0),this.getInputData(1));
+    global.sceneAdder({ layer : 2, mesh : result}, "analysisModel");
     // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
-    this.setOutputData(0, result.analysisOutput);
+    // this.setOutputData(0, result.analysisOutput)
+  };
+
+  function AnalysisResultView() {
+    this.addInput("nodeInput", "nodeInput");
+    this.addInput("frameInput", "frameInput");
+    this.addInput("femResult", "object");
+    this.addInput("loadCase", "string");
+    this.addInput("forceNum", "number");
+  }
+
+  AnalysisResultView.prototype.onExecute = function () {
+    let result = AnalysisResult(this.getInputData(0),this.getInputData(1),this.getInputData(2),this.getInputData(3),this.getInputData(4));
+    global.sceneAdder({ layer : 2, mesh : result}, "Result" + this.getInputData(3) + this.getInputData(4));
+    // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
+    // this.setOutputData(0, result.analysisOutput)
   };
 
   // import makerjs from 'makerjs'
@@ -10277,7 +10323,7 @@
               for (let k = 0; k < xList.length - 1; k += inc) {
                   slabWeight.data.push({
                       elem: elemNum, RD: [xList[k], xList[k + inc]],
-                      Uzp: [wList[k] * ((1 - xList[k]) * br[j] + xList[k] * br[j + 1]), wList[k + inc] * ((1 - xList[k + inc]) * br[j] + xList[k + inc] * br[j + 1])]
+                      Uzp: [-1 * wList[k] * ((1 - xList[k]) * br[j] + xList[k] * br[j + 1]), -1 * wList[k + inc] * ((1 - xList[k + inc]) * br[j] + xList[k + inc] * br[j + 1])]
                   });
               }
               for (let k in barrierOffset) {
@@ -10322,7 +10368,7 @@
       }
       // console.log("new", frameInput.girderElemList)
       // return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
-      return { frame, section, material, selfWeight, slabWeight, pavement, barrier }
+      return {frameInput : { frame, section, material, selfWeight, slabWeight, pavement, barrier }, girderElemList : frameInput.girderElemList }
   }
 
 
@@ -10567,11 +10613,13 @@
       this.addInput("gridPoint", "gridPoint");
       this.addInput("slabInfo", "slabInfo");
       this.addOutput("frameInput", "frameInput");
+      this.addOutput("girderElemList", "girderElemList");
   }
 
   CompositeFrame.prototype.onExecute = function () {
       const result = CompositeFrameGen(this.getInputData(0), this.getInputData(1),this.getInputData(2),this.getInputData(3),this.getInputData(4),this.getInputData(5) );
-      this.setOutputData(0, result);
+      this.setOutputData(0, result.frameInput);
+      this.setOutputData(1, result.girderElemList);
   };
 
   function SectionDB() {
@@ -11139,6 +11187,7 @@
   global.LiteGraph.registerNodeType("3DVIEW/RebarView", RebarView);
   global.LiteGraph.registerNodeType("3DVIEW/StudView", StudView);
   global.LiteGraph.registerNodeType("3DVIEW/AnalysisView", AnalysisView);
+  global.LiteGraph.registerNodeType("3DVIEW/AnalysisResultView", AnalysisResultView);
 
   global.LiteGraph.registerNodeType("Drawing/SectionView", SectionViewer );
   global.LiteGraph.registerNodeType("Drawing/TopView", TopViewer );

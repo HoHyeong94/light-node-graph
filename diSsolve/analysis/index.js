@@ -67,9 +67,11 @@ export function CompositeFrame() {
     this.addInput("gridPoint", "gridPoint");
     this.addInput("slabInfo", "slabInfo");
     this.addOutput("frameInput", "frameInput");
+    this.addOutput("girderElemList", "girderElemList");
 }
 
 CompositeFrame.prototype.onExecute = function () {
     const result = CompositeFrameGen(this.getInputData(0), this.getInputData(1),this.getInputData(2),this.getInputData(3),this.getInputData(4),this.getInputData(5) )
-    this.setOutputData(0, result)
+    this.setOutputData(0, result.frameInput)
+    this.setOutputData(1, result.girderElemList)
 }
