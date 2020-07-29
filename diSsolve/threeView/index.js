@@ -17,7 +17,9 @@ LineViewer.prototype.on3DExecute = function () {
   console.log(this.getInputData(1) ? true : false)
   console.log(initPoint, color)
   let mesh = LineView(points, initPoint, color)
-  sceneAdder({ layer: 2, mesh: mesh }, "line");
+  sceneAdder({name:"line", layer:2, mesh:mesh, meta:{part:"line"}});
+
+  // sceneAdder({ layer: 2, mesh: mesh }, "line");
   // sceneAdder(mesh, [2, "line","total"])
 };
 
@@ -30,7 +32,9 @@ SteelPlateView.prototype.onExecute = function () {
   const steeBoxDict = this.getInputData(0);
   const initPoint = this.getInputData(1);
   const group = SteelBoxView(steeBoxDict, initPoint);
-  sceneAdder({ layer: 0, mesh: group }, "steelbox");
+  sceneAdder({name:"steelbox", layer:0, mesh:group, meta:{part:"steelbox"}});
+
+  // sceneAdder({ layer: 0, mesh: group }, "steelbox");
   // sceneAdder(group, [0, "steelBox","total"])
 }
 
@@ -47,7 +51,9 @@ DiaPhragmView.prototype.onExecute = function () {
   const group = DiaView(diaDict, initPoint);
   // let n = Math.random().toFixed(5)
   // console.log("random", n)
-  sceneAdder({ layer: 0, mesh: group }, keyName);
+  sceneAdder({name:`${keyName}`, layer:0, mesh:group, meta:{part:`${keyName}`}});
+
+  // sceneAdder({ layer: 0, mesh: group }, keyName);
   // sceneAdder(group, [0, "Part", keyName])
 }
 
@@ -61,8 +67,11 @@ HorBracingView.prototype.onExecute = function () {
   const initPoint = this.getInputData(1);
   const group = HBracingView(hb.hBracingDict, initPoint);
   const group2 = HBracingPlateView(hb.hBracingPlateDict, initPoint);
-  sceneAdder({ layer: 0, mesh: group }, "hbracing");
-  sceneAdder({ layer: 0, mesh: group2 }, "hbracingPlate");
+  sceneAdder({name:"hbracing", layer:0, mesh:group, meta:{part:"hbracing"}});
+  sceneAdder({name:"hbracingPlate", layer:0, mesh:group2, meta:{part:"hbracingPlate"}});
+
+  // sceneAdder({ layer: 0, mesh: group }, "hbracing");
+  // sceneAdder({ layer: 0, mesh: group2 }, "hbracingPlate");
   // sceneAdder(group, [0, "HBracing", "Bracing"])
   // sceneAdder(group2, [0, "HBracing", "Plate"])
 }
@@ -74,10 +83,11 @@ export function DeckView() {
 }
 
 DeckView.prototype.onExecute = function () {
-  sceneAdder({
-    layer: 0,
-    mesh: DeckPointView(this.getInputData(0), this.getInputData(1), this.getInputData(2))
-  }, "deck");
+  sceneAdder({name:"deck", layer:0, mesh:DeckPointView(this.getInputData(0), this.getInputData(1), this.getInputData(2)), meta:{part:"deck"}});
+  // sceneAdder({
+  //   layer: 0,
+  //   mesh: DeckPointView(this.getInputData(0), this.getInputData(1), this.getInputData(2))
+  // }, "deck");
   // sceneAdder(DeckPointView(this.getInputData(0),this.getInputData(1),this.getInputData(2)), [0, "deck", "total"]); 
 }
 
@@ -93,8 +103,9 @@ SpliceBoltView.prototype.onExecute = function () {
   for (let key in this.getInputData(0)) {
     let boltMesh = boltView(this.getInputData(0)[key], this.getInputData(1))
     if (boltMesh) {
-      boltMesh.userData["element"] = "bolt"
-      sceneAdder({ layer: 0, mesh: boltMesh }, "bolt" + key);
+      sceneAdder({name:`bolt${key}`, layer:0, mesh:boltMesh, meta:{part:"bolt"}});
+      // boltMesh.userData["element"] = "bolt"
+      // sceneAdder({ layer: 0, mesh: boltMesh }, "bolt" + key);
       // sceneAdder(boltMesh, [0, "bolt", key]);
     }
   }
@@ -106,10 +117,12 @@ export function StudView() {
 }
 
 StudView.prototype.onExecute = function () {
-  sceneAdder({
-    layer: 0,
-    mesh: StudMeshView(this.getInputData(0), this.getInputData(1))
-  }, "stud");
+  sceneAdder({name:"stud", layer:0, mesh:StudMeshView(this.getInputData(0), this.getInputData(1)), meta:{part:"stud"}});
+
+  // sceneAdder({
+  //   layer: 0,
+  //   mesh: StudMeshView(this.getInputData(0), this.getInputData(1))
+  // }, "stud");
   // sceneAdder( StudMeshView(this.getInputData(0),this.getInputData(1)), [0, "stud", "total"]); 
 }
 
@@ -123,11 +136,13 @@ BarrierView.prototype.onExecute = function () {
   const decPoint = this.getInputData(0)
   for (let key in decPoint) {
     let tmpMesh = BarrierPointView(decPoint[key], this.getInputData(1), this.getInputData(2))
-    tmpMesh.userData["element"] = "Barrier"
-    sceneAdder({
-      layer: 0,
-      mesh: tmpMesh
-    }, "Barrier" + key);
+    sceneAdder({name:`Barrier${key}`, layer:0, mesh:tmpMesh, meta:{part:"Barrier"}});
+
+    // tmpMesh.userData["element"] = "Barrier"
+    // sceneAdder({
+    //   layer: 0,
+    //   mesh: tmpMesh
+    // }, "Barrier" + key);
     // sceneAdder( BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2)), [0, "Barrier", key]);
   }
 }
@@ -150,8 +165,11 @@ RebarView.prototype.onExecute = function () {
     group2.add(LineMesh(deckRebar.r2[i], this.getInputData(1), 0x00ff00))
     // sceneAdder(LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00), [0, "rebar2", i])
   }
-  sceneAdder({ layer: 0, mesh: group1 }, "rebar1")
-  sceneAdder({ layer: 0, mesh: group2 }, "rebar2")
+  sceneAdder({name:"rebar1", layer:0, mesh:group1, meta:{part:"rebar"}});
+  sceneAdder({name:"rebar2", layer:0, mesh:group2, meta:{part:"rebar"}});
+
+  // sceneAdder({ layer: 0, mesh: group1 }, "rebar1")
+  // sceneAdder({ layer: 0, mesh: group2 }, "rebar2")
 
 }
 
@@ -177,7 +195,9 @@ export function AnalysisView() {
 
 AnalysisView.prototype.onExecute = function () {
   let result = AnalysisModel(this.getInputData(0),this.getInputData(1))
-  sceneAdder({ layer : 2, mesh : result}, "analysisModel");
+  sceneAdder({name:"analysisModel", layer:2, mesh:result, meta:{part:"analysisModel"}});
+
+  // sceneAdder({ layer : 2, mesh : result}, "analysisModel");
   // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
   // this.setOutputData(0, result.analysisOutput)
 }
@@ -192,7 +212,9 @@ export function AnalysisResultView() {
 
 AnalysisResultView.prototype.onExecute = function () {
   let result = AnalysisResult(this.getInputData(0),this.getInputData(1),this.getInputData(2),this.getInputData(3),this.getInputData(4))
-  sceneAdder({ layer : 2, mesh : result}, "Result" + this.getInputData(3) + this.getInputData(4));
+  sceneAdder({name:`Result${this.getInputData(3)}${this.getInputData(4)}`, layer:2, mesh:result, meta:{part:`Result${this.getInputData(3)}${this.getInputData(4)}`}});
+
+  // sceneAdder({ layer : 2, mesh : result}, "Result" + this.getInputData(3) + this.getInputData(4));
   // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
   // this.setOutputData(0, result.analysisOutput)
 }
