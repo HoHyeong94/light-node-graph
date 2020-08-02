@@ -206,7 +206,7 @@ export function AnalysisResult(node, frame, output,loadCase, forceNum ){
         analysisOutput = output;
     }
 
-    console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum)
+    // console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum)
     for (let i in node.node.data) {
         let pt = new THREE.Vector3(
             node.node.data[i].coord[0] - initPoint[0],

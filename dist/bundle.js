@@ -7114,7 +7114,7 @@
           analysisOutput = output;
       }
 
-      console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum);
+      // console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum)
       for (let i in node.node.data) {
           let pt = new global.THREE.Vector3(
               node.node.data[i].coord[0] - initPoint[0],
@@ -7664,8 +7664,8 @@
     const points = this.getInputData(0);
     const initPoint = this.getInputData(1) ? this.getInputData(1) : points[0];
     const color = this.getInputData(2);
-    console.log(this.getInputData(1) ? true : false);
-    console.log(initPoint, color);
+    // console.log(this.getInputData(1) ? true : false)
+    // console.log(initPoint, color)
     let mesh = LineView(points, initPoint, color);
     global.sceneAdder({name:"line", layer:2, mesh:mesh, meta:{part:"line"}});
 

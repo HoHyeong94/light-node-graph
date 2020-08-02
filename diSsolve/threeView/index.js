@@ -14,8 +14,8 @@ LineViewer.prototype.on3DExecute = function () {
   const points = this.getInputData(0);
   const initPoint = this.getInputData(1) ? this.getInputData(1) : points[0];
   const color = this.getInputData(2);
-  console.log(this.getInputData(1) ? true : false)
-  console.log(initPoint, color)
+  // console.log(this.getInputData(1) ? true : false)
+  // console.log(initPoint, color)
   let mesh = LineView(points, initPoint, color)
   sceneAdder({name:"line", layer:2, mesh:mesh, meta:{part:"line"}});
 

@@ -1,15 +1,16 @@
 {
-    "name": "test",
-    "version": "0.0.1",
+    "name": "Node",
+    "version": "0.0.2",
     "description": "For test node",
     "private": false,
     "keywords": [
         "test",
         "node"
     ],
-    "dependencies":{
-
-    },
+    "files": [
+        "/dist/bundle.js"
+    ],
+    "dependencies": {},
     "homepage": "http://github.com/owner/project",
     "bugs": {
         "url": "http://github.com/owner/project/issues",
