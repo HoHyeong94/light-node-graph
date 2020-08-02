@@ -7095,10 +7095,10 @@
           // group.add(arrow)
       }
 
-      return { AnalysisModel : modelGroup, LCselfweight : selfweightGroup, LCslabweight : slabweightGroup, LCbarrier : barrierGroup, LCpavement : pavementGroup}
+      return { AnalysisModel: modelGroup, LCselfweight: selfweightGroup, LCslabweight: slabweightGroup, LCbarrier: barrierGroup, LCpavement: pavementGroup }
   }
 
-  function AnalysisResult(node, frame, output,loadCase, forceNum ){
+  function AnalysisResult(node, frame, output, loadCase, forceNum) {
       let group = new global.THREE.Group();
       let geometry = new global.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
       let initPoint = node.node.data[0].coord;
@@ -7109,8 +7109,8 @@
       let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
       let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
       let elemDict = {};
-      let analysisOutput = {"force" : []};
-      if (output){
+      let analysisOutput = { "force": [] };
+      if (output) {
           analysisOutput = output;
       }
 
@@ -7298,7 +7298,24 @@
                   let hole = diaDict[diakey][partkey].hole;
                   let point = diaDict[diakey][partkey].point ? diaDict[diakey][partkey].point : diaDict[diakey].point;
                   group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
+                  if (diaDict[diakey][partkey].bolt) {
+                      let Thickness = diaDict[diakey][partkey].Thickness;
+                      let zPosition = diaDict[diakey][partkey].z;
+                      let rotationY = diaDict[diakey][partkey].rotationY + Math.PI / 2;
+                      let rotationX = diaDict[diakey][partkey].rotationX;
+                      let point = diaDict[diakey][partkey].point;
+                      let bolt = diaDict[diakey][partkey].bolt;
+                      // 볼트배치 자동계산 모듈 // 2020.7.7 by drlim
+                      let boltZ = bolt.isUpper ? zPosition + Thickness - bolt.l / 2 : zPosition + bolt.l / 2;
+                      if (bolt.layout) {
+                          for (let i in bolt.layout) {
+                              group.add(boltMesh(point, bolt, boltZ, rotationX, rotationY, bolt.layout[i], initPoint, meshMaterial));
+                              // dummyList.push(instancedBoltMesh(point, bolt, boltZ, rotationX, rotationY,bolt.layout[i], initPoint))
+                          }
+                      }
+                  }
               }
+
           }
       }
       return group
@@ -7578,7 +7595,7 @@
               dummy2.updateMatrix();
               instanceList.push(dummy);
               instanceList2.push(dummy2);
-              
+
               // instance mesh test
               // var mesh = new THREE.Mesh(geometry, meshMaterial)
               // var mesh2 = new THREE.Mesh(geometry2, meshMaterial)
@@ -7594,19 +7611,19 @@
 
           }
           let mesh = new global.THREE.InstancedMesh(geometry, meshMaterial, instanceList.length);
-              let mesh2 = new global.THREE.InstancedMesh(geometry2, meshMaterial, instanceList2.length);
-              mesh.instanceMatrix.setUsage( global.THREE.DynamicDrawUsage );
-              mesh2.instanceMatrix.setUsage( global.THREE.DynamicDrawUsage );
-              for (let i in instanceList){
-                  mesh.setMatrixAt(i, instanceList[i].matrix);
-              }
-              for (let i in instanceList2){
-                  mesh2.setMatrixAt(i, instanceList2[i].matrix);
-              }
-              mesh.instanceMatrix.needsUpdate = true;
-              mesh2.instanceMatrix.needsUpdate = true;
-              group.add(mesh);
-              group.add(mesh2);
+          let mesh2 = new global.THREE.InstancedMesh(geometry2, meshMaterial, instanceList2.length);
+          mesh.instanceMatrix.setUsage(global.THREE.DynamicDrawUsage);
+          mesh2.instanceMatrix.setUsage(global.THREE.DynamicDrawUsage);
+          for (let i in instanceList) {
+              mesh.setMatrixAt(i, instanceList[i].matrix);
+          }
+          for (let i in instanceList2) {
+              mesh2.setMatrixAt(i, instanceList2[i].matrix);
+          }
+          mesh.instanceMatrix.needsUpdate = true;
+          mesh2.instanceMatrix.needsUpdate = true;
+          group.add(mesh);
+          group.add(mesh2);
       }
       return group
   }
