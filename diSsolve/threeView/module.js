@@ -195,7 +195,7 @@ export function AnalysisResult(node, frame, output,loadCase, forceNum ){
     let elemDict = {};
     let analysisOutput = {force : []}
     if (output){
-        analysisOutput = output.data;
+        analysisOutput = output;
     }
 
     for (let i in node.node.data) {
