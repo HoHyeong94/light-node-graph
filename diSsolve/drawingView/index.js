@@ -202,7 +202,7 @@ GirderLayoutDraw.prototype.onExecute = function() {
 
 GirderLayoutDraw.prototype.on3DExecute = function() {
   let group = GirderLayoutView(this.getInputData(0))
-  sceneAdder({name:"GirderLayout", layer:3, mesh:group.planroup, meta:{part:"GirderLayout"}});
+  sceneAdder({name:"GirderLayout", layer:3, mesh:group.plan, meta:{part:"GirderLayout"}});
   sceneAdder({name:"GirderLayoutSide", layer:4, mesh:group.side, meta:{part:"GirderLayoutSide"}});
 
   // sceneAdder({layer:3, mesh:group.plan},"GirderLayout")
