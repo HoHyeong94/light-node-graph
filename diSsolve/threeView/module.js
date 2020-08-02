@@ -380,6 +380,14 @@ export function DiaView(diaDict, initPoint) {
     //     transparent: false,
     //     wireframe : false
     //   } );
+    var boltMaterial = new THREE.MeshLambertMaterial({
+        color: 0xffffff,
+        emissive: 0x000000,
+        opacity: 1,
+        side: THREE.DoubleSide,
+        transparent: false,
+        wireframe: false
+    });
     var meshMaterial = new THREE.MeshNormalMaterial()
     for (let diakey in diaDict) {
         for (let partkey in diaDict[diakey]) {
@@ -403,7 +411,7 @@ export function DiaView(diaDict, initPoint) {
                     let boltZ = bolt.isUpper ? zPosition + Thickness - bolt.l / 2 : zPosition + bolt.l / 2
                     if (bolt.layout) {
                         for (let i in bolt.layout) {
-                            group.add(boltMesh(point, bolt, boltZ, rotationX, rotationY, bolt.layout[i], initPoint, meshMaterial))
+                            group.add(boltMesh(point, bolt, boltZ, rotationX, rotationY, bolt.layout[i], initPoint, boltMaterial))
                             // dummyList.push(instancedBoltMesh(point, bolt, boltZ, rotationX, rotationY,bolt.layout[i], initPoint))
                         }
                     }
