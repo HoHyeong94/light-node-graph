@@ -195,8 +195,9 @@ export function AnalysisView() {
 
 AnalysisView.prototype.onExecute = function () {
   let result = AnalysisModel(this.getInputData(0),this.getInputData(1))
-  sceneAdder({name:"analysisModel", layer:2, mesh:result, meta:{part:"analysisModel"}});
-
+  for (let key in result){
+  sceneAdder({name:key, layer:2, mesh:result[key], meta:{part:key}});
+  }
   // sceneAdder({ layer : 2, mesh : result}, "analysisModel");
   // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
   // this.setOutputData(0, result.analysisOutput)

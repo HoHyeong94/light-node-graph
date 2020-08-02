@@ -2,7 +2,15 @@ import { THREE, SpriteText } from "global";
 // import { analysisOutput } from "../DB/module"
 
 export function AnalysisModel(node, frame) {
-    let group = new THREE.Group();
+    let modelGroup = new THREE.Group();
+    let selfweightGroup = new THREE.Group();
+    let slabweightGroup = new THREE.Group();
+    let barrierGroup = new THREE.Group();
+    let pavementGroup = new THREE.Group();
+    let laneGroup = new THREE.Group();
+
+
+
     let layer = 2; //frame Layer
     let material = new THREE.PointsMaterial({ color: 0xff0000, size: 300 });
     let geometry = new THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
@@ -24,7 +32,7 @@ export function AnalysisModel(node, frame) {
         text.position.set(pt.x, pt.y, pt.z)
         text.layers.set(layer);
         text.backgroundColor = "red"
-        group.add(text)
+        modelGroup.add(text)
     }
 
     for (let i in node.rigid.data) {
@@ -33,7 +41,7 @@ export function AnalysisModel(node, frame) {
             let sNum = node.rigid.data[i].slave[j] - 1
             let geo = new THREE.Geometry();
             geo.vertices.push(geometry.vertices[mNum], geometry.vertices[sNum])
-            group.add(new THREE.Line(geo, aquaLine));
+            modelGroup.add(new THREE.Line(geo, aquaLine));
         }
     }
 
@@ -43,7 +51,7 @@ export function AnalysisModel(node, frame) {
         let jNum = frame.frame.data[i].jNode - 1
         elemDict[frame.frame.data[i].number] = [iNum, jNum]
         geo.vertices.push(geometry.vertices[iNum], geometry.vertices[jNum])
-        group.add(new THREE.Line(geo, greenLine));
+        modelGroup.add(new THREE.Line(geo, greenLine));
 
         let text = new SpriteText(frame.frame.data[i].number, 150, "red");
         text.position.set(
@@ -51,7 +59,7 @@ export function AnalysisModel(node, frame) {
             (geometry.vertices[iNum].y + geometry.vertices[jNum].y) / 2,
             (geometry.vertices[iNum].z + geometry.vertices[jNum].z) / 2)
         text.layers.set(layer);
-        group.add(text)
+        modelGroup.add(text)
     }
 
 
@@ -66,7 +74,7 @@ export function AnalysisModel(node, frame) {
             new THREE.Vector3(ivec.x, ivec.y, ivec.z + izload),
             new THREE.Vector3(jvec.x, jvec.y, jvec.z + jzload),
             jvec)
-        group.add(new THREE.Line(geo, aquaLine));
+        selfweightGroup.add(new THREE.Line(geo, aquaLine));
     }
 
     for (let i in frame.slabWeight.data) {
@@ -83,7 +91,7 @@ export function AnalysisModel(node, frame) {
             new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload),
             new THREE.Vector3(njvec.x, njvec.y, njvec.z + jzload),
             njvec)
-        group.add(new THREE.Line(geo, aquaLine));
+        slabweightGroup.add(new THREE.Line(geo, aquaLine));
     }
 
     for (let i in frame.barrier.data) {
@@ -95,7 +103,7 @@ export function AnalysisModel(node, frame) {
         let izload = -1 * frame.barrier.data[i].Uz / 10
         geo.vertices.push(nivec,
             new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload))
-        group.add(new THREE.Line(geo, aquaLine));
+        barrierGroup.add(new THREE.Line(geo, aquaLine));
     }
 
     for (let i in frame.pavement.data) {
@@ -112,7 +120,7 @@ export function AnalysisModel(node, frame) {
             new THREE.Vector3(nivec.x, nivec.y, nivec.z + izload),
             new THREE.Vector3(njvec.x, njvec.y, njvec.z + jzload),
             njvec)
-        group.add(new THREE.Line(geo, aquaLine));
+        pavementGroup.add(new THREE.Line(geo, aquaLine));
     }
 
     for (let i in frame.laneList) {
@@ -127,7 +135,7 @@ export function AnalysisModel(node, frame) {
         }
         let line = new THREE.Line(geo, redDotLine)
         line.computeLineDistances();
-        group.add(line);
+        laneGroup.add(line);
     }
 
 
@@ -170,16 +178,16 @@ export function AnalysisModel(node, frame) {
         if (node.boundary.data[i].DOF[0] && node.boundary.data[i].DOF[1]) {
             let circle = new THREE.CircleGeometry(arrow, 16);
             circle.translate(vec.x, vec.y, vec.z)
-            group.add(new THREE.Mesh(circle, circleMaterial));
+            modelGroup.add(new THREE.Mesh(circle, circleMaterial));
         }
         geo.rotateZ(localData.ANG * Math.PI / 180)
         geo.translate(vec.x, vec.y, vec.z)
-        group.add(new THREE.LineSegments(geo, yellowLine));
+        modelGroup.add(new THREE.LineSegments(geo, yellowLine));
 
         // group.add(arrow)
     }
 
-    return group
+    return { AnalysisModel : modelGroup, LCselfweight : selfweightGroup, LCslabweight : slabweightGroup, LCbarrier : barrierGroup, LCpavement : pavementGroup}
 }
 
 export function AnalysisResult(node, frame, output,loadCase, forceNum ){
