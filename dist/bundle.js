@@ -7101,11 +7101,12 @@
       let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
       let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
       let elemDict = {};
-      let analysisOutput = {force : []};
+      let analysisOutput = {"force" : []};
       if (output){
-          analysisOutput = output.data;
+          analysisOutput = output;
       }
 
+      console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum);
       for (let i in node.node.data) {
           let pt = new global.THREE.Vector3(
               node.node.data[i].coord[0] - initPoint[0],
@@ -7126,9 +7127,9 @@
       let maxValue = null;
       let minValue = null;
 
-      for (let elemNum in analysisOutput.force) {
-          for (let seg in analysisOutput.force[elemNum]) {
-              let newValue = analysisOutput.force[elemNum][seg][loadCase][forceNum];
+      for (let elemNum in analysisOutput["force"]) {
+          for (let seg in analysisOutput["force"][elemNum]) {
+              let newValue = analysisOutput["force"][elemNum][seg][loadCase][forceNum];
               if (!maxValue || newValue > maxValue) {
                   maxValue = newValue;
               }
@@ -7138,14 +7139,14 @@
           }
       }
       let scaler = 5000 / Math.max(Math.abs(maxValue), Math.abs(minValue));
-      for (let elemNum in analysisOutput.force) {
+      for (let elemNum in analysisOutput["force"]) {
           let ivec = geometry.vertices[elemDict[elemNum][0]];
           let jvec = geometry.vertices[elemDict[elemNum][1]];
           let geo = new global.THREE.Geometry();
-          for (let seg in analysisOutput.force[elemNum]) {
+          for (let seg in analysisOutput["force"][elemNum]) {
               let a = seg * 1;
               let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
-              let izload = analysisOutput.force[elemNum][seg][loadCase][forceNum] * scaler;
+              let izload = analysisOutput["force"][elemNum][seg][loadCase][forceNum] * scaler;
               if (seg === "0.00000") {
                   geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z));
               }
