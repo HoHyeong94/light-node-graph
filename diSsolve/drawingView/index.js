@@ -20,6 +20,7 @@ SectionViewer.prototype.on3DExecute = function() {
 //   let svgAll = { models: {} };
   let i = 0;
   let offset = 5000;
+  const metaData={part:"section"}
   for (let value of gridlist) {
     let sectionPoint = sectionPointDict[value].forward;
     let diaPoint = diaDict[value];
@@ -29,7 +30,7 @@ SectionViewer.prototype.on3DExecute = function() {
     //     sceneAdder({layer:1, mesh:group[j]},"section" + value + j);
     // }
     group.position.set(i*offset, -5000 * this.getInputData(3),0)
-    sceneAdder({layer:1, mesh:group},"section" + value);
+    sceneAdder({name:`section${value}`, layer:1, mesh:group, meta:metaData});
     // sceneAdder(group,[1, "section", value]);
     // // svgAll.models[value].origin = [i * offset, 0];
     i += 1;
@@ -57,7 +58,8 @@ TopViewer.prototype.on3DExecute = function() {
   let group = topDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5),this.getInputData(6), this.getInputData(7))
   // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
   group.position.set(0,-offset,0)
-  sceneAdder({layer:6, mesh:group},"topView");
+  sceneAdder({name:"topView", layer:6, mesh:group, meta:{part:"topView"}});
+
   // sceneAdder(group,[6, "topView", "total"]);
 };
 
@@ -71,7 +73,8 @@ GirderGeneralView1.prototype.onExecute = function() {
 
 GirderGeneralView1.prototype.on3DExecute = function() {
   let group = GirderGeneralDraw1(this.getInputData(0),this.getInputData(1))
-  sceneAdder({layer:this.getInputData(1).layer, mesh:group},"GirderGeneralView1");
+  sceneAdder({name:"GirderGeneralView1", layer:this.getInputData(1).layer, mesh:group, meta:{part:"GirderGeneralView"}});
+  // sceneAdder({layer:this.getInputData(1).layer, mesh:group},"GirderGeneralView1");
   // sceneAdder(group, [this.getInputData(1), "GirderGeneralView1", "total"] );
 };
 
@@ -88,7 +91,9 @@ GirderGeneralView2.prototype.onExecute = function() {
 
 GirderGeneralView2.prototype.on3DExecute = function() {
   let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2), this.getInputData(3), this.getInputData(4))
-  sceneAdder({layer:this.getInputData(4).layer, mesh:group},"GirderGeneralView2");
+  sceneAdder({name:"GirderGeneralView2", layer:this.getInputData(4).layer, mesh:group, meta:{part:"GirderGeneralView"}});
+
+  // sceneAdder({layer:this.getInputData(4).layer, mesh:group},"GirderGeneralView2");
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
 };
 
@@ -108,7 +113,9 @@ PartGeneralView.prototype.on3DExecute = function() {
   let layer = this.getInputData(2).layer;
   let key = this.getInputData(3);
   // console.log("check", layer,key)
-  sceneAdder({layer:layer, mesh:group},key);
+  sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
+
+  // sceneAdder({layer:layer, mesh:group},key);
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
 };
 
@@ -128,7 +135,9 @@ XbeamGeneralView.prototype.on3DExecute = function() {
   let layer = this.getInputData(2).layer;
   let key = this.getInputData(3);
   // console.log("check", layer,key)
-  sceneAdder({layer:layer, mesh:group},key);
+  sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
+
+  // sceneAdder({layer:layer, mesh:group},key);
   // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
 };
 
@@ -163,7 +172,9 @@ LineDraw.prototype.onExecute = function() {
 
 LineDraw.prototype.on3DExecute = function() {
   let group = LineDrawView(this.getInputData(0),this.getInputData(1))
-  sceneAdder({layer:3, mesh:group},"LineView")
+  sceneAdder({name:"LineView", layer:3, mesh:group, meta:{part:"LineView"}});
+
+  // sceneAdder({layer:3, mesh:group},"LineView")
   // sceneAdder(group, [3, "LineView", "total"])
 }
 
@@ -176,7 +187,9 @@ LineSideDraw.prototype.onExecute = function() {
 
 LineSideDraw.prototype.on3DExecute = function() {
   let group = LineSideView(this.getInputData(0))
-  sceneAdder({layer:4, mesh:group},"LineSideView")
+  sceneAdder({name:"LineSideView", layer:4, mesh:group, meta:{part:"LineSideView"}});
+
+  // sceneAdder({layer:4, mesh:group},"LineSideView")
   // sceneAdder(group, [4, "LineSideView", "total"]);
 }
 
@@ -189,8 +202,11 @@ GirderLayoutDraw.prototype.onExecute = function() {
 
 GirderLayoutDraw.prototype.on3DExecute = function() {
   let group = GirderLayoutView(this.getInputData(0))
-  sceneAdder({layer:3, mesh:group.plan},"GirderLayout")
-  sceneAdder({layer:4, mesh:group.side},"GirderLayoutSide")
+  sceneAdder({name:"GirderLayout", layer:3, mesh:group.planroup, meta:{part:"GirderLayout"}});
+  sceneAdder({name:"GirderLayoutSide", layer:4, mesh:group.side, meta:{part:"GirderLayoutSide"}});
+
+  // sceneAdder({layer:3, mesh:group.plan},"GirderLayout")
+  // sceneAdder({layer:4, mesh:group.side},"GirderLayoutSide")
   // sceneAdder(group.plan, [3, "GirderLayout", "total"])
   // sceneAdder(group.side, [4, "GirderLayoutSide", "total"])
 }
