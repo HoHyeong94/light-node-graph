@@ -11297,6 +11297,7 @@
 
   function MaterialQntt() {
       this.addInput("diaDict", "diaDict");
+      this.addOutput("data", "arr");
   }
 
   MaterialQntt.prototype.onExecute = function () {
