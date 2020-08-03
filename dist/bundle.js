@@ -11259,7 +11259,7 @@
                       area += (points[k].x - points[i].x) * (points[i].y + points[k].y)/2;
                   }
                   let index2 = index1 === points.length - 1 ? 0 : index1 + 1;
-                  let ang = Math.atan2(points[index2].y - points[index1].y, points[index2].x - points[index1].x);
+                  let ang = -1 * Math.atan2(points[index2].y - points[index1].y, points[index2].x - points[index1].x);
                   let cos = Math.cos(ang);
                   let sin = Math.sin(ang);
                   let xList = [];
