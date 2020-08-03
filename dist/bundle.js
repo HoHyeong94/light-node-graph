@@ -11254,7 +11254,7 @@
                       index1 = i;
                   }
               }
-              let index2 = index1 === points.length? 0 : index1 + 1;
+              let index2 = index1 === points.length - 1? 0 : index1 + 1;
               let ang = Math.atan2(points[index2].y - points[index1].y,points[index2].x - points[index1].x );
               let cos = Math.cos(ang);
               let sin = Math.sin(ang);
