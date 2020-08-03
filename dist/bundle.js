@@ -11245,7 +11245,9 @@
                   let name = part;
                   let t = diaDict[key][part]["Thickness"];
                   let l = 0;
+                  let area = 0;
                   let index1 = 0;
+
                   // 가장 긴 변에 대해서 중심축을 잡음
                   for (let i = 0; i < points.length; i++) {
                       let k = i === points.length - 1 ? 0 : i + 1;
@@ -11254,6 +11256,7 @@
                           l = dummyL;
                           index1 = i;
                       }
+                      area += (points[k].x - points[i].x) * (points[i].y + points[k].y)/2;
                   }
                   let index2 = index1 === points.length - 1 ? 0 : index1 + 1;
                   let ang = Math.atan2(points[index2].y - points[index1].y, points[index2].x - points[index1].x);
@@ -11271,7 +11274,8 @@
                   let minY = Math.min(...yList);
                   let length = maxX - minX;
                   let width = maxY - minY;
-                  let weight = width * length * t * 0.000007850;
+                  let weight = area * t * 0.000007850;
+                  let loss = (length * width - area) / (length * width) * 100;
                   // 추후 재료에 대한 정보도  part 정보에 추가되어야 함.
                   data.push(
                       {
@@ -11281,7 +11285,7 @@
                           "w": width.toFixed(0),
                           "t": t,
                           "l": length.toFixed(0),
-                          "q": 1,
+                          "q": loss,
                           "wg": weight.toFixed(1),
                           "mat": "HSB500"
                       }
