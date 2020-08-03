@@ -11278,11 +11278,11 @@
                           "main": main,
                           "sub": sub,
                           "name": name,
-                          "w": width,
+                          "w": width.toFixed(0),
                           "t": t,
-                          "l": length,
+                          "l": length.toFixed(0),
                           "q": 1,
-                          "wg": weight,
+                          "wg": weight.toFixed(1),
                           "mat": "HSB500"
                       }
                   );
