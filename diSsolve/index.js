@@ -16,6 +16,7 @@ import { SplicePart } from "./splice/index"
 import { BarrierPoint } from "./barrier/index"
 import { DeckRebar } from "./rebar/index"
 import { Stud } from "./stud/index"
+import { MaterialQntt } from "./quantity/index"
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -23,6 +24,8 @@ LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
 LiteGraph.registerNodeType("nexivil/GridStationList", StationList);
 LiteGraph.registerNodeType("nexivil/SectionPoint", SectionPoint);
 LiteGraph.registerNodeType("nexivil/DeckPoint", DeckPoint);
+LiteGraph.registerNodeType("nexivil/MaterialQntt", MaterialQntt);
+
 LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
 LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
 LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
