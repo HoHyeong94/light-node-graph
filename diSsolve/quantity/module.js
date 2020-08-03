@@ -49,8 +49,8 @@ export function partQntt(diaDict) {
                 let minY = Math.min(...yList);
                 let length = maxX - minX;
                 let width = maxY - minY;
-                let weight = area * t * 0.000007850;
-                let loss = (length * width - area) / (length * width) * 100
+                let weight = Math.abs(area) * t * 0.000007850;
+                let loss = (length * width - Math.abs(area)) / (length * width) * 100
                 // 추후 재료에 대한 정보도  part 정보에 추가되어야 함.
                 data.push(
                     {
@@ -60,7 +60,7 @@ export function partQntt(diaDict) {
                         "w": width.toFixed(0),
                         "t": t,
                         "l": length.toFixed(0),
-                        "q": loss,
+                        "q": loss.toFixed(1),
                         "wg": weight.toFixed(1),
                         "mat": "HSB500"
                     }
