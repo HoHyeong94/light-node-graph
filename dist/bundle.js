@@ -11246,8 +11246,8 @@
               let l = 0;
               let index1 = 0;
               // 가장 긴 변에 대해서 중심축을 잡음
-              for (let i = 0; i < points.length + 1; i++){
-                  let k = i === points.length? 0 : i + 1;
+              for (let i = 0; i < points.length; i++){
+                  let k = i === points.length -1 ? 0 : i + 1;
                   let dummyL = lengthPt(points[i], points[k]);
                   if (dummyL > l){
                       l = dummyL;
