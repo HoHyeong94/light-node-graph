@@ -40,10 +40,10 @@ export function partQntt(diaDict) {
                     xList.push(points[i].x * cos - points[i].y * sin);
                     yList.push(points[i].x * sin + points[i].y * cos);
                 }
-                let maxX = Math.max(xList);
-                let minX = Math.min(xList);
-                let maxY = Math.max(yList);
-                let minY = Math.min(yList);
+                let maxX = Math.max(...xList);
+                let minX = Math.min(...xList);
+                let maxY = Math.max(...yList);
+                let minY = Math.min(...yList);
                 let length = maxX - minX;
                 let width = maxY - minY;
                 let weight = width * length * t * 0.000007850;
