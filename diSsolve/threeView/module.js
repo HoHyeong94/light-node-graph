@@ -384,7 +384,6 @@ export function DiaView(diaDict, initPoint) {
         color: 0xffffff,
         emissive: 0x000000,
         opacity: 1,
-        side: THREE.DoubleSide,
         transparent: false,
         wireframe: false
     });
