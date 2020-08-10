@@ -4947,9 +4947,9 @@
     //   anchor: [[lowerPlate[0].x, lowerPlate[0].y - 50], [lowerPlate[3].x, lowerPlate[3].y - 50]],
     //   welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
     // }
-    let lowerTop = [{x : lowerPlate[1].x, y : - ds.lowerTopwidth/2},{x : lowerPlate[1].x, y : ds.lowerTopwidth/2},
-    {x : lowerPlate[2].x, y : ds.lowerTopwidth/2},  {x : lowerPlate[2].x, y : - ds.lowerTopwidth/2} ];
-    let centerPoint = ToGlobalPoint(point, {x:0, y:lowerPlate[0].y});
+    let lowerTop = [{x : lowerPlate[2].x, y : - ds.lowerTopwidth/2},{x : lowerPlate[2].x, y : ds.lowerTopwidth/2},
+    {x : lowerPlate[3].x, y : ds.lowerTopwidth/2},  {x : lowerPlate[3].x, y : - ds.lowerTopwidth/2} ];
+    let centerPoint = ToGlobalPoint(point, {x:0, y:lowerPlate[2].y});
     result["lowerTopShape"] = hPlateGen(lowerTop,centerPoint,ds.lowerTopThickness,0,skew,0,0,lowerTopPoints,false,[0,1]);
     // {
     //   points: lowerTopPoints, Thickness: ds.lowerTopwidth, z: -ds.lowerTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
