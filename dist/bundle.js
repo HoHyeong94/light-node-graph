@@ -4911,8 +4911,9 @@
 
     ///lower stiffener
     let lowerPlate = [
-      { x: bl.x + lwCot * ds.lowerHeight, y: bl.y + ds.lowerHeight }, bl, br,
-      { x: br.x + rwCot * ds.lowerHeight, y: br.y + ds.lowerHeight }
+      bl, br,
+      { x: br.x + rwCot * ds.lowerHeight, y: br.y + ds.lowerHeight },
+      { x: bl.x + lwCot * ds.lowerHeight, y: bl.y + ds.lowerHeight }
     ];
     // let lowerPoints = [];
     // lowerPoints.push(lowerPlate[0]);
@@ -4929,10 +4930,10 @@
     // }
     // lowerPoints = lowerPoints.concat(scallop(bl, br, tr, ds.scallopRadius, 4));
     // lowerPoints.push(lowerPlate[3]);
-    let lowerTopPoints = [lowerPlate[0],
+    let lowerTopPoints = [lowerPlate[3],
     { x: bl.x + lwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
     { x: br.x + rwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
-    lowerPlate[3]];
+    lowerPlate[2]];
 
     let lrib2 = lrib;
     lrib2.ribHoleD = ds.ribHoleD;
@@ -4946,8 +4947,8 @@
     //   anchor: [[lowerPlate[0].x, lowerPlate[0].y - 50], [lowerPlate[3].x, lowerPlate[3].y - 50]],
     //   welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
     // }
-    let lowerTop = [{x : lowerPlate[0].x, y : - ds.lowerTopwidth/2},{x : lowerPlate[0].x, y : ds.lowerTopwidth/2},
-    {x : lowerPlate[3].x, y : ds.lowerTopwidth/2},  {x : lowerPlate[3].x, y : - ds.lowerTopwidth/2} ];
+    let lowerTop = [{x : lowerPlate[1].x, y : - ds.lowerTopwidth/2},{x : lowerPlate[1].x, y : ds.lowerTopwidth/2},
+    {x : lowerPlate[2].x, y : ds.lowerTopwidth/2},  {x : lowerPlate[2].x, y : - ds.lowerTopwidth/2} ];
     let centerPoint = ToGlobalPoint(point, {x:0, y:lowerPlate[0].y});
     result["lowerTopShape"] = hPlateGen(lowerTop,centerPoint,ds.lowerTopThickness,0,skew,0,0,lowerTopPoints,false,[0,1]);
     // {
