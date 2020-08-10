@@ -5619,7 +5619,7 @@
     }
     let result = {
       points2D: points, points: points, Thickness: Thickness, z: z,
-      rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint, topView, sideView
+      rotationX: Math.PI / 2, rotationY: rotationY, hole: [], point: centerPoint, topView, sideView
     };
 
     return result

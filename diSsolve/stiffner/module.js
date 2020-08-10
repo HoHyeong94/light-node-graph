@@ -1930,7 +1930,7 @@ export function vFrameGen(points, centerPoint, Thickness, z, top2D, side2D) {
   }
   let result = {
     points2D: points, points: points, Thickness: Thickness, z: z,
-    rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint, topView, sideView
+    rotationX: Math.PI / 2, rotationY: rotationY, hole: [], point: centerPoint, topView, sideView
   }
 
   return result
