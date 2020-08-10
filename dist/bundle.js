@@ -4978,11 +4978,12 @@
       
     if (uflange[0].length >0) {
       let upperTop = [
-        {x: uflange[0][0].x, y: -ds.upperTopWidth/2}, {x: uflange[0][0].x, y: ds.upperTopWidth/2},
-        {x: uflange[1][0].x, y: ds.upperTopWidth/2}, {x: uflange[1][0].x, y: - ds.upperTopWidth/2}
+        {x: uflange[0][1].x, y: -ds.upperTopwidth/2}, {x: uflange[0][1].x, y: ds.upperTopwidth/2},
+        {x: uflange[1][1].x, y: ds.upperTopwidth/2}, {x: uflange[1][1].x, y: - ds.upperTopwidth/2}
       ];
-      let upperTopPoints = PlateRestPoint(uflange[0][0], uflange[1][0], gtan, gtan, ds.upperTopThickness);
-      result["upperTopShape"] = hPlateGen(upperTop, point, ds.upperTopThickness,0,skew,0,gradRadian,upperTopPoints,true,[0,1]);
+      let cp = ToGlobalPoint(point, {x:0, y: tl.y - gradient * tl.x});
+      let upperTopPoints = PlateRestPoint(uflange[0][1], uflange[1][1], gtan, gtan, ds.upperTopThickness);
+      result["upperTopShape"] = hPlateGen(upperTop, cp, ds.upperTopThickness,0,skew,0,gradRadian,upperTopPoints,true,[0,1]);
       // {
       //   points: upperTopPoints, Thickness: ds.upperTopwidth, z: -ds.upperTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
       //   size: PlateSize2(upperTopPoints, 0, ds.upperTopThickness, ds.upperTopwidth),
