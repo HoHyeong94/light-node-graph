@@ -449,10 +449,6 @@ function SectionCompare(section1, section2) {
 
 // const gridModelL = [
 //     ["G1K1", "G2K1", "G3K1"],
-//     // ["G1K2","G2K2","G3K2"],
-//     // ["G1K3","G2K3","G3K3"],
-//     // ["G1K4","G2K4","G3K4"],
-//     // ["G1K5","G2K5","G3K5"],
 //     ["G1K6", "G2K6", "G3K6"],
 //     ["G1S1", "G2S1", "G3S1"],
 //     ["G1S2", "G2S2", "G3S2"],
@@ -478,7 +474,7 @@ function SectionCompare(section1, section2) {
 //     ["G1D26", "G2D26", "G3D26"],
 //     ["G1D27", "G2D27", "G3D27"],
 //     ["G1D28", "G2D28", "G3D28"],
-//     ["G1D29", "G2D29", "G3D29"],
+//     ["G1D29", "G2D29", "G3D29"]
 // ];
 
 export function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, sectionPointDict, gridPoint, slabInfo, gridModelL) { //gridModelData, xbeamData, 

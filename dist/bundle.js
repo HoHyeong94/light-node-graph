@@ -3790,13 +3790,7 @@
       let urib = sectionPointDict[gridkey].forward.input.Urib;
       let lrib = sectionPointDict[gridkey].forward.input.Lrib;
       if (diaphragmLayout[i][section] == "diaType1") {
-        result[gridkey] = diaphragmSection(
-          webPoints,
-          skew,
-          uflangePoints,
-          diaSection,
-          sectionDB
-        );
+        result[gridkey] = uBoxDia1(webPoints, point, skew, uflangePoint, lrib, diaSection, sectionDB);
       } else if (diaphragmLayout[i][section] == "diaType2") {
         result[gridkey] = diaphragmSection2(
           webPoints,
@@ -4902,7 +4896,7 @@
     return result
   }
 
-  function diaphragmSection(webPoints, skew, uflangePoint, ds, sectionDB) { //ribPoint needed
+  function uBoxDia1(webPoints, point, skew, uflangePoint, lrib, ds, sectionDB) { //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
     const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
     let result = {};
@@ -4920,37 +4914,45 @@
       { x: bl.x + lwCot * ds.lowerHeight, y: bl.y + ds.lowerHeight }, bl, br,
       { x: br.x + rwCot * ds.lowerHeight, y: br.y + ds.lowerHeight }
     ];
-    let lowerPoints = [];
-    lowerPoints.push(lowerPlate[0]);
-    lowerPoints = lowerPoints.concat(scallop(tl, bl, br, ds.scallopRadius, 4));
-    //// longitudinal stiffner holes
-    for (let i = 0; i < ds.longiRibRayout.length; i++) {
-      lowerPoints.push({ x: ds.longiRibRayout[i] - ds.ribHoleD, y: lowerPlate[1].y });
-      let curve = new global.THREE.ArcCurve(ds.longiRibRayout[i], lowerPlate[1].y + ds.longiRibHeight, ds.ribHoleR, Math.PI, 0, true);
-      let dummyVectors = curve.getPoints(8);
-      for (let i = 0; i < dummyVectors.length; i++) {
-        lowerPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y });
-      }
-      lowerPoints.push({ x: ds.longiRibRayout[i] + ds.ribHoleD, y: lowerPlate[1].y });
-    }
-    lowerPoints = lowerPoints.concat(scallop(bl, br, tr, ds.scallopRadius, 4));
-    lowerPoints.push(lowerPlate[3]);
+    // let lowerPoints = [];
+    // lowerPoints.push(lowerPlate[0]);
+    // lowerPoints = lowerPoints.concat(scallop(tl, bl, br, ds.scallopRadius, 4));
+    // //// longitudinal stiffner holes
+    // for (let i = 0; i < ds.longiRibRayout.length; i++) {
+    //   lowerPoints.push({ x: ds.longiRibRayout[i] - ds.ribHoleD, y: lowerPlate[1].y });
+    //   let curve = new THREE.ArcCurve(ds.longiRibRayout[i], lowerPlate[1].y + ds.longiRibHeight, ds.ribHoleR, Math.PI, 0, true);
+    //   let dummyVectors = curve.getPoints(8)
+    //   for (let i = 0; i < dummyVectors.length; i++) {
+    //     lowerPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
+    //   }
+    //   lowerPoints.push({ x: ds.longiRibRayout[i] + ds.ribHoleD, y: lowerPlate[1].y });
+    // }
+    // lowerPoints = lowerPoints.concat(scallop(bl, br, tr, ds.scallopRadius, 4));
+    // lowerPoints.push(lowerPlate[3]);
     let lowerTopPoints = [lowerPlate[0],
     { x: bl.x + lwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
     { x: br.x + rwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
     lowerPlate[3]];
-    result["lowerTopShape"] = {
-      points: lowerTopPoints, Thickness: ds.lowerTopwidth, z: -ds.lowerTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: PlateSize2(lowerPlate, 1, ds.lowerTopThickness, ds.lowerTopwidth),
-      anchor: [[lowerTopPoints[1].x, lowerTopPoints[1].y + 50], [lowerTopPoints[2].x, lowerTopPoints[2].y + 50]]
-    };
-    let lowerweldingLine = [lowerPlate[0], lowerPlate[1], lowerPlate[2], lowerPlate[3]];
-    result["lowershape"] = {
-      points: lowerPoints, Thickness: ds.lowerThickness, z: -ds.lowerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: PlateSize(lowerPlate, 1, ds.lowerThickness),
-      anchor: [[lowerPlate[0].x, lowerPlate[0].y - 50], [lowerPlate[3].x, lowerPlate[3].y - 50]],
-      welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
-    };
+
+    // let lowerweldingLine = [lowerPlate[0], lowerPlate[1], lowerPlate[2], lowerPlate[3]]
+    result["lowershape"] = vPlateGen(lowerPlate,point,ds.lowerThickness, [1,2],ds.scallopRadius,null,lrib,[],null,[3,0,1,2]);
+    // {
+    //   points: lowerPoints, Thickness: ds.lowerThickness, z: -ds.lowerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: PlateSize(lowerPlate, 1, ds.lowerThickness),
+    //   anchor: [[lowerPlate[0].x, lowerPlate[0].y - 50], [lowerPlate[3].x, lowerPlate[3].y - 50]],
+    //   welding: [{ Line: lowerweldingLine, type: "FF", value1: 6 }]
+    // }
+    let lowerTop = [{x : lowerPlate[1].x, y : - ds.lowerTopwidth},{x : lowerPlate[1].x, y : ds.lowerTopwidth},
+    {x : lowerPlate[2].x, y : ds.lowerTopwidth},
+    {x : lowerPlate[2].x, y : - ds.lowerTopwidth} ];
+    let centerPoint = ToGlobalPoint(point, {x:0, y:lowerPlate[1].y});
+    result["lowerTopShape"] = hPlateGen(lowerTop,centerPoint,ds.lowerTopThickness,0,skew,0,0,lowerTopPoints,false,[0,1]);
+    // {
+    //   points: lowerTopPoints, Thickness: ds.lowerTopwidth, z: -ds.lowerTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: PlateSize2(lowerPlate, 1, ds.lowerTopThickness, ds.lowerTopwidth),
+    //   anchor: [[lowerTopPoints[1].x, lowerTopPoints[1].y + 50], [lowerTopPoints[2].x, lowerTopPoints[2].y + 50]]
+    // }
+    
     ///upper stiffener
     let upperPlate = [{ x: tl.x, y: tl.y }, { x: tl.x - lwCot * ds.upperHeight, y: tl.y - ds.upperHeight },
     { x: tr.x - rwCot * ds.upperHeight, y: tr.y - ds.upperHeight }, { x: tr.x, y: tr.y }];
@@ -10194,10 +10196,6 @@
 
   // const gridModelL = [
   //     ["G1K1", "G2K1", "G3K1"],
-  //     // ["G1K2","G2K2","G3K2"],
-  //     // ["G1K3","G2K3","G3K3"],
-  //     // ["G1K4","G2K4","G3K4"],
-  //     // ["G1K5","G2K5","G3K5"],
   //     ["G1K6", "G2K6", "G3K6"],
   //     ["G1S1", "G2S1", "G3S1"],
   //     ["G1S2", "G2S2", "G3S2"],
@@ -10223,7 +10221,7 @@
   //     ["G1D26", "G2D26", "G3D26"],
   //     ["G1D27", "G2D27", "G3D27"],
   //     ["G1D28", "G2D28", "G3D28"],
-  //     ["G1D29", "G2D29", "G3D29"],
+  //     ["G1D29", "G2D29", "G3D29"]
   // ];
 
   function CompositeFrameGen(nodeNumDict, frameInput, deckLineDict, sectionPointDict, gridPoint, slabInfo, gridModelL) { //gridModelData, xbeamData, 
