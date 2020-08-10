@@ -4980,7 +4980,7 @@
       WebPoint(bl, tl, 0, bl.y + (ds.lowerHeight + ds.lowerTopThickness)),
       WebPoint(bl, tl, 0, tl.y - (ds.upperHeight + ds.leftsideTopThickness) * gsin), 0, gradient, ds.sideHeight);
     // let leftweldingLine = [leftPlate[3], leftPlate[0], leftPlate[1], leftPlate[2]]
-    result["leftPlateShape"] = vPlateGen(leftPlate, point, ds.sideThickness, 0,[],null,null,[],null,[0,3,1,2]);
+    result["leftPlateShape"] = vPlateGen(leftPlate, point, ds.sideThickness, [],0,null,null,[],null,[0,3,1,2]);
     // {
     //   points: leftPlate, Thickness: ds.sideThickness, z: -ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     //   size: PlateSize(leftPlate, 0, ds.sideThickness),
@@ -4991,7 +4991,7 @@
     let rightPlate = PlateRestPoint(
       WebPoint(br, tr, 0, br.y + (ds.lowerHeight + ds.lowerTopThickness)),
       WebPoint(br, tr, 0, tr.y - (ds.upperHeight + ds.leftsideTopThickness) * gsin), 0, gradient, -ds.sideHeight);
-    result["rightPlateShape"] = vPlateGen(rightPlate, point, ds.sideThickness, 0,[],null,null,[],null,null);
+    result["rightPlateShape"] = vPlateGen(rightPlate, point, ds.sideThickness, [],0,null,null,[],null,null);
     // {
     //   points: rightPlate, Thickness: ds.sideThickness, z: -ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     //   size: PlateSize(rightPlate, 0, ds.sideThickness),
