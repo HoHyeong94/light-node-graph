@@ -1288,15 +1288,17 @@ export function uBoxDia1(webPoints, point, skew, uflangePoint, uflange, lrib, ds
   //   size: PlateSize(rightPlate, 0, ds.sideThickness),
   //   anchor: [[rightPlate[0].x - 50, rightPlate[0].y], [rightPlate[1].x - 50, rightPlate[1].y]]
   // }
+  let cp1 = ToGlobalPoint(point, {x:0, y: leftPlate[1].y - gradient * leftPlate[1].x } )
   ////leftside top plate
   let leftTop = [
-    {x:0,y:- ds.leftsideToplength/2},{x:0,y: ds.leftsideToplength/2},
-    {x:ds.leftsideTopwidth, y: ds.leftsideToplength/2},{x:ds.leftsideTopwidth, y: - ds.leftsideToplength/2}
+    {x:leftPlate[1].x / gsin,y:- ds.leftsideToplength/2},{x:leftPlate[1].x / gsin,y: ds.leftsideToplength/2},
+    {x:leftPlate[1].x / gsin + ds.leftsideTopwidth, y: ds.leftsideToplength/2},{x:leftPlate[1].x / gsin + ds.leftsideTopwidth, y: - ds.leftsideToplength/2}
   ];
+  
   let leftTopPlate = PlateRestPoint(
     upperPlate[1], { x: upperPlate[1].x + ds.leftsideTopwidth * gsin, y: upperPlate[1].y - ds.leftsideTopwidth * gcos },
     1 / lwCot, -1 / gradient, -ds.leftsideTopThickness);
-  let cp1 = ToGlobalPoint(point, leftPlate[1])
+  
   result["leftTopPlateShape"] = hPlateGen(leftTop,cp1,ds.leftsideTopThickness,0,skew,0,-gradRadian,leftTopPlate,true,[0,1]);
   // {
   //   points: leftTopPlate, Thickness: ds.leftsideToplength, z: -ds.leftsideToplength / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
@@ -1305,14 +1307,14 @@ export function uBoxDia1(webPoints, point, skew, uflangePoint, uflange, lrib, ds
   // }
   ////rightside top plate
   let rightTop = [
-    {x:0,y: - ds.rightsideToplength/2},{x:0,y: ds.rightsideToplength/2},
-    {x:- ds.rightsideTopwidth, y: ds.rightsideToplength/2},{x:- ds.rightsideTopwidth, y: - ds.rightsideToplength/2}
+    {x:rightPlate[1].x / gsin,y: - ds.rightsideToplength/2},{x:rightPlate[1].x / gsin,y: ds.rightsideToplength/2},
+    {x:rightPlate[1].x / gsin - ds.rightsideTopwidth, y: ds.rightsideToplength/2},{x: rightPlate[1].x / gsin - ds.rightsideTopwidth, y: - ds.rightsideToplength/2}
   ];
   let rightTopPlate = PlateRestPoint(
     upperPlate[2], { x: upperPlate[2].x - ds.rightsideTopwidth * gsin, y: upperPlate[2].y + ds.rightsideTopwidth * gcos },
     1 / rwCot, -1 / gradient, -ds.rightsideTopThickness);
-  let cp2 = ToGlobalPoint(point, rightPlate[1])
-  result["rightTopPlateShape"] = hPlateGen(rightTop,cp2,ds.rightsideTopThickness,0,skew,0,-gradRadian,rightTopPlate,true,[0,1]);
+  // let cp2 = ToGlobalPoint(point, rightPlate[1])
+  result["rightTopPlateShape"] = hPlateGen(rightTop,cp1,ds.rightsideTopThickness,0,skew,0,-gradRadian,rightTopPlate,true,[0,1]);
   // {
   //   points: rightTopPlate, Thickness: ds.rightsideToplength, z: -ds.rightsideToplength / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
   //   size: PlateSize2(rightTopPlate, 0, ds.rightsideTopThickness, ds.rightsideToplength),
