@@ -3790,7 +3790,7 @@
       let urib = sectionPointDict[gridkey].forward.input.Urib;
       let lrib = sectionPointDict[gridkey].forward.input.Lrib;
       if (diaphragmLayout[i][section] == "diaType1") {
-        result[gridkey] = uBoxDia1(webPoints, point, skew, uflangePoint, lrib, diaSection, sectionDB);
+        result[gridkey] = uBoxDia1(webPoints, gridPoint[gridkey], skew, uflangePoint, lrib, diaSection, sectionDB);
       } else if (diaphragmLayout[i][section] == "diaType2") {
         result[gridkey] = diaphragmSection2(
           webPoints,
