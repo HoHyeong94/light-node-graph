@@ -34,7 +34,7 @@ export function DiaShapeDict(
     let urib = sectionPointDict[gridkey].forward.input.Urib;
     let lrib = sectionPointDict[gridkey].forward.input.Lrib;
     if (diaphragmLayout[i][section] == "diaType1") {
-      result[gridkey] = uBoxDia1(webPoints, gridPoint[gridkey], skew, uflangePoints, lrib, diaSection, sectionDB);
+      result[gridkey] = uBoxDia1(webPoints, gridPoint[gridkey], skew, uflangePoints, uflange, lrib, diaSection, sectionDB);
     } else if (diaphragmLayout[i][section] == "diaType2") {
       result[gridkey] = diaphragmSection2(
         webPoints,
@@ -1172,7 +1172,7 @@ export function DYdia1(webPoints, point, skew, uflangePoint, ds) {
   return result
 }
 
-export function uBoxDia1(webPoints, point, skew, uflangePoint, lrib, ds, sectionDB) { //ribPoint needed
+export function uBoxDia1(webPoints, point, skew, uflangePoint, uflange, lrib, ds, sectionDB) { //ribPoint needed
   // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
   const topY = 270; // 슬래브두께 + 헌치값이 포함된 값. 우선 변수만 입력
   let result = {}
@@ -1236,26 +1236,34 @@ export function uBoxDia1(webPoints, point, skew, uflangePoint, lrib, ds, section
   ///upper stiffener
   let upperPlate = [{ x: tl.x, y: tl.y }, { x: tl.x - lwCot * ds.upperHeight, y: tl.y - ds.upperHeight },
   { x: tr.x - rwCot * ds.upperHeight, y: tr.y - ds.upperHeight }, { x: tr.x, y: tr.y }];
-  let upperPoints = [...scallop(upperPlate[3], upperPlate[0], upperPlate[1], ds.scallopRadius, 4),
-  upperPlate[1], upperPlate[2], ...scallop(upperPlate[2], upperPlate[3], upperPlate[0], ds.scallopRadius, 4)];
+  // let upperPoints = [...scallop(upperPlate[3], upperPlate[0], upperPlate[1], ds.scallopRadius, 4),
+  // upperPlate[1], upperPlate[2], ...scallop(upperPlate[2], upperPlate[3], upperPlate[0], ds.scallopRadius, 4)];
 
-  result["upper"] = {
-    points: upperPoints, Thickness: ds.upperThickness, z: -ds.upperThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-    size: PlateSize(upperPlate, 1, ds.upperThickness),
-    anchor: [[upperPlate[0].x, upperPlate[0].y - 50], [upperPlate[3].x, upperPlate[3].y - 50]]
-  }
+  result["upper"] = vPlateGen(upperPlate,point,ds.upperThickness,[0,3],ds.scallopRadius,null,null,[],[0,1],[2,3,0,1])
+  // {
+  //   points: upperPoints, Thickness: ds.upperThickness, z: -ds.upperThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+  //   size: PlateSize(upperPlate, 1, ds.upperThickness),
+  //   anchor: [[upperPlate[0].x, upperPlate[0].y - 50], [upperPlate[3].x, upperPlate[3].y - 50]]
+  // }
+  
   //upperTopPlate
-
-  let gcos = (uflangePoint[1].x - uflangePoint[0].x) / Math.sqrt((uflangePoint[1].x - uflangePoint[0].x) ** 2 + (uflangePoint[1].y - uflangePoint[0].y) ** 2)
-  let gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
-  let gtan = (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
-  if (uflangePoint[0].x < uflangePoint[2].x) {
-    let upperTopPoints = PlateRestPoint(uflangePoint[0], uflangePoint[2], gtan, gtan, ds.upperTopThickness)
-    result["upperTopShape"] = {
-      points: upperTopPoints, Thickness: ds.upperTopwidth, z: -ds.upperTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: PlateSize2(upperTopPoints, 0, ds.upperTopThickness, ds.upperTopwidth),
-      anchor: [[upperTopPoints[0].x, upperTopPoints[0].y + 50], [upperTopPoints[1].x, upperTopPoints[1].y + 50]]
-    }
+  let gradRadian = Math.atan(gradient);
+  let gcos = Math.cos(gradRadian + Math.PI/2)
+  let gtan = Math.tan(gradRadian + Math.PI/2)
+  let gsin = Math.sin(gradRadian + Math.PI/2)
+    
+  if (uflange[0].length >0) {
+    let upperTop = [
+      {x: uflange[0][0].x, y: -ds.upperTopWidth/2}, {x: uflange[0][0].x, y: ds.upperTopWidth/2},
+      {x: uflange[1][0].x, y: ds.upperTopWidth/2}, {x: uflange[1][0].x, y: - ds.upperTopWidth/2}
+    ]
+    let upperTopPoints = PlateRestPoint(uflange[0][0], uflange[1][0], gtan, gtan, ds.upperTopThickness)
+    result["upperTopShape"] = hPlateGen(upperTop, point, ds.upperTopThickness,0,skew,0,gradRadian,upperTopPoints,true,[0,1])
+    // {
+    //   points: upperTopPoints, Thickness: ds.upperTopwidth, z: -ds.upperTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: PlateSize2(upperTopPoints, 0, ds.upperTopThickness, ds.upperTopwidth),
+    //   anchor: [[upperTopPoints[0].x, upperTopPoints[0].y + 50], [upperTopPoints[1].x, upperTopPoints[1].y + 50]]
+    // }
   }
   ////left side stiffner
   let leftPlate = PlateRestPoint(
