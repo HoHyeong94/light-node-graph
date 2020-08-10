@@ -1918,21 +1918,6 @@
     return points
    }
 
-  function PlateSize(points,index,thickness){
-    let index2;
-    index2 = index === points.length-1? 0 : index + 1;
-    let a = Math.atan2(points[index2].y -points[index].y,points[index2].x -points[index].x );
-    let xs = [];
-    let ys = [];
-    for (let i =0;i<points.length;i++){
-      xs.push(points[i].x * Math.cos(-a) - points[i].y * Math.sin(-a));
-      ys.push(points[i].x * Math.sin(-a) + points[i].y * Math.cos(-a));
-    }
-    let Length = Math.max(...xs) - Math.min(...xs);
-    let Height = Math.max(...ys) - Math.min(...ys);
-    return {L:Length,T:thickness,H:Height,Label:"PL-"+Height.toFixed(0) + 'x' + thickness.toFixed(0) + 'x' + Length.toFixed(0)}
-  }
-
   function PlateSize2(points,index,thickness,width){
     let index2;
     index2 = index === points.length-1? 0 : index + 1;
@@ -4983,7 +4968,7 @@
       ];
       let cp = ToGlobalPoint(point, {x:0, y: tl.y - gradient * tl.x});
       let upperTopPoints = PlateRestPoint(uflange[0][1], uflange[1][1], gtan, gtan, ds.upperTopThickness);
-      result["upperTopShape"] = hPlateGen(upperTop, cp, ds.upperTopThickness,0,skew,0,gradRadian,upperTopPoints,true,[0,1]);
+      result["upperTopShape"] = hPlateGen(upperTop, cp, ds.upperTopThickness,0,skew,0,-gradRadian,upperTopPoints,true,[0,1]);
       // {
       //   points: upperTopPoints, Thickness: ds.upperTopwidth, z: -ds.upperTopwidth / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
       //   size: PlateSize2(upperTopPoints, 0, ds.upperTopThickness, ds.upperTopwidth),
@@ -4994,24 +4979,24 @@
     let leftPlate = PlateRestPoint(
       WebPoint(bl, tl, 0, bl.y + (ds.lowerHeight + ds.lowerTopThickness)),
       WebPoint(bl, tl, 0, tl.y - (ds.upperHeight + ds.leftsideTopThickness) * gsin), 0, gradient, ds.sideHeight);
-    let leftweldingLine = [leftPlate[3], leftPlate[0], leftPlate[1], leftPlate[2]];
-    result["leftPlateShape"] = {
-      points: leftPlate, Thickness: ds.sideThickness, z: -ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: PlateSize(leftPlate, 0, ds.sideThickness),
-      anchor: [[leftPlate[0].x + 50, leftPlate[0].y], [leftPlate[1].x + 50, leftPlate[1].y]],
-      welding: [{ Line: leftweldingLine, type: "FF", value1: 6 }]
-    };
-
-
+    // let leftweldingLine = [leftPlate[3], leftPlate[0], leftPlate[1], leftPlate[2]]
+    result["leftPlateShape"] = vPlateGen(leftPlate, point, ds.sideThickness, 0,[],null,null,[],null,[0,3,1,2]);
+    // {
+    //   points: leftPlate, Thickness: ds.sideThickness, z: -ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: PlateSize(leftPlate, 0, ds.sideThickness),
+    //   anchor: [[leftPlate[0].x + 50, leftPlate[0].y], [leftPlate[1].x + 50, leftPlate[1].y]],
+    //   welding: [{ Line: leftweldingLine, type: "FF", value1: 6 }]
+    // }
     //   ////right side stiffner
     let rightPlate = PlateRestPoint(
       WebPoint(br, tr, 0, br.y + (ds.lowerHeight + ds.lowerTopThickness)),
       WebPoint(br, tr, 0, tr.y - (ds.upperHeight + ds.leftsideTopThickness) * gsin), 0, gradient, -ds.sideHeight);
-    result["rightPlateShape"] = {
-      points: rightPlate, Thickness: ds.sideThickness, z: -ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: PlateSize(rightPlate, 0, ds.sideThickness),
-      anchor: [[rightPlate[0].x - 50, rightPlate[0].y], [rightPlate[1].x - 50, rightPlate[1].y]]
-    };
+    result["rightPlateShape"] = vPlateGen(rightPlate, point, ds.sideThickness, 0,[],null,null,[],null,null);
+    // {
+    //   points: rightPlate, Thickness: ds.sideThickness, z: -ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: PlateSize(rightPlate, 0, ds.sideThickness),
+    //   anchor: [[rightPlate[0].x - 50, rightPlate[0].y], [rightPlate[1].x - 50, rightPlate[1].y]]
+    // }
     ////leftside top plate
     let leftTopPlate = PlateRestPoint(
       upperPlate[1], { x: upperPlate[1].x + ds.leftsideTopwidth * gsin, y: upperPlate[1].y - ds.leftsideTopwidth * gcos },
