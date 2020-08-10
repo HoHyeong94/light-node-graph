@@ -1918,10 +1918,6 @@
     return points
    }
 
-  function PointLength(point1,point2){
-    return Math.sqrt((point1.x-point2.x)**2 + (point1.y-point2.y)**2)
-  }
-
   function ZOffsetLine(points, z) {
     let result = [];
     let vec = [];
@@ -4876,7 +4872,6 @@
     const tl = webPoints[1];
     const br = webPoints[2];
     const tr = webPoints[3];
-    const rotationY = (skew - 90) * Math.PI / 180;
     const lwCot = (tl.x - bl.x) / (tl.y - bl.y);
     const rwCot = (tr.x - br.x) / (tr.y - br.y);
     const gradient = (tr.y - tl.y) / (tr.x - tl.x);
@@ -5026,12 +5021,16 @@
       { x: leftline[1].x + (ds.spc - lsin * pts[3]), y: leftline[1].y + ltan * (ds.spc - lsin * pts[3]) }
     ];
     let [leftframe1, leftframe2] = Kframe(newleftline[1], newleftline[0], 0, 0, pts);
-    result["leftframe1"] = { points: leftframe1, Thickness: pts[4], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] };
-    result["leftframe2"] = {
-      points: leftframe2, Thickness: pts[5], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: { Label: "L-100x100x10x" + PointLength(...newleftline).toFixed(0) },
-      anchor: [[newleftline[1].x - 20, newleftline[1].y], [newleftline[0].x - 20, newleftline[0].y]]
-    };
+    result["leftframe1"] = vFrameGen(leftframe1,point, pts[4],ds.sideThickness /2, null, null);
+    result["leftframe2"] = vFrameGen(leftframe2,point, pts[5],ds.sideThickness /2, null, null);
+
+    // { points: leftframe1, Thickness: pts[4], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] }
+    // result["leftframe2"] = 
+    // {
+    //   points: leftframe2, Thickness: pts[5], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: { Label: "L-100x100x10x" + PointLength(...newleftline).toFixed(0) },
+    //   anchor: [[newleftline[1].x - 20, newleftline[1].y], [newleftline[0].x - 20, newleftline[0].y]]
+    // }
 
     let rightline = [{ x: ds.spc * gsin, y: -topY - ds.spc * gcos }, lowerTopPoints[2]];
     let rcos = (rightline[1].x - rightline[0].x) / Math.sqrt((rightline[1].x - rightline[0].x) ** 2 + (rightline[1].y - rightline[0].y) ** 2);
@@ -5042,12 +5041,14 @@
       { x: rightline[1].x - (ds.spc - rsin * pts[3]), y: rightline[1].y - rtan * (ds.spc - rsin * pts[3]) }
     ];
     let [rightframe1, rightframe2] = Kframe(newrightline[0], newrightline[1], 0, 0, pts);
-    result["rightframe1"] = { points: rightframe1, Thickness: pts[4], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] };
-    result["rightframe2"] = {
-      points: rightframe2, Thickness: pts[5], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: { Label: "L-100x100x10x" + PointLength(...newrightline).toFixed(0) },
-      anchor: [[newrightline[0].x + 20, newrightline[0].y], [newrightline[1].x + 20, newrightline[1].y]]
-    };
+    result["rightframe1"] = vFrameGen(rightframe1, point, pts[4], ds.sideThickness/2, null, null);
+    // { points: rightframe1, Thickness: pts[4], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] }
+    result["rightframe2"] = vFrameGen(rightframe2, point, pts[5], ds.sideThickness/2, null, null);
+    // {
+    //   points: rightframe2, Thickness: pts[5], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: { Label: "L-100x100x10x" + PointLength(...newrightline).toFixed(0) },
+    //   anchor: [[newrightline[0].x + 20, newrightline[0].y], [newrightline[1].x + 20, newrightline[1].y]]
+    // }
     return result
   }
 
@@ -5581,6 +5582,49 @@
 
     return result
   }
+
+
+  function vFrameGen(points, centerPoint, Thickness, z, top2D, side2D) {
+    let skew = centerPoint.skew;
+    const cosec = 1 / Math.sin(skew * Math.PI / 180);
+    const rotationY = (skew - 90) * Math.PI / 180;
+    let topView = null;
+    let sideView = null;
+    if (top2D) {
+      let pt1 = { x: points[top2D[0]].x * cosec, y: 0 };
+      let pt2 = { x: points[top2D[1]].x * cosec, y: 0 };
+      let gpt1 = ToGlobalPoint(centerPoint, pt1);
+      let gpt2 = ToGlobalPoint(centerPoint, pt2);
+      // let th = Thickness * cosec;
+      let dx1 = centerPoint.normalSin * (Thickness + z) * cosec;
+      let dy1 = centerPoint.normalCos * (Thickness + z) * cosec;
+      let dx2 = centerPoint.normalSin * (z) * cosec;
+      let dy2 = centerPoint.normalCos * (z) * cosec;
+      topView = [{ x: gpt1.x + dx1, y: gpt1.y - dy1 },
+      { x: gpt1.x + dx2, y: gpt1.y - dy2 },
+      { x: gpt2.x + dx2, y: gpt2.y - dy2 },
+      { x: gpt2.x + dx1, y: gpt2.y - dy1 }];
+    }
+
+    if (side2D) {
+      let bottomY = centerPoint.z + (points[side2D[0]].y - points[side2D[1]].y) / (points[side2D[0]].x - points[side2D[1]].x) * (- points[side2D[1]].x) + points[side2D[1]].y;
+      let topY = centerPoint.z + (points[side2D[2]].y - points[side2D[3]].y) / (points[side2D[2]].x - points[side2D[3]].x) * (- points[side2D[3]].x) + points[side2D[3]].y;
+      let X = centerPoint.girderStation;
+      sideView = [
+        { x: X - Thickness, y: bottomY },
+        { x: X - Thickness -z, y: bottomY },
+        { x: X - Thickness -z, y: topY },
+        { x: X - Thickness, y: topY },
+      ];
+    }
+    let result = {
+      points2D: points, points: points, Thickness: Thickness, z: z,
+      rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints, point: centerPoint, topView, sideView
+    };
+
+    return result
+  }
+
 
   // export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, rotationY) {
   //   const cosec = 1 / Math.sin(skew * Math.PI / 180);
