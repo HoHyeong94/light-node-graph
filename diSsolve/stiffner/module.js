@@ -1210,8 +1210,11 @@ export function uBoxDia1(webPoints, point, skew, uflangePoint, lrib, ds, section
   { x: br.x + rwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
   lowerPlate[3]];
 
+  let lrib2 = lrib
+  lrib2.ribHoleD = ds.ribHoleD
+  lrib2.ribHoleR = ds.ribHoleR
   // let lowerweldingLine = [lowerPlate[0], lowerPlate[1], lowerPlate[2], lowerPlate[3]]
-  result["lowershape"] = vPlateGen(lowerPlate,point,ds.lowerThickness, [1,2],ds.scallopRadius,null,lrib,[],null,[3,0,1,2])
+  result["lowershape"] = vPlateGen(lowerPlate,point,ds.lowerThickness, [1,2],ds.scallopRadius,null,lrib2,[],null,[3,0,1,2])
   // {
   //   points: lowerPoints, Thickness: ds.lowerThickness, z: -ds.lowerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
   //   size: PlateSize(lowerPlate, 1, ds.lowerThickness),
