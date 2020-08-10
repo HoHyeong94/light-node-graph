@@ -4940,7 +4940,7 @@
     lrib2.ribHoleR = ds.ribHoleR;
     lrib2.type = 0;
     // let lowerweldingLine = [lowerPlate[0], lowerPlate[1], lowerPlate[2], lowerPlate[3]]
-    result["lowershape"] = vPlateGen(lowerPlate,point,ds.lowerThickness, [1,2],ds.scallopRadius,null,lrib2,[],null,[3,0,1,2]);
+    result["lowershape"] = vPlateGen(lowerPlate,point,ds.lowerThickness, [0,1],ds.scallopRadius,null,lrib2,[],null,[0,1,2,3]);
     // {
     //   points: lowerPoints, Thickness: ds.lowerThickness, z: -ds.lowerThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     //   size: PlateSize(lowerPlate, 1, ds.lowerThickness),
