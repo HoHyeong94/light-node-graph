@@ -1918,19 +1918,6 @@
     return points
    }
 
-  function PlateSize2(points,index,thickness,width){
-    let index2;
-    index2 = index === points.length-1? 0 : index + 1;
-    let a = Math.atan2(points[index2].y -points[index].y,points[index2].x -points[index].x );
-    let xs = [];
-    for (let i =0;i<points.length;i++){
-      xs.push(points[i].x * Math.cos(-a) - points[i].y * Math.sin(-a));
-    }
-    let Length = Math.max(...xs) - Math.min(...xs);
-    let Height = width;
-    return {L:Length,T:thickness,H:Height,Label:"PL-"+Height.toFixed(0) + 'x' + thickness.toFixed(0) + 'x' + Length.toFixed(0)}
-  }
-
   function PointLength(point1,point2){
     return Math.sqrt((point1.x-point2.x)**2 + (point1.y-point2.y)**2)
   }
@@ -4948,7 +4935,7 @@
     // let upperPoints = [...scallop(upperPlate[3], upperPlate[0], upperPlate[1], ds.scallopRadius, 4),
     // upperPlate[1], upperPlate[2], ...scallop(upperPlate[2], upperPlate[3], upperPlate[0], ds.scallopRadius, 4)];
 
-    result["upper"] = vPlateGen(upperPlate,point,ds.upperThickness,[0,3],ds.scallopRadius,null,null,[],[0,1],[2,3,0,1]);
+    result["upper"] = vPlateGen(upperPlate,point,ds.upperThickness,[0,3],ds.scallopRadius,null,null,[],[0,3],[0,3,2,1]);
     // {
     //   points: upperPoints, Thickness: ds.upperThickness, z: -ds.upperThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
     //   size: PlateSize(upperPlate, 1, ds.upperThickness),
@@ -4998,23 +4985,35 @@
     //   anchor: [[rightPlate[0].x - 50, rightPlate[0].y], [rightPlate[1].x - 50, rightPlate[1].y]]
     // }
     ////leftside top plate
+    let leftTop = [
+      {x:0,y:- ds.leftsideToplength/2},{x:0,y: ds.leftsideToplength/2},
+      {x:ds.leftsideTopwidth, y: ds.leftsideToplength/2},{x:ds.leftsideTopwidth, y: - ds.leftsideToplength/2}
+    ];
     let leftTopPlate = PlateRestPoint(
       upperPlate[1], { x: upperPlate[1].x + ds.leftsideTopwidth * gsin, y: upperPlate[1].y - ds.leftsideTopwidth * gcos },
       1 / lwCot, -1 / gradient, -ds.leftsideTopThickness);
-    result["leftTopPlateShape"] = {
-      points: leftTopPlate, Thickness: ds.leftsideToplength, z: -ds.leftsideToplength / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: PlateSize2(leftTopPlate, 0, ds.leftsideTopThickness, ds.leftsideToplength),
-      anchor: [[leftTopPlate[0].x + 50, leftTopPlate[0].y + 50], [leftTopPlate[1].x + 50, leftTopPlate[1].y + 50]]
-    };
+    let cp1 = ToGlobalPoint(point, leftPlate[1]);
+    result["leftTopPlateShape"] = hPlateGen(leftTop,cp1,ds.leftsideTopThickness,0,skew,0,-gradRadian,leftTopPlate,true,[0,1]);
+    // {
+    //   points: leftTopPlate, Thickness: ds.leftsideToplength, z: -ds.leftsideToplength / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: PlateSize2(leftTopPlate, 0, ds.leftsideTopThickness, ds.leftsideToplength),
+    //   anchor: [[leftTopPlate[0].x + 50, leftTopPlate[0].y + 50], [leftTopPlate[1].x + 50, leftTopPlate[1].y + 50]]
+    // }
     ////rightside top plate
+    let rightTop = [
+      {x:0,y: - ds.rightsideToplength/2},{x:0,y: ds.rightsideToplength/2},
+      {x:- ds.rightsideTopwidth, y: ds.rightsideToplength/2},{x:- ds.rightsideTopwidth, y: - ds.rightsideToplength/2}
+    ];
     let rightTopPlate = PlateRestPoint(
       upperPlate[2], { x: upperPlate[2].x - ds.rightsideTopwidth * gsin, y: upperPlate[2].y + ds.rightsideTopwidth * gcos },
       1 / rwCot, -1 / gradient, -ds.rightsideTopThickness);
-    result["rightTopPlateShape"] = {
-      points: rightTopPlate, Thickness: ds.rightsideToplength, z: -ds.rightsideToplength / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
-      size: PlateSize2(rightTopPlate, 0, ds.rightsideTopThickness, ds.rightsideToplength),
-      anchor: [[rightTopPlate[1].x - 80, rightTopPlate[1].y + 50], [rightTopPlate[0].x - 80, rightTopPlate[0].y + 50]]
-    };
+    let cp2 = ToGlobalPoint(point, rightPlate[1]);
+    result["rightTopPlateShape"] = hPlateGen(rightTop,cp2,ds.rightsideTopThickness,0,skew,0,-gradRadian,rightTopPlate,true,[0,1]);
+    // {
+    //   points: rightTopPlate, Thickness: ds.rightsideToplength, z: -ds.rightsideToplength / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
+    //   size: PlateSize2(rightTopPlate, 0, ds.rightsideTopThickness, ds.rightsideToplength),
+    //   anchor: [[rightTopPlate[1].x - 80, rightTopPlate[1].y + 50], [rightTopPlate[0].x - 80, rightTopPlate[0].y + 50]]
+    // }
     // k-frame diaphragm
     let leftline = [{ x: -ds.spc * gsin, y: -topY - ds.spc * gcos }, lowerTopPoints[1]];
     let lcos = (leftline[1].x - leftline[0].x) / Math.sqrt((leftline[1].x - leftline[0].x) ** 2 + (leftline[1].y - leftline[0].y) ** 2);
