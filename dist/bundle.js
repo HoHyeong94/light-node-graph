@@ -5251,7 +5251,7 @@
     holePoints = holePoints.concat(Fillet2D(holeRect[1], holeRect[2], holeRect[3], holeFilletR, 4));
     holePoints = holePoints.concat(Fillet2D(holeRect[2], holeRect[3], holeRect[0], holeFilletR, 4));
     holePoints = holePoints.concat(Fillet2D(holeRect[3], holeRect[0], holeRect[1], holeFilletR, 4));
-    result['mainPlate'] = vPlateGen(diaPoints, point, plateThickness, [0,1,2,3], scallopRadius, null, null, holePoints, [2,3], [0,1,2,3]);
+    result['mainPlate'] = vPlateGen(mainPlate, point, plateThickness, [0,1,2,3], scallopRadius, null, null, holePoints, [2,3], [0,1,2,3]);
 
     return result
   }
