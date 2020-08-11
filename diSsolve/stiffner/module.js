@@ -36,7 +36,7 @@ export function DiaShapeDict(
     if (diaphragmLayout[i][section] == "diaType1") {
       result[gridkey] = uBoxDia1(webPoints, gridPoint[gridkey], skew, uflangePoints, uflange, lrib, diaSection, sectionDB);
     } else if (diaphragmLayout[i][section] == "diaType2") {
-      result[gridkey] = boxDiaHole1(webPoints, gridPoint[gridkey], skew, uflangePoints, uflange, diaSection);
+      result[gridkey] = boxDiaHole1(webPoints, gridPoint[gridkey], skew, uflange, urib, lrib, diaSection);
     } else if (diaphragmLayout[i][section] == "DYdia0") {
       result[gridkey] = DYdia0(
         webPoints,
@@ -1342,199 +1342,358 @@ export function uBoxDia1(webPoints, point, skew, uflangePoint, uflange, lrib, ds
   return result
 }
 
-export function boxDiaHole1(webPoints, point, skew, uflangePoint, uflange, diaSection) { //ribPoint needed
+export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSection) { //ribPoint needed
   // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
   let result = {}
-  const plateThickness = diaSection.plateThickness;
-  const holeBottomOffset = diaSection.holeBottomOffset;
-  const holeRightOffset = diaSection.holeRightOffset;
-  const holeFilletR = diaSection.holeFilletR;
-  const holeHeight = diaSection.holeHeight;
-  const holeWidth = diaSection.holeWidth;
-  const vStiffThickness = diaSection.vStiffThickness;
-  const vStiffWidth = diaSection.vStiffWidth;
-  const vStiffLayout = diaSection.vStiffLayout;
+  let dsi = {
+    webThickness: diaSection.plateThickness,
+    hstiffWidth: diaSection.hStiffWidth,
+    hstiffWidth2: diaSection.vStiffWidth,
+    hstiffThickness: diaSection.hStiffThickness,
+    hstiffHeight: diaSection.hStiffBottomOffset,
+    scallopRadius: diaSection.scallopRadius,
+    ribHoleD: 42,
+    ribHoleR: 25,
+    holeBottomY: diaSection.holeBottomOffset, //y축은 중앙이 기준
+    holeCenterOffset: diaSection.holeRightOffset - diaSection.holeWidth / 2,
+    holeWidth: diaSection.holeWidth,
+    holeHeight: diaSection.holeHeight,
+    holeFilletR: diaSection.holeFilletR,
+    holeStiffThickness: diaSection.holeVstiffnerThickness,
+    holeStiffhl: diaSection.holeHstiffnerLength,
+    holeStiffvl: diaSection.holeVstiffnerLength,
+    holeStiffmargin: diaSection.holeStiffSpacing,
+    holeStiffHeight: diaSection.holeVstiffnerhight,
+    supportStiffLayout: diaSection.vStiffLayout,
+    supportStiffWidth: diaSection.vStiffWidth,
+    supportStiffThickness: diaSection.vStiffThickness,
+  } //  임시 입력변수
+
+  // const plateThickness = diaSection.plateThickness;
+  // const holeBottomOffset = diaSection.holeBottomOffset;
+  // const holeCenterOffset = diaSection.holeRightOffset - diaSection.holeWidth / 2;
+  // const holeFilletR = diaSection.holeFilletR;
+  // const holeHeight = diaSection.holeHeight;
+  // const holeWidth = diaSection.holeWidth;
+  // const vStiffThickness = diaSection.vStiffThickness;
+  // const vStiffWidth = diaSection.vStiffWidth;
+  // const vStiffLayout = diaSection.vStiffLayout;
   const topPlateWidth = diaSection.topPlateWidth;
   const topPlateThickness = diaSection.topPlateThickness;
 
-  const hStiffThickness = diaSection.hStiffThickness
-  const hStiffWidth = diaSection.hStiffWidth
-  const hStiffBottomOffset = diaSection.hStiffBottomOffset
+  // const hStiffThickness = diaSection.hStiffThickness
+  // const hStiffWidth = diaSection.hStiffWidth
+  // const hStiffBottomOffset = diaSection.hStiffBottomOffset
   // let longiRibHeight = diaSection.longiRibHeight;
   // let longiRibRayout = diaSection.longiRibRayout;
-  const holeVstiffnerThickness = diaSection.holeVstiffnerThickness
-  const holeVstiffnerhight = diaSection.holeVstiffnerhight
-  const holeVstiffnerLength = diaSection.holeVstiffnerLength
-  const holeHstiffnerThickness = diaSection.holeHstiffnerThickness
-  const holeHstiffnerHeight = diaSection.holeHstiffnerHeight
-  const holeHstiffnerLength = diaSection.holeHstiffnerLength
-  const holeStiffSpacing = diaSection.holeStiffSpacing
-  // added letiables
-  let scallopRadius = diaSection.scallopRadius;
+  // const holeVstiffnerThickness = diaSection.holeVstiffnerThickness
+  // const holeVstiffnerhight = diaSection.holeVstiffnerhight
+  // const holeVstiffnerLength = diaSection.holeVstiffnerLength
+  // const holeHstiffnerThickness = diaSection.holeHstiffnerThickness
+  // const holeStiffHeight = diaSection.holeHstiffnerHeight
+  // const holeStiffhl = diaSection.holeHstiffnerLength
+  // const holeStiffmargin = diaSection.holeStiffSpacing
+  // // added letiables
+  // let scallopRadius = diaSection.scallopRadius;
 
 
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
   const tr = webPoints[3];
-
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
-
   const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
   const rwCot = (tr.x - br.x) / (tr.y - br.y)
+
   const cosec = Math.abs(1 / Math.sin(skew * Math.PI / 180));
-  const sec = Math.abs(1 / Math.cos(skew * Math.PI / 180));
   const cot = Math.abs(1 / Math.tan(skew * Math.PI / 180));
-  const rotationY = (skew - 90) * Math.PI / 180
 
-  let vstiffX1 = (holeRightOffset - holeWidth) / cosec - holeStiffSpacing - holeVstiffnerThickness
-  let vstiffX2 = holeRightOffset / cosec + holeStiffSpacing + holeVstiffnerThickness
-  let vstiffX3 = vStiffLayout[0] - vStiffThickness / 2
-  let vstiffX4 = vStiffLayout[0] + vStiffThickness / 2
-  let vstiffX5 = vStiffLayout[1] - vStiffThickness / 2
-  let vstiffX6 = vStiffLayout[1] + vStiffThickness / 2
+  let urib2 = urib
+  urib2.ribHoleD = dsi.ribHoleD
+  urib2.ribHoleR = dsi.ribHoleR
+  let lrib2 = lrib
+  lrib2.ribHoleD = dsi.ribHoleD
+  lrib2.ribHoleR = dsi.ribHoleR
+  lrib.type = 1; //하부리브 스캘럽
 
-  let hStiff1 = [
-    { x: bl.x + hStiffBottomOffset * lwCot, y: -(bl.x + hStiffBottomOffset * lwCot) * cot - (hStiffWidth + plateThickness / 2) * cosec },
-    { x: bl.x + hStiffBottomOffset * lwCot, y: -(bl.x + hStiffBottomOffset * lwCot) * cot - (plateThickness / 2) * cosec },
-    { x: vstiffX1, y: -(vstiffX1) * cot - (plateThickness / 2) * cosec },
-    { x: vstiffX1, y: -(vstiffX1) * cot - (holeVstiffnerhight + plateThickness / 2) * cosec },
-  ]
-  let hStiff2 = [
-    { x: vstiffX2, y: -(vstiffX2) * cot - (holeVstiffnerhight + plateThickness / 2) * cosec },
-    { x: vstiffX2, y: -(vstiffX2) * cot - (plateThickness / 2) * cosec },
-    { x: vstiffX3, y: -(vstiffX3) * cot - (plateThickness / 2) * cosec },
-    { x: vstiffX3, y: -(vstiffX3) * cot - (hStiffWidth + plateThickness / 2) * cosec },
-  ]
-  let hStiff3 = [
-    { x: vstiffX4, y: -(vstiffX4) * cot - (hStiffWidth + plateThickness / 2) * cosec },
-    { x: vstiffX4, y: -(vstiffX4) * cot - (plateThickness / 2) * cosec },
-    { x: vstiffX5, y: -(vstiffX5) * cot - (plateThickness / 2) * cosec },
-    { x: vstiffX5, y: -(vstiffX5) * cot - (hStiffWidth + plateThickness / 2) * cosec },
-  ]
-  let hStiff4 = [
-    { x: vstiffX6, y: -(vstiffX6) * cot - (hStiffWidth + plateThickness / 2) * cosec },
-    { x: vstiffX6, y: -(vstiffX6) * cot - (plateThickness / 2) * cosec },
-    { x: br.x + hStiffBottomOffset * rwCot, y: -(br.x + hStiffBottomOffset * rwCot) * cot - (plateThickness / 2) * cosec },
-    { x: br.x + hStiffBottomOffset * rwCot, y: -(br.x + hStiffBottomOffset * rwCot) * cot - (hStiffWidth + plateThickness / 2) * cosec },
-  ]
-  result['hStiff1'] = { points: hStiff1, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
-  result['hStiff2'] = { points: hStiff2, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
-  result['hStiff3'] = { points: hStiff3, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
-  result['hStiff4'] = { points: hStiff4, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+  let holeRect = [{ x: dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY }, { x: -dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY },
+  { x: -dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight }, { x: dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight }];
+  let holePoints = [];
+  holePoints.push(...Fillet2D(holeRect[0], holeRect[1], holeRect[2], dsi.holeFilletR, 4));
+  holePoints.push(...Fillet2D(holeRect[1], holeRect[2], holeRect[3], dsi.holeFilletR, 4));
+  holePoints.push(...Fillet2D(holeRect[2], holeRect[3], holeRect[0], dsi.holeFilletR, 4));
+  holePoints.push(...Fillet2D(holeRect[3], holeRect[0], holeRect[1], dsi.holeFilletR, 4));
+  result["mainPlate"] = vPlateGen([bl, br, tr, tl], point, dsi.webThickness, [0, 1, 2, 3], dsi.scallopRadius, urib2, lrib2, holePoints, [2, 3], [0,1,2,3]);
 
-  let hStiff5 = [
-    { x: bl.x + hStiffBottomOffset * lwCot, y: -(bl.x + hStiffBottomOffset * lwCot) * cot + (hStiffWidth + plateThickness / 2) * cosec },
-    { x: bl.x + hStiffBottomOffset * lwCot, y: -(bl.x + hStiffBottomOffset * lwCot) * cot + (plateThickness / 2) * cosec },
-    { x: vstiffX1, y: -(vstiffX1) * cot + (plateThickness / 2) * cosec },
-    { x: vstiffX1, y: -(vstiffX1) * cot + (holeVstiffnerhight + plateThickness / 2) * cosec },
-  ]
-  let hStiff6 = [
-    { x: vstiffX2, y: -(vstiffX2) * cot + (holeVstiffnerhight + plateThickness / 2) * cosec },
-    { x: vstiffX2, y: -(vstiffX2) * cot + (plateThickness / 2) * cosec },
-    { x: vstiffX3, y: -(vstiffX3) * cot + (plateThickness / 2) * cosec },
-    { x: vstiffX3, y: -(vstiffX3) * cot + (hStiffWidth + plateThickness / 2) * cosec },
-  ]
-  let hStiff7 = [
-    { x: vstiffX4, y: -(vstiffX4) * cot + (hStiffWidth + plateThickness / 2) * cosec },
-    { x: vstiffX4, y: -(vstiffX4) * cot + (plateThickness / 2) * cosec },
-    { x: vstiffX5, y: -(vstiffX5) * cot + (plateThickness / 2) * cosec },
-    { x: vstiffX5, y: -(vstiffX5) * cot + (hStiffWidth + plateThickness / 2) * cosec },
-  ]
-  let hStiff8 = [
-    { x: vstiffX6, y: -(vstiffX6) * cot + (hStiffWidth + plateThickness / 2) * cosec },
-    { x: vstiffX6, y: -(vstiffX6) * cot + (plateThickness / 2) * cosec },
-    { x: br.x + hStiffBottomOffset * rwCot, y: -(br.x + hStiffBottomOffset * rwCot) * cot + (plateThickness / 2) * cosec },
-    { x: br.x + hStiffBottomOffset * rwCot, y: -(br.x + hStiffBottomOffset * rwCot) * cot + (hStiffWidth + plateThickness / 2) * cosec },
-  ]
-  result['hStiff5'] = { points: hStiff5, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
-  result['hStiff6'] = { points: hStiff6, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
-  result['hStiff7'] = { points: hStiff7, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
-  result['hStiff8'] = { points: hStiff8, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+  let holeCenter1 = { x: dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness }
+  let hstiff1 = [{ x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 },
+  { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }, { x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }];
+  let hstiff2D1 = [{ x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
+  { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
+  { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin },
+  { x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin }]
+  result["hstiff1"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter1), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D1, false, [1,2])
+  let holeCenter2 = { x: dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }
+  let hstiff2D2 = [{ x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
+  { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
+  { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin },
+  { x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }]
+  result["hstiff2"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter2), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D2, true, [1,2])
+  let holeCenter3 = { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 },
+  { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }, { x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }];
+  let vstiff2D1 = [{ x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
+  { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
+  result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D1, true , [1,2])
+  let holeCenter4 = { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  let vstiff2D2 = [{ x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
+  { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
+  result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D2, true)
+
+
+  for (let i in dsi.supportStiffLayout) {
+    let supportStiffCenter1 = { x: dsi.supportStiffLayout[i], y: tl.y + gradient * (dsi.supportStiffLayout[i] - tl.x) };
+    let supportStiff1 = [{ x: 0, y: dsi.webThickness / 2 }, { x: supportStiffCenter1.y - bl.y, y: dsi.webThickness / 2 },
+    { x: supportStiffCenter1.y - bl.y, y: dsi.supportStiffWidth + dsi.webThickness / 2 }, { x: 0, y: dsi.supportStiffWidth + dsi.webThickness / 2 }];
+    let supportStiff2 = [{ x: 0, y: -dsi.webThickness / 2 }, { x: supportStiffCenter1.y - bl.y, y: -dsi.webThickness / 2 },
+    { x: supportStiffCenter1.y - bl.y, y: - dsi.supportStiffWidth - dsi.webThickness / 2 }, { x: 0, y: - dsi.supportStiffWidth - dsi.webThickness / 2 }];
+    let supportStiff2D = [
+      { x: dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2, y: tl.y + gradient * (dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2 - tl.x) },
+      { x: dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2, y: bl.y },
+      { x: dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2, y: bl.y },
+      { x: dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2, y: tl.y + gradient * (dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2 - tl.x) }
+    ]
+    result["supportStiff1" + i] = hPlateGen(supportStiff1, ToGlobalPoint(point, supportStiffCenter1), dsi.supportStiffThickness, -dsi.supportStiffThickness / 2, point.skew, 0, Math.PI / 2, supportStiff2D, true);
+    result["supportStiff2" + i] = hPlateGen(supportStiff2, ToGlobalPoint(point, supportStiffCenter1), dsi.supportStiffThickness, -dsi.supportStiffThickness / 2, point.skew, 0, Math.PI / 2, null, true);
+  }
+
+  let hStiffCenter = { x: 0, y: bl.y + dsi.hstiffHeight };
+  // let h1 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 },
+  //    { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
+  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: - dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.webThickness / 2 }];
+  // result["h1"] = hPlateGen(h1, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, 0, point.skew, 0, 0);
+  // let h11 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.hstiffWidth + dsi.webThickness / 2 }, { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.holeStiffHeight + dsi.webThickness / 2 },
+  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.webThickness / 2 }];
+  // result["h11"] = hPlateGen(h11, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, 0, point.skew, 0, 0);
+  let x0 = bl.x + lwCot * dsi.hstiffHeight;
+  let x00 = dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness;
+  let x1 = dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness;
+  let x2 = dsi.supportStiffLayout[0] - dsi.supportStiffThickness / 2;
+  let x3 = dsi.supportStiffLayout[0] + dsi.supportStiffThickness / 2;
+  let x4 = dsi.supportStiffLayout[1] - dsi.supportStiffThickness / 2;
+  let x5 = dsi.supportStiffLayout[1] + dsi.supportStiffThickness / 2;
+  let x6 = dsi.supportStiffLayout[2] - dsi.supportStiffThickness / 2;
+  let x7 = dsi.supportStiffLayout[2] + dsi.supportStiffThickness / 2;
+  let x8 = br.x + rwCot * dsi.hstiffHeight;
+  let w0 = dsi.webThickness / 2;
+  let w1 = dsi.holeStiffHeight + dsi.webThickness / 2;
+  let w2 = dsi.hstiffWidth2 + dsi.webThickness / 2;
+  let w3 = dsi.hstiffWidth + dsi.webThickness / 2;
+
+  let h2 = [
+    [{ x: x0, y: -w3 }, { x: x00, y: -w1 }, { x: x00, y: - w0 }, { x: x0, y: - w0 }],
+    [{ x: x1, y: -w1 }, { x: x2, y: -w2 }, { x: x2, y: - w0 }, { x: x1, y: - w0 }],
+    [{ x: x3, y: -w2 }, { x: x4, y: -w2 }, { x: x4, y: - w0 }, { x: x3, y: - w0 }],
+    [{ x: x5, y: -w2 }, { x: x6, y: -w2 }, { x: x6, y: - w0 }, { x: x5, y: - w0 }],
+    [{ x: x7, y: -w2 }, { x: x8, y: -w3 }, { x: x8, y: - w0 }, { x: x7, y: - w0 }]];
+  let h3 = [
+    [{ x: x0, y: w3 }, { x: x00, y: w1 }, { x: x00, y: w0 }, { x: x0, y: w0 }],
+    [{ x: x1, y: w1 }, { x: x2, y: w2 }, { x: x2, y: w0 }, { x: x1, y: w0 }],
+    [{ x: x3, y: w2 }, { x: x4, y: w2 }, { x: x4, y: w0 }, { x: x3, y: w0 }],
+    [{ x: x5, y: w2 }, { x: x6, y: w2 }, { x: x6, y: w0 }, { x: x5, y: w0 }],
+    [{ x: x7, y: w2 }, { x: x8, y: w3 }, { x: x8, y: w0 }, { x: x7, y: w0 }]];
+  let cpt = ToGlobalPoint(point, hStiffCenter)
+  for (let i in h2) {
+    let h2D = [{ x: h2[i][0].x, y: hStiffCenter.y },
+    { x: h2[i][1].x, y: hStiffCenter.y },
+    { x: h2[i][1].x, y: hStiffCenter.y + dsi.hstiffThickness },
+    { x: h2[i][0].x, y: hStiffCenter.y + dsi.hstiffThickness }]
+    result["h2" + i] = hPlateGen(h2[i], cpt, dsi.hstiffThickness, 0, point.skew, 0, 0, h2D, true);
+    result["h3" + i] = hPlateGen(h3[i], cpt, dsi.hstiffThickness, 0, point.skew, 0, 0, null, true);
+  }
+
+  // let vstiffX1 = (holeCenterOffset - holeWidth /2 ) / cosec - holeStiffmargin - holeVstiffnerThickness
+  // let vstiffX2 = (holeCenterOffset - holeWidth / 2) / cosec + holeStiffmargin + holeVstiffnerThickness
+  // let vstiffX3 = vStiffLayout[0] - vStiffThickness / 2
+  // let vstiffX4 = vStiffLayout[0] + vStiffThickness / 2
+  // let vstiffX5 = vStiffLayout[1] - vStiffThickness / 2
+  // let vstiffX6 = vStiffLayout[1] + vStiffThickness / 2
+
+  // let hStiff1 = [
+  //   { x: bl.x + hStiffBottomOffset * lwCot, y: - (hStiffWidth + plateThickness / 2)  },
+  //   { x: bl.x + hStiffBottomOffset * lwCot, y: - (plateThickness / 2) },
+  //   { x: vstiffX1, y:  - (plateThickness / 2) },
+  //   { x: vstiffX1, y:  - (holeVstiffnerhight + plateThickness / 2) },
+  // ]
+  // let hStiff2 = [
+  //   { x: vstiffX2, y: - (holeVstiffnerhight + plateThickness / 2) },
+  //   { x: vstiffX2, y: - (plateThickness / 2) },
+  //   { x: vstiffX3, y: - (plateThickness / 2) },
+  //   { x: vstiffX3, y: - (hStiffWidth + plateThickness / 2) },
+  // ]
+  // let hStiff3 = [
+  //   { x: vstiffX4, y: - (hStiffWidth + plateThickness / 2) },
+  //   { x: vstiffX4, y: - (plateThickness / 2) },
+  //   { x: vstiffX5, y: - (plateThickness / 2) },
+  //   { x: vstiffX5, y: - (hStiffWidth + plateThickness / 2) },
+  // ]
+  // let hStiff4 = [
+  //   { x: vstiffX6, y: - (hStiffWidth + plateThickness / 2) },
+  //   { x: vstiffX6, y: - (plateThickness / 2) },
+  //   { x: br.x + hStiffBottomOffset * rwCot, y: - (plateThickness / 2) },
+  //   { x: br.x + hStiffBottomOffset * rwCot, y: - (hStiffWidth + plateThickness / 2) },
+  // ]
+  // let cp1 = ToGlobalPoint(point, {x:0, y: bl.y + hStiffBottomOffset})
+  // result['hStiff1'] = { points: hStiff1, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+  // result['hStiff2'] = { points: hStiff2, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+  // result['hStiff3'] = { points: hStiff3, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+  // result['hStiff4'] = { points: hStiff4, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+
+  // let hStiff5 = [
+  //   { x: bl.x + hStiffBottomOffset * lwCot, y: -(bl.x + hStiffBottomOffset * lwCot) * cot + (hStiffWidth + plateThickness / 2) * cosec },
+  //   { x: bl.x + hStiffBottomOffset * lwCot, y: -(bl.x + hStiffBottomOffset * lwCot) * cot + (plateThickness / 2) * cosec },
+  //   { x: vstiffX1, y: -(vstiffX1) * cot + (plateThickness / 2) * cosec },
+  //   { x: vstiffX1, y: -(vstiffX1) * cot + (holeVstiffnerhight + plateThickness / 2) * cosec },
+  // ]
+  // let hStiff6 = [
+  //   { x: vstiffX2, y: -(vstiffX2) * cot + (holeVstiffnerhight + plateThickness / 2) * cosec },
+  //   { x: vstiffX2, y: -(vstiffX2) * cot + (plateThickness / 2) * cosec },
+  //   { x: vstiffX3, y: -(vstiffX3) * cot + (plateThickness / 2) * cosec },
+  //   { x: vstiffX3, y: -(vstiffX3) * cot + (hStiffWidth + plateThickness / 2) * cosec },
+  // ]
+  // let hStiff7 = [
+  //   { x: vstiffX4, y: -(vstiffX4) * cot + (hStiffWidth + plateThickness / 2) * cosec },
+  //   { x: vstiffX4, y: -(vstiffX4) * cot + (plateThickness / 2) * cosec },
+  //   { x: vstiffX5, y: -(vstiffX5) * cot + (plateThickness / 2) * cosec },
+  //   { x: vstiffX5, y: -(vstiffX5) * cot + (hStiffWidth + plateThickness / 2) * cosec },
+  // ]
+  // let hStiff8 = [
+  //   { x: vstiffX6, y: -(vstiffX6) * cot + (hStiffWidth + plateThickness / 2) * cosec },
+  //   { x: vstiffX6, y: -(vstiffX6) * cot + (plateThickness / 2) * cosec },
+  //   { x: br.x + hStiffBottomOffset * rwCot, y: -(br.x + hStiffBottomOffset * rwCot) * cot + (plateThickness / 2) * cosec },
+  //   { x: br.x + hStiffBottomOffset * rwCot, y: -(br.x + hStiffBottomOffset * rwCot) * cot + (hStiffWidth + plateThickness / 2) * cosec },
+  // ]
+  // result['hStiff5'] = { points: hStiff5, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+  // result['hStiff6'] = { points: hStiff6, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+  // result['hStiff7'] = { points: hStiff7, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
+  // result['hStiff8'] = { points: hStiff8, Thickness: hStiffThickness, z: bl.y + hStiffBottomOffset, rotationX: 0, rotationY: 0, hole: [] }
 
   // let ribHoleD = diaSection.ribHoleD;
   // let ribHoleR = diaSection.ribHoleR;
 
   // hole stiffner
-  let holeVStiff1 = [
-    { x: holeRightOffset / cosec + holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight / 2 - holeVstiffnerLength / 2 },
-    { x: holeRightOffset / cosec + holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight / 2 + holeVstiffnerLength / 2 },
-    { x: holeRightOffset / cosec + holeStiffSpacing + holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight / 2 + holeVstiffnerLength / 2 },
-    { x: holeRightOffset / cosec + holeStiffSpacing + holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight / 2 - holeVstiffnerLength / 2 },
-  ]
-  result['holeVStiff1'] = {
-    points: holeVStiff1,
-    Thickness: holeVstiffnerhight,
-    z: holeVStiff1[0].x * cot + plateThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: 0,
-    hole: []
-  }
+  // let holeVStiff1 = [
+  //   { x: holeRightOffset / cosec + holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight / 2 - holeVstiffnerLength / 2 },
+  //   { x: holeRightOffset / cosec + holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight / 2 + holeVstiffnerLength / 2 },
+  //   { x: holeRightOffset / cosec + holeStiffSpacing + holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight / 2 + holeVstiffnerLength / 2 },
+  //   { x: holeRightOffset / cosec + holeStiffSpacing + holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight / 2 - holeVstiffnerLength / 2 },
+  // ]
+  // result['holeVStiff1'] = {
+  //   points: holeVStiff1,
+  //   Thickness: holeVstiffnerhight,
+  //   z: holeVStiff1[0].x * cot + plateThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: 0,
+  //   hole: []
+  // }
 
-  let holeVStiff2 = [
-    { x: (holeRightOffset - holeWidth) / cosec - holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight / 2 - holeVstiffnerLength / 2 },
-    { x: (holeRightOffset - holeWidth) / cosec - holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight / 2 + holeVstiffnerLength / 2 },
-    { x: (holeRightOffset - holeWidth) / cosec - holeStiffSpacing - holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight / 2 + holeVstiffnerLength / 2 },
-    { x: (holeRightOffset - holeWidth) / cosec - holeStiffSpacing - holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight / 2 - holeVstiffnerLength / 2 },
-  ]
-  result['holeVStiff2'] = {
-    points: holeVStiff2,
-    Thickness: holeVstiffnerhight,
-    z: holeVStiff2[0].x * cot + plateThickness / 2,
-    rotationX: Math.PI / 2,
-    rotationY: 0,
-    hole: []
-  }
+  // let holeVStiff2 = [
+  //   { x: (holeRightOffset - holeWidth) / cosec - holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight / 2 - holeVstiffnerLength / 2 },
+  //   { x: (holeRightOffset - holeWidth) / cosec - holeStiffSpacing, y: bl.y + holeBottomOffset + holeHeight / 2 + holeVstiffnerLength / 2 },
+  //   { x: (holeRightOffset - holeWidth) / cosec - holeStiffSpacing - holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight / 2 + holeVstiffnerLength / 2 },
+  //   { x: (holeRightOffset - holeWidth) / cosec - holeStiffSpacing - holeVstiffnerThickness, y: bl.y + holeBottomOffset + holeHeight / 2 - holeVstiffnerLength / 2 },
+  // ]
+  // result['holeVStiff2'] = {
+  //   points: holeVStiff2,
+  //   Thickness: holeVstiffnerhight,
+  //   z: holeVStiff2[0].x * cot + plateThickness / 2,
+  //   rotationX: Math.PI / 2,
+  //   rotationY: 0,
+  //   hole: []
+  // }
 
-  let holeHStiff1 = [
-    { x: (holeRightOffset - holeWidth / 2) / cosec - holeHstiffnerLength / 2, y: -((holeRightOffset - holeWidth / 2) / cosec - holeHstiffnerLength / 2) * cot },
-    { x: (holeRightOffset - holeWidth / 2) / cosec + holeHstiffnerLength / 2, y: -((holeRightOffset - holeWidth / 2) / cosec + holeHstiffnerLength / 2) * cot },
-    { x: (holeRightOffset - holeWidth / 2) / cosec + holeHstiffnerLength / 2, y: -((holeRightOffset - holeWidth / 2) / cosec + holeHstiffnerLength / 2) * cot + holeHstiffnerHeight * cosec },
-    { x: (holeRightOffset - holeWidth / 2) / cosec - holeHstiffnerLength / 2, y: -((holeRightOffset - holeWidth / 2) / cosec - holeHstiffnerLength / 2) * cot + holeHstiffnerHeight * cosec },
-  ]
-  result['holeHStiff1'] = {
-    points: holeHStiff1,
-    Thickness: holeHstiffnerThickness,
-    z: bl.y + holeBottomOffset + holeHeight + holeStiffSpacing,
-    rotationX: 0,
-    rotationY: 0,
-    hole: []
-  }
+  // let holeHStiff1 = [
+  //   { x: (holeRightOffset - holeWidth / 2) / cosec - holeHstiffnerLength / 2, y: -((holeRightOffset - holeWidth / 2) / cosec - holeHstiffnerLength / 2) * cot },
+  //   { x: (holeRightOffset - holeWidth / 2) / cosec + holeHstiffnerLength / 2, y: -((holeRightOffset - holeWidth / 2) / cosec + holeHstiffnerLength / 2) * cot },
+  //   { x: (holeRightOffset - holeWidth / 2) / cosec + holeHstiffnerLength / 2, y: -((holeRightOffset - holeWidth / 2) / cosec + holeHstiffnerLength / 2) * cot + holeHstiffnerHeight * cosec },
+  //   { x: (holeRightOffset - holeWidth / 2) / cosec - holeHstiffnerLength / 2, y: -((holeRightOffset - holeWidth / 2) / cosec - holeHstiffnerLength / 2) * cot + holeHstiffnerHeight * cosec },
+  // ]
+  // result['holeHStiff1'] = {
+  //   points: holeHStiff1,
+  //   Thickness: holeHstiffnerThickness,
+  //   z: bl.y + holeBottomOffset + holeHeight + holeStiffSpacing,
+  //   rotationX: 0,
+  //   rotationY: 0,
+  //   hole: []
+  // }
 
-  result['holeHStiff2'] = {
-    points: holeHStiff1,
-    Thickness: - holeHstiffnerThickness,
-    z: bl.y + holeBottomOffset - holeStiffSpacing,
-    rotationX: 0,
-    rotationY: 0,
-    hole: []
-  }
+  // result['holeHStiff2'] = {
+  //   points: holeHStiff1,
+  //   Thickness: - holeHstiffnerThickness,
+  //   z: bl.y + holeBottomOffset - holeStiffSpacing,
+  //   rotationX: 0,
+  //   rotationY: 0,
+  //   hole: []
+  // }
 
-
-  // vertical stiffener 
-  for (let i = 0; i < vStiffLayout.length; i++) {
-    let name = 'verticalStiffner' + (i + 1)
-    let Points = [
-      { x: vStiffLayout[i] - vStiffThickness / 2, y: bl.y },
-      { x: vStiffLayout[i] + vStiffThickness / 2, y: bl.y },
-      { x: vStiffLayout[i] + vStiffThickness / 2, y: tl.y + ((vStiffLayout[i] + vStiffThickness / 2) - tl.x) * gradient },
-      { x: vStiffLayout[i] - vStiffThickness / 2, y: tl.y + ((vStiffLayout[i] - vStiffThickness / 2) - tl.x) * gradient },
-    ]
-    result[name] = {
-      points: Points,
-      Thickness: vStiffWidth,
-      z: vStiffLayout[i] * cot - vStiffWidth / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: []
-    }
-  }
+  // let holeCenter1 = { x: holeCenterOffset, y: bl.y + holeBottomOffset - holeStiffmargin - holeHstiffnerThickness }
+  // let holeCenter2 = { x: holeCenterOffset, y: bl.y + holeBottomOffset + holeHeight + holeStiffmargin }
+  // let hstiff1 = [{ x: -holeStiffhl / 2, y: plateThickness / 2 }, { x: holeStiffhl / 2, y: plateThickness / 2 },
+  // { x: holeStiffhl / 2, y: plateThickness / 2 + holeStiffHeight }, { x: -holeStiffhl / 2, y: plateThickness / 2 + holeStiffHeight }];
+  // let hstiff2D1 = [{ x: holeCenterOffset - holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
+  // { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
+  // { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin },
+  // { x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin }]
+  // result["hstiff1"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter1), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D1, false, [1,2])
+  // let holeCenter2 = { x: dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }
+  // let hstiff2D2 = [{ x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
+  // { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
+  // { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin },
+  // { x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }]
+  // result["hstiff2"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter2), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D2, true, [1,2])
+  // let holeCenter3 = { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  // let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 },
+  // { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }, { x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }];
+  // let vstiff2D1 = [{ x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
+  // result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D1, true , [1,2])
+  // let holeCenter4 = { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  // let vstiff2D2 = [{ x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
+  // result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D2, true)
+  // // vertical stiffener 
+  // for (let i = 0; i < vStiffLayout.length; i++) {
+  //   let name = 'verticalStiffner' + (i + 1)
+  //   let Points = [
+  //     { x: vStiffLayout[i] - vStiffThickness / 2, y: bl.y },
+  //     { x: vStiffLayout[i] + vStiffThickness / 2, y: bl.y },
+  //     { x: vStiffLayout[i] + vStiffThickness / 2, y: tl.y + ((vStiffLayout[i] + vStiffThickness / 2) - tl.x) * gradient },
+  //     { x: vStiffLayout[i] - vStiffThickness / 2, y: tl.y + ((vStiffLayout[i] - vStiffThickness / 2) - tl.x) * gradient },
+  //   ]
+  //   result[name] = {
+  //     points: Points,
+  //     Thickness: vStiffWidth,
+  //     z: vStiffLayout[i] * cot - vStiffWidth / 2,
+  //     rotationX: Math.PI / 2,
+  //     rotationY: 0,
+  //     hole: []
+  //   }
+  // }
 
   let gradRadian = Math.atan(gradient);
   let gsec = 1 / Math.cos(gradRadian);
+  let gtan = Math.tan(gradRadian + Math.PI/2)
   // topPlate
   if (uflange[0].length > 0) {
-    let topPlate2D = []
+    let topPlate2D = PlateRestPoint(uflange[0][1], uflange[1][1], gtan, gtan, topPlateThickness);
     let topPlate = [
       { x: uflange[0][1].x, y: topPlateWidth / 2 },
       { x: uflange[0][1].x, y:  - topPlateWidth / 2 },
@@ -1545,25 +1704,25 @@ export function boxDiaHole1(webPoints, point, skew, uflangePoint, uflange, diaSe
     result['topPlate'] = hPlateGen(topPlate, cp, topPlateThickness,0,skew,0,-gradRadian,topPlate2D,true,[0,1])
   }
 
-  ///lower stiffener
-  let mainPlate = [
-    { x: bl.x * cosec, y: bl.y },
-    { x: br.x * cosec, y: br.y },
-    { x: tr.x * cosec, y: tr.y },
-    { x: tl.x * cosec, y: tl.y },
-  ];
-  let holePoints = []
-  let holeRect = [
-    { x: holeRightOffset, y: (bl.y + br.y) / 2 + holeBottomOffset },
-    { x: holeRightOffset - holeWidth, y: (bl.y + br.y) / 2 + holeBottomOffset },
-    { x: holeRightOffset - holeWidth, y: (bl.y + br.y) / 2 + holeBottomOffset + holeHeight },
-    { x: holeRightOffset, y: (bl.y + br.y) / 2 + holeBottomOffset + holeHeight },
-  ]
-  holePoints = holePoints.concat(Fillet2D(holeRect[0], holeRect[1], holeRect[2], holeFilletR, 4))
-  holePoints = holePoints.concat(Fillet2D(holeRect[1], holeRect[2], holeRect[3], holeFilletR, 4))
-  holePoints = holePoints.concat(Fillet2D(holeRect[2], holeRect[3], holeRect[0], holeFilletR, 4))
-  holePoints = holePoints.concat(Fillet2D(holeRect[3], holeRect[0], holeRect[1], holeFilletR, 4))
-  result['mainPlate'] = vPlateGen(mainPlate, point, plateThickness, [0,1,2,3], scallopRadius, null, null, holePoints, [2,3], [0,1,2,3])
+  // ///lower stiffener
+  // let mainPlate = [
+  //   { x: bl.x * cosec, y: bl.y },
+  //   { x: br.x * cosec, y: br.y },
+  //   { x: tr.x * cosec, y: tr.y },
+  //   { x: tl.x * cosec, y: tl.y },
+  // ];
+  // let holePoints = []
+  // let holeRect = [
+  //   { x: holeCenterOffset, y: (bl.y + br.y) / 2 + holeBottomOffset },
+  //   { x: holeCenterOffset - holeWidth, y: (bl.y + br.y) / 2 + holeBottomOffset },
+  //   { x: holeCenterOffset - holeWidth, y: (bl.y + br.y) / 2 + holeBottomOffset + holeHeight },
+  //   { x: holeCenterOffset, y: (bl.y + br.y) / 2 + holeBottomOffset + holeHeight },
+  // ]
+  // holePoints = holePoints.concat(Fillet2D(holeRect[0], holeRect[1], holeRect[2], holeFilletR, 4))
+  // holePoints = holePoints.concat(Fillet2D(holeRect[1], holeRect[2], holeRect[3], holeFilletR, 4))
+  // holePoints = holePoints.concat(Fillet2D(holeRect[2], holeRect[3], holeRect[0], holeFilletR, 4))
+  // holePoints = holePoints.concat(Fillet2D(holeRect[3], holeRect[0], holeRect[1], holeFilletR, 4))
+  // result['mainPlate'] = vPlateGen(mainPlate, point, plateThickness, [0,1,2,3], scallopRadius, null, null, holePoints, [2,3], [0,1,2,3])
 
   return result
 }
