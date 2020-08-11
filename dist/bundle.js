@@ -3760,12 +3760,7 @@
       if (diaphragmLayout[i][section] == "diaType1") {
         result[gridkey] = uBoxDia1(webPoints, gridPoint[gridkey], skew, uflangePoints, uflange, lrib, diaSection, sectionDB);
       } else if (diaphragmLayout[i][section] == "diaType2") {
-        result[gridkey] = diaphragmSection2(
-          webPoints,
-          skew,
-          uflangePoints,
-          diaSection
-        );
+        result[gridkey] = boxDiaHole1(webPoints, gridPoint[gridkey], skew, uflangePoints, uflange, diaSection);
       } else if (diaphragmLayout[i][section] == "DYdia0") {
         result[gridkey] = DYdia0(
           webPoints,
@@ -4882,21 +4877,6 @@
       { x: br.x + rwCot * ds.lowerHeight, y: br.y + ds.lowerHeight },
       { x: bl.x + lwCot * ds.lowerHeight, y: bl.y + ds.lowerHeight }
     ];
-    // let lowerPoints = [];
-    // lowerPoints.push(lowerPlate[0]);
-    // lowerPoints = lowerPoints.concat(scallop(tl, bl, br, ds.scallopRadius, 4));
-    // //// longitudinal stiffner holes
-    // for (let i = 0; i < ds.longiRibRayout.length; i++) {
-    //   lowerPoints.push({ x: ds.longiRibRayout[i] - ds.ribHoleD, y: lowerPlate[1].y });
-    //   let curve = new THREE.ArcCurve(ds.longiRibRayout[i], lowerPlate[1].y + ds.longiRibHeight, ds.ribHoleR, Math.PI, 0, true);
-    //   let dummyVectors = curve.getPoints(8)
-    //   for (let i = 0; i < dummyVectors.length; i++) {
-    //     lowerPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y })
-    //   }
-    //   lowerPoints.push({ x: ds.longiRibRayout[i] + ds.ribHoleD, y: lowerPlate[1].y });
-    // }
-    // lowerPoints = lowerPoints.concat(scallop(bl, br, tr, ds.scallopRadius, 4));
-    // lowerPoints.push(lowerPlate[3]);
     let lowerTopPoints = [lowerPlate[3],
     { x: bl.x + lwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
     { x: br.x + rwCot * (ds.lowerHeight + ds.lowerTopThickness), y: bl.y + (ds.lowerHeight + ds.lowerTopThickness) },
@@ -5044,7 +5024,6 @@
     ];
     let [rightframe1, rightframe2] = Kframe(newrightline[0], newrightline[1], 0, 0, pts);
     result["rightframe1"] = vFrameGen(rightframe1, point, pts[4], ds.sideThickness/2, null, null);
-    // { points: rightframe1, Thickness: pts[4], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] }
     result["rightframe2"] = vFrameGen(rightframe2, point, pts[5], ds.sideThickness/2, null, null);
     // {
     //   points: rightframe2, Thickness: pts[5], z: ds.sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [],
@@ -5054,7 +5033,7 @@
     return result
   }
 
-  function diaphragmSection2(webPoints, skew, uflangePoint, diaSection) { //ribPoint needed
+  function boxDiaHole1(webPoints, point, skew, uflangePoint, uflange, diaSection) { //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
     let result = {};
     const plateThickness = diaSection.plateThickness;
@@ -5096,7 +5075,6 @@
     const rwCot = (tr.x - br.x) / (tr.y - br.y);
     const cosec = Math.abs(1 / Math.sin(skew * Math.PI / 180));
     const cot = Math.abs(1 / Math.tan(skew * Math.PI / 180));
-    const rotationY = (skew - 90) * Math.PI / 180;
 
     let vstiffX1 = (holeRightOffset - holeWidth) / cosec - holeStiffSpacing - holeVstiffnerThickness;
     let vstiffX2 = holeRightOffset / cosec + holeStiffSpacing + holeVstiffnerThickness;
@@ -5241,50 +5219,27 @@
       };
     }
 
+    let gradRadian = Math.atan(gradient);
     // topPlate
-    if (uflangePoint[0].x < uflangePoint[2].x) {
+    if (uflange[0].length > 0) {
+      let topPlate2D = [];
       let topPlate = [
-        { x: uflangePoint[0].x, y: -uflangePoint[0].x * cot + topPlateWidth / 2 * cosec },
-        { x: uflangePoint[0].x, y: -uflangePoint[0].x * cot - topPlateWidth / 2 * cosec },
-        { x: uflangePoint[2].x, y: -uflangePoint[2].x * cot - topPlateWidth / 2 * cosec },
-        { x: uflangePoint[2].x, y: -uflangePoint[2].x * cot + topPlateWidth / 2 * cosec },
+        { x: uflange[0][1].x, y: topPlateWidth / 2 },
+        { x: uflange[0][1].x, y:  - topPlateWidth / 2 },
+        { x: uflange[1][1].x, y:  - topPlateWidth / 2 },
+        { x: uflange[1][1].x, y: topPlateWidth / 2 },
       ];
-      result['topPlate'] = {
-        points: topPlate,
-        Thickness: topPlateThickness,
-        z: tl.y - tl.x * gradient,
-        rotationX: 0,
-        rotationY: -Math.atan(gradient),
-        hole: []
-      };
+      let cp = ToGlobalPoint(point, {x:0, y: tl.y - tl.x * gradient});
+      result['topPlate'] = hPlateGen(topPlate, cp, topPlateThickness,0,skew,0,-gradRadian,topPlate2D,true,[0,1]);
     }
 
     ///lower stiffener
     let mainPlate = [
-      { x: tl.x * cosec, y: tl.y },
       { x: bl.x * cosec, y: bl.y },
       { x: br.x * cosec, y: br.y },
       { x: tr.x * cosec, y: tr.y },
+      { x: tl.x * cosec, y: tl.y },
     ];
-    let diaPoints = [];
-    diaPoints = diaPoints.concat(scallop(mainPlate[3], mainPlate[0], mainPlate[1], scallopRadius, 4));
-    // points.push(plate[1]);
-    diaPoints = diaPoints.concat(scallop(mainPlate[0], mainPlate[1], mainPlate[2], scallopRadius, 4));
-    //// longitudinal stiffner holes
-    // for (let i=0; i<longiRibRayout.length;i++){
-    //   lowerPoints.push({x:longiRibRayout[i] - ribHoleD, y:lowerPlate[1].y});
-    //   let curve = new THREE.ArcCurve(longiRibRayout[i],lowerPlate[1].y + longiRibHeight, ribHoleR, Math.PI,0,true);
-    //   let dummyVectors = curve.getPoints(8)
-    //   for (let i = 0; i< dummyVectors.length;i++){
-    //     lowerPoints.push({x:dummyVectors[i].x, y:dummyVectors[i].y})
-    //   }
-    //   lowerPoints.push({x:longiRibRayout[i] + ribHoleD,y:lowerPlate[1].y});
-    // }
-    ////
-    diaPoints = diaPoints.concat(scallop(mainPlate[1], mainPlate[2], mainPlate[3], scallopRadius, 4));
-    diaPoints = diaPoints.concat(scallop(mainPlate[2], mainPlate[3], mainPlate[0], scallopRadius, 4));
-    ////
-
     let holePoints = [];
     let holeRect = [
       { x: holeRightOffset, y: (bl.y + br.y) / 2 + holeBottomOffset },
@@ -5296,7 +5251,7 @@
     holePoints = holePoints.concat(Fillet2D(holeRect[1], holeRect[2], holeRect[3], holeFilletR, 4));
     holePoints = holePoints.concat(Fillet2D(holeRect[2], holeRect[3], holeRect[0], holeFilletR, 4));
     holePoints = holePoints.concat(Fillet2D(holeRect[3], holeRect[0], holeRect[1], holeFilletR, 4));
-    result['mainPlate'] = { points: diaPoints, Thickness: plateThickness, z: - plateThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: holePoints };
+    result['mainPlate'] = vPlateGen(diaPoints, point, plateThickness, [0,1,2,3], scallopRadius, null, null, holePoints, [2,3], [0,1,2,3]);
 
     return result
   }
