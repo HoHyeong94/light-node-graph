@@ -5035,6 +5035,7 @@
 
   function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSection) { //ribPoint needed
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
+    // dia6에서 가져옴 200811
     let result = {};
     let dsi = {
       webThickness: diaSection.plateThickness,
@@ -5167,33 +5168,63 @@
     // let h11 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.hstiffWidth + dsi.webThickness / 2 }, { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.holeStiffHeight + dsi.webThickness / 2 },
     // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.webThickness / 2 }];
     // result["h11"] = hPlateGen(h11, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, 0, point.skew, 0, 0);
-    let x0 = bl.x + lwCot * dsi.hstiffHeight;
-    let x00 = dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness;
-    let x1 = dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness;
-    let x2 = dsi.supportStiffLayout[0] - dsi.supportStiffThickness / 2;
-    let x3 = dsi.supportStiffLayout[0] + dsi.supportStiffThickness / 2;
-    let x4 = dsi.supportStiffLayout[1] - dsi.supportStiffThickness / 2;
-    let x5 = dsi.supportStiffLayout[1] + dsi.supportStiffThickness / 2;
-    let x6 = dsi.supportStiffLayout[2] - dsi.supportStiffThickness / 2;
-    let x7 = dsi.supportStiffLayout[2] + dsi.supportStiffThickness / 2;
-    let x8 = br.x + rwCot * dsi.hstiffHeight;
+    
     let w0 = dsi.webThickness / 2;
     let w1 = dsi.holeStiffHeight + dsi.webThickness / 2;
-    let w2 = dsi.hstiffWidth2 + dsi.webThickness / 2;
-    let w3 = dsi.hstiffWidth + dsi.webThickness / 2;
+    let w2 = dsi.hstiffWidth + dsi.webThickness / 2;
+    let w3 = dsi.hstiffWidth2 + dsi.webThickness / 2;
+    
+    let hx = [[bl.x + lwCot * dsi.hstiffHeight,w2], [ br.x + rwCot * dsi.hstiffHeight, w2],
+      [dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, w1],
+      [dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, w1]];
+    for (let i in dsi.supportStiffLayout) {
+      hx.push([dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2,w3]);
+      hx.push([dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2,w3]);
+    }
+    hx.sort(function(a,b){return a[0]-b[0]});
+    let h2 = [];
+    let h3 = [];
+    for (let i = 0; i < hx.length/2;i++){
+      h2.push([{x : hx[i * 2][0], y : -hx[i * 2][1]},
+        {x : hx[i * 2 + 1][0], y : -hx[i * 2 + 1][1]},
+        {x : hx[i * 2 + 1][0], y : -w0},
+        {x : hx[i * 2][0], y : -w0}]);
+        h3.push([{x : hx[i * 2][0], y : hx[i * 2][1]},
+          {x : hx[i * 2 + 1][0], y : hx[i * 2 + 1][1]},
+          {x : hx[i * 2 + 1][0], y : w0},
+          {x : hx[i * 2][0], y : w0}]);
+    }
+    // let x0 = bl.x + lwCot * dsi.hstiffHeight;
+    
+    // let x00 = dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness;
+    // let x1 = dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness;
+    
+    // let x2 = dsi.supportStiffLayout[0] - dsi.supportStiffThickness / 2;
+    // let x3 = dsi.supportStiffLayout[0] + dsi.supportStiffThickness / 2;
+    
+    // let x4 = dsi.supportStiffLayout[1] - dsi.supportStiffThickness / 2;
+    // let x5 = dsi.supportStiffLayout[1] + dsi.supportStiffThickness / 2;
+    
+    // let x6 = dsi.supportStiffLayout[2] - dsi.supportStiffThickness / 2;
+    // let x7 = dsi.supportStiffLayout[2] + dsi.supportStiffThickness / 2;
+    
+    // let x8 = br.x + rwCot * dsi.hstiffHeight;
+    
+    
+    
 
-    let h2 = [
-      [{ x: x0, y: -w3 }, { x: x00, y: -w1 }, { x: x00, y: - w0 }, { x: x0, y: - w0 }],
-      [{ x: x1, y: -w1 }, { x: x2, y: -w2 }, { x: x2, y: - w0 }, { x: x1, y: - w0 }],
-      [{ x: x3, y: -w2 }, { x: x4, y: -w2 }, { x: x4, y: - w0 }, { x: x3, y: - w0 }],
-      [{ x: x5, y: -w2 }, { x: x6, y: -w2 }, { x: x6, y: - w0 }, { x: x5, y: - w0 }],
-      [{ x: x7, y: -w2 }, { x: x8, y: -w3 }, { x: x8, y: - w0 }, { x: x7, y: - w0 }]];
-    let h3 = [
-      [{ x: x0, y: w3 }, { x: x00, y: w1 }, { x: x00, y: w0 }, { x: x0, y: w0 }],
-      [{ x: x1, y: w1 }, { x: x2, y: w2 }, { x: x2, y: w0 }, { x: x1, y: w0 }],
-      [{ x: x3, y: w2 }, { x: x4, y: w2 }, { x: x4, y: w0 }, { x: x3, y: w0 }],
-      [{ x: x5, y: w2 }, { x: x6, y: w2 }, { x: x6, y: w0 }, { x: x5, y: w0 }],
-      [{ x: x7, y: w2 }, { x: x8, y: w3 }, { x: x8, y: w0 }, { x: x7, y: w0 }]];
+    // let h2 = [
+    //   [{ x: x0, y: -w3 }, { x: x00, y: -w1 }, { x: x00, y: - w0 }, { x: x0, y: - w0 }],
+    //   [{ x: x1, y: -w1 }, { x: x2, y: -w2 }, { x: x2, y: - w0 }, { x: x1, y: - w0 }],
+    //   [{ x: x3, y: -w2 }, { x: x4, y: -w2 }, { x: x4, y: - w0 }, { x: x3, y: - w0 }],
+    //   [{ x: x5, y: -w2 }, { x: x6, y: -w2 }, { x: x6, y: - w0 }, { x: x5, y: - w0 }],
+    //   [{ x: x7, y: -w2 }, { x: x8, y: -w3 }, { x: x8, y: - w0 }, { x: x7, y: - w0 }]];
+    // let h3 = [
+    //   [{ x: x0, y: w3 }, { x: x00, y: w1 }, { x: x00, y: w0 }, { x: x0, y: w0 }],
+    //   [{ x: x1, y: w1 }, { x: x2, y: w2 }, { x: x2, y: w0 }, { x: x1, y: w0 }],
+    //   [{ x: x3, y: w2 }, { x: x4, y: w2 }, { x: x4, y: w0 }, { x: x3, y: w0 }],
+    //   [{ x: x5, y: w2 }, { x: x6, y: w2 }, { x: x6, y: w0 }, { x: x5, y: w0 }],
+    //   [{ x: x7, y: w2 }, { x: x8, y: w3 }, { x: x8, y: w0 }, { x: x7, y: w0 }]];
     let cpt = ToGlobalPoint(point, hStiffCenter);
     for (let i in h2) {
       let h2D = [{ x: h2[i][0].x, y: hStiffCenter.y },
