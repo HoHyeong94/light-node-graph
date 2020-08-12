@@ -1530,8 +1530,8 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   let cpt = ToGlobalPoint(point, hStiffCenter)
   for (let i in h2) {
     let h2D = [{ x: h2[i][0].x, y: hStiffCenter.y },
-    { x: h2[i][1].x, y: hStiffCenter.y },
-    { x: h2[i][1].x, y: hStiffCenter.y + dsi.hstiffThickness },
+    { x: h2[i][3].x, y: hStiffCenter.y },
+    { x: h2[i][3].x, y: hStiffCenter.y + dsi.hstiffThickness },
     { x: h2[i][0].x, y: hStiffCenter.y + dsi.hstiffThickness }]
     result["h2" + i] = hPlateGen(h2[i], cpt, dsi.hstiffThickness, 0, point.skew, 0, 0, h2D, true);
     result["h3" + i] = hPlateGen(h3[i], cpt, dsi.hstiffThickness, 0, point.skew, 0, 0, null, true);
