@@ -1448,8 +1448,8 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 },
   { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }, { x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }];
   let vStiffRad = Math.atan(sign * dsi.holeHeight/100)
-  let vcos = Math.cos(-vStiffRad - Math.PI/2)
-  let vsin = Math.sin(-vStiffRad - Math.PI/2)
+  let vcos = Math.cos(vStiffRad + Math.PI/2)
+  let vsin = Math.sin(vStiffRad + Math.PI/2)
   let x1 = - sign* (dsi.holeStiffmargin + dsi.holeStiffThickness);
   let x2 = - sign * dsi.holeStiffmargin;
   let y1 = dsi.holeStiffvl / 2;
