@@ -5137,7 +5137,7 @@
     { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
     { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
     { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }];
-    result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, - Math.atan(dsi.holeHeight/100), vstiff2D1, true , [1,2]);
+    result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, Math.atan(dsi.holeHeight/100), vstiff2D1, true , [1,2]);
     let holeCenter4 = { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 };
     let vstiff2D2 = [{ x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
     { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
