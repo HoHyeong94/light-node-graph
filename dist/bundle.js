@@ -5037,6 +5037,7 @@
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
     // dia6에서 가져옴 200811
     let result = {};
+    let sign = -1;
     let dsi = {
       webThickness: diaSection.plateThickness,
       hstiffWidth: diaSection.hStiffWidth,
@@ -5047,8 +5048,8 @@
       ribHoleD: 42,
       ribHoleR: 25,
       holeBottomY: diaSection.holeBottomOffset, //y축은 중앙이 기준
-      holeCenterOffset: diaSection.holeRightOffset - diaSection.holeWidth / 2,
-      holeWidth: diaSection.holeWidth,
+      holeCenterOffset: sign * diaSection.holeRightOffset - sign * diaSection.holeWidth / 2,
+      holeWidth: sign * diaSection.holeWidth,
       holeHeight: diaSection.holeHeight,
       holeFilletR: diaSection.holeFilletR,
       holeStiffThickness: diaSection.holeVstiffnerThickness,

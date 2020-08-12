@@ -1346,6 +1346,8 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
   // dia6에서 가져옴 200811
   let result = {}
+  let isLeft = false;
+  let sign = isLeft? 1:-1;
   let dsi = {
     webThickness: diaSection.plateThickness,
     hstiffWidth: diaSection.hStiffWidth,
@@ -1356,8 +1358,8 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
     ribHoleD: 42,
     ribHoleR: 25,
     holeBottomY: diaSection.holeBottomOffset, //y축은 중앙이 기준
-    holeCenterOffset: diaSection.holeRightOffset - diaSection.holeWidth / 2,
-    holeWidth: diaSection.holeWidth,
+    holeCenterOffset: sign * diaSection.holeRightOffset - sign * diaSection.holeWidth / 2,
+    holeWidth: sign * diaSection.holeWidth,
     holeHeight: diaSection.holeHeight,
     holeFilletR: diaSection.holeFilletR,
     holeStiffThickness: diaSection.holeVstiffnerThickness,
