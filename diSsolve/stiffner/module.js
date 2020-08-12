@@ -1486,9 +1486,11 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   let w2 = dsi.hstiffWidth + dsi.webThickness / 2;
   let w3 = dsi.hstiffWidth2 + dsi.webThickness / 2;
   
-  let hx = [[bl.x + lwCot * dsi.hstiffHeight,w2], [ br.x + rwCot * dsi.hstiffHeight, w2],
-    [dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, w1],
-    [dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, w1]];
+  let hx = [[bl.x + lwCot * dsi.hstiffHeight,w2], [ br.x + rwCot * dsi.hstiffHeight, w2]];
+  if (dsi.hstiffHeight < dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 && dsi.hstiffHeight > dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2){
+    hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, w1],
+      [dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, w1])
+  }
   for (let i in dsi.supportStiffLayout) {
     hx.push([dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2,w3]);
     hx.push([dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2,w3]);
