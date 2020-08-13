@@ -5136,23 +5136,23 @@
     let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 },
     { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }, { x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }];
     let vStiffRad = Math.atan(sign * dsi.holeHeight/100);
-    let vcos = Math.cos(- vStiffRad - Math.PI/2);
-    let vsin = Math.sin(- vStiffRad - Math.PI/2);
-    let x1 = - sign* (dsi.holeStiffThickness);
-    let x2 = 0;
-    let y1 = dsi.holeStiffvl / 2;
-    let y2 = - dsi.holeStiffvl / 2;
-    let vstiff2D1 = [{ x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x1 * vcos - y1 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x1 * vsin + y1 * vcos },
-    { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign * ( 100/2 + dsi.holeStiffmargin) + x1 * vcos - y2 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x1 * vsin + y2 * vcos },
-    { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x2 * vcos - y2 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x2 * vsin + y2 * vcos },
-    { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x2 * vcos - y1 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x2 * vsin + y1 * vcos }];
-    result["vstiff1"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter3), dsi.holeStiffThickness, 0, point.skew, 0, vStiffRad, vstiff2D1, true , [1,2]);
+    // let vcos = Math.cos(- vStiffRad - Math.PI/2)
+    // let vsin = Math.sin(- vStiffRad - Math.PI/2)
+    // let x1 = - sign* (dsi.holeStiffThickness);
+    // let x2 = 0;
+    // let y1 = dsi.holeStiffvl / 2;
+    // let y2 = - dsi.holeStiffvl / 2;
+    // let vstiff2D1 = [{ x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x1 * vcos - y1 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x1 * vsin + y1 * vcos },
+    // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign * ( 100/2 + dsi.holeStiffmargin) + x1 * vcos - y2 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x1 * vsin + y2 * vcos },
+    // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x2 * vcos - y2 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x2 * vsin + y2 * vcos },
+    // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x2 * vcos - y1 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x2 * vsin + y1 * vcos }]
+    result["vstiff1"] = hPlateGenV2(vstiff1, point, holeCenter3, dsi.holeStiffThickness, 0, point.skew, 0, vStiffRad, ang90,ang90, true , [1,2]);
     let holeCenter4 = { x: dsi.holeCenterOffset + dsi.holeWidth / 2  + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 };
-    let vstiff2D2 = [{ x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
-    { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
-    { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
-    { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }];
-    result["vstiff2"] = hPlateGen(vstiff1, ToGlobalPoint(point, holeCenter4), dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, vstiff2D2, true);
+    // let vstiff2D2 = [{ x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
+    // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+    // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+    // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
+    result["vstiff2"] = hPlateGenV2(vstiff1, point, holeCenter4, dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, ang90, ang90, true, null);
 
 
     for (let i in dsi.supportStiffLayout) {
