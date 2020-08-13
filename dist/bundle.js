@@ -6692,7 +6692,7 @@
     { x: xs.webThickness / 2, y: -vStiffLength - xs.webThickness / 2 * gradientX },
     { x: xs.webThickness / 2 + vStiffWidth, y: -vStiffLength - xs.webThickness / 2 * gradientX },
     { x: xs.webThickness / 2 + vStiffWidth, y: -(xs.webThickness / 2 + vStiffWidth) * gradientX }];
-    let vStiffTopFillet = Math.max(vStiffWidth - (upperFlangeWidth - webThickness) / 2, 0);
+    let vStiffTopFillet = Math.max(vStiffWidth - (xs.flangeWidth - webThickness) / 2, 0);
     let vStiffPoint = [];
     vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[1], vStiffPlate[0], vStiffPlate[3], scallopRadius, 4));
     vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[0], vStiffPlate[3], vStiffPlate[2], vStiffTopFillet, 1));
