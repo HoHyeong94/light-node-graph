@@ -5222,7 +5222,7 @@
       // { x: h2[i][3].x, y: hStiffCenter.y + dsi.hstiffThickness },
       // { x: h2[i][0].x, y: hStiffCenter.y + dsi.hstiffThickness }]
       result["h2" + i] = hPlateGenV2(h2[i], point, hStiffCenter, dsi.hstiffThickness, 0, point.skew, 0, 0, ang90, ang90, true, [2, 6]);
-      result["h3" + i] = hPlateGenV2(h3[i], point, hStiffCenter, dsi.hstiffThickness, 0, point.skew, 0, 0, ang90, ang90, true);
+      result["h3" + i] = hPlateGenV2(h3[i], point, hStiffCenter, dsi.hstiffThickness, 0, point.skew, 0, 0, null, null, true, [2, 6]);
     }
 
     let gradRadian = Math.atan(gradient);
