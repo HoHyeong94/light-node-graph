@@ -6502,6 +6502,7 @@
     const lowerFlangeThickness = xbeamSection.lowerFlangeThickness;
     const lowerFlangeWidth = xbeamSection.lowerFlangeWidth;
     
+    
     const vStiffThickness = xbeamSection.vStiffThickness;
     const vStiffBottomOffset = xbeamSection.vStiffBottomOffset;
     const vStiffWidth = xbeamSection.vStiffWidth;
@@ -6590,13 +6591,15 @@
     let uRad = -Math.atan(uGradient);
     let lRad = -Math.atan(lGradient);
 
-    let lwebPlate = [tl, { x: tl.x, y: tl.y - xs.webHeight }, { x: tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength },
+    let lwCot = (tl.x - bl.x) / (tl.y - bl.y);
+    let rwCot = (tr.x - br.x) / (tr.y - br.y);
+    let lwebPlate = [tl, { x: tl.x - xs.webHeight * lwCot, y: tl.y - xs.webHeight }, { x: tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength },
       { x: tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x)) }, ufl];
     result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
     // let lstiff = PlateRestPoint({ x: tl.x, y: tl.y - xs.webHeight - xs.flangeThickness }, bl, lGradient, 0, xs.stiffWidth);
     // result["lstiff"] = vPlateGen(lstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
 
-    let rwebPlate = [tr, { x: tr.x, y: tr.y - xs.webHeight }, { x: tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength },
+    let rwebPlate = [tr, { x: tr.x -xs.webHeight * rwCot, y: tr.y - xs.webHeight }, { x: tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength },
       { x: tr.x - xs.bracketLength, y: ufr.y - uGradient * (xs.bracketLength - (tr.x - ufr.x)) }, ufr];
     result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
     // let rstiff = PlateRestPoint({ x: tr.x, y: tr.y - xs.webHeight - xs.flangeThickness }, br, lGradient, 0, -xs.stiffWidth);
