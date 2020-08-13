@@ -1970,6 +1970,8 @@ export function hPlateGenV2(points, Point, relativeCP, Thickness, z, skew, rotat
 
   points.forEach(pt => resultPoints.push({ x: pt.x, y: pt.x * cot + pt.y * cosec }))
   if (top2D) {
+    let yList = [];
+    resultPoints.forEach(elem => yList.push(elem.y))
     topView = [];
     if (rotationY < Math.PI / 2 && rotationY > -Math.PI / 2) {
       resultPoints.forEach(function (pt) {
@@ -1983,7 +1985,7 @@ export function hPlateGenV2(points, Point, relativeCP, Thickness, z, skew, rotat
       let gpt = ToGlobalPoint(centerPoint, { x: resultPoints[0].x * cos, y: 0 })
       for (let i = 0; i < 4; i++) {
         let sign = rotationY > 0 ? 1 : -1
-        let th = i < 2 ? resultPoints[0].y * cosx : resultPoints[3].y * cosx;
+        let th = i < 2 ? Math.min(...yList) * cosx : Math.max(...yList) * cosx;
         let dx = centerPoint.normalSin * th;
         let dy = centerPoint.normalCos * th;
         let dx2 = 0 < i && i < 3 ? sign * centerPoint.normalCos * z : sign * centerPoint.normalCos * (z + Thickness)
