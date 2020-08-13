@@ -6668,13 +6668,15 @@
     //   normalCos: vec.x,
     //   normalSin: vec.y,
     // }
-    let lFlangeL = (iSectionPoint.rWeb[2].x - iSectionPoint.rightTopPlate[0].x) * cosec;
-    let rFlangeL = (jSectionPoint.lWeb[2].x - jSectionPoint.leftTopPlate[0].x) * cosec;
+    // let lFlangeL = (iSectionPoint.rWeb[2].x - iSectionPoint.rightTopPlate[0].x) * cosec
+    // let rFlangeL = (jSectionPoint.lWeb[2].x - jSectionPoint.leftTopPlate[0].x) * cosec
 
     let iBottom = ToGlobalPoint(iPoint, iSectionPoint.bottomPlate[1]);
     let jBottom = ToGlobalPoint(jPoint, jSectionPoint.bottomPlate[0]);
     let lengthB = Math.sqrt((jBottom.x - iBottom.x) ** 2 + (jBottom.y - iBottom.y) ** 2);
     let vecB = { x: (jBottom.x - iBottom.x) / lengthB, y: (jBottom.y - iBottom.y) / lengthB };
+    // let grdB = (jBottom.z - iBottom.z) / lengthB
+    // let grdSecB = Math.sqrt(1 + grdB ** 2)
     let bottomPoint = {
       x: (iBottom.x + jBottom.x) / 2,
       y: (iBottom.y + jBottom.y) / 2,
@@ -6682,8 +6684,8 @@
       normalCos: vecB.x,
       normalSin: vecB.y,
     };
-    let lFlangeB = (iSectionPoint.rWeb[3].x - iSectionPoint.bottomPlate[1].x) * cosec;
-    let rFlangeB = (jSectionPoint.lWeb[3].x - jSectionPoint.bottomPlate[0].x) * cosec;
+    // let lFlangeB = (iSectionPoint.rWeb[3].x - iSectionPoint.bottomPlate[1].x) * cosec
+    // let rFlangeB = (jSectionPoint.lWeb[3].x - jSectionPoint.bottomPlate[0].x) * cosec
     let gradientX = (iPoint.gradientX + jPoint.gradientX) / 2;
     let vStiffLength = centerPoint.z - bottomPoint.z - vStiffBottomOffset;
     let vStiffPlate = [{ x: xs.webThickness / 2, y: -xs.webThickness / 2 * gradientX },
