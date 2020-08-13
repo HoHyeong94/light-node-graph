@@ -821,12 +821,18 @@ export function XbeamI0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
   // let rstiff = PlateRestPoint({ x: tr.x, y: tr.y - xs.webHeight - xs.flangeThickness }, br, lGradient, 0, -xs.stiffWidth);
   // result["rstiff"] = vPlateGen(rstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
 
-  let bracketPoint = [{ x: tl.x, y: tl.y - xs.webHeight - xs.flangeThickness },{ x: tr.x, y: tr.y - xs.webHeight - xs.flangeThickness }, ufl, ufr];
+  let bracketPoint = [{ x: tl.x - (xs.webHeight + xs.flangeThickness) * lwCot, y: tl.y - xs.webHeight - xs.flangeThickness },
+                      { x: tr.x - (xs.webHeight + xs.flangeThickness) * rwCot , y: tr.y - xs.webHeight - xs.flangeThickness }, ufl, ufr];
+  let bracketLengthList = [xs.bracketLength + (xs.webHeight + xs.flangeThickness) * lwCot,
+    xs.bracketLength - (xs.webHeight + xs.flangeThickness) * rwCot,
+    xs.bracketLength - (ufl.x - tl.x),
+    xs.bracketLength - (tr.x - ufr.x)
+  ];
   for (let i = 0; i < 4; i++) {
     let sign = i % 2 === 0 ? 1 : -1;
     let grad = i < 2 ? lRad : uRad;
     let th1 = i < 2 ? Math.PI / 2 + grad : rightAngle
-    let bracketLength = i < 2 ? xs.bracketLength : i === 2 ? xs.bracketLength - (ufl.x - tl.x) : xs.bracketLength - (tr.x - ufr.x);
+    let bracketLength = bracketLengthList[i]; //i < 2 ? xs.bracketLength : i === 2 ? xs.bracketLength - (ufl.x - tl.x) : xs.bracketLength - (tr.x - ufr.x);
     let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
     { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
