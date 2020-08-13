@@ -915,17 +915,19 @@ export function XbeamI0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
   // let rFlangeB = (jSectionPoint.lWeb[3].x - jSectionPoint.bottomPlate[0].x) * cosec
   let gradientX = (iPoint.gradientX + jPoint.gradientX) / 2
   let vStiffLength = centerPoint.z - bottomPoint.z - vStiffBottomOffset
-  let vStiffPlate = [{ x: xs.webThickness / 2, y: -xs.webThickness / 2 * gradientX },
-  { x: xs.webThickness / 2, y: -vStiffLength - xs.webThickness / 2 * gradientX },
-  { x: xs.webThickness / 2 + vStiffWidth, y: -vStiffLength - xs.webThickness / 2 * gradientX },
-  { x: xs.webThickness / 2 + vStiffWidth, y: -(xs.webThickness / 2 + vStiffWidth) * gradientX }]
+  let vStiffPlate = [{x: 0, y: -xs.webThickness / 2},
+  { x: vStiffLength , y : -xs.webThickness / 2},
+  { x: vStiffLength , y: -xs.webThickness / 2 - vStiffWidth },
+  { x: -(vStiffWidth) * gradientX, y: -xs.webThickness / 2 - vStiffWidth }]
+  
   let vStiffTopFillet = Math.max(vStiffWidth - (xs.flangeWidth - xs.webThickness) / 2, 0)
   let vStiffPoint = []
   vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[1], vStiffPlate[0], vStiffPlate[3], scallopRadius, 4));
   vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[0], vStiffPlate[3], vStiffPlate[2], vStiffTopFillet, 1));
   vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[3], vStiffPlate[2], vStiffPlate[1], vStiffendFillet, 1));
   vStiffPoint.push(vStiffPlate[1])
-  result['vStiffner'] = hPlateGen(vStiffPoint,centerPoint, vStiffThickness, -vStiffThickness/2,centerPoint.skew,Math.PI/2,Math.PI/2*3,null,true,null )
+  let ang90 = Math.PI/2
+  result['vStiffner'] = hPlateGenV2(vStiffPoint,centerPoint, {x:(ufl.x + ufr.x)/2, y: (ufl.y + ufr.y)/2}, vStiffThickness, -vStiffThickness/2,centerPoint.skew, 0, ang90,ang90,ang90,true,null )
   // {
   //   points: vStiffPoint,
   //   Thickness: vStiffThickness,
