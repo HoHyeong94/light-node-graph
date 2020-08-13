@@ -6698,7 +6698,7 @@
     vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[0], vStiffPlate[3], vStiffPlate[2], vStiffTopFillet, 1));
     vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[3], vStiffPlate[2], vStiffPlate[1], vStiffendFillet, 1));
     vStiffPoint.push(vStiffPlate[1]);
-    result['vStiffner'] = hPlateGen(vStiffPoint,centerPoint, vStiffThickness, -vStiffThickness/2,point.skew,Math.PI/2,Math.PI/2*3,null,true,null );
+    result['vStiffner'] = hPlateGen(vStiffPoint,centerPoint, vStiffThickness, -vStiffThickness/2,centerPoint.skew,Math.PI/2,Math.PI/2*3,null,true,null );
     // {
     //   points: vStiffPoint,
     //   Thickness: vStiffThickness,
