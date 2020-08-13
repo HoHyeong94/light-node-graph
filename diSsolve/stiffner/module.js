@@ -2017,14 +2017,12 @@ export function hPlateGenV2(points, Point, relativeCP, Thickness, z, skew, rotat
       points.forEach(pt => sideView.push({ x: X + pt.y, y: Y + pt.x * Math.sin(rotationY) }))
     }
   }
-
+  let points2D = null;
   if (th1 && th2) {
     let xList = [];
     points.forEach(elem => xList.push(elem.x))
-    const points2D = hPlateSide2D(Math.min(...xList), Math.max(...xList), Thickness, z, relativeCP, rotationY, th1, th2);
-  } else {
-    const points2D = null;
-  }
+    points2D = hPlateSide2D(Math.min(...xList), Math.max(...xList), Thickness, z, relativeCP, rotationY, th1, th2);
+  } 
   let result = { points2D: points2D, points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint, topView, sideView }
   return result
 }
