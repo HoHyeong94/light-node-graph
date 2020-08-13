@@ -5097,6 +5097,7 @@
     const gradient = (tr.y - tl.y) / (tr.x - tl.x);
     const lwCot = (tl.x - bl.x) / (tl.y - bl.y);
     const rwCot = (tr.x - br.x) / (tr.y - br.y);
+    const ang90 = Math.PI/2;
 
     let urib2 = urib;
     urib2.ribHoleD = dsi.ribHoleD;
@@ -5118,19 +5119,19 @@
     let holeCenter1 = { x: dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness };
     let hstiff1 = [{ x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 }, { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 },
     { x: dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }, { x: -dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }];
-    let hstiff2D1 = [{ x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
-    { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
-    { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin },
-    { x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin }];
-    result["hstiff1"] = hPlateGen(hstiff1, ToGlobalPoint(point, holeCenter1), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D1, false, [1,2]);
+    // let hstiff2D1 = [{ x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
+    // { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin - dsi.holeStiffThickness },
+    // { x: dsi.holeCenterOffset + dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin },
+    // { x: dsi.holeCenterOffset - dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY - dsi.holeStiffmargin }]
+    result["hstiff1"] = hPlateGenV2(hstiff1, point, holeCenter1, dsi.holeStiffThickness, 0, point.skew, 0, 0, ang90,ang90, false, [1,2]);
     let hstiff2 = [{ x: - sign* (dsi.holeStiffhl / 2 + 100), y: dsi.webThickness / 2 }, { x: sign * dsi.holeStiffhl / 2, y: dsi.webThickness / 2 },
       { x: sign * dsi.holeStiffhl / 2, y: dsi.webThickness / 2 + dsi.holeStiffHeight }, { x: - sign * (dsi.holeStiffhl / 2 + 100), y: dsi.webThickness / 2 + dsi.holeStiffHeight }];
     let holeCenter2 = { x: dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin };
-    let hstiff2D2 = [{ x: dsi.holeCenterOffset - sign * (dsi.holeStiffhl / 2 + 100), y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
-    { x: dsi.holeCenterOffset + sign * dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
-    { x: dsi.holeCenterOffset + sign * dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin },
-    { x: dsi.holeCenterOffset - sign * (dsi.holeStiffhl / 2 + 100), y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }];
-    result["hstiff2"] = hPlateGen(hstiff2, ToGlobalPoint(point, holeCenter2), dsi.holeStiffThickness, 0, point.skew, 0, 0, hstiff2D2, true, [1,2]);
+    // let hstiff2D2 = [{ x: dsi.holeCenterOffset - sign * (dsi.holeStiffhl / 2 + 100), y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
+    // { x: dsi.holeCenterOffset + sign * dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin + dsi.holeStiffThickness },
+    // { x: dsi.holeCenterOffset + sign * dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin },
+    // { x: dsi.holeCenterOffset - sign * (dsi.holeStiffhl / 2 + 100), y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }]
+    result["hstiff2"] = hPlateGenV2(hstiff2, point, holeCenter2, dsi.holeStiffThickness, 0, point.skew, 0, 0, ang90, ang90, true, [1,2]);
     let holeCenter3 = { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign * ( 100/2 + dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 };
     let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 },
     { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }, { x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }];
@@ -5237,7 +5238,7 @@
       ];
       let cp = ToGlobalPoint(point, {x:0, y: tl.y - tl.x * gradient});
       let cp2 = {x:0, y: tl.y - tl.x * gradient};
-      let ang90 = Math.PI/2;
+      const ang90 = Math.PI/2;
       result['topPlate'] = hPlateGenV2(topPlate, point, cp2, topPlateThickness,0,skew,0,-gradRadian,ang90,ang90,true,[0,1]);
     }
     return result
