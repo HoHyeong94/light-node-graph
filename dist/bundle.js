@@ -6682,28 +6682,30 @@
     // let lFlangeL = (iSectionPoint.rWeb[2].x - iSectionPoint.rightTopPlate[0].x) * cosec
     // let rFlangeL = (jSectionPoint.lWeb[2].x - jSectionPoint.leftTopPlate[0].x) * cosec
 
-    let iBottom = ToGlobalPoint(iPoint, iSectionPoint.bottomPlate[1]);
-    let jBottom = ToGlobalPoint(jPoint, jSectionPoint.bottomPlate[0]);
-    let lengthB = Math.sqrt((jBottom.x - iBottom.x) ** 2 + (jBottom.y - iBottom.y) ** 2);
-    let vecB = { x: (jBottom.x - iBottom.x) / lengthB, y: (jBottom.y - iBottom.y) / lengthB };
+    // let iBottom = ToGlobalPoint(iPoint, iSectionPoint.bottomPlate[1])
+    // let jBottom = ToGlobalPoint(jPoint, jSectionPoint.bottomPlate[0])
+    // let lengthB = Math.sqrt((jBottom.x - iBottom.x) ** 2 + (jBottom.y - iBottom.y) ** 2)
+    // let vecB = { x: (jBottom.x - iBottom.x) / lengthB, y: (jBottom.y - iBottom.y) / lengthB }
     // let grdB = (jBottom.z - iBottom.z) / lengthB
     // let grdSecB = Math.sqrt(1 + grdB ** 2)
-    let bottomPoint = {
-      x: (iBottom.x + jBottom.x) / 2,
-      y: (iBottom.y + jBottom.y) / 2,
-      z: (iBottom.z + jBottom.z) / 2,
-      normalCos: vecB.x,
-      normalSin: vecB.y,
-    };
+    // let bottomPoint = {
+    //   x: (iBottom.x + jBottom.x) / 2,
+    //   y: (iBottom.y + jBottom.y) / 2,
+    //   z: (iBottom.z + jBottom.z) / 2,
+    //   normalCos: vecB.x,
+    //   normalSin: vecB.y,
+    // }
     // let lFlangeB = (iSectionPoint.rWeb[3].x - iSectionPoint.bottomPlate[1].x) * cosec
     // let rFlangeB = (jSectionPoint.lWeb[3].x - jSectionPoint.bottomPlate[0].x) * cosec
     let gradientX = (iPoint.gradientX + jPoint.gradientX) / 2;
-    let vStiffLength = centerPoint.z - bottomPoint.z - vStiffBottomOffset;
+    let bottom = {x: (lwebPlate[2].x + rwebPlate[2].x)/2, y: (lwebPlate[2].y + rwebPlate[2].y)/2};
+    let top = {x:(ufl.x + ufr.x)/2, y: (ufl.y + ufr.y)/2};
+    let vStiffLength = top.y - bottom.y - vStiffBottomOffset;
     let vStiffPlate = [{x: 0, y: -xs.webThickness / 2},
     { x: vStiffLength , y : -xs.webThickness / 2},
     { x: vStiffLength , y: -xs.webThickness / 2 - vStiffWidth },
     { x: -(vStiffWidth) * gradientX, y: -xs.webThickness / 2 - vStiffWidth }];
-    
+
     let vStiffTopFillet = Math.max(vStiffWidth - (xs.flangeWidth - xs.webThickness) / 2, 0);
     let vStiffPoint = [];
     vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[1], vStiffPlate[0], vStiffPlate[3], scallopRadius, 4));
@@ -6711,7 +6713,7 @@
     vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[3], vStiffPlate[2], vStiffPlate[1], vStiffendFillet, 1));
     vStiffPoint.push(vStiffPlate[1]);
     let ang90 = Math.PI/2;
-    result['vStiffner'] = hPlateGenV2(vStiffPoint,centerPoint, {x:(ufl.x + ufr.x)/2, y: (ufl.y + ufr.y)/2}, vStiffThickness, -vStiffThickness/2,centerPoint.skew, 0, ang90,ang90,ang90,true,null );
+    result['vStiffner'] = hPlateGenV2(vStiffPoint,centerPoint, top, vStiffThickness, -vStiffThickness/2,centerPoint.skew, 0, ang90,ang90,ang90,true,null );
     // {
     //   points: vStiffPoint,
     //   Thickness: vStiffThickness,
