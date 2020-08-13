@@ -1550,7 +1550,9 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
       { x: uflange[1][1].x, y: topPlateWidth / 2 },
     ]
     let cp = ToGlobalPoint(point, {x:0, y: tl.y - tl.x * gradient})
-    result['topPlate'] = hPlateGen(topPlate, cp, topPlateThickness,0,skew,0,-gradRadian,topPlate2D,true,[0,1])
+    let cp2 = {x:0, y: tl.y - tl.x * gradient}
+    let ang90 = Math.PI/2
+    result['topPlate'] = hPlateGenV2(topPlate, point, cp2, topPlateThickness,0,skew,0,-gradRadian,ang90,ang90,true,[0,1])
   }
   return result
 }
@@ -1952,6 +1954,72 @@ export function hPlateGen(points, centerPoint, Thickness, z, skew, rotationX, ro
     }
   }
 
+  let result = { points2D: points2D, points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint, topView, sideView }
+  return result
+}
+
+export function hPlateGenV2(points, Point, relativeCP, Thickness, z, skew, rotationX, rotationY, th1, th2, top2D, side2D){
+  const centerPoint = ToGlobalPoint(Point,relativeCP);
+  const cosec = 1 / Math.sin(skew * Math.PI / 180);
+  const cot = - 1 / Math.tan(skew * Math.PI / 180);
+  let cos = Math.cos(rotationY)
+  let cosx = Math.cos(rotationX)
+  let resultPoints = [];
+  let topView = null;
+  let sideView = null;
+
+  points.forEach(pt => resultPoints.push({ x: pt.x, y: pt.x * cot + pt.y * cosec }))
+  if (top2D) {
+    topView = [];
+    if (rotationY < Math.PI / 2 && rotationY > -Math.PI / 2) {
+      resultPoints.forEach(function (pt) {
+        let gpt = ToGlobalPoint(centerPoint, { x: pt.x * cos, y: 0 })
+        let th = pt.y * cosx;
+        let dx = centerPoint.normalSin * th;
+        let dy = centerPoint.normalCos * th;
+        topView.push({ x: gpt.x - dx, y: gpt.y + dy })
+      });
+    } else if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
+      let gpt = ToGlobalPoint(centerPoint, { x: resultPoints[0].x * cos, y: 0 })
+      for (let i = 0; i < 4; i++) {
+        let sign = rotationY > 0 ? 1 : -1
+        let th = i < 2 ? resultPoints[0].y * cosx : resultPoints[3].y * cosx;
+        let dx = centerPoint.normalSin * th;
+        let dy = centerPoint.normalCos * th;
+        let dx2 = 0 < i && i < 3 ? sign * centerPoint.normalCos * z : sign * centerPoint.normalCos * (z + Thickness)
+        let dy2 = 0 < i && i < 3 ? sign * centerPoint.normalSin * z : sign * centerPoint.normalSin * (z + Thickness)
+        topView.push({ x: gpt.x - dx + dx2, y: gpt.y + dy + dy2 })
+      }
+    }
+    // console.log("check", topView)
+  }
+  if (side2D || side2D === 0) {
+    let cos = Math.cos(rotationX);
+    let sin = Math.sin(rotationX);
+    sideView = [];
+    if (rotationY < Math.PI / 4 && rotationY > -Math.PI / 4) {
+      let x1 = points[side2D[0]].y
+      let x2 = points[side2D[1]].y
+      let X = centerPoint.girderStation;
+      let Y = centerPoint.z;
+      let pts = [{ x: X + x1 * cos - z * sin, y: Y + x1 * sin + z * cos }, 
+                 { x: X + x2 * cos - z * sin, y: Y + x2 * sin + z * cos},
+                { x: X + x2 * cos - (Thickness + z) * sin, y: Y + x2 * sin + (Thickness + z) * cos }, 
+                { x: X + x1 * cos - (Thickness + z) * sin, y: Y + x1 * sin + (Thickness + z) * cos }]
+      pts.forEach(pt => sideView.push(pt))
+
+    } else { //if (rotationY === Math.PI / 2 || rotationY === - Math.PI / 2) {
+      // let sign = rotationY > 0 ? 1 : -1
+      let dz = 0
+      if (typeof side2D ==="number") { dz = side2D}
+      let X = centerPoint.girderStation;
+      let Y = centerPoint.z + dz;
+      points.forEach(pt => sideView.push({x: X + pt.y, y: Y + pt.x * Math.sin(rotationY)}))
+    }
+  }
+  let xList = [];
+  points.forEach(elem => xList.push(elem.x))
+  const points2D = hPlateSide2D(Math.min(...xList), Math.max(...xList),Thickness, z, relativeCP, rotationY, th1, th2);
   let result = { points2D: points2D, points: resultPoints, Thickness: Thickness, z: z, rotationX: rotationX, rotationY: rotationY, hole: [], point: centerPoint, topView, sideView }
   return result
 }
