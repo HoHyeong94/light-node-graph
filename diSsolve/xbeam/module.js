@@ -1,6 +1,6 @@
 import { ToGlobalPoint, PlateRestPoint, Kframe, XYOffset, Vector, scallop, Fillet2D } from "../geometryModule"
 import { PTS } from "../DB/module"
-import { vPlateGen, hPlateGen, hPlateSide2D } from "../stiffner/module"
+import { vPlateGen, hPlateGen, hPlateSide2D, hPlateGenV2 } from "../stiffner/module"
 import { IbeamJoint } from "../splice/module"
 
 export function XbeamDict(
