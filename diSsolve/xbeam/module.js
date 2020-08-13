@@ -716,17 +716,13 @@ export function XbeamI0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
   // const upperFlangeWidth = xbeamSection.upperFlangeWidth
   const lowerFlangeThickness = xbeamSection.lowerFlangeThickness
   const lowerFlangeWidth = xbeamSection.lowerFlangeWidth
-  
-  
   const vStiffThickness = xbeamSection.vStiffThickness
   const vStiffBottomOffset = xbeamSection.vStiffBottomOffset
   const vStiffWidth = xbeamSection.vStiffWidth
   const vStiffendFillet = xbeamSection.vStiffendFillet
-
   // const webThickness = xbeamSection.webThickness
-  
   const scallopRadius = xbeamSection.scallopRadius
-
+  // 추후 변수정리 및 웹을 기준으로 하는 방법에서 하부플랜지 기준높이로 바꿔야 양측의 다이아프램과 매칭이 가능함
   let xs = {
     bracketLength: xbeamSection.connectorLength,
     bracketWidth: xbeamSection.connectorWidth,
@@ -811,15 +807,11 @@ export function XbeamI0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
   let rwCot = (tr.x - br.x) / (tr.y - br.y);
   let lwebPlate = [tl, { x: tl.x - xs.webHeight * lwCot, y: tl.y - xs.webHeight }, { x: tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength },
     { x: tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x)) }, ufl]
-  result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
-  // let lstiff = PlateRestPoint({ x: tl.x, y: tl.y - xs.webHeight - xs.flangeThickness }, bl, lGradient, 0, xs.stiffWidth);
-  // result["lstiff"] = vPlateGen(lstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
+  result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [],[0,3]);
 
   let rwebPlate = [tr, { x: tr.x -xs.webHeight * rwCot, y: tr.y - xs.webHeight }, { x: tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength },
     { x: tr.x - xs.bracketLength, y: ufr.y - uGradient * (xs.bracketLength - (tr.x - ufr.x)) }, ufr]
-  result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
-  // let rstiff = PlateRestPoint({ x: tr.x, y: tr.y - xs.webHeight - xs.flangeThickness }, br, lGradient, 0, -xs.stiffWidth);
-  // result["rstiff"] = vPlateGen(rstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
+  result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0,3]);
 
   let bracketPoint = [{ x: tl.x - (xs.webHeight + xs.flangeThickness) * lwCot, y: tl.y - xs.webHeight - xs.flangeThickness },
                       { x: tr.x - (xs.webHeight + xs.flangeThickness) * rwCot , y: tr.y - xs.webHeight - xs.flangeThickness }, ufl, ufr];
@@ -832,9 +824,7 @@ export function XbeamI0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
     let sign = i % 2 === 0 ? 1 : -1;
     let grad = i < 2 ? lRad : uRad;
     let th1 = i < 2 ? Math.PI / 2 + grad : rightAngle
-    let bracketLength = bracketLengthList[i]; //i < 2 ? xs.bracketLength : i === 2 ? xs.bracketLength - (ufl.x - tl.x) : xs.bracketLength - (tr.x - ufr.x);
-    // let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
-    // { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
+    let bracketLength = bracketLengthList[i]; 
     let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 15, y: xs.bracketWidth / 2 }, { x: sign * 44, y: xs.bracketWidth / 2 - 82 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
       { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 44, y: -xs.bracketWidth / 2 + 82 }, { x: sign * 15, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
     let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
@@ -843,20 +833,11 @@ export function XbeamI0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
     let top2D = i < 2 ? false : true;
     result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint, bracketPoint[i]), xs.flangeThickness, 0, centerPoint.skew, 0, grad,
     hPlateSide2D(0, sign * bracketLength / Math.cos(grad), xs.flangeThickness, 0, bracketPoint[i], grad, th1, Math.PI / 2 + grad), top2D, false)
-    // {
-    //   points: bracketShape,
-    //   Thickness: xs.flangeThickness,
-    //   z: 0,
-    //   rotationX: 0,
-    //   rotationY: grad,
-    //   hole: [],
-    //   point: bracketPoint[i],
     //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
     //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
-    // }
   }
   let webPlate = [lwebPlate[2], rwebPlate[2], rwebPlate[3], lwebPlate[3]]
-  result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, []);
+  result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2,3]);
   let uPoint = ToGlobalPoint(centerPoint, lwebPlate[3])
   let l = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x) ** 2 + (lwebPlate[3].y - rwebPlate[3].y) ** 2)
   let uflangePlate = [{ x: 0, y: xs.flangeWidth / 2 }, { x: 0, y: -xs.flangeWidth / 2 }, { x: l, y: -xs.flangeWidth / 2 }, { x: l, y: xs.flangeWidth / 2 }];
@@ -875,44 +856,6 @@ export function XbeamI0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
   ToGlobalPoint(centerPoint, { x: (rwebPlate[0].x + rwebPlate[1].x) / 2, y: (rwebPlate[0].y + rwebPlate[1].y) / 2, z: (rwebPlate[0].z + rwebPlate[1].z) / 2 })]; //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
   // let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2
   let section = [xs.flangeWidth, xs.flangeThickness, xs.flangeWidth, xs.flangeThickness, xs.webHeight, xs.webThickness];// [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ]
-  // return { result, data, section }
-
-  // const cosec = Math.abs(1 / Math.sin(iPoint.skew * Math.PI / 180));
-  // const cot = Math.abs(1 / Math.tan(iPoint.skew * Math.PI / 180));
-  // const cos = cot / cosec
-
-  // // 기준점은 iTopNode라고 가정, 가로보는 반드시 skew각도와 일치해야함.
-  // let iNode = ToGlobalPoint(iPoint, iSectionPoint.rightTopPlate[0]) //순서가 바뀌었을때도 예외처리 필요
-  // let jNode = ToGlobalPoint(jPoint, jSectionPoint.leftTopPlate[0])
-  // let length = Math.sqrt((jNode.x - iNode.x) ** 2 + (jNode.y - iNode.y) ** 2)
-  // let vec = { x: (jNode.x - iNode.x) / length, y: (jNode.y - iNode.y) / length }
-  // let grd = (jNode.z - iNode.z) / length
-  // let grdSec = Math.sqrt(1 + grd ** 2)
-  // let centerPoint = {
-  //   x: (iNode.x + jNode.x) / 2,
-  //   y: (iNode.y + jNode.y) / 2,
-  //   z: (iNode.z + jNode.z) / 2,
-  //   normalCos: vec.x,
-  //   normalSin: vec.y,
-  // }
-  // let lFlangeL = (iSectionPoint.rWeb[2].x - iSectionPoint.rightTopPlate[0].x) * cosec
-  // let rFlangeL = (jSectionPoint.lWeb[2].x - jSectionPoint.leftTopPlate[0].x) * cosec
-
-  // let iBottom = ToGlobalPoint(iPoint, iSectionPoint.bottomPlate[1])
-  // let jBottom = ToGlobalPoint(jPoint, jSectionPoint.bottomPlate[0])
-  // let lengthB = Math.sqrt((jBottom.x - iBottom.x) ** 2 + (jBottom.y - iBottom.y) ** 2)
-  // let vecB = { x: (jBottom.x - iBottom.x) / lengthB, y: (jBottom.y - iBottom.y) / lengthB }
-  // let grdB = (jBottom.z - iBottom.z) / lengthB
-  // let grdSecB = Math.sqrt(1 + grdB ** 2)
-  // let bottomPoint = {
-  //   x: (iBottom.x + jBottom.x) / 2,
-  //   y: (iBottom.y + jBottom.y) / 2,
-  //   z: (iBottom.z + jBottom.z) / 2,
-  //   normalCos: vecB.x,
-  //   normalSin: vecB.y,
-  // }
-  // let lFlangeB = (iSectionPoint.rWeb[3].x - iSectionPoint.bottomPlate[1].x) * cosec
-  // let rFlangeB = (jSectionPoint.lWeb[3].x - jSectionPoint.bottomPlate[0].x) * cosec
   let gradientX = (iPoint.gradientX + jPoint.gradientX) / 2
   let bottom = {x: (lwebPlate[2].x + rwebPlate[2].x)/2, y: (lwebPlate[2].y + rwebPlate[2].y)/2}
   let top = {x:(ufl.x + ufr.x)/2, y: (ufl.y + ufr.y)/2}
@@ -930,174 +873,6 @@ export function XbeamI0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
   vStiffPoint.push(vStiffPlate[1])
   let ang90 = Math.PI/2
   result['vStiffner'] = hPlateGenV2(vStiffPoint,centerPoint, top, vStiffThickness, -vStiffThickness/2,centerPoint.skew, 0, ang90,ang90,ang90,true,null )
-  // {
-  //   points: vStiffPoint,
-  //   Thickness: vStiffThickness,
-  //   z: -vStiffThickness / 2,
-  //   rotationX: Math.PI / 2,
-  //   rotationY: Math.PI / 2 * 3,
-  //   hole: [],
-  //   point: centerPoint
-  // }
-
-  // result['cbUpperFlange'] = {
-  //   points: [{ x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
-  //   { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: upperFlangeWidth / 2 },
-  //   { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: upperFlangeWidth / 2 },
-  //   { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: -upperFlangeWidth / 2 },],
-  //   Thickness: upperFlangeThickness,
-  //   z: 0,
-  //   rotationX: Math.atan(gradientX),
-  //   rotationY: -Math.atan(grd),
-  //   hole: [],
-  //   point: centerPoint
-  // }
-  // result['connectorLeftTop'] = {
-  //   points: [{ x: (- length / 2 - connectorWidth / 2 * cot) * grdSec, y: connectorWidth / 2 },
-  //   { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: upperFlangeWidth / 2 },
-  //   { x: (lFlangeL - length / 2 + connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
-  //   { x: (- length / 2 + connectorWidth / 2 * cot) * grdSec, y: -connectorWidth / 2 }],
-
-  //   Thickness: upperFlangeThickness,
-  //   z: 0,
-  //   rotationX: Math.atan(gradientX),
-  //   rotationY: -Math.atan(grd),
-  //   hole: [],
-  //   point: centerPoint
-  // }
-  // result['connectorRightTop'] = {
-  //   points: [{ x: (length / 2 - connectorWidth / 2 * cot) * grdSec, y: connectorWidth / 2 },
-  //   { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: upperFlangeWidth / 2 },
-  //   { x: (rFlangeL + length / 2 - connectorLength) * grdSec, y: -upperFlangeWidth / 2 },
-  //   { x: (length / 2 + connectorWidth / 2 * cot) * grdSec, y: -connectorWidth / 2 }],
-  //   Thickness: upperFlangeThickness,
-  //   z: 0,
-  //   rotationX: Math.atan((iPoint.gradientX + jPoint.gradientX) / 2),
-  //   rotationY: -Math.atan(grd),
-  //   hole: [],
-  //   point: centerPoint
-  // }
-
-  // result['cblowerFlange'] = {
-  //   points: [{ x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
-  //   { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
-  //   { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
-  //   { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },],
-  //   Thickness: lowerFlangeThickness,
-  //   z: -lowerFlangeThickness,
-  //   rotationX: 0,
-  //   rotationY: -Math.atan(grdB),
-  //   hole: [],
-  //   point: bottomPoint
-  // }
-  // result['connectorLeftBottom'] = {
-  //   points: [{ x: (- lengthB / 2 - connectorWidth / 2 * cot) * grdSecB, y: connectorWidth / 2 },
-  //   { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
-  //   { x: (lFlangeL - length / 2 + connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
-  //   { x: (- lengthB / 2 + connectorWidth / 2 * cot) * grdSecB, y: -connectorWidth / 2 }],
-  //   Thickness: lowerFlangeThickness,
-  //   z: -lowerFlangeThickness,
-  //   rotationX: 0,
-  //   rotationY: -Math.atan(grdB),
-  //   hole: [],
-  //   point: bottomPoint
-  // }
-  // result['connectorRightBottom'] = {
-  //   points: [{ x: (lengthB / 2 - connectorWidth / 2 * cot) * grdSecB, y: connectorWidth / 2 },
-  //   { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: lowerFlangeWidth / 2 },
-  //   { x: (rFlangeL + length / 2 - connectorLength) * grdSecB, y: -lowerFlangeWidth / 2 },
-  //   { x: (lengthB / 2 + connectorWidth / 2 * cot) * grdSecB, y: -connectorWidth / 2 }],
-  //   Thickness: lowerFlangeThickness,
-  //   z: -lowerFlangeThickness,
-  //   rotationX: 0,
-  //   rotationY: -Math.atan(grdB),
-  //   hole: [],
-  //   point: bottomPoint
-  // }
-
-  // let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[2])
-  // let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[2])
-  // let cblength = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2)
-  // let cbVec = { x: (jTopNode.x - iTopNode.x) / cblength, y: (jTopNode.y - iTopNode.y) / cblength }
-  // let gradient = (jTopNode.z - iTopNode.z) / cblength
-  // let iCos = (iPoint.normalCos * cbVec.x + iPoint.normalSin * cbVec.y).toFixed(6) * 1
-  // let jCos = jPoint.normalCos * cbVec.x + jPoint.normalSin * cbVec.y
-
-  // let ibaseNode = { x: iSectionPoint.rWeb[2].x * cosec, y: iSectionPoint.rWeb[2].y }
-  // let iTopNode1 = { x: iSectionPoint.rightTopPlate[0].x * cosec, y: iSectionPoint.rightTopPlate[0].y }
-  // let jbaseNode = { x: ibaseNode.x + cblength, y: ibaseNode.y + jTopNode.z - iTopNode.z }
-  // let jTopNode1 = { x: jbaseNode.x + (jSectionPoint.leftTopPlate[0].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.leftTopPlate[0].y - jSectionPoint.lWeb[2].y }
-
-
-  // let jBottomNode = { x: jbaseNode.x + (jSectionPoint.lWeb[3].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.lWeb[3].y - jSectionPoint.lWeb[2].y }
-  // let jBottomNode1 = { x: jbaseNode.x + (jSectionPoint.bottomPlate[0].x - jSectionPoint.lWeb[2].x) * cosec, y: jbaseNode.y + jSectionPoint.bottomPlate[0].y - jSectionPoint.lWeb[2].y }
-  // let iBottomNode1 = { x: iSectionPoint.bottomPlate[1].x * cosec, y: iSectionPoint.bottomPlate[1].y }
-  // let iBottomNode = { x: iSectionPoint.rWeb[3].x * cosec, y: iSectionPoint.rWeb[3].y }
-
-  // let a = (jBottomNode1.y - iBottomNode1.y) / (jBottomNode1.x - iBottomNode1.x)
-
-  // let iTopNode2 = { x: ibaseNode.x + connectorLength, y: ibaseNode.y + connectorLength * gradient }
-  // let iBottomNode2 = { x: iTopNode2.x, y: iBottomNode1.y + a * (iTopNode2.x - iBottomNode1.x) }
-  // let jTopNode2 = { x: jbaseNode.x - connectorLength, y: jbaseNode.y - connectorLength * gradient }
-  // let jBottomNode2 = { x: jTopNode2.x, y: iBottomNode1.y + a * (jTopNode2.x - iBottomNode1.x) }
-
-  // let leftConnectorWeb = [
-  //   ibaseNode,
-  //   iTopNode1,
-  //   iTopNode2,
-  //   iBottomNode2,
-  //   iBottomNode1,
-  //   iBottomNode,
-  // ]
-  // result['leftConnectorWeb'] = {
-  //   points: leftConnectorWeb,
-  //   Thickness: xbeamSection.webThickness,
-  //   z: -xbeamSection.webThickness / 2,
-  //   rotationX: Math.PI / 2,
-  //   rotationY: Math.acos(iCos),
-  //   hole: [],
-  //   point: iPoint
-  // }
-  // let rightConnectorWeb = [
-  //   jbaseNode,
-  //   jTopNode1,
-  //   jTopNode2,
-  //   jBottomNode2,
-  //   jBottomNode1,
-  //   jBottomNode,
-  // ]
-  // result['rightConnectorWeb'] = {
-  //   points: rightConnectorWeb,
-  //   Thickness: xbeamSection.webThickness,
-  //   z: -xbeamSection.webThickness / 2,
-  //   rotationX: Math.PI / 2,
-  //   rotationY: Math.acos(iCos),
-  //   hole: [],
-  //   point: iPoint
-  // }
-  // let cbWeb = [
-  //   iTopNode2,
-  //   iBottomNode2,
-  //   jBottomNode2,
-  //   jTopNode2
-  // ]
-  // result['cbWeb'] = {
-  //   points: cbWeb,
-  //   Thickness: xbeamSection.webThickness,
-  //   z: -xbeamSection.webThickness / 2,
-  //   rotationX: Math.PI / 2,
-  //   rotationY: Math.acos(iCos),
-  //   hole: [],
-  //   point: iPoint
-  // }
-  // // console.log('icos:', iCos) 
-  // // let tlength = Math.sqrt((iPoint.x - jPoint.x) ** 2 + (iPoint.y - jPoint.y) ** 2)
-  // data = [ToGlobalPoint(iPoint, { x: (ibaseNode.x + iTopNode1.x) / 2, y: (ibaseNode.y + iTopNode1.y) / 2, z: (ibaseNode.z + iTopNode1.z) / 2 }),
-  // ToGlobalPoint(iPoint, { x: (jbaseNode.x + jTopNode1.x) / 2, y: (jbaseNode.y + jTopNode1.y) / 2, z: (jbaseNode.z + jTopNode1.z) / 2 })];
-  // //[cbWeb[0].x, tlength - cbWeb[3].x]; //임시 강역값 입력 20.03.24  by jhlim  
-
-  // let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y)) / 2
-  // let section = [upperFlangeWidth, upperFlangeThickness, lowerFlangeWidth, lowerFlangeThickness, webHeight, webThickness]
   return { result, data, section }
 }
 
