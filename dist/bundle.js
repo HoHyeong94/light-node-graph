@@ -6731,12 +6731,12 @@
     let bottomVec = Vector(framePoints[3], framePoints[2]);
 
     let boltLayout = [
-      XYOffset(framePoints[0],topFrame, hFrameEndOffset + 40, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[0],topFrame, hFrameEndOffset + 120, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[0],topFrame, hFrameEndOffset + 200, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[1],topFrame, -hFrameEndOffset - 40, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[1],topFrame, -hFrameEndOffset - 120, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[1],topFrame, -hFrameEndOffset - 200, (pts1[0]+pts1[3])/2 ),
+      XYOffset(framePoints[0],topVec, hFrameEndOffset + 40, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[0],topVec, hFrameEndOffset + 120, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[0],topVec, hFrameEndOffset + 200, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[1],topVec, -hFrameEndOffset - 40, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[1],topVec, -hFrameEndOffset - 120, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[1],topVec, -hFrameEndOffset - 200, (pts1[0]+pts1[3])/2 ),
   ];
     let Bolt = {
       size: wBolt.size, dia: wBolt.dia, t: wBolt.t, l: gussetThickness,
