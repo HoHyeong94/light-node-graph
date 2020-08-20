@@ -1,5 +1,5 @@
-import { sceneAdder, THREE } from "global";
-import { sectionView, topDraw, sideDraw, LineDrawView, LineSideView, GirderLayoutView, 
+import { sceneAdder } from "global";
+import { sectionView, topDraw, LineDrawView, LineSideView, GirderLayoutView, 
   XbeamSection,  GirderGeneralDraw1, GirderGeneralDraw2, PartGeneralDraw } from "./module"
 // import { LineToThree } from "../line/module";
 
