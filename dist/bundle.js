@@ -3861,24 +3861,25 @@
     const section = 3;
     const platelayout = 4;
     let right = true;
-    let webPoints1 = [
-      sectionPointDict[pk1].forward.web[0][0],
-      sectionPointDict[pk1].forward.web[0][1],
-      sectionPointDict[pk1].forward.web[1][0],
-      sectionPointDict[pk1].forward.web[1][1]
-    ];
-    let webPoints2 = [
-      sectionPointDict[pk2].forward.web[0][0],
-      sectionPointDict[pk2].forward.web[0][1],
-      sectionPointDict[pk2].forward.web[1][0],
-      sectionPointDict[pk2].forward.web[1][1]
-    ];
+
 
     for (let i = 0; i < hBracingLayout.length; i++) {
       if (hBracingLayout[i][section] === "hBracingType1") {
         let hBSection = hBracingectionList[hBracingLayout[i][section]];
         let pk1 = hBracingLayout[i][from];
         let pk2 = hBracingLayout[i][to];
+        let webPoints1 = [
+          sectionPointDict[pk1].forward.web[0][0],
+          sectionPointDict[pk1].forward.web[0][1],
+          sectionPointDict[pk1].forward.web[1][0],
+          sectionPointDict[pk1].forward.web[1][1]
+        ];
+        let webPoints2 = [
+          sectionPointDict[pk2].forward.web[0][0],
+          sectionPointDict[pk2].forward.web[0][1],
+          sectionPointDict[pk2].forward.web[1][0],
+          sectionPointDict[pk2].forward.web[1][1]
+        ];
         let webPoints = [];
         if (hBracingLayout[i][leftToright]) {
           webPoints = [webPoints1[0],webPoints1[1],webPoints2[2],webPoints2[3]];
