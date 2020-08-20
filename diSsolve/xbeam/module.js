@@ -951,12 +951,28 @@ export function XbeamK0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
   XYOffset(framePoints[1],topVec, -hFrameEndOffset - 40, (pts1[0]+pts1[3])/2 ),
   XYOffset(framePoints[1],topVec, -hFrameEndOffset - 120, (pts1[0]+pts1[3])/2 ),
   XYOffset(framePoints[1],topVec, -hFrameEndOffset - 200, (pts1[0]+pts1[3])/2 ),
+  XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 40, (pts2[0]+pts2[3])/2 ),
+  XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 120, (pts2[0]+pts2[3])/2 ),
+  XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 200, (pts2[0]+pts2[3])/2 ),
+  XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 280, (pts2[0]+pts2[3])/2 ),
+  XYOffset(framePoints[1],rightVec, diaFrameEndOffset + 40, (pts2[0]+pts2[3])/2 ),
+  XYOffset(framePoints[1],rightVec, diaFrameEndOffset + 120, (pts2[0]+pts2[3])/2 ),
+  XYOffset(framePoints[1],rightVec, diaFrameEndOffset + 200, (pts2[0]+pts2[3])/2 ),
+  XYOffset(framePoints[1],rightVec, diaFrameEndOffset + 280, (pts2[0]+pts2[3])/2 ),
+  XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 40, (pts3[0]+pts3[3])/2 ),
+  XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 120, (pts3[0]+pts3[3])/2 ),
+  XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 200, (pts3[0]+pts3[3])/2 ),
+  XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 280, (pts3[0]+pts3[3])/2 ),
+  XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 40, (pts3[0]+pts3[3])/2 ),
+  XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 120, (pts3[0]+pts3[3])/2 ),
+  XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 200, (pts3[0]+pts3[3])/2 ),
+  XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 280, (pts3[0]+pts3[3])/2 ),
 ]
 let boltLayout2 = []
 boltLayout.forEach(elem => boltLayout2.push([elem.x, elem.y]))
   let Bolt = {
-    size: wBolt.size, dia: wBolt.dia, t: wBolt.t, l: gussetThickness,
-    layout: boltLayout2, isUpper: true
+    size: wBolt.size, dia: wBolt.dia, t: wBolt.t, l: gussetThickness * 2,
+    layout: boltLayout2, isUpper: false
   };
 
 
@@ -1000,7 +1016,7 @@ boltLayout.forEach(elem => boltLayout2.push([elem.x, elem.y]))
     { x: br.x + (gussetWeldingOffset + gussetBottomWidth) * jCot, y: br.y + (gussetWeldingOffset + gussetBottomWidth) },
   ];
   result['rightBottomGusset'] = vPlateGen(rightBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null)
-  result['topFrame1'] = vFrameGen(topFrame[1],centerPoint, pts1[4], gussetThickness/2,[0,3,1,2],null)
+  result['topFrame1'] = vFrameGen(topFrame[0],centerPoint, pts1[4], gussetThickness/2,[0,3,1,2],null)
   result['topFrame2'] = vFrameGen(topFrame[1],centerPoint, pts1[5], gussetThickness/2,[0,3,1,2],null)
   result['bottomFrame1'] = vFrameGen(bottomFrame[0],centerPoint, pts2[4], gussetThickness/2,null,null)
   result['bottomFrame2'] = vFrameGen(bottomFrame[1],centerPoint, pts2[5], gussetThickness/2,null,null)
