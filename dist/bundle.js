@@ -6698,13 +6698,16 @@
       z: (iTopNode.z + jTopNode.z) / 2,
       normalCos: vec.x,
       normalSin: vec.y,
+      offset: (iPoint.offset + jPoint.offset) / 2
     };
+    let cw = (centerPoint.normalCos * vec.y - centerPoint.normalSin * vec.x) > 0 ? 1 : -1; // 반시계방향의 경우 1
+    centerPoint.skew = 90 + cw * Math.acos(centerPoint.normalCos * vec.x + centerPoint.normalSin * vec.y) * 180 / Math.PI;
 
     const iCot = (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x) / (iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y);
     const jCot = (jSectionPoint.lWeb[1].x - jSectionPoint.lWeb[0].x) / (jSectionPoint.lWeb[1].y - jSectionPoint.lWeb[0].y);
     let iheight = iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y;
     let jheight = jSectionPoint.rWeb[1].y - jSectionPoint.rWeb[0].y;
-    let points = [
+    let points = [ //frame 기준 포인트
       { x: -xlength / 2 - topOffset * iCot, y: -xlength / 2 * grd - topOffset },
       { x: xlength / 2 - topOffset * jCot, y: xlength / 2 * grd - topOffset },
       { x: xlength / 2 - (jheight - bottomOffset) * jCot, y: xlength / 2 * grd - (jheight - bottomOffset) },
@@ -6798,81 +6801,89 @@
       point: centerPoint
     };
 
-    result['topFrame1'] = {
-      points: topFrame[0],
-      Thickness: pts1[4],
-      z: gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
-    result['topFrame2'] = {
-      points: topFrame[1],
-      Thickness: pts1[5],
-      z: gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
+    result['topFrame1'] = vFrameGen(topFrame[1],centerPoint, pts1[4], gussetThickness/2,null,null);
+    // {
+    //   points: topFrame[0],
+    //   Thickness: pts1[4],
+    //   z: gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    result['topFrame2'] = vFrameGen(topFrame[1],centerPoint, pts1[5], gussetThickness/2,null,null);
+    // {
+    //   points: topFrame[1],
+    //   Thickness: pts1[5],
+    //   z: gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
     // console.log(result)
 
-    result['bottomFrame1'] = {
-      points: bottomFrame[0],
-      Thickness: pts2[4],
-      z: gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
-    result['bottomFrame2'] = {
-      points: bottomFrame[1],
-      Thickness: pts2[5],
-      z: gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
+    result['bottomFrame1'] = vFrameGen(bottomFrame[0],centerPoint, pts2[4], gussetThickness/2,null,null);
+    // {
+    //   points: bottomFrame[0],
+    //   Thickness: pts2[4],
+    //   z: gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    result['bottomFrame2'] = vFrameGen(bottomFrame[1],centerPoint, pts2[5], gussetThickness/2,null,null);
+    // {
+    //   points: bottomFrame[1],
+    //   Thickness: pts2[5],
+    //   z: gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
 
-    result['leftFrame1'] = {
-      points: leftFrame[0],
-      Thickness: pts3[4],
-      z: gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
-    result['leftFrame2'] = {
-      points: leftFrame[1],
-      Thickness: pts3[5],
-      z: gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
-    result['righttFrame1'] = {
-      points: rightFrame[0],
-      Thickness: pts3[4],
-      z: gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
-    result['rightFrame2'] = {
-      points: rightFrame[1],
-      Thickness: pts3[5],
-      z: gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
+    result['leftFrame1'] = vFrameGen(leftFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null);
+    // {
+    //   points: leftFrame[0],
+    //   Thickness: pts3[4],
+    //   z: gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    result['leftFrame2'] = vFrameGen(leftFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null);
+    // {
+    //   points: leftFrame[1],
+    //   Thickness: pts3[5],
+    //   z: gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    result['righttFrame1'] =vFrameGen(rightFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null); 
+    // {
+    //   points: rightFrame[0],
+    //   Thickness: pts3[4],
+    //   z: gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    result['rightFrame2'] = vFrameGen(rightFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null);
+    // {
+    //   points: rightFrame[1],
+    //   Thickness: pts3[5],
+    //   z: gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
     let dummyPoints = [...points, bottomCenter];
     dummyPoints.forEach(function (elem) { data.push(ToGlobalPoint(centerPoint, elem)); });
     let section = [tFrame, bFrame, dFrame];   //사용자로부터 받은 단면요소의 값을 객체로 저장
