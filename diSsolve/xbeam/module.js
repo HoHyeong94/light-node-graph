@@ -1016,7 +1016,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
     point: centerPoint
   }
 
-  result['topFrame1'] = vFrameGen(topFrame[1],centerPoint, pts1[4], gussetThickness/2,null,null)
+  result['topFrame1'] = vFrameGen(topFrame[1],centerPoint, pts1[4], gussetThickness/2,[0,3,1,2],null)
   // {
   //   points: topFrame[0],
   //   Thickness: pts1[4],
@@ -1026,7 +1026,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
   //   hole: [],
   //   point: centerPoint
   // }
-  result['topFrame2'] = vFrameGen(topFrame[1],centerPoint, pts1[5], gussetThickness/2,null,null)
+  result['topFrame2'] = vFrameGen(topFrame[1],centerPoint, pts1[5], gussetThickness/2,[0,3,1,2],null)
   // {
   //   points: topFrame[1],
   //   Thickness: pts1[5],
@@ -1038,7 +1038,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
   // }
   // console.log(result)
 
-  result['bottomFrame1'] = vFrameGen(bottomFrame[0],centerPoint, pts2[4], gussetThickness/2,null,null)
+  result['bottomFrame1'] = vFrameGen(bottomFrame[0],centerPoint, pts2[4], gussetThickness/2,[0,3,1,2],null)
   // {
   //   points: bottomFrame[0],
   //   Thickness: pts2[4],
@@ -1048,7 +1048,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
   //   hole: [],
   //   point: centerPoint
   // }
-  result['bottomFrame2'] = vFrameGen(bottomFrame[1],centerPoint, pts2[5], gussetThickness/2,null,null)
+  result['bottomFrame2'] = vFrameGen(bottomFrame[1],centerPoint, pts2[5], gussetThickness/2,[0,3,1,2],null)
   // {
   //   points: bottomFrame[1],
   //   Thickness: pts2[5],
@@ -1059,7 +1059,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
   //   point: centerPoint
   // }
 
-  result['leftFrame1'] = vFrameGen(leftFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null)
+  result['leftFrame1'] = vFrameGen(leftFrame[0],centerPoint, pts3[4], gussetThickness/2,[0,3,1,2],null)
   // {
   //   points: leftFrame[0],
   //   Thickness: pts3[4],
@@ -1069,7 +1069,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
   //   hole: [],
   //   point: centerPoint
   // }
-  result['leftFrame2'] = vFrameGen(leftFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null)
+  result['leftFrame2'] = vFrameGen(leftFrame[1],centerPoint, pts3[5], gussetThickness/2,[0,3,1,2],null)
   // {
   //   points: leftFrame[1],
   //   Thickness: pts3[5],
@@ -1079,7 +1079,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
   //   hole: [],
   //   point: centerPoint
   // }
-  result['righttFrame1'] =vFrameGen(rightFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null) 
+  result['righttFrame1'] =vFrameGen(rightFrame[0],centerPoint, pts3[4], gussetThickness/2,[0,3,1,2],null) 
   // {
   //   points: rightFrame[0],
   //   Thickness: pts3[4],
@@ -1089,7 +1089,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
   //   hole: [],
   //   point: centerPoint
   // }
-  result['rightFrame2'] = vFrameGen(rightFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null)
+  result['rightFrame2'] = vFrameGen(rightFrame[1],centerPoint, pts3[5], gussetThickness/2,[0,3,1,2],null)
   // {
   //   points: rightFrame[1],
   //   Thickness: pts3[5],
