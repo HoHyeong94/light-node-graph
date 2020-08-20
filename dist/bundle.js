@@ -6724,82 +6724,114 @@
     let rightVec = Vector(bottomCenter, points[1]);
     let bottomVec = Vector(points[3], points[2]);
 
-    let leftTopGussetPlate = [
+    let centerGusset = [
+      XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
+      XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
+      XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+      XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+      XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+      XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+    ];
+    result['centerGusset'] = vPlateGen(centerGusset,centerPoint, gussetThickness,[], 0, null,null,[],[3,4],null);
+    // {
+    //   points: [
+    //     XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
+    //     XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
+    //     XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+    //     XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+    //     XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+    //     XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+    //   ],
+    //   Thickness: gussetThickness,
+    //   z: -gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    let leftTopGusset = [
       { x: -xlength / 2 - gussetWeldingOffset * iCot, y: -xlength / 2 * grd - gussetWeldingOffset },
       XYOffset(points[0], topVec, hFrameEndOffset + gussetBondingLength, pts1[0] + gussetWeldingOffset),
       XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[0] + gussetWeldingOffset),
       XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[3] - gussetWeldingOffset),
       { x: -xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * iCot, y: -xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
     ];
-    result['centerGusset'] = {
-      points: [
-        XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
-        XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
-        XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-        XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-        XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-        XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-      ],
-      Thickness: gussetThickness,
-      z: -gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
-    result['leftTopGusset'] = {
-      points: leftTopGussetPlate,
-      Thickness: gussetThickness,
-      z: -gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
-    result['rightTopGusset'] = {
-      points: [
-        { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
-        XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
-        XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-        XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-        { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
-      ],
-      Thickness: gussetThickness,
-      z: -gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
-    result['leftBottomGusset'] = {
-      points: [
-        { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
-        XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
-        XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
-        { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
-      ],
-      Thickness: gussetThickness,
-      z: -gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
 
-    result['rightBottomGusset'] = {
-      points: [
-        { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
-        XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
-        XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
-        { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
-      ],
-      Thickness: gussetThickness,
-      z: -gussetThickness / 2,
-      rotationX: Math.PI / 2,
-      rotationY: 0,
-      hole: [],
-      point: centerPoint
-    };
+    result['leftTopGusset'] = vPlateGen(leftTopGusset,centerPoint, gussetThickness,[], 0, null,null,[],[0,2],null);
+    // {
+    //   points: leftTopGussetPlate,
+    //   Thickness: gussetThickness,
+    //   z: -gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    let rightTopGusset = [
+      { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
+      XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
+      XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+      XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+      { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
+    ];
+    result['rightTopGusset'] = vPlateGen(rightTopGusset,centerPoint, gussetThickness,[], 0, null,null,[],[0,2],null);
+    // {
+    //   points: [
+    //     { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
+    //     XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
+    //     XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+    //     XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+    //     { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
+    //   ],
+    //   Thickness: gussetThickness,
+    //   z: -gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    let leftBottomGusset = [
+      { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
+      XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
+      XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
+      { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
+    ];
+    result['leftBottomGusset'] = vPlateGen(leftBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null);
+    // {
+    //   points: [
+    //     { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
+    //     XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
+    //     XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
+    //     { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
+    //   ],
+    //   Thickness: gussetThickness,
+    //   z: -gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
+    let rightBottomGusset = [
+      { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
+      XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
+      XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
+      { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
+    ];
+    result['rightBottomGusset'] = vPlateGen(rightBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null);
+    // {
+    //   points: [
+    //     { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
+    //     XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
+    //     XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
+    //     { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
+    //   ],
+    //   Thickness: gussetThickness,
+    //   z: -gussetThickness / 2,
+    //   rotationX: Math.PI / 2,
+    //   rotationY: 0,
+    //   hole: [],
+    //   point: centerPoint
+    // }
 
     result['topFrame1'] = vFrameGen(topFrame[1],centerPoint, pts1[4], gussetThickness/2,[0,3,1,2],null);
     // {
@@ -6823,7 +6855,7 @@
     // }
     // console.log(result)
 
-    result['bottomFrame1'] = vFrameGen(bottomFrame[0],centerPoint, pts2[4], gussetThickness/2,[0,3,1,2],null);
+    result['bottomFrame1'] = vFrameGen(bottomFrame[0],centerPoint, pts2[4], gussetThickness/2,null,null);
     // {
     //   points: bottomFrame[0],
     //   Thickness: pts2[4],
@@ -6833,7 +6865,7 @@
     //   hole: [],
     //   point: centerPoint
     // }
-    result['bottomFrame2'] = vFrameGen(bottomFrame[1],centerPoint, pts2[5], gussetThickness/2,[0,3,1,2],null);
+    result['bottomFrame2'] = vFrameGen(bottomFrame[1],centerPoint, pts2[5], gussetThickness/2,null,null);
     // {
     //   points: bottomFrame[1],
     //   Thickness: pts2[5],
@@ -6844,7 +6876,7 @@
     //   point: centerPoint
     // }
 
-    result['leftFrame1'] = vFrameGen(leftFrame[0],centerPoint, pts3[4], gussetThickness/2,[0,3,1,2],null);
+    result['leftFrame1'] = vFrameGen(leftFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null);
     // {
     //   points: leftFrame[0],
     //   Thickness: pts3[4],
@@ -6854,7 +6886,7 @@
     //   hole: [],
     //   point: centerPoint
     // }
-    result['leftFrame2'] = vFrameGen(leftFrame[1],centerPoint, pts3[5], gussetThickness/2,[0,3,1,2],null);
+    result['leftFrame2'] = vFrameGen(leftFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null);
     // {
     //   points: leftFrame[1],
     //   Thickness: pts3[5],
@@ -6864,7 +6896,7 @@
     //   hole: [],
     //   point: centerPoint
     // }
-    result['righttFrame1'] =vFrameGen(rightFrame[0],centerPoint, pts3[4], gussetThickness/2,[0,3,1,2],null); 
+    result['righttFrame1'] =vFrameGen(rightFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null); 
     // {
     //   points: rightFrame[0],
     //   Thickness: pts3[4],
@@ -6874,7 +6906,7 @@
     //   hole: [],
     //   point: centerPoint
     // }
-    result['rightFrame2'] = vFrameGen(rightFrame[1],centerPoint, pts3[5], gussetThickness/2,[0,3,1,2],null);
+    result['rightFrame2'] = vFrameGen(rightFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null);
     // {
     //   points: rightFrame[1],
     //   Thickness: pts3[5],
