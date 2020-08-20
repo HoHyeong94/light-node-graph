@@ -5839,7 +5839,7 @@
         xbData = xbeam.data;
         xbSection = xbeam.section;
       } else if (xbeamLayout[i][section] == "xbeamK") {
-        let xbeam = XbeamSectionK(
+        let xbeam = XbeamK0(
           iPoint,
           jPoint,
           iSectionPoint,
@@ -6662,7 +6662,7 @@
     return { result, data, section }
   }
 
-  function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection, sectionDB) {
+  function XbeamK0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSection, sectionDB) {
     const result = {};
     let data = [];
     //K형가로보는 skew를 허용하지 않고 생성됨.
@@ -6674,23 +6674,21 @@
     const gussetTopWidth = xbeamSection.gussetTopWidth;
     const gussetBottomWidth = xbeamSection.gussetBottomWidth;
     const gussetCenterWidth = xbeamSection.gussetCenterWidth;
-    let hFrameEndOffset = xbeamSection.hFrameEndOffset;
-    let diaFrameEndOffset = xbeamSection.diaFrameEndOffset;
-    let tFrame = xbeamSection.tFrameName;
-    let bFrame = xbeamSection.bFrameName;
-    let dFrame = xbeamSection.dFrameName;
+    const hFrameEndOffset = xbeamSection.hFrameEndOffset;
+    const diaFrameEndOffset = xbeamSection.diaFrameEndOffset;
+    const tFrame = xbeamSection.tFrameName;
+    const bFrame = xbeamSection.bFrameName;
+    const dFrame = xbeamSection.dFrameName;
     const pts1 = PTS(tFrame, true, 1, sectionDB);
     const pts2 = PTS(bFrame, true, 1, sectionDB);
     const pts3 = PTS(dFrame, true, 1, sectionDB);
 
-    // let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1])
-    // let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1])
 
-    // let length = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2)
-    // let xlength = Math.abs(jPoint.offset - iPoint.offset)
-    // let vec = { x: (jTopNode.x - iTopNode.x) / length, y: (jTopNode.y - iTopNode.y) / length }
-    // let grd = (jTopNode.z - iTopNode.z) / length
-    // let grdSec = Math.sqrt(1 + grd ** 2)
+    let wBolt = {
+      dia : 22,
+      size:37,
+      t:14,
+    };
 
     let tlength = Math.sqrt((iPoint.x - jPoint.x) ** 2 + (iPoint.y - jPoint.y) ** 2);
     let vec = { x: (jPoint.x - iPoint.x) / tlength, y: (jPoint.y - iPoint.y) / tlength };
@@ -6715,8 +6713,6 @@
     
     const iCot = (tl.x - bl.x) / (tl.y - bl.y);
     const jCot = (tr.x - br.x) / (tr.y - br.y);
-    // let iheight = iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y
-    // let jheight = jSectionPoint.rWeb[1].y - jSectionPoint.rWeb[0].y
     let framePoints = [ //frame 기준 포인트
       { x: tl.x - topOffset * iCot, y: tl.y - topOffset },
       { x: tr.x - topOffset * jCot, y: tr.y - topOffset },
@@ -6734,6 +6730,20 @@
     let rightVec = Vector(bottomCenter, framePoints[1]);
     let bottomVec = Vector(framePoints[3], framePoints[2]);
 
+    let boltLayout = [
+      XYOffset(framePoints[0],topFrame, hFrameEndOffset + 40, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[0],topFrame, hFrameEndOffset + 120, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[0],topFrame, hFrameEndOffset + 200, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[1],topFrame, -hFrameEndOffset - 40, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[1],topFrame, -hFrameEndOffset - 120, (pts1[0]+pts1[3])/2 ),
+    XYOffset(framePoints[1],topFrame, -hFrameEndOffset - 200, (pts1[0]+pts1[3])/2 ),
+  ];
+    let Bolt = {
+      size: wBolt.size, dia: wBolt.dia, t: wBolt.t, l: gussetThickness,
+      layout: boltLayout, isUpper: true
+    };
+
+
     let centerGusset = [
       XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
       XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
@@ -6743,22 +6753,7 @@
       XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
     ];
     result['centerGusset'] = vPlateGen(centerGusset,centerPoint, gussetThickness,[], 0, null,null,[],[3,4],null);
-    // {
-    //   points: [
-    //     XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
-    //     XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
-    //     XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-    //     XYOffset(bottomCenter, rightVec, (diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-    //     XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-    //     XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-    //   ],
-    //   Thickness: gussetThickness,
-    //   z: -gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
+    result['centerGusset']['bolt'] = Bolt;
     let leftTopGusset = [
       { x: tl.x - gussetWeldingOffset * iCot, y: tl.y - gussetWeldingOffset },
       XYOffset(framePoints[0], topVec, hFrameEndOffset + gussetBondingLength, pts1[0] + gussetWeldingOffset),
@@ -6766,17 +6761,7 @@
       XYOffset(framePoints[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[3] - gussetWeldingOffset),
       { x: tl.x - (gussetWeldingOffset + gussetTopWidth) * iCot, y: tl.y - (gussetWeldingOffset + gussetTopWidth) },
     ];
-
     result['leftTopGusset'] = vPlateGen(leftTopGusset,centerPoint, gussetThickness,[], 0, null,null,[],[0,2],null);
-    // {
-    //   points: leftTopGussetPlate,
-    //   Thickness: gussetThickness,
-    //   z: -gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
     let rightTopGusset = [
       { x: tr.x - gussetWeldingOffset * jCot, y: tr.y - gussetWeldingOffset },
       XYOffset(framePoints[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
@@ -6785,21 +6770,6 @@
       { x:tr.x - (gussetWeldingOffset + gussetTopWidth) * jCot, y: tr.y - (gussetWeldingOffset + gussetTopWidth) },
     ];
     result['rightTopGusset'] = vPlateGen(rightTopGusset,centerPoint, gussetThickness,[], 0, null,null,[],[0,2],null);
-    // {
-    //   points: [
-    //     { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
-    //     XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
-    //     XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-    //     XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-    //     { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
-    //   ],
-    //   Thickness: gussetThickness,
-    //   z: -gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
     let leftBottomGusset = [
       { x: bl.x + gussetWeldingOffset * iCot, y: bl.y + gussetWeldingOffset },
       XYOffset(framePoints[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
@@ -6807,20 +6777,6 @@
       { x: bl.x + (gussetWeldingOffset + gussetBottomWidth) * iCot, y: bl.y + (gussetWeldingOffset + gussetBottomWidth) },
     ];
     result['leftBottomGusset'] = vPlateGen(leftBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null);
-    // {
-    //   points: [
-    //     { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
-    //     XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
-    //     XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
-    //     { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
-    //   ],
-    //   Thickness: gussetThickness,
-    //   z: -gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
     let rightBottomGusset = [
       { x: br.x + gussetWeldingOffset * jCot, y: br.y + gussetWeldingOffset },
       XYOffset(framePoints[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
@@ -6828,104 +6784,15 @@
       { x: br.x + (gussetWeldingOffset + gussetBottomWidth) * jCot, y: br.y + (gussetWeldingOffset + gussetBottomWidth) },
     ];
     result['rightBottomGusset'] = vPlateGen(rightBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null);
-    // {
-    //   points: [
-    //     { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
-    //     XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
-    //     XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
-    //     { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
-    //   ],
-    //   Thickness: gussetThickness,
-    //   z: -gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
-
     result['topFrame1'] = vFrameGen(topFrame[1],centerPoint, pts1[4], gussetThickness/2,[0,3,1,2],null);
-    // {
-    //   points: topFrame[0],
-    //   Thickness: pts1[4],
-    //   z: gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
     result['topFrame2'] = vFrameGen(topFrame[1],centerPoint, pts1[5], gussetThickness/2,[0,3,1,2],null);
-    // {
-    //   points: topFrame[1],
-    //   Thickness: pts1[5],
-    //   z: gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
-    // console.log(result)
-
     result['bottomFrame1'] = vFrameGen(bottomFrame[0],centerPoint, pts2[4], gussetThickness/2,null,null);
-    // {
-    //   points: bottomFrame[0],
-    //   Thickness: pts2[4],
-    //   z: gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
     result['bottomFrame2'] = vFrameGen(bottomFrame[1],centerPoint, pts2[5], gussetThickness/2,null,null);
-    // {
-    //   points: bottomFrame[1],
-    //   Thickness: pts2[5],
-    //   z: gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
-
     result['leftFrame1'] = vFrameGen(leftFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null);
-    // {
-    //   points: leftFrame[0],
-    //   Thickness: pts3[4],
-    //   z: gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
     result['leftFrame2'] = vFrameGen(leftFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null);
-    // {
-    //   points: leftFrame[1],
-    //   Thickness: pts3[5],
-    //   z: gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
     result['righttFrame1'] =vFrameGen(rightFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null); 
-    // {
-    //   points: rightFrame[0],
-    //   Thickness: pts3[4],
-    //   z: gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
     result['rightFrame2'] = vFrameGen(rightFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null);
-    // {
-    //   points: rightFrame[1],
-    //   Thickness: pts3[5],
-    //   z: gussetThickness / 2,
-    //   rotationX: Math.PI / 2,
-    //   rotationY: 0,
-    //   hole: [],
-    //   point: centerPoint
-    // }
+
     let dummyPoints = [...framePoints, bottomCenter];
     dummyPoints.forEach(function (elem) { data.push(ToGlobalPoint(centerPoint, elem)); });
     let section = [tFrame, bFrame, dFrame];   //사용자로부터 받은 단면요소의 값을 객체로 저장
