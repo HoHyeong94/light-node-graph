@@ -1652,8 +1652,8 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
     offset : point1.offset + (node1.x + node2.x)/2
   };
   let [frame1, frame2] = Kframe({x:0,y: -VectorLength}, {x:0,y: VectorLength}, spc, spc, pts)
-  result['frame1'] = hPlateGen(frame1, centerPoint, pts[4],0,0,Math.atan(Vector[2].VectorLength),0,null,true,null)
-  result['frame2'] = hPlateGen(frame2, centerPoint, pts[5],0,0,Math.atan(Vector[2].VectorLength),0,null,true,null)
+  result['frame1'] = hPlateGen(frame1, centerPoint, pts[4],0,0,Math.atan(Vector[2]/VectorLength),0,null,true,null)
+  result['frame2'] = hPlateGen(frame2, centerPoint, pts[5],0,0,Math.atan(Vector[2]/VectorLength),0,null,true,null)
 
   // let newBrLine = [{
   //   x: Brline[0].x + Vector[0] * spc / VectorLength,
