@@ -95,7 +95,7 @@ export function PlateRestPoint(point1, point2, tan1, tan2, thickness){
 
 export function Kframe(node1, node2, ioffset, joffset, pts){
   let length = Math.sqrt((node2.x-node1.x)**2 + (node2.y-node1.y)**2)
-  let vec = Vector(node1, node2)
+  let vec = Vector2D(node1, node2)
   let plate1 = [ XYOffset(node1,vec,ioffset,pts[0]),
                 XYOffset(node1,vec,ioffset,pts[1]),
                 XYOffset(node1,vec,(length-joffset),pts[1]),
@@ -112,7 +112,7 @@ export function XYOffset(node, vector, xoffset, yoffset){
     x:node.x + vector.x *xoffset - vector.y* yoffset, 
     y: node.y + vector.y * xoffset + vector.x* yoffset}
   }
-export function Vector(node1,node2){
+export function Vector2D(node1,node2){ //2D에서만 유효한벡터임
   let length = Math.sqrt((node2.x-node1.x)**2 + (node2.y-node1.y)**2)
   return {x :(node2.x-node1.x)/length, y:(node2.y-node1.y)/length }
 }

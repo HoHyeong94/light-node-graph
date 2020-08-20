@@ -148,6 +148,7 @@ export function HBracingDict(
   hBracingectionList,
   sectionDB
 ) {
+  let result = {};
   const from = 0;
   const to = 1;
   const leftToright = 2;
@@ -156,6 +157,19 @@ export function HBracingDict(
   let hBracingDict = {};
   let hBracingPlateDict = {};
   let right = true;
+  let webPoints1 = [
+    sectionPointDict[pk1].forward.web[0][0],
+    sectionPointDict[pk1].forward.web[0][1],
+    sectionPointDict[pk1].forward.web[1][0],
+    sectionPointDict[pk1].forward.web[1][1]
+  ];
+  let webPoints2 = [
+    sectionPointDict[pk2].forward.web[0][0],
+    sectionPointDict[pk2].forward.web[0][1],
+    sectionPointDict[pk2].forward.web[1][0],
+    sectionPointDict[pk2].forward.web[1][1]
+  ];
+
   for (let i = 0; i < hBracingLayout.length; i++) {
     if (hBracingLayout[i][section] === "hBracingType1") {
       let hBSection = hBracingectionList[hBracingLayout[i][section]];
@@ -163,48 +177,26 @@ export function HBracingDict(
       let pk2 = hBracingLayout[i][to];
       let webPoints = [];
       if (hBracingLayout[i][leftToright]) {
-        webPoints = [
-          sectionPointDict[pk1].forward.lWeb[0],
-          sectionPointDict[pk1].forward.lWeb[1],
-          sectionPointDict[pk2].forward.rWeb[0],
-          sectionPointDict[pk2].forward.rWeb[1]
-        ];
+        webPoints = [webPoints1[0],webPoints1[1],webPoints2[2],webPoints2[3]];
       } else {
-        webPoints = [
-          sectionPointDict[pk1].forward.rWeb[0],
-          sectionPointDict[pk1].forward.rWeb[1],
-          sectionPointDict[pk2].forward.lWeb[0],
-          sectionPointDict[pk2].forward.lWeb[1]
-        ];
+        webPoints = [webPoints1[2],webPoints1[3],webPoints2[1],webPoints2[2]];
       }
       let point1 = pointDict[pk1];
       let point2 = pointDict[pk2];
 
-      hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB);
+      result["br" + pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB);
       if (hBracingLayout[i][platelayout][0]) {
         right = hBracingLayout[i][leftToright] ? false : true;
-        let webPoints1 = [
-          sectionPointDict[pk1].forward.lWeb[0],
-          sectionPointDict[pk1].forward.lWeb[1],
-          sectionPointDict[pk1].forward.rWeb[0],
-          sectionPointDict[pk1].forward.rWeb[1]
-        ];
-        hBracingPlateDict[pk1] = hBracingPlate(point1, right, webPoints1, hBSection);
+        result["brp" + pk1] = hBracingPlate(point1, right, webPoints1, hBSection);
       }
       if (hBracingLayout[i][platelayout][1]) {
         right = hBracingLayout[i][leftToright] ? true : false;
-        let webPoints2 = [
-          sectionPointDict[pk2].forward.lWeb[0],
-          sectionPointDict[pk2].forward.lWeb[1],
-          sectionPointDict[pk2].forward.rWeb[0],
-          sectionPointDict[pk2].forward.rWeb[1]
-        ];
-        hBracingPlateDict[pk2] = hBracingPlate(point2, right, webPoints2, hBSection);
+        result["brp" + pk2] = hBracingPlate(point2, right, webPoints2, hBSection);
       }
     }
   }
 
-  return { hBracingDict, hBracingPlateDict };
+  return result;
 }
 
 export function JackupStiffDict(gridPoint,
@@ -1624,7 +1616,7 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
   // let B = 2000;
   // let H = 2500;
   // let ULR = 1300;
-
+  let result = {};
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
@@ -1648,41 +1640,53 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
   Brline[1].y - Brline[0].y,
   Brline[1].z - Brline[0].z]
   let VectorLength = Math.sqrt(Vector[0] ** 2 + Vector[1] ** 2 + Vector[2] ** 2)
-  let normalCos = Vector[1] / VectorLength;
-  let normalSin = - Vector[0] / VectorLength;
-  let newBrLine = [{
-    x: Brline[0].x + Vector[0] * spc / VectorLength,
-    y: Brline[0].y + Vector[1] * spc / VectorLength,
-    z: Brline[0].z + Vector[2] * spc / VectorLength
-  },
-  {
-    x: Brline[1].x - Vector[0] * spc / VectorLength,
-    y: Brline[1].y - Vector[1] * spc / VectorLength,
-    z: Brline[1].z - Vector[2] * spc / VectorLength
-  }]
-  let pointslist =
-    [{ x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z },
-    { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z },
-    { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z + pts[4] },
-    { x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z + pts[4] },
-    { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z },
-    { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z },
-    { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z + pts[4] },
-    { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z + pts[4] },
-    ]
-  let pointslist2 =
-    [
-      { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z },
-      { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z },
-      { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z + pts[5] },
-      { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z + pts[5] },
-      { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z },
-      { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z },
-      { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z + pts[5] },
-      { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z + pts[5] },
-    ];
+  // let normalCos = Vector[1] / VectorLength;
+  // let normalSin = - Vector[0] / VectorLength;
+  let centerPoint = {
+    x:(Brline[1].x + Brline[0].x)/2,
+    y:(Brline[1].y + Brline[0].y)/2,
+    z: (Brline[1].z + Brline[0].z)/2,
+    normalCos : Vector[1] / VectorLength,
+    normalSin : - Vector[0] / VectorLength,
+    offset : point1.offset + (node1.x + node2.x)/2
+  };
+  let [frame1, frame2] = Kframe({x:0,y: -VectorLength}, {x:0,y: VectorLength}, spc, spc, pts)
+  result = hPlateGen(frame1, centerPoint, pts[4],0,0,Math.atan(Vector[2].VectorLength),0,null,true,null)
 
-  return { line: Brline, points: [pointslist, pointslist2, []] };
+  // let newBrLine = [{
+  //   x: Brline[0].x + Vector[0] * spc / VectorLength,
+  //   y: Brline[0].y + Vector[1] * spc / VectorLength,
+  //   z: Brline[0].z + Vector[2] * spc / VectorLength
+  // },
+  // {
+  //   x: Brline[1].x - Vector[0] * spc / VectorLength,
+  //   y: Brline[1].y - Vector[1] * spc / VectorLength,
+  //   z: Brline[1].z - Vector[2] * spc / VectorLength
+  // }]
+  // let pointslist =
+  //   [{ x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z },
+  //   { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z },
+  //   { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z + pts[4] },
+  //   { x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z + pts[4] },
+  //   { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z },
+  //   { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z },
+  //   { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z + pts[4] },
+  //   { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z + pts[4] },
+  //   ]
+  // let pointslist2 =
+  //   [
+  //     { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z },
+  //     { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z },
+  //     { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z + pts[5] },
+  //     { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z + pts[5] },
+  //     { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z },
+  //     { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z },
+  //     { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z + pts[5] },
+  //     { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z + pts[5] },
+  //   ];
+
+  // return { line: Brline, points: [pointslist, pointslist2, []] };
+  return result 
 }
 
 export function hBracingPlate(point, right, webPoints, hBSection) {
@@ -1731,7 +1735,8 @@ export function hBracingPlate(point, right, webPoints, hBSection) {
     plateShape.push({ x: position.x + ps[i].x * cos - ps[i].y * sin, y: ps[i].y * cos + ps[i].x * sin })
   }
 
-  return { point: point, plate: { points: plateShape, Thickness: sideTopThickness, z: position.y, rotationX: 0, rotationY: rotationY, hole: [] } }
+  return hPlateGen(plateShape, point, sideTopThickness, position.y, 0, 0, rotationY,null,true,null)
+  // { point: point, plate: { points: plateShape, Thickness: sideTopThickness, z: position.y, rotationX: 0, rotationY: rotationY, hole: [] } }
 }
 
 // 판요소 생성시 기준점은 좌측하단을 기준으로 반드시 시계반대방향으로 회전할 것

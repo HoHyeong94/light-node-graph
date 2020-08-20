@@ -46,7 +46,7 @@ export function HBracing(){
     this.addInput("hBracingLayout","arr");
     this.addInput("hBracingSectionList","hBracingSectionList");
     this.addInput("sectionDB","sectionDB");
-    this.addOutput("hBracingDict","hBracingDict");
+    this.addOutput("diaDict","diaDict");
   }
   
   HBracing.prototype.onExecute = function() {

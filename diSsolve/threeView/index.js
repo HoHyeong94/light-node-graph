@@ -57,24 +57,24 @@ DiaPhragmView.prototype.onExecute = function () {
   // sceneAdder(group, [0, "Part", keyName])
 }
 
-export function HorBracingView() {
-  this.addInput("hBracingDict", "hBracingDict");
-  this.addInput("Point", "Point");
-}
+// export function HorBracingView() {
+//   this.addInput("hBracingDict", "hBracingDict");
+//   this.addInput("Point", "Point");
+// }
 
-HorBracingView.prototype.onExecute = function () {
-  const hb = this.getInputData(0);
-  const initPoint = this.getInputData(1);
-  const group = HBracingView(hb.hBracingDict, initPoint);
-  const group2 = HBracingPlateView(hb.hBracingPlateDict, initPoint);
-  sceneAdder({name:"hbracing", layer:0, mesh:group, meta:{part:"hbracing"}});
-  sceneAdder({name:"hbracingPlate", layer:0, mesh:group2, meta:{part:"hbracingPlate"}});
+// HorBracingView.prototype.onExecute = function () {
+//   const hb = this.getInputData(0);
+//   const initPoint = this.getInputData(1);
+//   const group = HBracingView(hb.hBracingDict, initPoint);
+//   const group2 = HBracingPlateView(hb.hBracingPlateDict, initPoint);
+//   sceneAdder({name:"hbracing", layer:0, mesh:group, meta:{part:"hbracing"}});
+//   sceneAdder({name:"hbracingPlate", layer:0, mesh:group2, meta:{part:"hbracingPlate"}});
 
-  // sceneAdder({ layer: 0, mesh: group }, "hbracing");
-  // sceneAdder({ layer: 0, mesh: group2 }, "hbracingPlate");
-  // sceneAdder(group, [0, "HBracing", "Bracing"])
-  // sceneAdder(group2, [0, "HBracing", "Plate"])
-}
+//   // sceneAdder({ layer: 0, mesh: group }, "hbracing");
+//   // sceneAdder({ layer: 0, mesh: group2 }, "hbracingPlate");
+//   // sceneAdder(group, [0, "HBracing", "Bracing"])
+//   // sceneAdder(group2, [0, "HBracing", "Plate"])
+// }
 
 export function DeckView() {
   this.addInput("deckPointDict", "deckPointDict");
