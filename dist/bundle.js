@@ -3859,7 +3859,9 @@
     const to = 1;
     const leftToright = 2;
     const section = 3;
-    const platelayout = 4;
+    // const platelayout = 4;
+    // let hBracingDict = {};
+    // let hBracingPlateDict = {};
     let right = true;
 
 
@@ -3890,11 +3892,11 @@
         let point2 = pointDict[pk2];
 
         result[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB);
-        if (hBracingLayout[i][platelayout][0]) {
+        if (hBracingLayout[i][4]) {
           right = hBracingLayout[i][leftToright] ? false : true;
           result[pk1 + pk2]["p1"] = hBracingPlate(point1, right, webPoints1, hBSection);
         }
-        if (hBracingLayout[i][platelayout][1]) {
+        if (hBracingLayout[i][5]) {
           right = hBracingLayout[i][leftToright] ? true : false;
           result[pk1 + pk2]["p2"] = hBracingPlate(point2, right, webPoints2, hBSection);
         }
@@ -5337,42 +5339,10 @@
       offset : point1.offset + (node1.x + node2.x)/2
     };
     let [frame1, frame2] = Kframe({x:0,y: -VectorLength/2}, {x:0,y: VectorLength/2}, spc, spc, pts);
-    result['frame1'] = hPlateGen(frame1, centerPoint, pts[4],0,90,Math.atan(Vector[2]/VectorLength),0,null,true,null);
-    result['frame2'] = hPlateGen(frame2, centerPoint, pts[5],0,90,Math.atan(Vector[2]/VectorLength),0,null,true,null);
-
-    // let newBrLine = [{
-    //   x: Brline[0].x + Vector[0] * spc / VectorLength,
-    //   y: Brline[0].y + Vector[1] * spc / VectorLength,
-    //   z: Brline[0].z + Vector[2] * spc / VectorLength
-    // },
-    // {
-    //   x: Brline[1].x - Vector[0] * spc / VectorLength,
-    //   y: Brline[1].y - Vector[1] * spc / VectorLength,
-    //   z: Brline[1].z - Vector[2] * spc / VectorLength
-    // }]
-    // let pointslist =
-    //   [{ x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z },
-    //   { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z },
-    //   { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z + pts[4] },
-    //   { x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z + pts[4] },
-    //   { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z },
-    //   { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z },
-    //   { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z + pts[4] },
-    //   { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z + pts[4] },
-    //   ]
-    // let pointslist2 =
-    //   [
-    //     { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z },
-    //     { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z },
-    //     { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z + pts[5] },
-    //     { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z + pts[5] },
-    //     { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z },
-    //     { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z },
-    //     { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z + pts[5] },
-    //     { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z + pts[5] },
-    //   ];
-
-    // return { line: Brline, points: [pointslist, pointslist2, []] };
+    let z1 =  pts[4]>0? 0: pts[4];
+    let z2 =  pts[5]>0? 0: pts[5];
+    result['frame1'] = hPlateGen(frame1, centerPoint, Math.abs(pts[4]),z1,90,Math.atan(Vector[2]/VectorLength),0,null,true,null);
+    result['frame2'] = hPlateGen(frame2, centerPoint, Math.abs(pts[5]),z2,90,Math.atan(Vector[2]/VectorLength),0,null,true,null);
     return result 
   }
 
