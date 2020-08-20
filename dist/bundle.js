@@ -6738,9 +6738,11 @@
     XYOffset(framePoints[1],topVec, -hFrameEndOffset - 120, (pts1[0]+pts1[3])/2 ),
     XYOffset(framePoints[1],topVec, -hFrameEndOffset - 200, (pts1[0]+pts1[3])/2 ),
   ];
+  let boltLayout2 = [];
+  boltLayout.forEach(elem => boltLayout2.push([elem.x, elem.y]));
     let Bolt = {
       size: wBolt.size, dia: wBolt.dia, t: wBolt.t, l: gussetThickness,
-      layout: boltLayout, isUpper: true
+      layout: boltLayout2, isUpper: true
     };
 
 
