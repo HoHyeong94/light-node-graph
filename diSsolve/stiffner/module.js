@@ -1660,7 +1660,7 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
 }
 
 export function hBracingPlate(point, right, webPoints, hBSection) {
-  const topY = 270; //슬래브두께 + 헌치가 포함된 값이어야함.
+  // const topY = 270; //슬래브두께 + 헌치가 포함된 값이어야함.
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
@@ -1679,10 +1679,10 @@ export function hBracingPlate(point, right, webPoints, hBSection) {
   let position = {};
   let rotationY = Math.atan((tr.y - tl.y) / (tr.x - tl.x));
   if (right) {
-    position = { x: tr.x - rwCot * (upperHeight + sideTopThickness), y: - topY - (upperHeight + sideTopThickness) };
+    position = { x: tr.x - rwCot * (upperHeight + sideTopThickness), y: tr.y - (upperHeight + sideTopThickness) };
     rotationY = -rotationY
   } else {
-    position = { x: tl.x - lwCot * (upperHeight + sideTopThickness), y: - topY - (upperHeight + sideTopThickness) };
+    position = { x: tl.x - lwCot * (upperHeight + sideTopThickness), y: tl.y - (upperHeight + sideTopThickness) };
   }
   let rotation = (right) ? Math.PI / 2 : -Math.PI / 2;
   let cos = Math.cos(rotation);
