@@ -7,7 +7,7 @@ import {SectionPoint, DeckPoint} from "./section/index"
 import {SteelBox } from "./steelBox/index"
 import { VstiffDict, DiaDict, HBracing, JackupDict} from "./stiffner/index"
 import { Xbeam } from "./xbeam/index"
-import { LineViewer, SteelPlateView, InitPoint, DiaPhragmView,HorBracingView, DeckView, BarrierView, SpliceBoltView, RebarView, StudView, AnalysisView, AnalysisResultView } from "./threeView/index"
+import { LineViewer, SteelPlateView, InitPoint, DiaPhragmView, DeckView, BarrierView, SpliceBoltView, RebarView, StudView, AnalysisView, AnalysisResultView } from "./threeView/index"
 import { SectionViewer, TopViewer, LineDraw, LineSideDraw, GirderLayoutDraw, GirderGeneralView1, GirderGeneralView2, PartGeneralView, 
         XbeamGeneralView} from "./drawingView/index"
 import { Support, SapJoint, SapFrame, CompositeJoint, CompositeFrame } from "./analysis/index"
@@ -47,7 +47,7 @@ LiteGraph.registerNodeType("HMECS/Stud", Stud)
 LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
 LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
 LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
-LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
+// LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
 LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
 LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
 LiteGraph.registerNodeType("3DVIEW/BarrierView", BarrierView);

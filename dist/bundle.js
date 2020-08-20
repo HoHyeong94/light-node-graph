@@ -1846,7 +1846,7 @@
 
   function Kframe(node1, node2, ioffset, joffset, pts){
     let length = Math.sqrt((node2.x-node1.x)**2 + (node2.y-node1.y)**2);
-    let vec = Vector(node1, node2);
+    let vec = Vector2D(node1, node2);
     let plate1 = [ XYOffset(node1,vec,ioffset,pts[0]),
                   XYOffset(node1,vec,ioffset,pts[1]),
                   XYOffset(node1,vec,(length-joffset),pts[1]),
@@ -1863,7 +1863,7 @@
       x:node.x + vector.x *xoffset - vector.y* yoffset, 
       y: node.y + vector.y * xoffset + vector.x* yoffset}
     }
-  function Vector(node1,node2){
+  function Vector2D(node1,node2){ //2D에서만 유효한벡터임
     let length = Math.sqrt((node2.x-node1.x)**2 + (node2.y-node1.y)**2);
     return {x :(node2.x-node1.x)/length, y:(node2.y-node1.y)/length }
   }
@@ -3854,14 +3854,26 @@
     hBracingectionList,
     sectionDB
   ) {
+    let result = {};
     const from = 0;
     const to = 1;
     const leftToright = 2;
     const section = 3;
     const platelayout = 4;
-    let hBracingDict = {};
-    let hBracingPlateDict = {};
     let right = true;
+    let webPoints1 = [
+      sectionPointDict[pk1].forward.web[0][0],
+      sectionPointDict[pk1].forward.web[0][1],
+      sectionPointDict[pk1].forward.web[1][0],
+      sectionPointDict[pk1].forward.web[1][1]
+    ];
+    let webPoints2 = [
+      sectionPointDict[pk2].forward.web[0][0],
+      sectionPointDict[pk2].forward.web[0][1],
+      sectionPointDict[pk2].forward.web[1][0],
+      sectionPointDict[pk2].forward.web[1][1]
+    ];
+
     for (let i = 0; i < hBracingLayout.length; i++) {
       if (hBracingLayout[i][section] === "hBracingType1") {
         let hBSection = hBracingectionList[hBracingLayout[i][section]];
@@ -3869,48 +3881,26 @@
         let pk2 = hBracingLayout[i][to];
         let webPoints = [];
         if (hBracingLayout[i][leftToright]) {
-          webPoints = [
-            sectionPointDict[pk1].forward.lWeb[0],
-            sectionPointDict[pk1].forward.lWeb[1],
-            sectionPointDict[pk2].forward.rWeb[0],
-            sectionPointDict[pk2].forward.rWeb[1]
-          ];
+          webPoints = [webPoints1[0],webPoints1[1],webPoints2[2],webPoints2[3]];
         } else {
-          webPoints = [
-            sectionPointDict[pk1].forward.rWeb[0],
-            sectionPointDict[pk1].forward.rWeb[1],
-            sectionPointDict[pk2].forward.lWeb[0],
-            sectionPointDict[pk2].forward.lWeb[1]
-          ];
+          webPoints = [webPoints1[2],webPoints1[3],webPoints2[1],webPoints2[2]];
         }
         let point1 = pointDict[pk1];
         let point2 = pointDict[pk2];
 
-        hBracingDict[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB);
+        result["br" + pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB);
         if (hBracingLayout[i][platelayout][0]) {
           right = hBracingLayout[i][leftToright] ? false : true;
-          let webPoints1 = [
-            sectionPointDict[pk1].forward.lWeb[0],
-            sectionPointDict[pk1].forward.lWeb[1],
-            sectionPointDict[pk1].forward.rWeb[0],
-            sectionPointDict[pk1].forward.rWeb[1]
-          ];
-          hBracingPlateDict[pk1] = hBracingPlate(point1, right, webPoints1, hBSection);
+          result["brp" + pk1] = hBracingPlate(point1, right, webPoints1, hBSection);
         }
         if (hBracingLayout[i][platelayout][1]) {
           right = hBracingLayout[i][leftToright] ? true : false;
-          let webPoints2 = [
-            sectionPointDict[pk2].forward.lWeb[0],
-            sectionPointDict[pk2].forward.lWeb[1],
-            sectionPointDict[pk2].forward.rWeb[0],
-            sectionPointDict[pk2].forward.rWeb[1]
-          ];
-          hBracingPlateDict[pk2] = hBracingPlate(point2, right, webPoints2, hBSection);
+          result["brp" + pk2] = hBracingPlate(point2, right, webPoints2, hBSection);
         }
       }
     }
 
-    return { hBracingDict, hBracingPlateDict };
+    return result;
   }
 
   function JackupStiffDict(gridPoint,
@@ -5311,7 +5301,7 @@
     // let B = 2000;
     // let H = 2500;
     // let ULR = 1300;
-
+    let result = {};
     const bl = webPoints[0];
     const tl = webPoints[1];
     const br = webPoints[2];
@@ -5335,41 +5325,53 @@
     Brline[1].y - Brline[0].y,
     Brline[1].z - Brline[0].z];
     let VectorLength = Math.sqrt(Vector[0] ** 2 + Vector[1] ** 2 + Vector[2] ** 2);
-    let normalCos = Vector[1] / VectorLength;
-    let normalSin = - Vector[0] / VectorLength;
-    let newBrLine = [{
-      x: Brline[0].x + Vector[0] * spc / VectorLength,
-      y: Brline[0].y + Vector[1] * spc / VectorLength,
-      z: Brline[0].z + Vector[2] * spc / VectorLength
-    },
-    {
-      x: Brline[1].x - Vector[0] * spc / VectorLength,
-      y: Brline[1].y - Vector[1] * spc / VectorLength,
-      z: Brline[1].z - Vector[2] * spc / VectorLength
-    }];
-    let pointslist =
-      [{ x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z },
-      { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z },
-      { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z + pts[4] },
-      { x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z + pts[4] },
-      { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z },
-      { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z },
-      { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z + pts[4] },
-      { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z + pts[4] },
-      ];
-    let pointslist2 =
-      [
-        { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z },
-        { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z },
-        { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z + pts[5] },
-        { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z + pts[5] },
-        { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z },
-        { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z },
-        { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z + pts[5] },
-        { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z + pts[5] },
-      ];
+    // let normalCos = Vector[1] / VectorLength;
+    // let normalSin = - Vector[0] / VectorLength;
+    let centerPoint = {
+      x:(Brline[1].x + Brline[0].x)/2,
+      y:(Brline[1].y + Brline[0].y)/2,
+      z: (Brline[1].z + Brline[0].z)/2,
+      normalCos : Vector[1] / VectorLength,
+      normalSin : - Vector[0] / VectorLength,
+      offset : point1.offset + (node1.x + node2.x)/2
+    };
+    let [frame1, frame2] = Kframe({x:0,y: -VectorLength}, {x:0,y: VectorLength}, spc, spc, pts);
+    result = hPlateGen(frame1, centerPoint, pts[4],0,0,Math.atan(Vector[2].VectorLength),0,null,true,null);
 
-    return { line: Brline, points: [pointslist, pointslist2, []] };
+    // let newBrLine = [{
+    //   x: Brline[0].x + Vector[0] * spc / VectorLength,
+    //   y: Brline[0].y + Vector[1] * spc / VectorLength,
+    //   z: Brline[0].z + Vector[2] * spc / VectorLength
+    // },
+    // {
+    //   x: Brline[1].x - Vector[0] * spc / VectorLength,
+    //   y: Brline[1].y - Vector[1] * spc / VectorLength,
+    //   z: Brline[1].z - Vector[2] * spc / VectorLength
+    // }]
+    // let pointslist =
+    //   [{ x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z },
+    //   { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z },
+    //   { x: newBrLine[0].x + normalCos * pts[1], y: newBrLine[0].y + normalSin * pts[1], z: newBrLine[0].z + pts[4] },
+    //   { x: newBrLine[0].x + normalCos * pts[0], y: newBrLine[0].y + normalSin * pts[0], z: newBrLine[0].z + pts[4] },
+    //   { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z },
+    //   { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z },
+    //   { x: newBrLine[1].x + normalCos * pts[1], y: newBrLine[1].y + normalSin * pts[1], z: newBrLine[1].z + pts[4] },
+    //   { x: newBrLine[1].x + normalCos * pts[0], y: newBrLine[1].y + normalSin * pts[0], z: newBrLine[1].z + pts[4] },
+    //   ]
+    // let pointslist2 =
+    //   [
+    //     { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z },
+    //     { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z },
+    //     { x: newBrLine[0].x + normalCos * pts[3], y: newBrLine[0].y + normalSin * pts[3], z: newBrLine[0].z + pts[5] },
+    //     { x: newBrLine[0].x + normalCos * pts[2], y: newBrLine[0].y + normalSin * pts[2], z: newBrLine[0].z + pts[5] },
+    //     { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z },
+    //     { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z },
+    //     { x: newBrLine[1].x + normalCos * pts[3], y: newBrLine[1].y + normalSin * pts[3], z: newBrLine[1].z + pts[5] },
+    //     { x: newBrLine[1].x + normalCos * pts[2], y: newBrLine[1].y + normalSin * pts[2], z: newBrLine[1].z + pts[5] },
+    //   ];
+
+    // return { line: Brline, points: [pointslist, pointslist2, []] };
+    return result 
   }
 
   function hBracingPlate(point, right, webPoints, hBSection) {
@@ -5417,7 +5419,8 @@
       plateShape.push({ x: position.x + ps[i].x * cos - ps[i].y * sin, y: ps[i].y * cos + ps[i].x * sin });
     }
 
-    return { point: point, plate: { points: plateShape, Thickness: sideTopThickness, z: position.y, rotationX: 0, rotationY: rotationY, hole: [] } }
+    return hPlateGen(plateShape, point, sideTopThickness, position.y, 0, 0, rotationY,null,true,null)
+    // { point: point, plate: { points: plateShape, Thickness: sideTopThickness, z: position.y, rotationX: 0, rotationY: rotationY, hole: [] } }
   }
 
   // 판요소 생성시 기준점은 좌측하단을 기준으로 반드시 시계반대방향으로 회전할 것
@@ -5776,7 +5779,7 @@
       this.addInput("hBracingLayout","arr");
       this.addInput("hBracingSectionList","hBracingSectionList");
       this.addInput("sectionDB","sectionDB");
-      this.addOutput("hBracingDict","hBracingDict");
+      this.addOutput("diaDict","diaDict");
     }
     
     HBracing.prototype.onExecute = function() {
@@ -5981,14 +5984,14 @@
     let lRad = -Math.atan(lGradient);
 
     let lwebPlate = PlateRestPoint({ x: bl.x, y: bl.y + xs.lflangeHeight }, { x: bl.x, y: bl.y + xs.webHeight + xs.lflangeHeight }, lGradient, lGradient, xs.bracketLength);
-    result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0,3], [0,3,2,1]);
+    result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0, 3], [0, 3, 2, 1]);
     let lstiff = PlateRestPoint({ x: bl.x, y: bl.y + xs.lflangeHeight - xs.flangeThickness }, bl, lGradient, 0, xs.stiffWidth);
     let lstiff2 = PlateRestPoint({ x: bl.x, y: bl.y + xs.lflangeHeight + xs.webHeight + xs.flangeThickness }, tl, lGradient, uGradient, xs.stiffWidth);
     result["lstiff"] = vPlateGen(lstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
     result["lstiff2"] = vPlateGen(lstiff2, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
 
     let rwebPlate = PlateRestPoint({ x: br.x, y: br.y + xs.lflangeHeight }, { x: br.x, y: br.y + xs.webHeight + xs.lflangeHeight }, lGradient, lGradient, -xs.bracketLength);
-    result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0,3], [0,3,2,1]);
+    result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0, 3], [0, 3, 2, 1]);
     let rstiff = PlateRestPoint({ x: br.x, y: br.y + xs.lflangeHeight - xs.flangeThickness }, br, lGradient, 0, -xs.stiffWidth);
     let rstiff2 = PlateRestPoint({ x: br.x, y: br.y + xs.lflangeHeight + xs.webHeight + xs.flangeThickness }, tr, lGradient, uGradient, -xs.stiffWidth);
     result["rstiff"] = vPlateGen(rstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
@@ -6001,7 +6004,7 @@
       let grad = lRad;
       let bracketLength = xs.bracketLength;
       let z = i < 2 ? - xs.flangeThickness : 0;
-      let thickness = i < 2? -xs.flangeThickness : xs.flangeThickness;
+      let thickness = i < 2 ? -xs.flangeThickness : xs.flangeThickness;
       let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
       { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
       let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
@@ -6009,10 +6012,10 @@
       lowerbracket1[6], lowerbracket1[7]];
       let top2D = i < 2 ? false : true;
       result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint, bracketPoint[i]), xs.flangeThickness, z, centerPoint.skew, 0, grad,
-            hPlateSide2D(0, sign * bracketLength / Math.cos(grad), thickness, 0, bracketPoint[i], grad, Math.PI / 2 + grad, Math.PI / 2 + grad), top2D, false);
+        hPlateSide2D(0, sign * bracketLength / Math.cos(grad), thickness, 0, bracketPoint[i], grad, Math.PI / 2 + grad, Math.PI / 2 + grad), top2D, false);
     }
     let webPlate = [lwebPlate[3], rwebPlate[3], rwebPlate[2], lwebPlate[2]];
-    result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2,3], [0,1,2,3]);
+    result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2, 3], [0, 1, 2, 3]);
     let uPoint = ToGlobalPoint(centerPoint, lwebPlate[2]);
     let l = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x) ** 2 + (lwebPlate[3].y - rwebPlate[3].y) ** 2);
     let uflangePlate = [{ x: 0, y: xs.flangeWidth / 2 }, { x: 0, y: -xs.flangeWidth / 2 }, { x: l, y: -xs.flangeWidth / 2 }, { x: l, y: xs.flangeWidth / 2 }];
@@ -6157,7 +6160,7 @@
       let sign = i % 2 === 0 ? 1 : -1;
       let grad = i < 2 ? uRad : lRad;
       let z = i < 2 ? 0 : -xs.flangeThickness;
-      let thickness = i < 2? xs.flangeThickness : - xs.flangeThickness;
+      let thickness = i < 2 ? xs.flangeThickness : - xs.flangeThickness;
       let bracketLength = i < 2 ? xs.bracketLength : i === 2 ? xs.bracketLength - (ufl.x - tl.x) : xs.bracketLength - (tr.x - ufr.x);
       let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.bracketWidth / 2 }, { x: sign * 20, y: xs.flangeWidth / 2 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
       { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.flangeWidth / 2 }, { x: sign * 20, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
@@ -6166,10 +6169,10 @@
       lowerbracket1[6], lowerbracket1[7]];
       let top2D = i < 2 ? true : false;
       result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint, bracketPoint[i]), xs.flangeThickness, z, centerPoint.skew, 0, grad,
-            hPlateSide2D(0, sign * bracketLength / Math.cos(grad), thickness, 0, bracketPoint[i], grad, Math.PI / 2 + grad, Math.PI / 2 + grad), top2D, false);
+        hPlateSide2D(0, sign * bracketLength / Math.cos(grad), thickness, 0, bracketPoint[i], grad, Math.PI / 2 + grad, Math.PI / 2 + grad), top2D, false);
     }
     let webPlate = [lwebPlate[3], rwebPlate[3], rwebPlate[4], lwebPlate[4]];
-    result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2,3],[0, 1, 2, 3]);
+    result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2, 3], [0, 1, 2, 3]);
     let uPoint = ToGlobalPoint(centerPoint, lwebPlate[4]);
     let l = Math.sqrt((lwebPlate[4].x - rwebPlate[4].x) ** 2 + (lwebPlate[4].y - rwebPlate[4].y) ** 2);
     let uflangePlate = [{ x: 0, y: xs.flangeWidth / 2 }, { x: 0, y: -xs.flangeWidth / 2 }, { x: l, y: -xs.flangeWidth / 2 }, { x: l, y: xs.flangeWidth / 2 }];
@@ -6445,7 +6448,7 @@
     let rstiff = PlateRestPoint({ x: tr.x, y: tr.y - xs.webHeight - xs.flangeThickness }, br, lGradient, 0, -xs.stiffWidth);
     result["rstiff"] = vPlateGen(rstiff, centerPoint, xs.stiffThickness, [0, 1], xs.scallopRadius, null, null, []);
 
-    let bracketPoint = [lstiff[0],rstiff[0], ufl, ufr];
+    let bracketPoint = [lstiff[0], rstiff[0], ufl, ufr];
     for (let i = 0; i < 4; i++) {
       let sign = i % 2 === 0 ? 1 : -1;
       let grad = i < 2 ? lRad : uRad;
@@ -6458,7 +6461,7 @@
       lowerbracket1[6], lowerbracket1[7]];
       let top2D = i < 2 ? false : true;
       result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint, bracketPoint[i]), xs.flangeThickness, 0, centerPoint.skew, 0, grad,
-      hPlateSide2D(0, sign * bracketLength / Math.cos(grad), xs.flangeThickness, 0, bracketPoint[i], grad, th1, Math.PI / 2 + grad), top2D, false);
+        hPlateSide2D(0, sign * bracketLength / Math.cos(grad), xs.flangeThickness, 0, bracketPoint[i], grad, th1, Math.PI / 2 + grad), top2D, false);
       // {
       //   points: bracketShape,
       //   Thickness: xs.flangeThickness,
@@ -6593,37 +6596,37 @@
     let rwCot = (tr.x - br.x) / (tr.y - br.y);
     let lwebPlate = [tl, { x: tl.x - xs.webHeight * lwCot, y: tl.y - xs.webHeight }, { x: tl.x + xs.bracketLength, y: tl.y - xs.webHeight + lGradient * xs.bracketLength },
       { x: tl.x + xs.bracketLength, y: ufl.y + uGradient * (xs.bracketLength - (ufl.x - tl.x)) }, ufl];
-    result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [],[0,3]);
+    result["lweb"] = vPlateGen(lwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0, 3]);
 
-    let rwebPlate = [tr, { x: tr.x -xs.webHeight * rwCot, y: tr.y - xs.webHeight }, { x: tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength },
+    let rwebPlate = [tr, { x: tr.x - xs.webHeight * rwCot, y: tr.y - xs.webHeight }, { x: tr.x - xs.bracketLength, y: tr.y - xs.webHeight - lGradient * xs.bracketLength },
       { x: tr.x - xs.bracketLength, y: ufr.y - uGradient * (xs.bracketLength - (tr.x - ufr.x)) }, ufr];
-    result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0,3]);
+    result["rweb"] = vPlateGen(rwebPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [0, 3]);
 
     let bracketPoint = [{ x: tl.x - (xs.webHeight + xs.flangeThickness) * lwCot, y: tl.y - xs.webHeight - xs.flangeThickness },
-                        { x: tr.x - (xs.webHeight + xs.flangeThickness) * rwCot , y: tr.y - xs.webHeight - xs.flangeThickness }, ufl, ufr];
+    { x: tr.x - (xs.webHeight + xs.flangeThickness) * rwCot, y: tr.y - xs.webHeight - xs.flangeThickness }, ufl, ufr];
     let bracketLengthList = [xs.bracketLength + (xs.webHeight + xs.flangeThickness) * lwCot,
-      xs.bracketLength - (xs.webHeight + xs.flangeThickness) * rwCot,
-      xs.bracketLength - (ufl.x - tl.x),
-      xs.bracketLength - (tr.x - ufr.x)
+    xs.bracketLength - (xs.webHeight + xs.flangeThickness) * rwCot,
+    xs.bracketLength - (ufl.x - tl.x),
+    xs.bracketLength - (tr.x - ufr.x)
     ];
     for (let i = 0; i < 4; i++) {
       let sign = i % 2 === 0 ? 1 : -1;
       let grad = i < 2 ? lRad : uRad;
       let th1 = i < 2 ? Math.PI / 2 + grad : rightAngle;
-      let bracketLength = bracketLengthList[i]; 
+      let bracketLength = bracketLengthList[i];
       let lowerbracket1 = [{ x: 0, y: xs.bracketWidth / 2 }, { x: sign * 15, y: xs.bracketWidth / 2 }, { x: sign * 44, y: xs.bracketWidth / 2 - 82 }, { x: sign * bracketLength, y: xs.flangeWidth / 2 },
-        { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 44, y: -xs.bracketWidth / 2 + 82 }, { x: sign * 15, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
+      { x: sign * bracketLength, y: -xs.flangeWidth / 2 }, { x: sign * 44, y: -xs.bracketWidth / 2 + 82 }, { x: sign * 15, y: -xs.bracketWidth / 2 }, { x: 0, y: -xs.bracketWidth / 2 }];
       let bracketShape = [lowerbracket1[0], lowerbracket1[1], ...Fillet2D(lowerbracket1[1], lowerbracket1[2], lowerbracket1[3], xs.bracketFilletR, 4),
       lowerbracket1[3], lowerbracket1[4], ...Fillet2D(lowerbracket1[4], lowerbracket1[5], lowerbracket1[6], xs.bracketFilletR, 4),
       lowerbracket1[6], lowerbracket1[7]];
       let top2D = i < 2 ? false : true;
       result["bracket" + i.toFixed(0)] = hPlateGen(bracketShape, ToGlobalPoint(centerPoint, bracketPoint[i]), xs.flangeThickness, 0, centerPoint.skew, 0, grad,
-      hPlateSide2D(0, sign * bracketLength / Math.cos(grad), xs.flangeThickness, 0, bracketPoint[i], grad, th1, Math.PI / 2 + grad), top2D, false);
+        hPlateSide2D(0, sign * bracketLength / Math.cos(grad), xs.flangeThickness, 0, bracketPoint[i], grad, th1, Math.PI / 2 + grad), top2D, false);
       //   // size : PlateSize2(lowerPlate,1,dsi.lowerTopThickness,dsi.lowerTopwidth),
       //   // anchor : [[lowerTopPoints[1].x,lowerTopPoints[1].y + 50],[lowerTopPoints[2].x,lowerTopPoints[2].y + 50]]
     }
     let webPlate = [lwebPlate[2], rwebPlate[2], rwebPlate[3], lwebPlate[3]];
-    result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2,3]);
+    result["web"] = vPlateGen(webPlate, centerPoint, xs.webThickness, [], 0, null, null, [], [2, 3]);
     let uPoint = ToGlobalPoint(centerPoint, lwebPlate[3]);
     let l = Math.sqrt((lwebPlate[3].x - rwebPlate[3].x) ** 2 + (lwebPlate[3].y - rwebPlate[3].y) ** 2);
     let uflangePlate = [{ x: 0, y: xs.flangeWidth / 2 }, { x: 0, y: -xs.flangeWidth / 2 }, { x: l, y: -xs.flangeWidth / 2 }, { x: l, y: xs.flangeWidth / 2 }];
@@ -6643,12 +6646,12 @@
     // let webHeight = ((iTopNode2.y - iBottomNode2.y) + (jTopNode2.y - jBottomNode2.y))/2
     let section = [xs.flangeWidth, xs.flangeThickness, xs.flangeWidth, xs.flangeThickness, xs.webHeight, xs.webThickness];// [upperFlangeWidth,upperFlangeThickness,lowerFlangeWidth,lowerFlangeThickness,webHeight, webThickness ]
     let gradientX = (iPoint.gradientX + jPoint.gradientX) / 2;
-    let bottom = {x: (lwebPlate[2].x + rwebPlate[2].x)/2, y: (lwebPlate[2].y + rwebPlate[2].y)/2};
-    let top = {x:(ufl.x + ufr.x)/2, y: (ufl.y + ufr.y)/2};
+    let bottom = { x: (lwebPlate[2].x + rwebPlate[2].x) / 2, y: (lwebPlate[2].y + rwebPlate[2].y) / 2 };
+    let top = { x: (ufl.x + ufr.x) / 2, y: (ufl.y + ufr.y) / 2 };
     let vStiffLength = top.y - bottom.y - vStiffBottomOffset;
-    let vStiffPlate = [{x: 0, y: -xs.webThickness / 2},
-    { x: vStiffLength , y : -xs.webThickness / 2},
-    { x: vStiffLength , y: -xs.webThickness / 2 - vStiffWidth },
+    let vStiffPlate = [{ x: 0, y: -xs.webThickness / 2 },
+    { x: vStiffLength, y: -xs.webThickness / 2 },
+    { x: vStiffLength, y: -xs.webThickness / 2 - vStiffWidth },
     { x: -(vStiffWidth) * gradientX, y: -xs.webThickness / 2 - vStiffWidth }];
 
     let vStiffTopFillet = Math.max(vStiffWidth - (xs.flangeWidth - xs.webThickness) / 2, 0);
@@ -6657,8 +6660,8 @@
     vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[0], vStiffPlate[3], vStiffPlate[2], vStiffTopFillet, 1));
     vStiffPoint = vStiffPoint.concat(scallop(vStiffPlate[3], vStiffPlate[2], vStiffPlate[1], vStiffendFillet, 1));
     vStiffPoint.push(vStiffPlate[1]);
-    let ang90 = Math.PI/2;
-    result['vStiffner'] = hPlateGenV2(vStiffPoint,centerPoint, top, vStiffThickness, -vStiffThickness/2,centerPoint.skew, 0, ang90,ang90,ang90,true,null );
+    let ang90 = Math.PI / 2;
+    result['vStiffner'] = hPlateGenV2(vStiffPoint, centerPoint, top, vStiffThickness, -vStiffThickness / 2, centerPoint.skew, 0, ang90, ang90, ang90, true, null);
     return { result, data, section }
   }
 
@@ -6685,9 +6688,9 @@
 
 
     let wBolt = {
-      dia : 22,
-      size:37,
-      t:14,
+      dia: 22,
+      size: 37,
+      t: 14,
     };
 
     let tlength = Math.sqrt((iPoint.x - jPoint.x) ** 2 + (iPoint.y - jPoint.y) ** 2);
@@ -6710,7 +6713,7 @@
     let tr = { x: jSectionPoint.web[0][2].x + dOffset, y: jSectionPoint.web[0][2].y + dz };
     let bl = { x: iSectionPoint.web[1][3].x - dOffset, y: iSectionPoint.web[1][3].y - dz };
     let br = { x: jSectionPoint.web[0][3].x + dOffset, y: jSectionPoint.web[0][3].y + dz };
-    
+
     const iCot = (tl.x - bl.x) / (tl.y - bl.y);
     const jCot = (tr.x - br.x) / (tr.y - br.y);
     let framePoints = [ //frame 기준 포인트
@@ -6725,43 +6728,41 @@
     let leftFrame = Kframe(framePoints[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts3);
     let rightFrame = Kframe(bottomCenter, framePoints[1], diaFrameEndOffset, diaFrameEndOffset, pts3);
 
-    let topVec = Vector(framePoints[0], framePoints[1]);
-    let leftVec = Vector(framePoints[0], bottomCenter);
-    let rightVec = Vector(bottomCenter, framePoints[1]);
-    let bottomVec = Vector(framePoints[3], framePoints[2]);
+    let topVec = Vector2D(framePoints[0], framePoints[1]);
+    let leftVec = Vector2D(framePoints[0], bottomCenter);
+    let rightVec = Vector2D(bottomCenter, framePoints[1]);
+    let bottomVec = Vector2D(framePoints[3], framePoints[2]);
 
     let boltLayout = [
-      XYOffset(framePoints[0],topVec, hFrameEndOffset + 40, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[0],topVec, hFrameEndOffset + 120, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[0],topVec, hFrameEndOffset + 200, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[1],topVec, -hFrameEndOffset - 40, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[1],topVec, -hFrameEndOffset - 120, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[1],topVec, -hFrameEndOffset - 200, (pts1[0]+pts1[3])/2 ),
-    XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 40, (pts2[0]+pts2[3])/2 ),
-    XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 120, (pts2[0]+pts2[3])/2 ),
-    XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 200, (pts2[0]+pts2[3])/2 ),
-    // XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 280, (pts2[0]+pts2[3])/2 ),
-    XYOffset(framePoints[1],rightVec, -diaFrameEndOffset - 40, (pts2[0]+pts2[3])/2 ),
-    XYOffset(framePoints[1],rightVec, -diaFrameEndOffset - 120, (pts2[0]+pts2[3])/2 ),
-    XYOffset(framePoints[1],rightVec, -diaFrameEndOffset - 200, (pts2[0]+pts2[3])/2 ),
-    // XYOffset(framePoints[1],rightVec, -diaFrameEndOffset - 280, (pts2[0]+pts2[3])/2 ),
-    XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 40, (pts3[0]+pts3[3])/2 ),
-    XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 120, (pts3[0]+pts3[3])/2 ),
-    XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 200, (pts3[0]+pts3[3])/2 ),
-    // XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 280, (pts3[0]+pts3[3])/2 ),
-    XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 40, (pts3[0]+pts3[3])/2 ),
-    XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 120, (pts3[0]+pts3[3])/2 ),
-    XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 200, (pts3[0]+pts3[3])/2 ),
-    // XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 280, (pts3[0]+pts3[3])/2 ),
-  ];
-  let boltLayout2 = [];
-  boltLayout.forEach(elem => boltLayout2.push([elem.x, elem.y]));
+      XYOffset(framePoints[0], topVec, hFrameEndOffset + 40, (pts1[0] + pts1[3]) / 2),
+      XYOffset(framePoints[0], topVec, hFrameEndOffset + 120, (pts1[0] + pts1[3]) / 2),
+      XYOffset(framePoints[0], topVec, hFrameEndOffset + 200, (pts1[0] + pts1[3]) / 2),
+      XYOffset(framePoints[1], topVec, -hFrameEndOffset - 40, (pts1[0] + pts1[3]) / 2),
+      XYOffset(framePoints[1], topVec, -hFrameEndOffset - 120, (pts1[0] + pts1[3]) / 2),
+      XYOffset(framePoints[1], topVec, -hFrameEndOffset - 200, (pts1[0] + pts1[3]) / 2),
+      XYOffset(framePoints[0], leftVec, diaFrameEndOffset + 40, (pts2[0] + pts2[3]) / 2),
+      XYOffset(framePoints[0], leftVec, diaFrameEndOffset + 120, (pts2[0] + pts2[3]) / 2),
+      XYOffset(framePoints[0], leftVec, diaFrameEndOffset + 200, (pts2[0] + pts2[3]) / 2),
+      // XYOffset(framePoints[0],leftVec, diaFrameEndOffset + 280, (pts2[0]+pts2[3])/2 ),
+      XYOffset(framePoints[1], rightVec, -diaFrameEndOffset - 40, (pts2[0] + pts2[3]) / 2),
+      XYOffset(framePoints[1], rightVec, -diaFrameEndOffset - 120, (pts2[0] + pts2[3]) / 2),
+      XYOffset(framePoints[1], rightVec, -diaFrameEndOffset - 200, (pts2[0] + pts2[3]) / 2),
+      // XYOffset(framePoints[1],rightVec, -diaFrameEndOffset - 280, (pts2[0]+pts2[3])/2 ),
+      XYOffset(framePoints[3], bottomVec, hFrameEndOffset + 40, (pts3[0] + pts3[3]) / 2),
+      XYOffset(framePoints[3], bottomVec, hFrameEndOffset + 120, (pts3[0] + pts3[3]) / 2),
+      XYOffset(framePoints[3], bottomVec, hFrameEndOffset + 200, (pts3[0] + pts3[3]) / 2),
+      // XYOffset(framePoints[3],bottomVec, hFrameEndOffset + 280, (pts3[0]+pts3[3])/2 ),
+      XYOffset(framePoints[2], bottomVec, -hFrameEndOffset - 40, (pts3[0] + pts3[3]) / 2),
+      XYOffset(framePoints[2], bottomVec, -hFrameEndOffset - 120, (pts3[0] + pts3[3]) / 2),
+      XYOffset(framePoints[2], bottomVec, -hFrameEndOffset - 200, (pts3[0] + pts3[3]) / 2),
+      // XYOffset(framePoints[2],bottomVec, -hFrameEndOffset - 280, (pts3[0]+pts3[3])/2 ),
+    ];
+    let boltLayout2 = [];
+    boltLayout.forEach(elem => boltLayout2.push([elem.x, elem.y]));
     let Bolt = {
       size: wBolt.size, dia: wBolt.dia, t: wBolt.t, l: gussetThickness * 2,
       layout: boltLayout2, isUpper: false
     };
-
-
     let centerGusset = [
       XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
       XYOffset(bottomCenter, bottomVec, gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
@@ -6770,7 +6771,7 @@
       XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
       XYOffset(bottomCenter, leftVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
     ];
-    result['centerGusset'] = vPlateGen(centerGusset,centerPoint, gussetThickness,[], 0, null,null,[],[3,4],null);
+    result['centerGusset'] = vPlateGen(centerGusset, centerPoint, gussetThickness, [], 0, null, null, [], [3, 4], null);
     result['centerGusset']['bolt'] = Bolt;
     let leftTopGusset = [
       { x: tl.x - gussetWeldingOffset * iCot, y: tl.y - gussetWeldingOffset },
@@ -6779,37 +6780,37 @@
       XYOffset(framePoints[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[3] - gussetWeldingOffset),
       { x: tl.x - (gussetWeldingOffset + gussetTopWidth) * iCot, y: tl.y - (gussetWeldingOffset + gussetTopWidth) },
     ];
-    result['leftTopGusset'] = vPlateGen(leftTopGusset,centerPoint, gussetThickness,[], 0, null,null,[],[0,2],null);
+    result['leftTopGusset'] = vPlateGen(leftTopGusset, centerPoint, gussetThickness, [], 0, null, null, [], [0, 2], null);
     let rightTopGusset = [
       { x: tr.x - gussetWeldingOffset * jCot, y: tr.y - gussetWeldingOffset },
       XYOffset(framePoints[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
       XYOffset(framePoints[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
       XYOffset(framePoints[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-      { x:tr.x - (gussetWeldingOffset + gussetTopWidth) * jCot, y: tr.y - (gussetWeldingOffset + gussetTopWidth) },
+      { x: tr.x - (gussetWeldingOffset + gussetTopWidth) * jCot, y: tr.y - (gussetWeldingOffset + gussetTopWidth) },
     ];
-    result['rightTopGusset'] = vPlateGen(rightTopGusset,centerPoint, gussetThickness,[], 0, null,null,[],[0,2],null);
+    result['rightTopGusset'] = vPlateGen(rightTopGusset, centerPoint, gussetThickness, [], 0, null, null, [], [0, 2], null);
     let leftBottomGusset = [
       { x: bl.x + gussetWeldingOffset * iCot, y: bl.y + gussetWeldingOffset },
       XYOffset(framePoints[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
       XYOffset(framePoints[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
       { x: bl.x + (gussetWeldingOffset + gussetBottomWidth) * iCot, y: bl.y + (gussetWeldingOffset + gussetBottomWidth) },
     ];
-    result['leftBottomGusset'] = vPlateGen(leftBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null);
+    result['leftBottomGusset'] = vPlateGen(leftBottomGusset, centerPoint, gussetThickness, [], 0, null, null, [], null, null);
     let rightBottomGusset = [
       { x: br.x + gussetWeldingOffset * jCot, y: br.y + gussetWeldingOffset },
       XYOffset(framePoints[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
       XYOffset(framePoints[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
       { x: br.x + (gussetWeldingOffset + gussetBottomWidth) * jCot, y: br.y + (gussetWeldingOffset + gussetBottomWidth) },
     ];
-    result['rightBottomGusset'] = vPlateGen(rightBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null);
-    result['topFrame1'] = vFrameGen(topFrame[0],centerPoint, pts1[4], gussetThickness/2,[0,3,1,2],null);
-    result['topFrame2'] = vFrameGen(topFrame[1],centerPoint, pts1[5], gussetThickness/2,[0,3,1,2],null);
-    result['bottomFrame1'] = vFrameGen(bottomFrame[0],centerPoint, pts2[4], gussetThickness/2,null,null);
-    result['bottomFrame2'] = vFrameGen(bottomFrame[1],centerPoint, pts2[5], gussetThickness/2,null,null);
-    result['leftFrame1'] = vFrameGen(leftFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null);
-    result['leftFrame2'] = vFrameGen(leftFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null);
-    result['righttFrame1'] =vFrameGen(rightFrame[0],centerPoint, pts3[4], gussetThickness/2,null,null); 
-    result['rightFrame2'] = vFrameGen(rightFrame[1],centerPoint, pts3[5], gussetThickness/2,null,null);
+    result['rightBottomGusset'] = vPlateGen(rightBottomGusset, centerPoint, gussetThickness, [], 0, null, null, [], null, null);
+    result['topFrame1'] = vFrameGen(topFrame[0], centerPoint, pts1[4], gussetThickness / 2, [0, 3, 1, 2], null);
+    result['topFrame2'] = vFrameGen(topFrame[1], centerPoint, pts1[5], gussetThickness / 2, [0, 3, 1, 2], null);
+    result['bottomFrame1'] = vFrameGen(bottomFrame[0], centerPoint, pts2[4], gussetThickness / 2, null, null);
+    result['bottomFrame2'] = vFrameGen(bottomFrame[1], centerPoint, pts2[5], gussetThickness / 2, null, null);
+    result['leftFrame1'] = vFrameGen(leftFrame[0], centerPoint, pts3[4], gussetThickness / 2, null, null);
+    result['leftFrame2'] = vFrameGen(leftFrame[1], centerPoint, pts3[5], gussetThickness / 2, null, null);
+    result['righttFrame1'] = vFrameGen(rightFrame[0], centerPoint, pts3[4], gussetThickness / 2, null, null);
+    result['rightFrame2'] = vFrameGen(rightFrame[1], centerPoint, pts3[5], gussetThickness / 2, null, null);
 
     let dummyPoints = [...framePoints, bottomCenter];
     dummyPoints.forEach(function (elem) { data.push(ToGlobalPoint(centerPoint, elem)); });
@@ -7287,68 +7288,6 @@
       return mesh
   }
 
-  function HBracingPlateView(hBraicngPlateDict, initPoint) {
-      var group = new global.THREE.Group();
-      // var meshMaterial = new THREE.MeshLambertMaterial( {
-      //     color: 0x00ffff,
-      //     emissive: 0x44aaaa,
-      //     opacity: 1,
-      //     side:THREE.DoubleSide,
-      //     transparent: false,
-      //     wireframe : false
-      //   } );
-      var meshMaterial = new global.THREE.MeshNormalMaterial();
-      for (let pk in hBraicngPlateDict) {
-          //    let point = pointDict[pk]
-          for (let partkey in hBraicngPlateDict[pk]) {
-              if (partkey !== "point") {
-                  let shapeNode = hBraicngPlateDict[pk][partkey].points;
-                  let Thickness = hBraicngPlateDict[pk][partkey].Thickness;
-                  let zPosition = hBraicngPlateDict[pk][partkey].z;
-                  let rotationY = hBraicngPlateDict[pk][partkey].rotationY;
-                  let rotationX = hBraicngPlateDict[pk][partkey].rotationX;
-                  let hole = hBraicngPlateDict[pk][partkey].hole;
-                  let point = hBraicngPlateDict[pk].point ? hBraicngPlateDict[pk].point : hBraicngPlateDict[pk][partkey].point;
-                  group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial));
-              }
-          }
-      }
-      return group
-  }
-
-  function HBracingView(hBracingDict, initPoint) {
-      var group = new global.THREE.Group();
-      // var meshMaterial = new THREE.MeshLambertMaterial( {
-      //     color: 0x00ffff,
-      //     emissive: 0x44aaaa,
-      //     opacity: 1,
-      //     side:THREE.DoubleSide,
-      //     transparent: false,
-      //     wireframe : false
-      //   } );
-      var meshMaterial = new global.THREE.MeshNormalMaterial();
-      for (let i in hBracingDict) {
-          group.add(convexMesh(hBracingDict[i].points[0], initPoint, meshMaterial));
-          group.add(convexMesh(hBracingDict[i].points[1], initPoint, meshMaterial));
-      }
-      return group
-  }
-
-  function convexMesh(plist, initPoint, meshMaterial) {
-      let geometry = new global.THREE.Geometry();
-      for (let i in plist) {
-          geometry.vertices.push(new global.THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z));
-      }
-      let j = plist.length / 2;
-      for (let i = 0; i < j; i++) {
-          let k = i + 1 === j ? 0 : i + 1;
-          geometry.faces.push(new global.THREE.Face3(k, i, i + j));
-          geometry.faces.push(new global.THREE.Face3(k, i + j, k + j));
-      }
-      geometry.computeFaceNormals();
-      return new global.THREE.Mesh(geometry, meshMaterial)
-  }
-
   function DeckPointView(deckPointDict, initPoint, opacity) {
       let group = new global.THREE.Group();
       var meshMaterial = new global.THREE.MeshLambertMaterial({
@@ -7662,24 +7601,24 @@
     // sceneAdder(group, [0, "Part", keyName])
   };
 
-  function HorBracingView() {
-    this.addInput("hBracingDict", "hBracingDict");
-    this.addInput("Point", "Point");
-  }
+  // export function HorBracingView() {
+  //   this.addInput("hBracingDict", "hBracingDict");
+  //   this.addInput("Point", "Point");
+  // }
 
-  HorBracingView.prototype.onExecute = function () {
-    const hb = this.getInputData(0);
-    const initPoint = this.getInputData(1);
-    const group = HBracingView(hb.hBracingDict, initPoint);
-    const group2 = HBracingPlateView(hb.hBracingPlateDict, initPoint);
-    global.sceneAdder({name:"hbracing", layer:0, mesh:group, meta:{part:"hbracing"}});
-    global.sceneAdder({name:"hbracingPlate", layer:0, mesh:group2, meta:{part:"hbracingPlate"}});
+  // HorBracingView.prototype.onExecute = function () {
+  //   const hb = this.getInputData(0);
+  //   const initPoint = this.getInputData(1);
+  //   const group = HBracingView(hb.hBracingDict, initPoint);
+  //   const group2 = HBracingPlateView(hb.hBracingPlateDict, initPoint);
+  //   sceneAdder({name:"hbracing", layer:0, mesh:group, meta:{part:"hbracing"}});
+  //   sceneAdder({name:"hbracingPlate", layer:0, mesh:group2, meta:{part:"hbracingPlate"}});
 
-    // sceneAdder({ layer: 0, mesh: group }, "hbracing");
-    // sceneAdder({ layer: 0, mesh: group2 }, "hbracingPlate");
-    // sceneAdder(group, [0, "HBracing", "Bracing"])
-    // sceneAdder(group2, [0, "HBracing", "Plate"])
-  };
+  //   // sceneAdder({ layer: 0, mesh: group }, "hbracing");
+  //   // sceneAdder({ layer: 0, mesh: group2 }, "hbracingPlate");
+  //   // sceneAdder(group, [0, "HBracing", "Bracing"])
+  //   // sceneAdder(group2, [0, "HBracing", "Plate"])
+  // }
 
   function DeckView() {
     this.addInput("deckPointDict", "deckPointDict");
@@ -11272,7 +11211,7 @@
   global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
   global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
   global.LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
-  global.LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
+  // LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
   global.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
   global.LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
   global.LiteGraph.registerNodeType("3DVIEW/BarrierView", BarrierView);

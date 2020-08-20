@@ -1,4 +1,4 @@
-import { ToGlobalPoint, PlateRestPoint, Kframe, XYOffset, Vector, scallop, Fillet2D } from "../geometryModule"
+import { ToGlobalPoint, PlateRestPoint, Kframe, XYOffset, Vector2D, scallop, Fillet2D } from "../geometryModule"
 import { PTS } from "../DB/module"
 import { vPlateGen, hPlateGen, hPlateSide2D, hPlateGenV2, vFrameGen } from "../stiffner/module"
 import { IbeamJoint } from "../splice/module"
@@ -939,10 +939,10 @@ export function XbeamK0(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeamSecti
   let leftFrame = Kframe(framePoints[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts3)
   let rightFrame = Kframe(bottomCenter, framePoints[1], diaFrameEndOffset, diaFrameEndOffset, pts3)
 
-  let topVec = Vector(framePoints[0], framePoints[1])
-  let leftVec = Vector(framePoints[0], bottomCenter)
-  let rightVec = Vector(bottomCenter, framePoints[1])
-  let bottomVec = Vector(framePoints[3], framePoints[2])
+  let topVec = Vector2D(framePoints[0], framePoints[1])
+  let leftVec = Vector2D(framePoints[0], bottomCenter)
+  let rightVec = Vector2D(bottomCenter, framePoints[1])
+  let bottomVec = Vector2D(framePoints[3], framePoints[2])
 
   let boltLayout = [
     XYOffset(framePoints[0], topVec, hFrameEndOffset + 40, (pts1[0] + pts1[3]) / 2),

@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import {LineMesh, LineView, SteelBoxView, DiaView, HBracingView, HBracingPlateView, DeckPointView, boltView, BarrierPointView, StudMeshView, AnalysisModel, AnalysisResult } from "./module"
+import {LineMesh, LineView, SteelBoxView, DiaView, DeckPointView, boltView, BarrierPointView, StudMeshView, AnalysisModel, AnalysisResult } from "./module"
 import { LineToThree } from "../line/module";
 
 export function LineViewer() {
