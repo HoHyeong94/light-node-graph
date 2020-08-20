@@ -5391,7 +5391,7 @@
       plateShape.push({ x: position.x + ps[i].x * cos - ps[i].y * sin, y: ps[i].y * cos + ps[i].x * sin });
     }
 
-    return hPlateGen(plateShape, point, sideTopThickness, position.y, 0, 0, rotationY,null,true,null)
+    return hPlateGen(plateShape, point, sideTopThickness, position.y, 90, 0, rotationY,null,true,null)
     // { point: point, plate: { points: plateShape, Thickness: sideTopThickness, z: position.y, rotationX: 0, rotationY: rotationY, hole: [] } }
   }
 
