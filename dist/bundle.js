@@ -6683,46 +6683,56 @@
     const pts2 = PTS(bFrame, true, 1, sectionDB);
     const pts3 = PTS(dFrame, true, 1, sectionDB);
 
+    // let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1])
+    // let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1])
 
-    let iTopNode = ToGlobalPoint(iPoint, iSectionPoint.rWeb[1]);
-    let jTopNode = ToGlobalPoint(jPoint, jSectionPoint.lWeb[1]);
+    // let length = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2)
+    // let xlength = Math.abs(jPoint.offset - iPoint.offset)
+    // let vec = { x: (jTopNode.x - iTopNode.x) / length, y: (jTopNode.y - iTopNode.y) / length }
+    // let grd = (jTopNode.z - iTopNode.z) / length
+    // let grdSec = Math.sqrt(1 + grd ** 2)
 
-    let length = Math.sqrt((jTopNode.x - iTopNode.x) ** 2 + (jTopNode.y - iTopNode.y) ** 2);
-    let xlength = Math.abs(jTopNode.x - iTopNode.x);
-    let vec = { x: (jTopNode.x - iTopNode.x) / length, y: (jTopNode.y - iTopNode.y) / length };
-    let grd = (jTopNode.z - iTopNode.z) / length;
+    let tlength = Math.sqrt((iPoint.x - jPoint.x) ** 2 + (iPoint.y - jPoint.y) ** 2);
+    let vec = { x: (jPoint.x - iPoint.x) / tlength, y: (jPoint.y - iPoint.y) / tlength };
+    let dOffset = (jPoint.offset - iPoint.offset) / 2;
+    let dz = (jPoint.z - iPoint.z) / 2;
 
     let centerPoint = {
-      x: (iTopNode.x + jTopNode.x) / 2,
-      y: (iTopNode.y + jTopNode.y) / 2,
-      z: (iTopNode.z + jTopNode.z) / 2,
-      normalCos: vec.x,
-      normalSin: vec.y,
+      x: (iPoint.x + jPoint.x) / 2,
+      y: (iPoint.y + jPoint.y) / 2,
+      z: (iPoint.z + jPoint.z) / 2,
+      normalCos: iPoint.normalCos,
+      normalSin: iPoint.normalSin,
       offset: (iPoint.offset + jPoint.offset) / 2
     };
     let cw = (centerPoint.normalCos * vec.y - centerPoint.normalSin * vec.x) > 0 ? 1 : -1; // 반시계방향의 경우 1
     centerPoint.skew = 90 + cw * Math.acos(centerPoint.normalCos * vec.x + centerPoint.normalSin * vec.y) * 180 / Math.PI;
 
-    const iCot = (iSectionPoint.rWeb[1].x - iSectionPoint.rWeb[0].x) / (iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y);
-    const jCot = (jSectionPoint.lWeb[1].x - jSectionPoint.lWeb[0].x) / (jSectionPoint.lWeb[1].y - jSectionPoint.lWeb[0].y);
-    let iheight = iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y;
-    let jheight = jSectionPoint.rWeb[1].y - jSectionPoint.rWeb[0].y;
-    let points = [ //frame 기준 포인트
-      { x: -xlength / 2 - topOffset * iCot, y: -xlength / 2 * grd - topOffset },
-      { x: xlength / 2 - topOffset * jCot, y: xlength / 2 * grd - topOffset },
-      { x: xlength / 2 - (jheight - bottomOffset) * jCot, y: xlength / 2 * grd - (jheight - bottomOffset) },
-      { x: -xlength / 2 - (iheight - bottomOffset) * iCot, y: -xlength / 2 * grd - (iheight - bottomOffset) },
+    let tl = { x: iSectionPoint.web[1][2].x - dOffset, y: iSectionPoint.web[1][2].y - dz };
+    let tr = { x: jSectionPoint.web[0][2].x + dOffset, y: jSectionPoint.web[0][2].y + dz };
+    let bl = { x: iSectionPoint.web[1][3].x - dOffset, y: iSectionPoint.web[1][3].y - dz };
+    let br = { x: jSectionPoint.web[0][3].x + dOffset, y: jSectionPoint.web[0][3].y + dz };
+    
+    const iCot = (tl.x - bl.x) / (tl.y - bl.y);
+    const jCot = (tr.x - br.x) / (tr.y - br.y);
+    // let iheight = iSectionPoint.rWeb[1].y - iSectionPoint.rWeb[0].y
+    // let jheight = jSectionPoint.rWeb[1].y - jSectionPoint.rWeb[0].y
+    let framePoints = [ //frame 기준 포인트
+      { x: tl.x - topOffset * iCot, y: tl.y - topOffset },
+      { x: tr.x - topOffset * jCot, y: tr.y - topOffset },
+      { x: br.x + bottomOffset * jCot, y: br.y + bottomOffset },
+      { x: bl.x + bottomOffset * iCot, y: bl.y + bottomOffset },
     ];
-    let bottomCenter = { x: (points[2].x + points[3].x) / 2, y: (points[2].y + points[3].y) / 2 };
-    let topFrame = Kframe(points[0], points[1], hFrameEndOffset, hFrameEndOffset, pts1);
-    let bottomFrame = Kframe(points[3], points[2], hFrameEndOffset, hFrameEndOffset, pts2);
-    let leftFrame = Kframe(points[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts3);
-    let rightFrame = Kframe(bottomCenter, points[1], diaFrameEndOffset, diaFrameEndOffset, pts3);
+    let bottomCenter = { x: (framePoints[2].x + framePoints[3].x) / 2, y: (framePoints[2].y + framePoints[3].y) / 2 };
+    let topFrame = Kframe(framePoints[0], framePoints[1], hFrameEndOffset, hFrameEndOffset, pts1);
+    let bottomFrame = Kframe(framePoints[3], framePoints[2], hFrameEndOffset, hFrameEndOffset, pts2);
+    let leftFrame = Kframe(framePoints[0], bottomCenter, diaFrameEndOffset, diaFrameEndOffset, pts3);
+    let rightFrame = Kframe(bottomCenter, framePoints[1], diaFrameEndOffset, diaFrameEndOffset, pts3);
 
-    let topVec = Vector(points[0], points[1]);
-    let leftVec = Vector(points[0], bottomCenter);
-    let rightVec = Vector(bottomCenter, points[1]);
-    let bottomVec = Vector(points[3], points[2]);
+    let topVec = Vector(framePoints[0], framePoints[1]);
+    let leftVec = Vector(framePoints[0], bottomCenter);
+    let rightVec = Vector(bottomCenter, framePoints[1]);
+    let bottomVec = Vector(framePoints[3], framePoints[2]);
 
     let centerGusset = [
       XYOffset(bottomCenter, bottomVec, -gussetCenterWidth / 2, pts2[3] - gussetWeldingOffset),
@@ -6750,11 +6760,11 @@
     //   point: centerPoint
     // }
     let leftTopGusset = [
-      { x: -xlength / 2 - gussetWeldingOffset * iCot, y: -xlength / 2 * grd - gussetWeldingOffset },
-      XYOffset(points[0], topVec, hFrameEndOffset + gussetBondingLength, pts1[0] + gussetWeldingOffset),
-      XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[0] + gussetWeldingOffset),
-      XYOffset(points[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[3] - gussetWeldingOffset),
-      { x: -xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * iCot, y: -xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
+      { x: tl.x - gussetWeldingOffset * iCot, y: tl.y - gussetWeldingOffset },
+      XYOffset(framePoints[0], topVec, hFrameEndOffset + gussetBondingLength, pts1[0] + gussetWeldingOffset),
+      XYOffset(framePoints[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[0] + gussetWeldingOffset),
+      XYOffset(framePoints[0], leftVec, diaFrameEndOffset + gussetBondingLength, pts3[3] - gussetWeldingOffset),
+      { x: tl.x - (gussetWeldingOffset + gussetTopWidth) * iCot, y: tl.y - (gussetWeldingOffset + gussetTopWidth) },
     ];
 
     result['leftTopGusset'] = vPlateGen(leftTopGusset,centerPoint, gussetThickness,[], 0, null,null,[],[0,2],null);
@@ -6768,11 +6778,11 @@
     //   point: centerPoint
     // }
     let rightTopGusset = [
-      { x: xlength / 2 - gussetWeldingOffset * jCot, y: xlength / 2 * grd - gussetWeldingOffset },
-      XYOffset(points[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
-      XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
-      XYOffset(points[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
-      { x: xlength / 2 - (gussetWeldingOffset + gussetTopWidth) * jCot, y: xlength / 2 * grd - (gussetWeldingOffset + gussetTopWidth) },
+      { x: tr.x - gussetWeldingOffset * jCot, y: tr.y - gussetWeldingOffset },
+      XYOffset(framePoints[1], topVec, -(hFrameEndOffset + gussetBondingLength), pts1[0] + gussetWeldingOffset),
+      XYOffset(framePoints[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[0] + gussetWeldingOffset),
+      XYOffset(framePoints[1], rightVec, -(diaFrameEndOffset + gussetBondingLength), pts3[3] - gussetWeldingOffset),
+      { x:tr.x - (gussetWeldingOffset + gussetTopWidth) * jCot, y: tr.y - (gussetWeldingOffset + gussetTopWidth) },
     ];
     result['rightTopGusset'] = vPlateGen(rightTopGusset,centerPoint, gussetThickness,[], 0, null,null,[],[0,2],null);
     // {
@@ -6791,10 +6801,10 @@
     //   point: centerPoint
     // }
     let leftBottomGusset = [
-      { x: -xlength / 2 - (iheight - gussetWeldingOffset) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset) },
-      XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
-      XYOffset(points[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
-      { x: -xlength / 2 - (iheight - gussetWeldingOffset - gussetBottomWidth) * iCot, y: -xlength / 2 * grd - (iheight - gussetWeldingOffset - gussetBottomWidth) },
+      { x: bl.x + gussetWeldingOffset * iCot, y: bl.y + gussetWeldingOffset },
+      XYOffset(framePoints[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[3] - gussetWeldingOffset),
+      XYOffset(framePoints[3], bottomVec, hFrameEndOffset + gussetBondingLength, pts2[0] + gussetWeldingOffset),
+      { x: bl.x + (gussetWeldingOffset + gussetBottomWidth) * iCot, y: bl.y + (gussetWeldingOffset + gussetBottomWidth) },
     ];
     result['leftBottomGusset'] = vPlateGen(leftBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null);
     // {
@@ -6812,10 +6822,10 @@
     //   point: centerPoint
     // }
     let rightBottomGusset = [
-      { x: xlength / 2 - (jheight - gussetWeldingOffset) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset) },
-      XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
-      XYOffset(points[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
-      { x: xlength / 2 - (jheight - gussetWeldingOffset - gussetBottomWidth) * jCot, y: xlength / 2 * grd - (jheight - gussetWeldingOffset - gussetBottomWidth) },
+      { x: br.x + gussetWeldingOffset * jCot, y: br.y + gussetWeldingOffset },
+      XYOffset(framePoints[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[3] - gussetWeldingOffset),
+      XYOffset(framePoints[2], bottomVec, -(hFrameEndOffset + gussetBondingLength), pts2[0] + gussetWeldingOffset),
+      { x: br.x + (gussetWeldingOffset + gussetBottomWidth) * jCot, y: br.y + (gussetWeldingOffset + gussetBottomWidth) },
     ];
     result['rightBottomGusset'] = vPlateGen(rightBottomGusset,centerPoint, gussetThickness,[], 0, null,null,[],null,null);
     // {
@@ -6916,7 +6926,7 @@
     //   hole: [],
     //   point: centerPoint
     // }
-    let dummyPoints = [...points, bottomCenter];
+    let dummyPoints = [...framePoints, bottomCenter];
     dummyPoints.forEach(function (elem) { data.push(ToGlobalPoint(centerPoint, elem)); });
     let section = [tFrame, bFrame, dFrame];   //사용자로부터 받은 단면요소의 값을 객체로 저장
     return { result, data, section }
