@@ -5341,7 +5341,7 @@
     let [frame1, frame2] = Kframe({x:0,y: -VectorLength/2}, {x:0,y: VectorLength/2}, spc, spc, pts);
     let z1 =  pts[4]>0? 0: pts[4];
     let z2 =  pts[5]>0? 0: pts[5];
-    let rotX = - Math.atan(Vector[2]/VectorLength);
+    let rotX = Math.asin(Vector[2]/VectorLength);
     result['frame1'] = hPlateGen(frame1, centerPoint, Math.abs(pts[4]),z1,90,rotX,0,null,true,null);
     result['frame2'] = hPlateGen(frame2, centerPoint, Math.abs(pts[5]),z2,90,rotX,0,null,true,null);
     return result 
