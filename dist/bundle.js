@@ -5343,6 +5343,7 @@
     let z1 =  pts[4]>0? 0: pts[4];
     let z2 =  pts[5]>0? 0: pts[5];
     let rotX = Math.atan(Vector[2]/VectorLength2D);
+
     result['frame1'] = hPlateGen(frame1, centerPoint, Math.abs(pts[4]),z1,90,rotX,0,null,true,null);
     result['frame2'] = hPlateGen(frame2, centerPoint, Math.abs(pts[5]),z2,90,rotX,0,null,true,null);
     return result 
@@ -5365,14 +5366,15 @@
     let scallopRadius = hBSection.scallopRadius;
     let scallopBottom = hBSection.scallopBottom;
 
+
     let position = {};
     let rotationY = -Math.atan((tr.y - tl.y) / (tr.x - tl.x));
     if (right) {
       position = { x: tr.x - rwCot * (upperHeight + sideTopThickness), y: tr.y - (upperHeight + sideTopThickness) };
-      rotationY = -rotationY;
     } else {
       position = { x: tl.x - lwCot * (upperHeight + sideTopThickness), y: tl.y - (upperHeight + sideTopThickness) };
     }
+    let centerPoint = ToGlobalPoint(point, position);
     let rotation = (right) ? Math.PI / 2 : -Math.PI / 2;
     let cos = Math.cos(rotation);
     let sin = Math.sin(rotation);
@@ -5390,10 +5392,10 @@
     ps.push({ x: sideToplength / 2, y: sideTopwidth });
     let plateShape = [];
     for (let i = 0; i < ps.length; i++) {
-      plateShape.push({ x: position.x + ps[i].x * cos - ps[i].y * sin, y: ps[i].y * cos + ps[i].x * sin });
+      plateShape.push({ x: ps[i].x * cos - ps[i].y * sin, y: ps[i].y * cos + ps[i].x * sin });
     }
 
-    return hPlateGen(plateShape, point, sideTopThickness, position.y, 90, 0, rotationY,null,true,null)
+    return hPlateGen(plateShape, centerPoint, sideTopThickness, 0, 90, 0, rotationY,null,true,null)
     // { point: point, plate: { points: plateShape, Thickness: sideTopThickness, z: position.y, rotationX: 0, rotationY: rotationY, hole: [] } }
   }
 
