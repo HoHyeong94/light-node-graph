@@ -2925,8 +2925,8 @@
     let former2 = uf2[0][0] ? uf2[0][0].x : uf2[2][0].x;
     let latter2 = uf3[0][0] ? uf3[0][0].x : uf3[2][0].x;
 
-    let former3 = uf2[0][0] ? uf2[0][0].y : uf2[2][0].y;
-    let latter3 = uf3[0][0] ? uf3[0][0].y : uf3[2][0].y;
+    let former3 = uf2[0].length>0 ? uf2[0][0].y : uf2[2][0].y;
+    let latter3 = uf3[0].length>0 ? uf3[0][0].y : uf3[2][0].y;
     let former0 = uf0[0][0] ? uf0[0][0].y : uf0[2][0].y;
     let latter0 = uf1[0][0] ? uf1[0][0].y : uf1[2][0].y;
 
@@ -3029,7 +3029,7 @@
 
     }
     if (!FisB) {
-      if (former2 > latter2) {
+      if (former2 > latter2 && pk2.substr(2, 2) !== "K6") {
         if (uf2[2][0]) {
           plate2[2][0] = DividingPoint(plate2[2][0], plate1[2][0], (former2 - latter2) * 2);
           plate2[2][1] = DividingPoint(plate2[2][1], plate1[2][1], (former2 - latter2) * 2);
