@@ -5335,8 +5335,8 @@
       x:(Brline[1].x + Brline[0].x)/2,
       y:(Brline[1].y + Brline[0].y)/2,
       z: (Brline[1].z + Brline[0].z)/2,
-      normalCos : Vector[1] / VectorLength2D,
-      normalSin : - Vector[0] / VectorLength2D,
+      normalCos : -Vector[1] / VectorLength2D,
+      normalSin : Vector[0] / VectorLength2D,
       offset : point1.offset + (node1.x + node2.x)/2
     };
     let [frame1, frame2] = Kframe({x:0,y: -VectorLength/2}, {x:0,y: VectorLength/2}, spc, spc, pts);
