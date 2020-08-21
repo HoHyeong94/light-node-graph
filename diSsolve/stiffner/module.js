@@ -1618,21 +1618,21 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
   // let H = 2500;
   // let ULR = 1300;
   let result = {};
-  const bl = webPoints[0];
-  const tl = webPoints[1];
-  const br = webPoints[2];
-  const tr = webPoints[3];
+  const b1 = webPoints[0];
+  const t1 = webPoints[1];
+  const b2 = webPoints[2];
+  const t2 = webPoints[3];
 
-  const lwCot = (tl.x - bl.x) / (tl.y - bl.y)
-  const rwCot = (tr.x - br.x) / (tr.y - br.y)
+  const lwCot = (t1.x - b1.x) / (t1.y - b1.y)
+  const rwCot = (t2.x - b2.x) / (t2.y - b2.y)
 
   let upperHeight = hBSection.upperHeight;
   let sideTopThickness = hBSection.sideTopThickness;
   let spc = hBSection.spc
   let pts = PTS(hBSection.dFrameName, false, 1, sectionDB) //hBSection.pts
 
-  let node1 = { x: tl.x - lwCot * (upperHeight + sideTopThickness), y: tl.y - (upperHeight + sideTopThickness) };
-  let node2 = { x: tr.x - rwCot * (upperHeight + sideTopThickness), y: tr.y - (upperHeight + sideTopThickness) };
+  let node1 = { x: t1.x - lwCot * (upperHeight + sideTopThickness), y: t1.y - (upperHeight + sideTopThickness) };
+  let node2 = { x: t2.x - rwCot * (upperHeight + sideTopThickness), y: t2.y - (upperHeight + sideTopThickness) };
   let Brline = [
     ToGlobalPoint(point1, node1),
     ToGlobalPoint(point2, node2)
@@ -1641,20 +1641,21 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
   Brline[1].y - Brline[0].y,
   Brline[1].z - Brline[0].z]
   let VectorLength = Math.sqrt(Vector[0] ** 2 + Vector[1] ** 2 + Vector[2] ** 2)
+  let VectorLength2D = Math.sqrt(Vector[0] ** 2 + Vector[1] ** 2 )
   // let normalCos = Vector[1] / VectorLength;
   // let normalSin = - Vector[0] / VectorLength;
   let centerPoint = {
     x:(Brline[1].x + Brline[0].x)/2,
     y:(Brline[1].y + Brline[0].y)/2,
     z: (Brline[1].z + Brline[0].z)/2,
-    normalCos : Vector[1] / VectorLength,
-    normalSin : - Vector[0] / VectorLength,
+    normalCos : Vector[1] / VectorLength2D,
+    normalSin : - Vector[0] / VectorLength2D,
     offset : point1.offset + (node1.x + node2.x)/2
   };
   let [frame1, frame2] = Kframe({x:0,y: -VectorLength/2}, {x:0,y: VectorLength/2}, spc, spc, pts)
   let z1 =  pts[4]>0? 0: pts[4]
   let z2 =  pts[5]>0? 0: pts[5]
-  let rotX = Math.asin(Vector[2]/VectorLength)
+  let rotX = Math.atan(Vector[2]/VectorLength2D)
   result['frame1'] = hPlateGen(frame1, centerPoint, Math.abs(pts[4]),z1,90,rotX,0,null,true,null)
   result['frame2'] = hPlateGen(frame2, centerPoint, Math.abs(pts[5]),z2,90,rotX,0,null,true,null)
   return result 
