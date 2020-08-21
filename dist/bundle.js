@@ -3886,7 +3886,7 @@
         if (hBracingLayout[i][leftToright]) {
           webPoints = [webPoints1[0],webPoints1[1],webPoints2[2],webPoints2[3]];
         } else {
-          webPoints = [webPoints1[2],webPoints1[3],webPoints2[1],webPoints2[2]];
+          webPoints = [webPoints1[2],webPoints1[3],webPoints2[0],webPoints2[1]];
         }
         let point1 = pointDict[pk1];
         let point2 = pointDict[pk2];
@@ -8796,7 +8796,7 @@
           gridMark.meshes.forEach(function (mesh) {
               mesh.position.set(0, -i * girderOffset, 0);
               group.add(mesh);
-          });
+          }); 
           let label = LabelInsert(gridMark.labels, new global.THREE.MeshBasicMaterial({ color: 0xffffff }), layout.layer);
           label.position.set(0, -i * girderOffset, 0);
           group.add(label);

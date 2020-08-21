@@ -1070,7 +1070,7 @@ export function GirderGeneralDraw1(girderStation, layout) {
         gridMark.meshes.forEach(function (mesh) {
             mesh.position.set(0, -i * girderOffset, 0);
             group.add(mesh);
-        });
+        }); 
         let label = LabelInsert(gridMark.labels, new THREE.MeshBasicMaterial({ color: 0xffffff }), layout.layer)
         label.position.set(0, -i * girderOffset, 0);
         group.add(label)

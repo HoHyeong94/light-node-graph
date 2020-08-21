@@ -180,7 +180,7 @@ export function HBracingDict(
       if (hBracingLayout[i][leftToright]) {
         webPoints = [webPoints1[0],webPoints1[1],webPoints2[2],webPoints2[3]];
       } else {
-        webPoints = [webPoints1[2],webPoints1[3],webPoints2[1],webPoints2[2]];
+        webPoints = [webPoints1[2],webPoints1[3],webPoints2[0],webPoints2[1]];
       }
       let point1 = pointDict[pk1];
       let point2 = pointDict[pk2];
