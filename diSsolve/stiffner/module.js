@@ -1679,7 +1679,7 @@ export function hBracingPlate(point, right, webPoints, hBSection) {
   let scallopBottom = hBSection.scallopBottom
 
   let position = {};
-  let rotationY = Math.atan((tr.y - tl.y) / (tr.x - tl.x));
+  let rotationY = -Math.atan((tr.y - tl.y) / (tr.x - tl.x));
   if (right) {
     position = { x: tr.x - rwCot * (upperHeight + sideTopThickness), y: tr.y - (upperHeight + sideTopThickness) };
     rotationY = -rotationY
