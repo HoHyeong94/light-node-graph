@@ -3900,6 +3900,7 @@
           right = hBracingLayout[i][leftToright] ? true : false;
           result[pk1 + pk2]["p2"] = hBracingPlate(point2, right, webPoints2, hBSection);
         }
+        result[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB,right);
       }
     }
 
@@ -5298,7 +5299,7 @@
   }
 
 
-  function hBracingSection(point1, point2, webPoints, hBSection, sectionDB) {
+  function hBracingSection(point1, point2, webPoints, hBSection, sectionDB, isRight) {
     // let sideToplength = 700;
     // let sideTopwidth = 300;
     // let B = 2000;
@@ -5343,9 +5344,9 @@
     let z1 =  pts[4]>0? 0: pts[4];
     let z2 =  pts[5]>0? 0: pts[5];
     let rotX = Math.atan(Vector[2]/VectorLength2D);
-
-    result['frame1'] = hPlateGen(frame1, centerPoint, Math.abs(pts[4]),z1,90,rotX,0,null,true,null);
-    result['frame2'] = hPlateGen(frame2, centerPoint, Math.abs(pts[5]),z2,90,rotX,0,null,true,null);
+    let rotX2 = isRight? -rotX : rotX;
+    result['frame1'] = hPlateGen(frame1, centerPoint, Math.abs(pts[4]),z1,90,rotX2,0,null,true,null);
+    result['frame2'] = hPlateGen(frame2, centerPoint, Math.abs(pts[5]),z2,90,rotX2,0,null,true,null);
     return result 
   }
 
