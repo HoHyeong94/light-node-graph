@@ -1623,16 +1623,16 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
   const b2 = webPoints[2];
   const t2 = webPoints[3];
 
-  const lwCot = (t1.x - b1.x) / (t1.y - b1.y)
-  const rwCot = (t2.x - b2.x) / (t2.y - b2.y)
+  const cot1 = (t1.x - b1.x) / (t1.y - b1.y)
+  const cot2 = (t2.x - b2.x) / (t2.y - b2.y)
 
   let upperHeight = hBSection.upperHeight;
   let sideTopThickness = hBSection.sideTopThickness;
   let spc = hBSection.spc
   let pts = PTS(hBSection.dFrameName, false, 1, sectionDB) //hBSection.pts
 
-  let node1 = { x: t1.x - lwCot * (upperHeight + sideTopThickness), y: t1.y - (upperHeight + sideTopThickness) };
-  let node2 = { x: t2.x - rwCot * (upperHeight + sideTopThickness), y: t2.y - (upperHeight + sideTopThickness) };
+  let node1 = { x: t1.x - cot1 * (upperHeight + sideTopThickness), y: t1.y - (upperHeight + sideTopThickness) };
+  let node2 = { x: t2.x - cot2 * (upperHeight + sideTopThickness), y: t2.y - (upperHeight + sideTopThickness) };
   let Brline = [
     ToGlobalPoint(point1, node1),
     ToGlobalPoint(point2, node2)
@@ -1648,8 +1648,8 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB)
     x:(Brline[1].x + Brline[0].x)/2,
     y:(Brline[1].y + Brline[0].y)/2,
     z: (Brline[1].z + Brline[0].z)/2,
-    normalCos : -Vector[1] / VectorLength2D,
-    normalSin : Vector[0] / VectorLength2D,
+    normalCos : Vector[1] / VectorLength2D,
+    normalSin : -Vector[0] / VectorLength2D,
     offset : point1.offset + (node1.x + node2.x)/2
   };
   let [frame1, frame2] = Kframe({x:0,y: -VectorLength/2}, {x:0,y: VectorLength/2}, spc, spc, pts)
