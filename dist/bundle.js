@@ -4013,8 +4013,8 @@
       normalSin : -rvec[0] / rLength2D,
       offset : point1.offset + (rnode1.x + rnode2.x)/2
     };
-    let lRotX = Math.atan(lvec[2].lLength2D);
-    let rRotX = Math.atan(rvec[2].rLength2D);
+    let lRotX = Math.atan(lvec[2]/lLength2D);
+    let rRotX = Math.atan(rvec[2]/rLength2D);
     let lRotY = Math.atan(lcot1);
     let rRotY = Math.atan(rcot1);
 
