@@ -135,7 +135,7 @@ export function SplicePlate(iPoint, iSectionPoint) {
   let bXRad = Math.atan(iPoint.gradientX + iSectionPoint.input.gradientlf)
   // console.log("check", bXRad)
 
-  if (iSectionPoint.uflange[2].length > 0) { //폐합
+  if (iSectionPoint.lflange[2].length > 0) { //폐합
     let lx1 = Math.sqrt((iSectionPoint.web[0][0].x - lPoint.x) ** 2 + (iSectionPoint.web[0][0].y - lPoint.y) ** 2)
     let lx2 = Math.sqrt((iSectionPoint.web[1][0].x - lPoint.x) ** 2 + (iSectionPoint.web[1][0].y - lPoint.y) ** 2)
     let sec = (lx1 + lx2) / (iSectionPoint.web[1][1].x - iSectionPoint.web[0][1].x)
