@@ -5182,7 +5182,7 @@
     let hx = [[bl.x + lwCot * dsi.hstiffHeight, w2], [br.x + rwCot * dsi.hstiffHeight, w2]];
     if (dsi.hstiffHeight < dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 && dsi.hstiffHeight > dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2) {
       let dx = (dsi.holeBottomY + dsi.holeHeight - dsi.hstiffHeight) / dsi.holeHeight * 100;
-      hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness -dx), w1],
+      hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness + dx), w1],
         [dsi.holeCenterOffset + dsi.holeWidth / 2 + sign *(dsi.holeStiffmargin + dsi.holeStiffThickness), w1]);
     }
     console.log(hx, dsi.holeCenterOffset, dsi.holeWidth / 2);
