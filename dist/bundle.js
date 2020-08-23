@@ -5031,7 +5031,7 @@
     // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
     // dia6에서 가져옴 200811
     let result = {};
-    let sign =  -1;
+    let sign =  1 ;
     let dsi = {
       webThickness: diaSection.plateThickness,
       hstiffWidth: diaSection.hStiffWidth,
@@ -5181,9 +5181,10 @@
 
     let hx = [[bl.x + lwCot * dsi.hstiffHeight, w2], [br.x + rwCot * dsi.hstiffHeight, w2]];
     if (dsi.hstiffHeight < dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 && dsi.hstiffHeight > dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2) {
-      hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, w1],
-        [dsi.holeCenterOffset + dsi.holeWidth / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness, w1]);
+      hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness), w1],
+        [dsi.holeCenterOffset + dsi.holeWidth / 2 + sign *(dsi.holeStiffmargin + dsi.holeStiffThickness), w1]);
     }
+    console.log(hx, dsi.holeCenterOffset, dsi.holeWidth / 2);
     for (let i in dsi.supportStiffLayout) {
       hx.push([dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2, w3]);
       hx.push([dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2, w3]);
@@ -5209,7 +5210,7 @@
       { x: hx[i * 2][0] + 10, y: w0 },
       { x: hx[i * 2][0], y: (w0 + 10) }]);
     }
-    let cpt = ToGlobalPoint(point, hStiffCenter);
+    // let cpt = ToGlobalPoint(point, hStiffCenter)
     for (let i in h2) {
       // let h2D = [{ x: h2[i][0].x, y: hStiffCenter.y },
       // { x: h2[i][3].x, y: hStiffCenter.y },
@@ -5220,17 +5221,18 @@
     }
 
     let gradRadian = Math.atan(gradient);
-    let gtan = Math.tan(gradRadian + Math.PI / 2);
+    // let gsec = 1 / Math.cos(gradRadian);
+    // let gtan = Math.tan(gradRadian + Math.PI / 2)
     // topPlate
     if (uflange[0].length > 0) {
-      let topPlate2D = PlateRestPoint(uflange[0][1], uflange[1][1], gtan, gtan, topPlateThickness);
+      // let topPlate2D = PlateRestPoint(uflange[0][1], uflange[1][1], gtan, gtan, topPlateThickness);
       let topPlate = [
         { x: uflange[0][1].x, y: topPlateWidth / 2 },
         { x: uflange[0][1].x, y: - topPlateWidth / 2 },
         { x: uflange[1][1].x, y: - topPlateWidth / 2 },
         { x: uflange[1][1].x, y: topPlateWidth / 2 },
       ];
-      let cp = ToGlobalPoint(point, { x: 0, y: tl.y - tl.x * gradient });
+      // let cp = ToGlobalPoint(point, { x: 0, y: tl.y - tl.x * gradient })
       let cp2 = { x: 0, y: tl.y - tl.x * gradient };
       const ang90 = Math.PI / 2;
       result['topPlate'] = hPlateGenV2(topPlate, point, cp2, topPlateThickness, 0, skew, 0, -gradRadian, ang90, ang90, true, [0, 1]);
