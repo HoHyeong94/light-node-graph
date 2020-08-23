@@ -115,10 +115,10 @@ export function VstiffShapeDict(
     let gridkey = vStiffLayout[i][position];
     let vSection = vStiffSectionList[vStiffLayout[i][section]];
     let webPoints = [
-      sectionPointDict[gridkey].forward.lWeb[0],
-      sectionPointDict[gridkey].forward.lWeb[1],
-      sectionPointDict[gridkey].forward.rWeb[0],
-      sectionPointDict[gridkey].forward.rWeb[1]
+      sectionPointDict[gridkey].forward.web[0][0],
+      sectionPointDict[gridkey].forward.web[0][1],
+      sectionPointDict[gridkey].forward.web[1][0],
+      sectionPointDict[gridkey].forward.web[1][1]
     ];
     let uflangePoints = [
       sectionPointDict[gridkey].forward.leftTopPlate[1],
@@ -127,8 +127,8 @@ export function VstiffShapeDict(
       sectionPointDict[gridkey].forward.rightTopPlate[2]
     ];
     let skew = sectionPointDict[gridkey].forward.skew;
-    if (vStiffLayout[i][section] === "vStiffType1") {
-      result[gridkey] = vStiffSection(webPoints, skew, uflangePoints, vSection, sectionDB);
+    if (vStiffLayout[i][section] === "HMvStiff1") {
+      result[gridkey] = HMvStiff1(webPoints, gridPoint[gridkey], skew, uflangePoints, vSection, sectionDB);
     }
     else if (vStiffLayout[i][section] === "DYvStiff1") {
       result[gridkey] = DYVstiff1(webPoints, gridPoint[gridkey], skew, uflangePoints, vSection)
@@ -1553,12 +1553,15 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   return result
 }
 
-export function vStiffSection(webPoints, skew, uflangePoint, vSection, sectionDB) {
+export function HMvStiff1(webPoints, point, skew, uflangePoint, vSection, sectionDB) {
 
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
   const tr = webPoints[3];
+
+  const gradient = (tr.y - tl.y) / (tr.x - tl.x)
+
   let gcos = (uflangePoint[1].x - uflangePoint[0].x) / Math.sqrt((uflangePoint[1].x - uflangePoint[0].x) ** 2 + (uflangePoint[1].y - uflangePoint[0].y) ** 2)
   let gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
   const lwCot = (tl.x - bl.x) / (tl.y - bl.y);
@@ -1580,36 +1583,45 @@ export function vStiffSection(webPoints, skew, uflangePoint, vSection, sectionDB
   // let pts = vSection.pts;
   let rotationY = (skew - 90) * Math.PI / 180
   ///left stiffener
-  let leftplate = [
-    tl,
-    { x: bl.x + lwCot * bottomOffset, y: bl.y + bottomOffset },
-    { x: bl.x + lwCot * bottomOffset + lsin * sideHeight, y: bl.y + bottomOffset - lcos * sideHeight },
-    { x: tl.x + gsin * sideHeight, y: tl.y - gcos * sideHeight },
-  ]
-  let leftPoints = [];
-  leftPoints = leftPoints.concat(scallop(leftplate[3], leftplate[0], leftplate[1], scallopRadius, 4));
-  leftPoints.push(leftplate[1])
-  leftPoints = leftPoints.concat(scallop(leftplate[1], leftplate[2], leftplate[3], sideHeight - sideScallopOffset, 1));
-  leftPoints.push(leftplate[3])
+  let leftplate = PlateRestPoint({ x: bl.x + lwCot * bottomOffset, y: bl.y + bottomOffset },tl,0,gradient, sideHeight )
+  // [
+  //   tl,
+  //   { x: bl.x + lwCot * bottomOffset, y: bl.y + bottomOffset },
+  //   { x: bl.x + lwCot * bottomOffset + lsin * sideHeight, y: bl.y + bottomOffset - lcos * sideHeight },
+  //   { x: tl.x + gsin * sideHeight, y: tl.y - gcos * sideHeight },
+  // ]
+  let leftPoints = [...scallop(leftplate[0], leftplate[1], leftplate[2], scallopRadius, 4), leftplate[2],
+  ...scallop(leftplate[2], leftplate[3], leftplate[0], sideHeight - sideScallopOffset, 1), leftplate[0]];
+  // leftPoints = leftPoints.concat(scallop(leftplate[0], leftplate[1], leftplate[2], scallopRadius, 4));
+  // leftPoints.push(leftplate[2])
+  // leftPoints = leftPoints.concat(scallop(leftplate[2], leftplate[3], leftplate[0], sideHeight - sideScallopOffset, 1));
+  // leftPoints.push(leftplate[0])
 
   ///right stiffener
-  let rightplate = [
-    tr,
-    { x: br.x + rwCot * bottomOffset, y: br.y + bottomOffset },
-    { x: br.x + rwCot * bottomOffset - rsin * sideHeight, y: br.y + bottomOffset + rcos * sideHeight },
-    { x: tr.x - gsin * sideHeight, y: tr.y + gcos * sideHeight },
-  ]
-  let rightPoints = [...scallop(rightplate[3], rightplate[0], rightplate[1], scallopRadius, 4), rightplate[1],
-  ...scallop(rightplate[1], rightplate[2], rightplate[3], sideHeight - sideScallopOffset, 1), rightplate[3]];
+  let rightplate = PlateRestPoint({ x: br.x + rwCot * bottomOffset, y: br.y + bottomOffset },tr,0,gradient, -sideHeight )
+  // [
+  //   tr,
+  //   { x: br.x + rwCot * bottomOffset, y: br.y + bottomOffset },
+  //   { x: br.x + rwCot * bottomOffset - rsin * sideHeight, y: br.y + bottomOffset + rcos * sideHeight },
+  //   { x: tr.x - gsin * sideHeight, y: tr.y + gcos * sideHeight },
+  // ]
+  let rightPoints = [...scallop(rightplate[0], rightplate[1], rightplate[2], scallopRadius, 4), rightplate[2],
+  ...scallop(rightplate[2], rightplate[3], rightplate[0], sideHeight - sideScallopOffset, 1), rightplate[0]];
   ////upper bracing
-  let node1 = { x: tl.x - lwCot * upperHeight + gsin * spc, y: tl.y - upperHeight + gcos * spc }
-  let node2 = { x: tr.x - rwCot * upperHeight - gsin * spc, y: tr.y - upperHeight - gcos * spc }
-  let [upperframe1, upperframe2] = Kframe(node1, node2, 0, 0, pts)
+
+  let node1 = { x: tl.x - lwCot * upperHeight, y: tl.y - upperHeight }
+  let node2 = { x: tr.x - rwCot * upperHeight, y: tr.y - upperHeight }
+  let [upperframe1, upperframe2] = Kframe(node1, node2, spc, spc, pts)
+
   return {
-    leftshape: { points: leftPoints, Thickness: sideThickness, z: -sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
-    rightShape: { points: rightPoints, Thickness: sideThickness, z: -sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
-    upperframe1: { points: upperframe1, Thickness: pts[4], z: sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
-    upperframe2: { points: upperframe2, Thickness: pts[5], z: sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
+    leftshape: vPlateGen(leftPoints, point, sideThickness, [],0,null,null,[],[4,5],[4,5,7,8]),
+    // { points: leftPoints, Thickness: sideThickness, z: -sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
+    rightShape: vPlateGen(rightPoints, point, sideThickness, [],0,null,null,[],[4,5],null),
+    // { points: rightPoints, Thickness: sideThickness, z: -sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
+    upperframe1: vFrameGen(upperframe1, point, pts[4], sideThickness/2,[1,2],null),
+    // { points: upperframe1, Thickness: pts[4], z: sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
+    upperframe2: vFrameGen(upperframe2, point, pts[5], sideThickness/2,[1,2],null),
+    // { points: upperframe2, Thickness: pts[5], z: sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
   }
 }
 
