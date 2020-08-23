@@ -5100,7 +5100,7 @@
     lrib2.ribHoleD = dsi.ribHoleD;
     lrib2.ribHoleR = dsi.ribHoleR;
     lrib.type = 1; //하부리브 스캘럽
-
+   //사다리꼴 모양의 윗변이 아랫변보다 항상 100이 더 크게 설정함. 향후 비율에 따라 수정이 필요
     let holeRect = [{ x: dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY }, { x: -dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY },
     { x: -dsi.holeWidth / 2 + dsi.holeCenterOffset - sign * 100, y: bl.y + dsi.holeBottomY + dsi.holeHeight }, { x: dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight }];
     let holePoints = [];
@@ -5181,7 +5181,8 @@
 
     let hx = [[bl.x + lwCot * dsi.hstiffHeight, w2], [br.x + rwCot * dsi.hstiffHeight, w2]];
     if (dsi.hstiffHeight < dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 && dsi.hstiffHeight > dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2) {
-      hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness), w1],
+      let dx = (dsi.holeBottomY + dsi.holeHeight - dsi.hstiffHeight) / dsi.holeHeight * 100;
+      hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness -dx), w1],
         [dsi.holeCenterOffset + dsi.holeWidth / 2 + sign *(dsi.holeStiffmargin + dsi.holeStiffThickness), w1]);
     }
     console.log(hx, dsi.holeCenterOffset, dsi.holeWidth / 2);
