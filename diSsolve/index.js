@@ -5,7 +5,7 @@ import {MasterLine} from "./line/index"
 import {GirderLayout,GridPoint, StationList} from "./girder/index"
 import {SectionPoint, DeckPoint} from "./section/index"
 import {SteelBox } from "./steelBox/index"
-import { VstiffDict, DiaDict, HBracing, JackupDict} from "./stiffner/index"
+import { VstiffDict, DiaDict, HBracing, JackupDict, HstiffDict} from "./stiffner/index"
 import { Xbeam } from "./xbeam/index"
 import { LineViewer, SteelPlateView, InitPoint, DiaPhragmView, DeckView, BarrierView, SpliceBoltView, RebarView, StudView, AnalysisView, AnalysisResultView } from "./threeView/index"
 import { SectionViewer, TopViewer, LineDraw, LineSideDraw, GirderLayoutDraw, GirderGeneralView1, GirderGeneralView2, PartGeneralView, 
@@ -31,6 +31,7 @@ LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
 LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
 LiteGraph.registerNodeType("HMECS/hBracing", HBracing);
 LiteGraph.registerNodeType("HMECS/JackupDict", JackupDict);
+LiteGraph.registerNodeType("HMECS/HstiffDict",HstiffDict);
 LiteGraph.registerNodeType("HMECS/xbeam", Xbeam);
 LiteGraph.registerNodeType("nexivil/support",Support);
 LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);

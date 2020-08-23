@@ -3,6 +3,8 @@ import { ToGlobalPoint, ToGlobalPoint2, PlateRestPoint, WebPoint, Kframe, scallo
 import { PTS } from "../DB/module"
 import { IbeamJoint } from "../splice/module"
 
+
+
 export function DiaShapeDict(
   gridPoint,
   sectionPointDict,
@@ -185,7 +187,7 @@ export function HBracingDict(
       let point1 = pointDict[pk1];
       let point2 = pointDict[pk2];
 
-      result[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB);
+      result[pk1 + pk2] = hBracingFrame(point1, point2, webPoints, hBSection, sectionDB);
       if (hBracingLayout[i][4]) {
         right = hBracingLayout[i][leftToright] ? false : true;
         result[pk1 + pk2]["p1"] = hBracingPlate(point1, right, webPoints1, hBSection);
@@ -213,6 +215,120 @@ export function JackupStiffDict(gridPoint,
   }
   return result
 }
+
+export function HorStiffDict(
+  pointDict,
+  sectionPointDict,
+  hstiffLayout,
+) {
+  let result = {};
+  const from = 0;
+  const to = 1;
+  // const starOffset = 2;
+  // const endOffset = 3;
+  // const width = 4;
+  // const thickness = 5;
+  // const chamfer = 6;
+  // const isTop =7;
+  // const offset =8;
+
+  for (let i = 0; i < hstiffLayout.length; i++) {
+      let pk1 = hstiffLayout[i][from];
+      let pk2 = hstiffLayout[i][to];
+      let point1 = pointDict[pk1];
+      let point2 = pointDict[pk2];
+      let webPoints1 = [
+        sectionPointDict[pk1].forward.web[0][0],
+        sectionPointDict[pk1].forward.web[0][1],
+        sectionPointDict[pk1].forward.web[1][0],
+        sectionPointDict[pk1].forward.web[1][1]
+      ];
+      let webPoints2 = [
+        sectionPointDict[pk2].backward.web[0][0],
+        sectionPointDict[pk2].backward.web[0][1],
+        sectionPointDict[pk2].backward.web[1][0],
+        sectionPointDict[pk2].backward.web[1][1]
+      ];
+      result[pk1 + pk2] = HstiffGen(point1, point2, webPoints1, webPoints2, hstiffLayout[i]);
+  }
+  return result;
+}
+
+
+export function HstiffGen(point1, point2, webPoints1, webPoints2, hstiffLayout){
+  const startOffset = hstiffLayout[2];
+  const endOffset = hstiffLayout[3];
+  const width = hstiffLayout[4];
+  const thickness = hstiffLayout[5];
+  const chamfer = hstiffLayout[6];
+  const isTop =hstiffLayout[7];
+  const offset =hstiffLayout[8];
+  result = {};
+
+  const bl1 = webPoints1[0];
+  const tl1 = webPoints1[1];
+  const br1 = webPoints1[2];
+  const tr1 = webPoints1[3];
+  const bl2 = webPoints2[0];
+  const tl2 = webPoints2[1];
+  const br2 = webPoints2[2];
+  const tr2 = webPoints2[3];
+
+  const lcot1 = (tl1.x - bl1.x) / (tl1.y - bl1.y)
+  const rcot1 = (tr1.x - br1.x) / (tr1.y - br1.y)
+  const lcot2 = (tl2.x - bl2.x) / (tl2.y - bl2.y)
+  const rcot2 = (tr2.x - br2.x) / (tr2.y - br2.y)
+
+  let lnode1 = isTop? {x:tl1.x - lcot1 * offset, y: tl1.y - offset } : {x:bl1.x + lcot1 * offset, y: bl1.y + offset };
+  let lnode2 = isTop? {x:tl2.x - lcot2 * offset, y: tl2.y - offset } : {x:bl2.x + lcot2 * offset, y: bl2.y + offset };
+  let lgn1 = ToGlobalPoint(point1, lnode1); //leftGlobalNode
+  let lgn2 = ToGlobalPoint(point2, lnode2);
+  let rnode1 = isTop? {x:tr1.x - rcot1 * offset, y: tr1.y - offset } : {x:br1.x + rcot1 * offset, y: br1.y + offset };
+  let rnode2 = isTop? {x:tr2.x - rcot2 * offset, y: tr2.y - offset } : {x:br2.x + rcot2 * offset, y: br2.y + offset };
+  let rgn1 = ToGlobalPoint(point1, rnode1); //rightGlobalNode
+  let rgn2 = ToGlobalPoint(point2, rnode2);
+  let lvec = [lgn2.x - lgn1.x, lgn2.y - lgn1.y,lgn2.z - lgn1.z];
+  let lLength = Math.sqrt(lvec[0]**2 + lvec[1]**2 + lvec[2]**2);
+  let lLength2D = Math.sqrt(lvec[0]**2 + lvec[1]**2);
+  let rvec = [rgn2.x - rgn1.x, rgn2.y - rgn1.y,rgn2.z - rgn1.z];
+  let rLength = Math.sqrt(rvec[0]**2 + rvec[1]**2 + rvec[2]**2);
+  let rLength2D = Math.sqrt(rvec[0]**2 + rvec[1]**2);
+  let lCenterPoint = {
+    x: (lgn1.x + lgn2.x)/2,
+    y: (lgn1.x + lgn2.x)/2,
+    z: (lgn1.x + lgn2.x)/2,
+    normalCos : lvec[1] / lLength2D,
+    normalSin : -lvec[0] / lLength2D,
+    offset : point1.offset + (lnode1.x + lnode2.x)/2
+  };
+  let rCenterPoint = {
+    x: (rgn1.x + rgn2.x)/2,
+    y: (rgn1.x + rgn2.x)/2,
+    z: (rgn1.x + rgn2.x)/2,
+    normalCos : rvec[1] / rLength2D,
+    normalSin : -rvec[0] / rLength2D,
+    offset : point1.offset + (rnode1.x + rnode2.x)/2
+  };
+  let lRotX = Math.atan(lvec[2].lLength2D)
+  let rRotX = Math.atan(rvec[2].rLength2D)
+  let lRotY = Math.atan(lcot1);
+  let rRotY = Math.atan(rcot1);
+
+  let lPlate = [{x:0,y: - lLength/2 + startOffset}, {x:0,y: lLength/2 - endOffset}, 
+    {x:width - chamfer,y: lLength/2 - endOffset},{x:width,y: lLength/2 - endOffset- chamfer},
+    {x:width,y: -lLength/2 + startOffset + chamfer}, {x:width - chamfer, y: -lLength/2 + startOffset}
+  ];
+  let rPlate = [{x:0,y: - rLength/2 + startOffset}, {x:0,y: rLength/2 - endOffset}, 
+    {x:-(width - chamfer),y: rLength/2 - endOffset},{x:-width,y: rLength/2 - endOffset- chamfer},
+    {x:-width,y: -rLength/2 + startOffset + chamfer}, {x:-(width - chamfer), y: -rLength/2 + startOffset}
+  ];
+
+  result["left"] = hPlateGen(lPlate,lCenterPoint,thickness,0,90,lRotX,lRotY,null,false,null);
+  result["right"] = hPlateGen(rPlate,rCenterPoint,thickness,0,90,rRotX,rRotY,null,false,null);
+  return result
+}
+
+
 
 export function jackup0(webPoints, point, jackupData) {
   //ds 입력변수
@@ -1559,17 +1675,9 @@ export function HMvStiff1(webPoints, point, skew, uflangePoint, vSection, sectio
   const tl = webPoints[1];
   const br = webPoints[2];
   const tr = webPoints[3];
-
   const gradient = (tr.y - tl.y) / (tr.x - tl.x)
-
-  let gcos = (uflangePoint[1].x - uflangePoint[0].x) / Math.sqrt((uflangePoint[1].x - uflangePoint[0].x) ** 2 + (uflangePoint[1].y - uflangePoint[0].y) ** 2)
-  let gsin = gcos * (uflangePoint[1].y - uflangePoint[0].y) / (uflangePoint[1].x - uflangePoint[0].x)
   const lwCot = (tl.x - bl.x) / (tl.y - bl.y);
   const rwCot = (tr.x - br.x) / (tr.y - br.y);
-  const lcos = (tl.x - bl.x) / Math.sqrt((tl.x - bl.x) ** 2 + (tl.y - bl.y) ** 2);
-  const lsin = lcos / lwCot;
-  const rcos = (tr.x - br.x) / Math.sqrt((tr.x - br.x) ** 2 + (tr.y - br.y) ** 2);
-  const rsin = rcos / rwCot;
 
   let sideHeight = vSection.sideHeight;
   let sideThickness = vSection.sideThickness;
@@ -1580,53 +1688,26 @@ export function HMvStiff1(webPoints, point, skew, uflangePoint, vSection, sectio
   //L100x100x10 section point, origin = (0,0)
   let spc = vSection.spc;
   let pts = PTS(vSection.tFrameName, false, 0, sectionDB)
-  // let pts = vSection.pts;
-  let rotationY = (skew - 90) * Math.PI / 180
-  ///left stiffener
   let leftplate = PlateRestPoint({ x: bl.x + lwCot * bottomOffset, y: bl.y + bottomOffset },tl,0,gradient, sideHeight )
-  // [
-  //   tl,
-  //   { x: bl.x + lwCot * bottomOffset, y: bl.y + bottomOffset },
-  //   { x: bl.x + lwCot * bottomOffset + lsin * sideHeight, y: bl.y + bottomOffset - lcos * sideHeight },
-  //   { x: tl.x + gsin * sideHeight, y: tl.y - gcos * sideHeight },
-  // ]
   let leftPoints = [...scallop(leftplate[0], leftplate[1], leftplate[2], scallopRadius, 4), leftplate[2],
   ...scallop(leftplate[2], leftplate[3], leftplate[0], sideHeight - sideScallopOffset, 1), leftplate[0]];
-  // leftPoints = leftPoints.concat(scallop(leftplate[0], leftplate[1], leftplate[2], scallopRadius, 4));
-  // leftPoints.push(leftplate[2])
-  // leftPoints = leftPoints.concat(scallop(leftplate[2], leftplate[3], leftplate[0], sideHeight - sideScallopOffset, 1));
-  // leftPoints.push(leftplate[0])
-
-  ///right stiffener
   let rightplate = PlateRestPoint({ x: br.x + rwCot * bottomOffset, y: br.y + bottomOffset },tr,0,gradient, -sideHeight )
-  // [
-  //   tr,
-  //   { x: br.x + rwCot * bottomOffset, y: br.y + bottomOffset },
-  //   { x: br.x + rwCot * bottomOffset - rsin * sideHeight, y: br.y + bottomOffset + rcos * sideHeight },
-  //   { x: tr.x - gsin * sideHeight, y: tr.y + gcos * sideHeight },
-  // ]
   let rightPoints = [...scallop(rightplate[0], rightplate[1], rightplate[2], scallopRadius, 4), rightplate[2],
   ...scallop(rightplate[2], rightplate[3], rightplate[0], sideHeight - sideScallopOffset, 1), rightplate[0]];
-  ////upper bracing
-
   let node1 = { x: tl.x - lwCot * upperHeight, y: tl.y - upperHeight }
   let node2 = { x: tr.x - rwCot * upperHeight, y: tr.y - upperHeight }
   let [upperframe1, upperframe2] = Kframe(node1, node2, spc, spc, pts)
 
   return {
     leftshape: vPlateGen(leftPoints, point, sideThickness, [],0,null,null,[],[4,5],[4,5,7,8]),
-    // { points: leftPoints, Thickness: sideThickness, z: -sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
     rightShape: vPlateGen(rightPoints, point, sideThickness, [],0,null,null,[],[4,5],null),
-    // { points: rightPoints, Thickness: sideThickness, z: -sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
     upperframe1: vFrameGen(upperframe1, point, pts[4], sideThickness/2,[1,2],null),
-    // { points: upperframe1, Thickness: pts[4], z: sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
     upperframe2: vFrameGen(upperframe2, point, pts[5], sideThickness/2,[1,2],null),
-    // { points: upperframe2, Thickness: pts[5], z: sideThickness / 2, rotationX: Math.PI / 2, rotationY: rotationY, hole: [] },
   }
 }
 
 
-export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB) {
+export function hBracingFrame(point1, point2, webPoints, hBSection, sectionDB) {
   // let sideToplength = 700;
   // let sideTopwidth = 300;
   // let B = 2000;
