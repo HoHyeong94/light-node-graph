@@ -295,16 +295,16 @@ export function HstiffGen(point1, point2, webPoints1, webPoints2, hstiffLayout){
   let rLength2D = Math.sqrt(rvec[0]**2 + rvec[1]**2);
   let lCenterPoint = {
     x: (lgn1.x + lgn2.x)/2,
-    y: (lgn1.x + lgn2.x)/2,
-    z: (lgn1.x + lgn2.x)/2,
+    y: (lgn1.y + lgn2.y)/2,
+    z: (lgn1.z + lgn2.z)/2,
     normalCos : lvec[1] / lLength2D,
     normalSin : -lvec[0] / lLength2D,
     offset : point1.offset + (lnode1.x + lnode2.x)/2
   };
   let rCenterPoint = {
     x: (rgn1.x + rgn2.x)/2,
-    y: (rgn1.x + rgn2.x)/2,
-    z: (rgn1.x + rgn2.x)/2,
+    y: (rgn1.y + rgn2.y)/2,
+    z: (rgn1.z + rgn2.z)/2,
     normalCos : rvec[1] / rLength2D,
     normalSin : -rvec[0] / rLength2D,
     offset : point1.offset + (rnode1.x + rnode2.x)/2
