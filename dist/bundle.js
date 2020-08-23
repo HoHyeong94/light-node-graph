@@ -3960,13 +3960,13 @@
 
 
   function HstiffGen(point1, point2, webPoints1, webPoints2, hstiffLayout){
-    const startOffset = hstiffLayout[2];
-    const endOffset = hstiffLayout[3];
-    const width = hstiffLayout[4];
-    const thickness = hstiffLayout[5];
-    const chamfer = hstiffLayout[6];
+    const startOffset = hstiffLayout[2]*1;
+    const endOffset = hstiffLayout[3]*1;
+    const width = hstiffLayout[4]*1;
+    const thickness = hstiffLayout[5]*1;
+    const chamfer = hstiffLayout[6]*1;
     const isTop =hstiffLayout[7];
-    const offset =hstiffLayout[8];
+    const offset =hstiffLayout[8]*1;
     let result = {};
 
     const bl1 = webPoints1[0];
