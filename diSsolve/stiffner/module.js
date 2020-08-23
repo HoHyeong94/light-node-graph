@@ -263,7 +263,7 @@ export function HstiffGen(point1, point2, webPoints1, webPoints2, hstiffLayout){
   const chamfer = hstiffLayout[6];
   const isTop =hstiffLayout[7];
   const offset =hstiffLayout[8];
-  result = {};
+  let result = {};
 
   const bl1 = webPoints1[0];
   const tl1 = webPoints1[1];
