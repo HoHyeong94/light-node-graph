@@ -441,7 +441,7 @@ export function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotat
 
     var geometry = new THREE.ExtrudeBufferGeometry(shape, { depth: Thickness, steps: 1, bevelEnabled: false });
     var mesh = new THREE.Mesh(geometry, meshMaterial);
-    var rad = Math.atan(- point.normalCos / point.normalSin) + Math.PI / 2  //+ 
+    var rad = Math.atan2(- point.normalCos , point.normalSin) + Math.PI / 2  //+ 
 
     mesh.rotation.set(rotationX, rotationY, 0); //(rotationY - 90)*Math.PI/180
     mesh.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
@@ -450,67 +450,67 @@ export function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotat
     return mesh
 }
 
-export function HBracingPlateView(hBraicngPlateDict, initPoint) {
-    var group = new THREE.Group();
-    // var meshMaterial = new THREE.MeshLambertMaterial( {
-    //     color: 0x00ffff,
-    //     emissive: 0x44aaaa,
-    //     opacity: 1,
-    //     side:THREE.DoubleSide,
-    //     transparent: false,
-    //     wireframe : false
-    //   } );
-    var meshMaterial = new THREE.MeshNormalMaterial()
-    for (let pk in hBraicngPlateDict) {
-        //    let point = pointDict[pk]
-        for (let partkey in hBraicngPlateDict[pk]) {
-            if (partkey !== "point") {
-                let shapeNode = hBraicngPlateDict[pk][partkey].points
-                let Thickness = hBraicngPlateDict[pk][partkey].Thickness
-                let zPosition = hBraicngPlateDict[pk][partkey].z
-                let rotationY = hBraicngPlateDict[pk][partkey].rotationY
-                let rotationX = hBraicngPlateDict[pk][partkey].rotationX
-                let hole = hBraicngPlateDict[pk][partkey].hole
-                let point = hBraicngPlateDict[pk].point ? hBraicngPlateDict[pk].point : hBraicngPlateDict[pk][partkey].point
-                group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
-            }
-        }
-    }
-    return group
-}
+// export function HBracingPlateView(hBraicngPlateDict, initPoint) {
+//     var group = new THREE.Group();
+//     // var meshMaterial = new THREE.MeshLambertMaterial( {
+//     //     color: 0x00ffff,
+//     //     emissive: 0x44aaaa,
+//     //     opacity: 1,
+//     //     side:THREE.DoubleSide,
+//     //     transparent: false,
+//     //     wireframe : false
+//     //   } );
+//     var meshMaterial = new THREE.MeshNormalMaterial()
+//     for (let pk in hBraicngPlateDict) {
+//         //    let point = pointDict[pk]
+//         for (let partkey in hBraicngPlateDict[pk]) {
+//             if (partkey !== "point") {
+//                 let shapeNode = hBraicngPlateDict[pk][partkey].points
+//                 let Thickness = hBraicngPlateDict[pk][partkey].Thickness
+//                 let zPosition = hBraicngPlateDict[pk][partkey].z
+//                 let rotationY = hBraicngPlateDict[pk][partkey].rotationY
+//                 let rotationX = hBraicngPlateDict[pk][partkey].rotationX
+//                 let hole = hBraicngPlateDict[pk][partkey].hole
+//                 let point = hBraicngPlateDict[pk].point ? hBraicngPlateDict[pk].point : hBraicngPlateDict[pk][partkey].point
+//                 group.add(diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial))
+//             }
+//         }
+//     }
+//     return group
+// }
 
-export function HBracingView(hBracingDict, initPoint) {
-    var group = new THREE.Group();
-    // var meshMaterial = new THREE.MeshLambertMaterial( {
-    //     color: 0x00ffff,
-    //     emissive: 0x44aaaa,
-    //     opacity: 1,
-    //     side:THREE.DoubleSide,
-    //     transparent: false,
-    //     wireframe : false
-    //   } );
-    var meshMaterial = new THREE.MeshNormalMaterial()
-    for (let i in hBracingDict) {
-        group.add(convexMesh(hBracingDict[i].points[0], initPoint, meshMaterial))
-        group.add(convexMesh(hBracingDict[i].points[1], initPoint, meshMaterial))
-    }
-    return group
-}
+// export function HBracingView(hBracingDict, initPoint) {
+//     var group = new THREE.Group();
+//     // var meshMaterial = new THREE.MeshLambertMaterial( {
+//     //     color: 0x00ffff,
+//     //     emissive: 0x44aaaa,
+//     //     opacity: 1,
+//     //     side:THREE.DoubleSide,
+//     //     transparent: false,
+//     //     wireframe : false
+//     //   } );
+//     var meshMaterial = new THREE.MeshNormalMaterial()
+//     for (let i in hBracingDict) {
+//         group.add(convexMesh(hBracingDict[i].points[0], initPoint, meshMaterial))
+//         group.add(convexMesh(hBracingDict[i].points[1], initPoint, meshMaterial))
+//     }
+//     return group
+// }
 
-export function convexMesh(plist, initPoint, meshMaterial) {
-    let geometry = new THREE.Geometry();
-    for (let i in plist) {
-        geometry.vertices.push(new THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z))
-    }
-    let j = plist.length / 2
-    for (let i = 0; i < j; i++) {
-        let k = i + 1 === j ? 0 : i + 1
-        geometry.faces.push(new THREE.Face3(k, i, i + j));
-        geometry.faces.push(new THREE.Face3(k, i + j, k + j));
-    }
-    geometry.computeFaceNormals();
-    return new THREE.Mesh(geometry, meshMaterial)
-}
+// export function convexMesh(plist, initPoint, meshMaterial) {
+//     let geometry = new THREE.Geometry();
+//     for (let i in plist) {
+//         geometry.vertices.push(new THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z))
+//     }
+//     let j = plist.length / 2
+//     for (let i = 0; i < j; i++) {
+//         let k = i + 1 === j ? 0 : i + 1
+//         geometry.faces.push(new THREE.Face3(k, i, i + j));
+//         geometry.faces.push(new THREE.Face3(k, i + j, k + j));
+//     }
+//     geometry.computeFaceNormals();
+//     return new THREE.Mesh(geometry, meshMaterial)
+// }
 
 export function DeckPointView(deckPointDict, initPoint, opacity) {
     let group = new THREE.Group();
@@ -653,7 +653,7 @@ export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtransla
     var radius = bolt.size / 2
     var geometry = new THREE.CylinderBufferGeometry(radius, radius, bolt.t * 2 + bolt.l, 6, 1)
     var mesh = new THREE.Mesh(geometry, meshMaterial);
-    var rad = Math.atan(- point.normalCos / point.normalSin) + Math.PI / 2  //+ 
+    var rad = Math.atan2(- point.normalCos , point.normalSin) + Math.PI / 2  //+ 
     mesh.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
     mesh.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
     mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
@@ -665,7 +665,7 @@ export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtransla
 
 export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint) {
     var dummy = new THREE.Object3D();
-    var rad = Math.atan(- point.normalCos / point.normalSin) + Math.PI / 2  //+ 
+    var rad = Math.atan2(- point.normalCos,  point.normalSin) + Math.PI / 2  //+ 
     dummy.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
     dummy.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
     dummy.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
