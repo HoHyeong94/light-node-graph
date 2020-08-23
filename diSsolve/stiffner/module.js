@@ -185,7 +185,7 @@ export function HBracingDict(
       let point1 = pointDict[pk1];
       let point2 = pointDict[pk2];
 
-      result[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB,hBracingLayout[i][leftToright]);
+      result[pk1 + pk2] = hBracingSection(point1, point2, webPoints, hBSection, sectionDB);
       if (hBracingLayout[i][4]) {
         right = hBracingLayout[i][leftToright] ? false : true;
         result[pk1 + pk2]["p1"] = hBracingPlate(point1, right, webPoints1, hBSection);
@@ -1614,7 +1614,7 @@ export function vStiffSection(webPoints, skew, uflangePoint, vSection, sectionDB
 }
 
 
-export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB, isleft) {
+export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB) {
   // let sideToplength = 700;
   // let sideTopwidth = 300;
   // let B = 2000;
@@ -1659,9 +1659,9 @@ export function hBracingSection(point1, point2, webPoints, hBSection, sectionDB,
   let z1 =  pts[4]>0? 0: pts[4]
   let z2 =  pts[5]>0? 0: pts[5]
   let rotX = Math.atan(Vector[2]/VectorLength2D)
-  let rotX2 = isleft? rotX : -rotX;
-  result['frame1'] = hPlateGen(frame1, centerPoint, Math.abs(pts[4]),z1,90,rotX2,0,null,true,null)
-  result['frame2'] = hPlateGen(frame2, centerPoint, Math.abs(pts[5]),z2,90,rotX2,0,null,true,null)
+  // let rotX2 = isleft? rotX : -rotX;
+  result['frame1'] = hPlateGen(frame1, centerPoint, Math.abs(pts[4]),z1,90,rotX,0,null,true,null)
+  result['frame2'] = hPlateGen(frame2, centerPoint, Math.abs(pts[5]),z2,90,rotX,0,null,true,null)
   return result 
 }
 
