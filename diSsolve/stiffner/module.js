@@ -1613,7 +1613,6 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
     hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness + dx), w1],
       [dsi.holeCenterOffset + dsi.holeWidth / 2 + sign *(dsi.holeStiffmargin + dsi.holeStiffThickness), w1])
   }
-  console.log(hx, dsi.holeCenterOffset, dsi.holeWidth / 2)
   for (let i in dsi.supportStiffLayout) {
     hx.push([dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2, w3]);
     hx.push([dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2, w3]);

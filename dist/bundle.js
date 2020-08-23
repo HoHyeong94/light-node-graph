@@ -5299,7 +5299,6 @@
       hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness + dx), w1],
         [dsi.holeCenterOffset + dsi.holeWidth / 2 + sign *(dsi.holeStiffmargin + dsi.holeStiffThickness), w1]);
     }
-    console.log(hx, dsi.holeCenterOffset, dsi.holeWidth / 2);
     for (let i in dsi.supportStiffLayout) {
       hx.push([dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2, w3]);
       hx.push([dsi.supportStiffLayout[i] + dsi.supportStiffThickness / 2, w3]);
@@ -5885,7 +5884,7 @@
   }
 
   HstiffDict.prototype.onExecute = function(){
-    const result = HorStiffDict(this.getInputData(0), this.getInputData(0), this.getInputData(0));
+    const result = HorStiffDict(this.getInputData(0), this.getInputData(1), this.getInputData(2));
     this.setOutputData(0, result);
   };
 
