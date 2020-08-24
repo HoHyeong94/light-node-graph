@@ -7714,7 +7714,8 @@
               for (let j = 1; j < pNum - 1; j++) {
                   geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
               }
-          } else if (i === model.points.length - 2) {
+          } 
+          if (i === model.points.length - 2) {
               for (let j = 1; j < pNum - 1; j++) {
                   geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
               }
