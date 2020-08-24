@@ -7705,9 +7705,10 @@
       }
 
       for (let i = 0; i < model.points.length - 1; i++) {
-          for (let j = 0; j < pNum-1; j++) {
-              geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + j + 1));
-              geometry.faces.push(new global.THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
+          for (let j = 0; j < pNum; j++) {
+              let k = j < pNum -1? j + 1 : 0;
+              geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + k));
+              geometry.faces.push(new global.THREE.Face3(i * pNum + k, (i + 1) * pNum + j, (i + 1) * pNum + k));
           }
           if (i === 0) {
               for (let j = 1; j < pNum - 1; j++) {
