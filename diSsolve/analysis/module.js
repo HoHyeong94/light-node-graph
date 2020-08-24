@@ -290,16 +290,16 @@ export function SupportGenerator(supportFixed, supportData, gridPoint, sectionPo
         if (isFixed && name !== fixedPoint[0].point) {
 
             if (name.slice(2) === fixedPoint[0].point.slice(2)) {
-                angle = Math.atan2(newPoint.y - fixedCoord.y, newPoint.x - fixedCoord.x) * 180 / Math.PI + 90;
+                angle = Math.atan2(newPoint.y - fixedCoord.y, newPoint.x - fixedCoord.x) + Math.PI / 2;
             } else {
-                angle = Math.atan2(newPoint.y - fixedCoord.y, newPoint.x - fixedCoord.x) * 180 / Math.PI;
+                angle = Math.atan2(newPoint.y - fixedCoord.y, newPoint.x - fixedCoord.x);
             }
         } else {
             sign = point.normalCos >= 0 ? 1 : -1;
-            angle = sign * Math.acos(-point.normalSin) * 180 / Math.PI;
+            angle = sign * Math.acos(-point.normalSin);
         }
         data[index] = {
-            angle: angle > 90 ? angle - 180 : angle < -90 ? angle + 180 : angle,
+            angle: angle > Math.PI / 2 ? angle - Math.PI : angle < - Math.PI / 2 ? angle + Math.PI : angle,
             point: newPoint,
             basePointName: name,
             key: "SPPT" + index,
