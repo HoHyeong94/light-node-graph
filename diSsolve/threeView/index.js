@@ -1,5 +1,5 @@
 import { sceneAdder, THREE } from "global";
-import {LineMesh, LineView, SteelBoxView, DiaView, DeckPointView, boltView, BarrierPointView, StudMeshView, AnalysisModel, AnalysisResult } from "./module"
+import {LineMesh, LineView, SteelBoxView, DiaView, DeckPointView, boltView, barrierSectionView, StudMeshView, AnalysisModel, AnalysisResult, LoftModelView } from "./module"
 import { LineToThree } from "../line/module";
 
 export function LineViewer() {
@@ -135,7 +135,7 @@ export function BarrierView() {
 BarrierView.prototype.onExecute = function () {
   const decPoint = this.getInputData(0)
   for (let key in decPoint) {
-    let tmpMesh = BarrierPointView(decPoint[key], this.getInputData(1), this.getInputData(2))
+    let tmpMesh = barrierSectionView(decPoint[key], this.getInputData(1), this.getInputData(2))
     sceneAdder({name:`Barrier${key}`, layer:0, mesh:tmpMesh, meta:{part:"Barrier"}});
 
     // tmpMesh.userData["element"] = "Barrier"
@@ -146,6 +146,21 @@ BarrierView.prototype.onExecute = function () {
     // sceneAdder( BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2)), [0, "Barrier", key]);
   }
 }
+
+export function LoftView() {
+  this.addInput("model", "model");
+  this.addInput("Point", "Point");
+  this.addInput("PartName", "string");
+}
+
+LoftView.prototype.onExecute = function () {
+  const model = this.getInputData(0)
+  for (let key in model) {
+    let tmpMesh = LoftModelView(model[key], this.getInputData(1))
+    sceneAdder({name:this.getInputData(2) + key, layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
+  }
+}
+
 
 export function RebarView() {
   this.addInput("deckRebar", "deckRebar");

@@ -4,12 +4,15 @@ export function Support() {
     this.addInput("supportFixed", "boolean");
     this.addInput("supportLayout", "arr");
     this.addInput("gridPoint", "gridPoint");
+    this.addInput("sectionPointDict", "sectionPointDict");
     this.addOutput("supportdata", "supportdata");
+    this.addOutput("model", "model");
 }
 
 Support.prototype.onExecute = function () {
-    const result = SupportGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2))
-    this.setOutputData(0, result)
+    const result = SupportGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3))
+    this.setOutputData(0, result.data)
+    this.setOutputData(1, result.model)
 }
 
 export function SapJoint() {

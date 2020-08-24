@@ -742,7 +742,7 @@ export function StudMeshView(studList, initPoint) {
     return group
 }
 
-export function BarrierPointView(deckSection, initPoint, opacity) {
+export function barrierSectionView(deckSection, initPoint, opacity) {
     let group = new THREE.Group();
     var meshMaterial = new THREE.MeshLambertMaterial({
         color: 0x000000,
@@ -773,6 +773,40 @@ export function BarrierPointView(deckSection, initPoint, opacity) {
                 geometry.faces.push(new THREE.Face3(i, i + j, i + j + 1));
             }
         } else if (i === deckSection.length - 2) {
+            for (let j = 1; j < pNum - 1; j++) {
+                geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+            }
+        }
+    }
+    geometry.computeFaceNormals();
+    group.add(new THREE.Mesh(geometry, meshMaterial));
+    return group
+}
+
+
+export function LoftModelView(model, initPoint) {
+    let group = new THREE.Group();
+    let meshMaterial = new THREE.MeshNormalMaterial()
+    //     meshMaterial.side = THREE.DoubleSide
+
+    let pNum = model.points[0].length
+    let geometry = new THREE.Geometry();
+    for (let i in model.points) {
+        model.points[i].forEach(function (Point) {
+            geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
+        })
+    }
+
+    for (let i = 0; i < model.points.length - 1; i++) {
+        for (let j = 0; j < pNum - 1; j++) {
+            geometry.faces.push(new THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + j + 1));
+            geometry.faces.push(new THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
+        }
+        if (i === 0) {
+            for (let j = 1; j < pNum - 1; j++) {
+                geometry.faces.push(new THREE.Face3(i, i + j, i + j + 1));
+            }
+        } else if (i === model.points.length - 2) {
             for (let j = 1; j < pNum - 1; j++) {
                 geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
             }

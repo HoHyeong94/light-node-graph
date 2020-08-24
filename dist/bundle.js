@@ -7649,7 +7649,7 @@
       return group
   }
 
-  function BarrierPointView(deckSection, initPoint, opacity) {
+  function barrierSectionView(deckSection, initPoint, opacity) {
       let group = new global.THREE.Group();
       var meshMaterial = new global.THREE.MeshLambertMaterial({
           color: 0x000000,
@@ -7823,7 +7823,7 @@
   BarrierView.prototype.onExecute = function () {
     const decPoint = this.getInputData(0);
     for (let key in decPoint) {
-      let tmpMesh = BarrierPointView(decPoint[key], this.getInputData(1), this.getInputData(2));
+      let tmpMesh = barrierSectionView(decPoint[key], this.getInputData(1), this.getInputData(2));
       global.sceneAdder({name:`Barrier${key}`, layer:0, mesh:tmpMesh, meta:{part:"Barrier"}});
 
       // tmpMesh.userData["element"] = "Barrier"
@@ -7834,6 +7834,7 @@
       // sceneAdder( BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2)), [0, "Barrier", key]);
     }
   };
+
 
   function RebarView() {
     this.addInput("deckRebar", "deckRebar");
@@ -9994,8 +9995,9 @@
       return [stage1, stage2, stage3]
   }
 
-  function SupportGenerator(supportFixed, supportData, gridPoint) {
-      let support = {};
+  function SupportGenerator(supportFixed, supportData, gridPoint, sectionPointDict) {
+      let data = {};
+      let model = {};
       let girderHeight = 2000;    //임시로 2000이라고 가정함. 추후 girderSection정보로부터 받아올수 있도록 함.
       let fixedPoint = [];
       let isFixed = false;
@@ -10004,6 +10006,10 @@
       let type = "";
       let name = "";
       let point = {};
+      let width = 0;
+      let height = 0;
+      let thickness = 0;
+
       const dof = {
           고정단: [true, true, true, false, false, false],
           양방향단: [false, false, true, false, false, false],
@@ -10050,15 +10056,40 @@
               sign = point.normalCos >= 0 ? 1 : -1;
               angle = sign * Math.acos(-point.normalSin) * 180 / Math.PI;
           }
-          support[index] = {
+          data[index] = {
               angle: angle > 90 ? angle - 180 : angle < -90 ? angle + 180 : angle,
               point: newPoint,
               basePointName: name,
               key: "SPPT" + index,
               type: dof[type], //[x,y,z,rx,ry,rz]
           };
+
+          width = supportData[index][3];
+          height = supportData[index][4];
+          thickness = supportData[index][5];
+          let  pointAng = Math.atan(-point.normalSin, point.normalCos);
+          let dA = data[index].angle - pointAng;
+          let cos = Math.cos(dA);
+          let sin = Math.sin(dA);
+          let tan = point.gradientX;
+          let points1 = [
+              {x: - cos * width /2 - sin * height /2, y: - sin * width /2 + cos * height /2, z: newPoint.z - thickness},
+              {x: cos * width /2 - sin * height /2, y: sin * width /2 + cos * height /2, z: newPoint.z - thickness},
+              {x: cos * width /2 + sin * height /2, y: sin * width /2 - cos * height /2, z: newPoint.z - thickness},
+              {x: - cos * width /2 + sin * height /2, y: - sin * width /2 - cos * height /2, z: newPoint.z - thickness},
+          ];
+          let points2 = [];
+          points1.forEach(point => points2.push({x:point.x, y: point.y, z: point.z + point.y * tan}));
+          let newPoints = [[],[]];
+          let nCos = Math.cos(pointAng);
+          let nSin = Math.sin(pointAng);
+          points1.forEach(point => newPoints[0].push({x:point.x * nCos - point.y * nSin , y: point.x*nSin + point.y*nCos, z: point.z}));
+          points2.forEach(point => newPoints[1].push({x:point.x * nCos - point.y * nSin , y: point.x*nSin + point.y*nCos, z: point.z}));
+          
+          model["solePlate" + index] = {points : []};
+
       }
-      return support
+      return { data, model}
 
   }
   /**
@@ -10635,12 +10666,15 @@
       this.addInput("supportFixed", "boolean");
       this.addInput("supportLayout", "arr");
       this.addInput("gridPoint", "gridPoint");
+      this.addInput("sectionPointDict", "sectionPointDict");
       this.addOutput("supportdata", "supportdata");
+      this.addOutput("model", "model");
   }
 
   Support.prototype.onExecute = function () {
-      const result = SupportGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2));
-      this.setOutputData(0, result);
+      const result = SupportGenerator(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3));
+      this.setOutputData(0, result.data);
+      this.setOutputData(1, result.model);
   };
 
   function SapJoint() {
