@@ -264,6 +264,7 @@ export function SupportGenerator(supportFixed, supportData, gridPoint, sectionPo
     if (fixedPoint.length > 0) {
         isFixed = true
         let fixed = gridPoint[fixedPoint[0].point];
+        girderHeight = - sectionPointDict[fixed].forward.lflangeSide[1]
         let skew = fixed.skew * Math.PI / 180
         let offset = fixedPoint[0].offset
         fixedCoord = {
@@ -278,6 +279,7 @@ export function SupportGenerator(supportFixed, supportData, gridPoint, sectionPo
         type = supportData[index][1] //.type
         let offset = supportData[index][2] //.offset
         point = gridPoint[name]
+        girderHeight = - sectionPointDict[name].forward.lflangeSide[1]
         // console.log(name, point)
         let skew = point.skew * Math.PI / 180
         let newPoint = {
@@ -314,20 +316,18 @@ export function SupportGenerator(supportFixed, supportData, gridPoint, sectionPo
         let tan = point.gradientX;
         let points1 = [
             {x: - cos * width /2 - sin * height /2, y: - sin * width /2 + cos * height /2, z: - thickness},
-            {x: - cos * width /2 + sin * height /2, y: - sin * width /2 - cos * height /2, z: - thickness},
+            {x: cos * width /2 - sin * height /2, y: sin * width /2 + cos * height /2, z: - thickness},
             {x: cos * width /2 + sin * height /2, y: sin * width /2 - cos * height /2, z: - thickness},
-            {x: cos * width /2 - sin * height /2, y: sin * width /2 + cos * height /2, z: - thickness}           
+            {x: - cos * width /2 + sin * height /2, y: - sin * width /2 - cos * height /2, z: - thickness},
         ]
         let points2 = [];
         points1.forEach(point => points2.push({x:point.x, y: point.y, z: point.z + point.y * tan}))
         let newPoints = [[],[]];
         let nCos = Math.cos(pointAng);
         let nSin = Math.sin(pointAng);
-        points1.forEach(point => newPoints[0].push({x:newPoint.x + point.x * nCos - point.y * nSin , y: newPoint.y + point.x*nSin + point.y*nCos, z: newPoint.z + point.z}))
-        points2.forEach(point => newPoints[1].push({x:newPoint.x + point.x * nCos - point.y * nSin , y: newPoint.y + point.x*nSin + point.y*nCos, z: newPoint.z + point.z}))
-        
+        points1.forEach(point => newPoints[1].push({x:newPoint.x + point.x * nCos - point.y * nSin , y: newPoint.y + point.x*nSin + point.y*nCos, z: newPoint.z + point.z}))
+        points2.forEach(point => newPoints[0].push({x:newPoint.x + point.x * nCos - point.y * nSin , y: newPoint.y + point.x*nSin + point.y*nCos, z: newPoint.z + point.z}))
         model["solePlate" + index] = {points : newPoints}
-
     }
     return { data, model}
 
