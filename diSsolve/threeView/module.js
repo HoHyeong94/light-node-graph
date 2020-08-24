@@ -798,7 +798,7 @@ export function LoftModelView(model, initPoint) {
     }
 
     for (let i = 0; i < model.points.length - 1; i++) {
-        for (let j = 0; j < pNum; j++) {
+        for (let j = 0; j < pNum-1; j++) {
             geometry.faces.push(new THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + j + 1));
             geometry.faces.push(new THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
         }
