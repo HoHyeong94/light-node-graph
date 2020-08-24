@@ -7690,6 +7690,40 @@
       return group
   }
 
+
+  function LoftModelView(model, initPoint) {
+      let group = new global.THREE.Group();
+      let meshMaterial = new global.THREE.MeshNormalMaterial();
+      //     meshMaterial.side = THREE.DoubleSide
+
+      let pNum = model.points[0].length;
+      let geometry = new global.THREE.Geometry();
+      for (let i in model.points) {
+          model.points[i].forEach(function (Point) {
+              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+          });
+      }
+
+      for (let i = 0; i < model.points.length - 1; i++) {
+          for (let j = 0; j < pNum - 1; j++) {
+              geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + j + 1));
+              geometry.faces.push(new global.THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
+          }
+          if (i === 0) {
+              for (let j = 1; j < pNum - 1; j++) {
+                  geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
+              }
+          } else if (i === model.points.length - 2) {
+              for (let j = 1; j < pNum - 1; j++) {
+                  geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+              }
+          }
+      }
+      geometry.computeFaceNormals();
+      group.add(new global.THREE.Mesh(geometry, meshMaterial));
+      return group
+  }
+
   function LineViewer() {
     this.addInput("points", "points");
     this.addInput("initPoint", "point");
@@ -7832,6 +7866,20 @@
       //   mesh: tmpMesh
       // }, "Barrier" + key);
       // sceneAdder( BarrierPointView(decPoint[key],this.getInputData(1),this.getInputData(2)), [0, "Barrier", key]);
+    }
+  };
+
+  function LoftView() {
+    this.addInput("model", "model");
+    this.addInput("Point", "Point");
+    this.addInput("PartName", "string");
+  }
+
+  LoftView.prototype.onExecute = function () {
+    const model = this.getInputData(0);
+    for (let key in model) {
+      let tmpMesh = LoftModelView(model[key], this.getInputData(1));
+      global.sceneAdder({name:this.getInputData(2) + key, layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
     }
   };
 
@@ -10086,8 +10134,8 @@
           points1.forEach(point => newPoints[0].push({x:point.x * nCos - point.y * nSin , y: point.x*nSin + point.y*nCos, z: point.z}));
           points2.forEach(point => newPoints[1].push({x:point.x * nCos - point.y * nSin , y: point.x*nSin + point.y*nCos, z: point.z}));
           
-          model["solePlate" + index] = {points : []};
-
+          model["solePlate" + index] = {points : newPoints};
+  W;
       }
       return { data, model}
 
@@ -11399,6 +11447,7 @@
   global.LiteGraph.registerNodeType("3DVIEW/StudView", StudView);
   global.LiteGraph.registerNodeType("3DVIEW/AnalysisView", AnalysisView);
   global.LiteGraph.registerNodeType("3DVIEW/AnalysisResultView", AnalysisResultView);
+  global.LiteGraph.registerNodeType("3DVIEW/LoftView", LoftView);
 
   global.LiteGraph.registerNodeType("Drawing/SectionView", SectionViewer );
   global.LiteGraph.registerNodeType("Drawing/TopView", TopViewer );

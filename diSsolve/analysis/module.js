@@ -326,8 +326,8 @@ export function SupportGenerator(supportFixed, supportData, gridPoint, sectionPo
         points1.forEach(point => newPoints[0].push({x:point.x * nCos - point.y * nSin , y: point.x*nSin + point.y*nCos, z: point.z}))
         points2.forEach(point => newPoints[1].push({x:point.x * nCos - point.y * nSin , y: point.x*nSin + point.y*nCos, z: point.z}))
         
-        model["solePlate" + index] = {points : []}
-
+        model["solePlate" + index] = {points : newPoints}
+W
     }
     return { data, model}
 
