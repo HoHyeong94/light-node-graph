@@ -10122,9 +10122,9 @@
           let tan = point.gradientX;
           let points1 = [
               {x: - cos * width /2 - sin * height /2, y: - sin * width /2 + cos * height /2, z: - thickness},
-              {x: cos * width /2 - sin * height /2, y: sin * width /2 + cos * height /2, z: - thickness},
-              {x: cos * width /2 + sin * height /2, y: sin * width /2 - cos * height /2, z: - thickness},
               {x: - cos * width /2 + sin * height /2, y: - sin * width /2 - cos * height /2, z: - thickness},
+              {x: cos * width /2 + sin * height /2, y: sin * width /2 - cos * height /2, z: - thickness},
+              {x: cos * width /2 - sin * height /2, y: sin * width /2 + cos * height /2, z: - thickness}           
           ];
           let points2 = [];
           points1.forEach(point => points2.push({x:point.x, y: point.y, z: point.z + point.y * tan}));
