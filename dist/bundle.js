@@ -10117,7 +10117,7 @@
           width = supportData[index][3];
           height = supportData[index][4];
           thickness = supportData[index][5];
-          let  pointAng = Math.atan(-point.normalSin, point.normalCos);
+          let  pointAng = Math.atan2(-point.normalSin, point.normalCos);
           let dA = data[index].angle - pointAng;
           let cos = Math.cos(dA);
           let sin = Math.sin(dA);
