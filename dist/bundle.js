@@ -10121,18 +10121,18 @@
           let sin = Math.sin(dA);
           let tan = point.gradientX;
           let points1 = [
-              {x: - cos * width /2 - sin * height /2, y: - sin * width /2 + cos * height /2, z: newPoint.z - thickness},
-              {x: cos * width /2 - sin * height /2, y: sin * width /2 + cos * height /2, z: newPoint.z - thickness},
-              {x: cos * width /2 + sin * height /2, y: sin * width /2 - cos * height /2, z: newPoint.z - thickness},
-              {x: - cos * width /2 + sin * height /2, y: - sin * width /2 - cos * height /2, z: newPoint.z - thickness},
+              {x: - cos * width /2 - sin * height /2, y: - sin * width /2 + cos * height /2, z: - thickness},
+              {x: cos * width /2 - sin * height /2, y: sin * width /2 + cos * height /2, z: - thickness},
+              {x: cos * width /2 + sin * height /2, y: sin * width /2 - cos * height /2, z: - thickness},
+              {x: - cos * width /2 + sin * height /2, y: - sin * width /2 - cos * height /2, z: - thickness},
           ];
           let points2 = [];
           points1.forEach(point => points2.push({x:point.x, y: point.y, z: point.z + point.y * tan}));
           let newPoints = [[],[]];
           let nCos = Math.cos(pointAng);
           let nSin = Math.sin(pointAng);
-          points1.forEach(point => newPoints[0].push({x:point.x * nCos - point.y * nSin , y: point.x*nSin + point.y*nCos, z: point.z}));
-          points2.forEach(point => newPoints[1].push({x:point.x * nCos - point.y * nSin , y: point.x*nSin + point.y*nCos, z: point.z}));
+          points1.forEach(point => newPoints[0].push({x:newPoint.x + point.x * nCos - point.y * nSin , y: newPoint.y + point.x*nSin + point.y*nCos, z: newPoint.z + point.z}));
+          points2.forEach(point => newPoints[1].push({x:newPoint.x + point.x * nCos - point.y * nSin , y: newPoint.y + point.x*nSin + point.y*nCos, z: newPoint.z + point.z}));
           
           model["solePlate" + index] = {points : newPoints};
 
