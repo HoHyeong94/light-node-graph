@@ -7694,7 +7694,7 @@
   function LoftModelView(model, initPoint) {
       let group = new global.THREE.Group();
       let meshMaterial = new global.THREE.MeshNormalMaterial();
-      //     meshMaterial.side = THREE.DoubleSide
+      meshMaterial.side = global.THREE.DoubleSide;
 
       let pNum = model.points[0].length;
       let geometry = new global.THREE.Geometry();

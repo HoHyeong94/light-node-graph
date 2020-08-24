@@ -787,7 +787,7 @@ export function barrierSectionView(deckSection, initPoint, opacity) {
 export function LoftModelView(model, initPoint) {
     let group = new THREE.Group();
     let meshMaterial = new THREE.MeshNormalMaterial()
-    //     meshMaterial.side = THREE.DoubleSide
+    meshMaterial.side = THREE.DoubleSide
 
     let pNum = model.points[0].length
     let geometry = new THREE.Geometry();
