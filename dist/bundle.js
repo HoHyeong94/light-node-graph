@@ -11459,9 +11459,9 @@
           LeanConcL: 100
       };
       let abutHeight = 5000;
-      model["abutS"] = [];
+      model["Start"] = {"points" : []};
       for (let pt in abutPoints) {
-          model["abutS"].push([]);
+          model["Start"]["points"].push([]);
           let totalH = abutPoints[pt].z - tempInput.ELsub;
           let points = [{ x: 0, y: 0 },//시점을 기준으로 시계반대방향 순
           { x: -tempInput.backWallThick + tempInput.approachDepth, y: -tempInput.approachHeight },
@@ -11477,7 +11477,7 @@
           { x: tempInput.supportDepth, y: -totalH +  tempInput.backHaunchHeight + abutHeight},
           { x: 0, y: -totalH +  tempInput.backHaunchHeight + abutHeight},
           ];
-          points.forEach(npt => model["abutS"][npt].push(ToGlobalPoint3(abutPoints[pt], npt)));
+          points.forEach(npt => model["Start"]["points"][pt].push(ToGlobalPoint3(abutPoints[pt], npt)));
       }
       return model
   }
