@@ -19,7 +19,7 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
         approachDepth: 300,
         approachHeight: 800,
         supportDepth : 1400,
-        ELsub: 5000,
+        ELsub: 12000,
         footHeight: 1600,
         footLengthB: 3700,
         footLengthf: 1600,
@@ -28,11 +28,12 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
     };
     let abutDepth = 2500; // 거더높이 + 하부플렌지두께 + 솔플레이트두께 + 받침높이 + 페데스탈높이 중 최대깊이
     let abutHeight = 5000;
-    model["Start"] = {"points" : []}
+    model["Start"] = {"points" : [], "ptGroup" : []}
     for (let pt in abutPoints) {
         model["Start"]["points"].push([]);
         let totalH = abutPoints[pt].z - tempInput.ELsub
         let points = [{ x: 0, y: 0 },//시점을 기준으로 시계반대방향 순
+        { x: -tempInput.backWallThick + tempInput.approachDepth, y: 0 },
         { x: -tempInput.backWallThick + tempInput.approachDepth, y: -tempInput.approachHeight },
         { x: -tempInput.backWallThick, y: -tempInput.approachHeight },
         { x: -tempInput.backWallThick, y: -tempInput.backWallHeight },
@@ -48,5 +49,6 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
         ];
         points.forEach(npt => model["Start"]["points"][pt].push(ToGlobalPoint3(abutPoints[pt], npt)))
     }
+    model["Start"]["ptGroup"] = [[0,1,2,13], [2,3,4,5,13], [5,6,11,12,13], [7,8,9,10]];
     return model
 }

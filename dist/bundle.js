@@ -7386,7 +7386,7 @@
 
       var geometry = new global.THREE.ExtrudeBufferGeometry(shape, { depth: Thickness, steps: 1, bevelEnabled: false });
       var mesh = new global.THREE.Mesh(geometry, meshMaterial);
-      var rad = Math.atan2(- point.normalCos , point.normalSin) + Math.PI / 2;  //+ 
+      var rad = Math.atan2(- point.normalCos, point.normalSin) + Math.PI / 2;  //+ 
 
       mesh.rotation.set(rotationX, rotationY, 0); //(rotationY - 90)*Math.PI/180
       mesh.rotateOnWorldAxis(new global.THREE.Vector3(0, 0, 1), rad);
@@ -7598,7 +7598,7 @@
       var radius = bolt.size / 2;
       var geometry = new global.THREE.CylinderBufferGeometry(radius, radius, bolt.t * 2 + bolt.l, 6, 1);
       var mesh = new global.THREE.Mesh(geometry, meshMaterial);
-      var rad = Math.atan2(- point.normalCos , point.normalSin) + Math.PI / 2;  //+ 
+      var rad = Math.atan2(- point.normalCos, point.normalSin) + Math.PI / 2;  //+ 
       mesh.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
       mesh.rotateOnWorldAxis(new global.THREE.Vector3(0, 0, 1), rad);
       mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z);
@@ -7731,18 +7731,28 @@
 
       for (let i = 0; i < model.points.length - 1; i++) {
           for (let j = 0; j < pNum; j++) {
-              let k = j < pNum -1? j + 1 : 0;
+              let k = j < pNum - 1 ? j + 1 : 0;
               geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + k));
               geometry.faces.push(new global.THREE.Face3(i * pNum + k, (i + 1) * pNum + j, (i + 1) * pNum + k));
           }
-          if (i === 0) {
-              for (let j = 1; j < pNum - 1; j++) {
-                  geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
+          if (model.ptGroup) { 
+              if (i === 0) {
+                  for (let g in model.ptGroup){
+                      for (let j = 1; j < model.ptGroup[g].length - 1; j++) {
+                          geometry.faces.push(new global.THREE.Face3(model.ptGroup[g][0], model.ptGroup[g][j], model.ptGroup[g][j + 1]));
+                      }
+                  }
               }
-          } 
-          if (i === model.points.length - 2) {
-              for (let j = 1; j < pNum - 1; j++) {
-                  geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+          } else {
+              if (i === 0) {
+                  for (let j = 1; j < pNum - 1; j++) {
+                      geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
+                  }
+              }
+              if (i === model.points.length - 2) {
+                  for (let j = 1; j < pNum - 1; j++) {
+                      geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+                  }
               }
           }
       }
@@ -11451,7 +11461,7 @@
           approachDepth: 300,
           approachHeight: 800,
           supportDepth : 1400,
-          ELsub: 5000,
+          ELsub: 12000,
           footHeight: 1600,
           footLengthB: 3700,
           footLengthf: 1600,
@@ -11459,11 +11469,12 @@
           LeanConcL: 100
       };
       let abutHeight = 5000;
-      model["Start"] = {"points" : []};
+      model["Start"] = {"points" : [], "ptGroup" : []};
       for (let pt in abutPoints) {
           model["Start"]["points"].push([]);
           let totalH = abutPoints[pt].z - tempInput.ELsub;
           let points = [{ x: 0, y: 0 },//시점을 기준으로 시계반대방향 순
+          { x: -tempInput.backWallThick + tempInput.approachDepth, y: 0 },
           { x: -tempInput.backWallThick + tempInput.approachDepth, y: -tempInput.approachHeight },
           { x: -tempInput.backWallThick, y: -tempInput.approachHeight },
           { x: -tempInput.backWallThick, y: -tempInput.backWallHeight },
@@ -11479,6 +11490,7 @@
           ];
           points.forEach(npt => model["Start"]["points"][pt].push(ToGlobalPoint3(abutPoints[pt], npt)));
       }
+      model["Start"]["ptGroup"] = [[0,1,2,13], [2,3,4,5,13], [5,6,11,12,13], [7,8,9,10]];
       return model
   }
 

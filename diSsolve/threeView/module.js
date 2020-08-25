@@ -441,7 +441,7 @@ export function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotat
 
     var geometry = new THREE.ExtrudeBufferGeometry(shape, { depth: Thickness, steps: 1, bevelEnabled: false });
     var mesh = new THREE.Mesh(geometry, meshMaterial);
-    var rad = Math.atan2(- point.normalCos , point.normalSin) + Math.PI / 2  //+ 
+    var rad = Math.atan2(- point.normalCos, point.normalSin) + Math.PI / 2  //+ 
 
     mesh.rotation.set(rotationX, rotationY, 0); //(rotationY - 90)*Math.PI/180
     mesh.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
@@ -653,7 +653,7 @@ export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtransla
     var radius = bolt.size / 2
     var geometry = new THREE.CylinderBufferGeometry(radius, radius, bolt.t * 2 + bolt.l, 6, 1)
     var mesh = new THREE.Mesh(geometry, meshMaterial);
-    var rad = Math.atan2(- point.normalCos , point.normalSin) + Math.PI / 2  //+ 
+    var rad = Math.atan2(- point.normalCos, point.normalSin) + Math.PI / 2  //+ 
     mesh.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
     mesh.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
     mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
@@ -665,7 +665,7 @@ export function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtransla
 
 export function instancedBoltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint) {
     var dummy = new THREE.Object3D();
-    var rad = Math.atan2(- point.normalCos,  point.normalSin) + Math.PI / 2  //+ 
+    var rad = Math.atan2(- point.normalCos, point.normalSin) + Math.PI / 2  //+ 
     dummy.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
     dummy.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), rad);
     dummy.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z)
@@ -799,18 +799,28 @@ export function LoftModelView(model, initPoint) {
 
     for (let i = 0; i < model.points.length - 1; i++) {
         for (let j = 0; j < pNum; j++) {
-            let k = j < pNum -1? j + 1 : 0
+            let k = j < pNum - 1 ? j + 1 : 0
             geometry.faces.push(new THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + k));
             geometry.faces.push(new THREE.Face3(i * pNum + k, (i + 1) * pNum + j, (i + 1) * pNum + k));
         }
-        if (i === 0) {
-            for (let j = 1; j < pNum - 1; j++) {
-                geometry.faces.push(new THREE.Face3(i, i + j, i + j + 1));
+        if (model.ptGroup) { 
+            if (i === 0) {
+                for (let g in model.ptGroup){
+                    for (let j = 1; j < model.ptGroup[g].length - 1; j++) {
+                        geometry.faces.push(new THREE.Face3(model.ptGroup[g][0], model.ptGroup[g][j], model.ptGroup[g][j + 1]));
+                    }
+                }
             }
-        } 
-        if (i === model.points.length - 2) {
-            for (let j = 1; j < pNum - 1; j++) {
-                geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+        } else {
+            if (i === 0) {
+                for (let j = 1; j < pNum - 1; j++) {
+                    geometry.faces.push(new THREE.Face3(i, i + j, i + j + 1));
+                }
+            }
+            if (i === model.points.length - 2) {
+                for (let j = 1; j < pNum - 1; j++) {
+                    geometry.faces.push(new THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+                }
             }
         }
     }
