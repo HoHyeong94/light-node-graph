@@ -19,7 +19,7 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
         approachDepth: 300,
         approachHeight: 800,
         supportDepth : 1400,
-        ELsub: 12000,
+        ELsub: 18000,
         footHeight: 1600,
         footLengthB: 3700,
         footLengthf: 1600,
@@ -49,6 +49,6 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
         ];
         points.forEach(npt => model["Start"]["points"][pt].push(ToGlobalPoint3(abutPoints[pt], npt)))
     }
-    model["Start"]["ptGroup"] = [[0,1,2,13], [2,3,4,5,13], [5,6,11,12,13], [7,8,9,10]];
+    model["Start"]["ptGroup"] = [[0,1,2,13], [2,3,4,5,13], [5,6,13],[6,11,12,13], [7,8,9,10]];
     return model
 }
