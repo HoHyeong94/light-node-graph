@@ -1805,6 +1805,31 @@
     return newPoint
   }
 
+  function ToGlobalPoint3(Point, node2D){ //toglobalPoint에서 직교방향 면을 기준으로 새성
+    let newPoint = {
+        x:0, y:0, z:0
+    };
+    const cos = -Point.normalSin;
+    const sin = Point.normalCos;
+    let skewCot = 0;
+    let skew = Point.skew? Point.skew : 90;
+    if (Point.skew !=90){
+        skewCot = - 1 / Math.tan(skew * Math.PI/180); 
+    }  let X = node2D.x;
+    let Y = X * skewCot; 
+    let Z = node2D.y;
+
+    newPoint.x = Point.x + X * cos - Y*sin;
+    newPoint.y = Point.y + X * sin + Y*cos;
+    newPoint.z = Point.z + Z;
+    newPoint.s = Point.masterStationNumber;
+    newPoint.skew = skew;
+    newPoint.normalCos = Point.normalCos;
+    newPoint.normalSin = Point.normalSin;
+    newPoint.girderStation = Point.girderStation + X;
+    return newPoint
+  }
+
 
 
   function WebPoint(point1, point2, tan1, H){
@@ -11408,6 +11433,80 @@
       this.setOutputData(0, result);
   };
 
+  function AbutPointGen(girderLayout, masterLine, slabLayout){
+      let masterPoint = girderLayout.startPoint;
+      let leftOffset = slabLayout[0][3];
+      let rightOffset = slabLayout[0][4];
+      let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
+      let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
+      return  [leftPoint, masterPoint, rightPoint]
+  }
+  function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLayout) {
+      let model = {}; // for loftModel
+      const tempInput = {
+          backWallThick: 800,
+          backWallHeight: 2800,
+          backHaunchHeight: 600,
+          backHaunchThick: 600,
+          approachDepth: 300,
+          approachHeight: 800,
+          supportDepth : 1400,
+          ELsub: 5000,
+          footHeight: 1600,
+          footLengthB: 3700,
+          footLengthf: 1600,
+          LeanConcT: 100,
+          LeanConcL: 100
+      };
+      let abutHeight = 5000;
+      model["abutS"] = [];
+      for (let pt in abutPoints) {
+          model["abutS"].push([]);
+          let totalH = abutPoints[pt].z - tempInput.ELsub;
+          let points = [{ x: 0, y: 0 },//시점을 기준으로 시계반대방향 순
+          { x: -tempInput.backWallThick + tempInput.approachDepth, y: -tempInput.approachHeight },
+          { x: -tempInput.backWallThick, y: -tempInput.approachHeight },
+          { x: -tempInput.backWallThick, y: -tempInput.backWallHeight },
+          { x: -tempInput.backWallThick + tempInput.backHaunchThick, y: -tempInput.backWallHeight - tempInput.backHaunchHeight },
+          { x: -tempInput.backWallThick + tempInput.backHaunchThick, y: -totalH + tempInput.backHaunchHeight },
+          { x: -tempInput.backWallThick + tempInput.backHaunchThick - tempInput.footLengthB, y: -totalH + tempInput.backHaunchHeight },
+          { x: -tempInput.backWallThick + tempInput.backHaunchThick - tempInput.footLengthB, y: -totalH },
+          { x: tempInput.supportDepth + tempInput.footLengthf, y: -totalH },
+          { x: tempInput.supportDepth + tempInput.footLengthf, y: -totalH +  tempInput.backHaunchHeight},
+          { x: tempInput.supportDepth, y: -totalH +  tempInput.backHaunchHeight},
+          { x: tempInput.supportDepth, y: -totalH +  tempInput.backHaunchHeight + abutHeight},
+          { x: 0, y: -totalH +  tempInput.backHaunchHeight + abutHeight},
+          ];
+          points.forEach(npt => model["abutS"][npt].push(ToGlobalPoint3(abutPoints[pt], npt)));
+      }
+      return model
+  }
+
+  function AbutPoint(){
+      this.addInput("girderLayout","girderLayout");
+      this.addInput("masterLine","line");
+      this.addInput("slabLayout","arr");
+      this.addOutput("abutPoint","arr");
+    }
+    
+    AbutPoint.prototype.onExecute = function() {
+      const result = AbutPointGen(this.getInputData(0), this.getInputData(1), this.getInputData(2));
+      this.setOutputData(0, result);
+    };
+
+    function AbutModel(){
+      this.addInput("abutPoint","arr");
+      this.addInput("abutInput","abutInput");
+      this.addInput("sectionPointDict","sectionPointDict");
+      this.addInput("supportLayout","arr");
+      this.addOutput("model","model");
+    }
+    
+    AbutModel.prototype.onExecute = function() {
+      const result = AbutModelGen(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3));
+      this.setOutputData(0, result);
+    };
+
   // import { defaultValues } from "./defaultValues";
 
   global.LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
@@ -11431,6 +11530,9 @@
   global.LiteGraph.registerNodeType("nexivil/CompositeJoint",CompositeJoint);
   global.LiteGraph.registerNodeType("nexivil/CompositeFrame",CompositeFrame);
   global.LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
+  global.LiteGraph.registerNodeType("nexivil/AbutModel",AbutModel);
+  global.LiteGraph.registerNodeType("nexivil/AbutPoint",AbutPoint);
+
   global.LiteGraph.registerNodeType("HMECS/splice", SplicePart);
   global.LiteGraph.registerNodeType("HMECS/barrier", BarrierPoint);
   global.LiteGraph.registerNodeType("HMECS/DeckRebar", DeckRebar);

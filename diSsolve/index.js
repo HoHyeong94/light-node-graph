@@ -18,6 +18,7 @@ import { BarrierPoint } from "./barrier/index"
 import { DeckRebar } from "./rebar/index"
 import { Stud } from "./stud/index"
 import { MaterialQntt } from "./quantity/index"
+import { AbutModel, AbutPoint } from "./substruc/index"
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -40,6 +41,9 @@ LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
 LiteGraph.registerNodeType("nexivil/CompositeJoint",CompositeJoint);
 LiteGraph.registerNodeType("nexivil/CompositeFrame",CompositeFrame);
 LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
+LiteGraph.registerNodeType("nexivil/AbutModel",AbutModel);
+LiteGraph.registerNodeType("nexivil/AbutPoint",AbutPoint);
+
 LiteGraph.registerNodeType("HMECS/splice", SplicePart)
 LiteGraph.registerNodeType("HMECS/barrier", BarrierPoint)
 LiteGraph.registerNodeType("HMECS/DeckRebar", DeckRebar)

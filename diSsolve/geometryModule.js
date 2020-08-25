@@ -53,6 +53,32 @@ export function ToGlobalPoint2(Point, node2D){
   return newPoint
 }
 
+export function ToGlobalPoint3(Point, node2D){ //toglobalPoint에서 직교방향 면을 기준으로 새성
+  let newPoint = {
+      x:0, y:0, z:0
+  }
+  const cos = -Point.normalSin;
+  const sin = Point.normalCos;
+  let skewCot = 0;
+  let skew = Point.skew? Point.skew : 90;
+  if (Point.skew !=90){
+      skewCot = - 1 / Math.tan(skew * Math.PI/180) 
+  };
+  let X = node2D.x
+  let Y = X * skewCot; 
+  let Z = node2D.y
+
+  newPoint.x = Point.x + X * cos - Y*sin;
+  newPoint.y = Point.y + X * sin + Y*cos;
+  newPoint.z = Point.z + Z;
+  newPoint.s = Point.masterStationNumber;
+  newPoint.skew = skew;
+  newPoint.normalCos = Point.normalCos;
+  newPoint.normalSin = Point.normalSin;
+  newPoint.girderStation = Point.girderStation + X;
+  return newPoint
+}
+
 
 
 export function WebPoint(point1, point2, tan1, H){
