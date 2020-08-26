@@ -68,7 +68,7 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
                     points[7], points[6], points[5], points[4], points[3], points[2], points[1]]
 
     let wingPt1 = [];
-    wingPoints.push(pt => wingPt1.push(ToGlobalPoint3(abutPoints[0],pt)))
+    wingPoints.forEach(pt => wingPt1.push(ToGlobalPoint3(abutPoints[0],pt)))
     let cos = abutPoints[0].normalCos
     let sin = abutPoints[0].normalSin
     let dx = tempInput.wingWallThick * cos
