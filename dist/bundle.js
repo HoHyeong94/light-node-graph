@@ -11523,9 +11523,9 @@
       let sin = abutPoints[0].normalSin;
       let dx = tempInput.wingWallThick * cos;
       let dy = tempInput.wingWallThick * sin;
-      let dz = 0;
+      let dz = tempInput.wingWallThick * abutPoints[0].gradientY;
       // console.log(wingPoints, wingPt1)
-      let wingPt2 = [{ x: wingPt1[0].x + dx, y: wingPt1[0].y + dy, z: wingPt1[0].z },
+      let wingPt2 = [{ x: wingPt1[0].x + dx, y: wingPt1[0].y + dy, z: wingPt1[0].z +dz},
       { x: wingPt1[1].x + dx, y: wingPt1[1].y + dy, z: wingPt1[1].z },
       { x: wingPt1[2].x + dx, y: wingPt1[2].y + dy, z: wingPt1[2].z },
       { x: wingPt1[3].x + dx, y: wingPt1[3].y + dy, z: wingPt1[3].z },];
@@ -11541,9 +11541,9 @@
       let theta = Math.atan2(points[0][4].y - points[0][5].y, points[0][4].x - points[0][5].x);
       // Math.tan(theta/2) * tempInput.wingHaunch // 추후 방향을 고려하여 일반화 필요함
       let HPt = [];
+      dx = tempInput.wingHaunch * sin;
+      dy = - tempInput.wingHaunch * cos;
       for (let i of [4, 5, 6, 7]) {
-          dx = tempInput.wingHaunch * sin;
-          dy = - tempInput.wingHaunch * cos;
           dz = i === 5 || i === 6? - Math.tan(theta/2   - Math.PI/4) * tempInput.wingHaunch : 0;
           pt1 = wingPt1[i];
           pt2 = wingPt2[i];
@@ -11553,7 +11553,19 @@
           let hpt2 = DividingPoint(pt1, pt2, (tempInput.wingWallThick + tempInput.wingHaunch) * l / l2D);
           HPt.push([wingPt2[i],hpt1, hpt2 ]);
       }
+      let HPt2 = [];
+      for (let i of [8,9]) {
+          dz = i === 5 || i === 6? - Math.tan(theta/2   - Math.PI/4) * tempInput.wingHaunch : 0;
+          pt1 = wingPt1[i];
+          pt2 = wingPt2[i];
+          let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
+          let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
+          let hpt1 = {x : wingPt2[i].x +dx, y : wingPt2[i].y +dy, z : wingPt2[i].z+dz};
+          let hpt2 = DividingPoint(pt1, pt2, (tempInput.wingWallThick + tempInput.wingHaunch) * l / l2D);
+          HPt2.push([wingPt2[i],hpt1, hpt2 ]);
+      }
       model["leftWingH1"] = { "points": HPt, };
+      model["leftWingH2"] = { "points": HPt2, };
       return model
   }
 
