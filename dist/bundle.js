@@ -11548,7 +11548,7 @@
           let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
           let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
           let hpt1 = {x : wingPt2[i].x +dx, y : wingPt2[i].y +dy, z : wingPt2[i].z+dz};
-          let hpt2 = DividingPoint(pt1, pt2, tempInput.wingHaunch * l / l2D);
+          let hpt2 = DividingPoint(pt1, pt2, (tempInput.wingWallThick + tempInput.wingHaunch) * l / l2D);
           HPt.push([wingPt2[i],hpt1, hpt2 ]);
       }
       model["leftWingH1"] = { "points": HPt, };
