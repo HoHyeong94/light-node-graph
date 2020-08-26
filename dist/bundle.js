@@ -11555,7 +11555,7 @@
       }
       let HPt2 = [];
       for (let i of [8,9]) {
-          dz = i === 5 || i === 6? - Math.tan(theta/2   - Math.PI/4) * tempInput.wingHaunch : 0;
+          dz = i === 9? - tempInput.wingHaunch * tempInput.wingGradient : 0;
           pt1 = wingPt1[i];
           pt2 = wingPt2[i];
           let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
