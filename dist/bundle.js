@@ -11509,7 +11509,7 @@
       //우선 직각인 날개벽을 예시로함
       let pt1 = {};
       let pt2 = {};
-      let npt = [];
+      // let npt = [];
       let wingPoints = [
                       {x : points[0].x - tempInput.wingLength ,y: points[0].y - tempInput.wingLength * tempInput.wingGradient},
                       {x : points[0].x - tempInput.wingLength ,y: points[0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1},
@@ -11522,7 +11522,7 @@
       let sin = abutPoints[0].normalSin;
       let dx = tempInput.wingWallThick * cos;
       let dy = tempInput.wingWallThick * sin;
-      console.log(wingPoints, wingPt1);
+      // console.log(wingPoints, wingPt1)
       let wingPt2 = [{x: wingPt1[0].x + dx, y: wingPt1[0].y + dy, z: wingPt1[0].z},
                       {x: wingPt1[1].x + dx, y: wingPt1[1].y + dy, z: wingPt1[1].z},
                       {x: wingPt1[2].x + dx, y: wingPt1[2].y + dy, z: wingPt1[2].z},
@@ -11532,7 +11532,7 @@
           pt2 = model["Start"]["points"][1][i];
           let l = Math.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2 + (pt1.z - pt2.z)**2);
           let l2D = Math.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2);
-          npt.push(DividingPoint(pt1, pt2, tempInput.wingWallThick * l / l2D));
+          wingPt2.push(DividingPoint(pt1, pt2, tempInput.wingWallThick * l / l2D));
       }
       model["leftWing"] = { "points": [wingPt1, wingPt2], "ptGroup": [[0,7,8,9],[0,1,2,6,7],[2,3,4,5,6]]  };
       return model
