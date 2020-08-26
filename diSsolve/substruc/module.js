@@ -1,4 +1,4 @@
-import { ToGlobalPoint3, DividingPoint } from "../geometryModule"
+import { ToGlobalPoint, ToGlobalPoint3, DividingPoint } from "../geometryModule"
 import { OffsetPoint } from "../line/module"
 
 export function AbutPointGen(girderLayout, masterLine, slabLayout) {
@@ -33,6 +33,48 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportDat
         wingGradient: 0.02,
         wingHaunch: 300,
     };
+    let supportList = [];
+    for (let key in supportData) {
+        if (supportData[key].basePointName.substr(2, 2) === "S1") {
+            supportList.push([supportData[key].point.offset, supportData[key].point.z, supportData[key].solePlateThck], 400);
+        }
+    }
+    supportList.sort(function (a, b) { return a[0] < b[0] ? -1 : 1; });
+
+    let absZ = abutPoints[0].z;
+    let cos = - abutPoints[0].normalSin;
+    let sin = abutPoints[0].normalCos;
+    for (let i = 0; i < supportList.length; i++) {
+        let z1 = supportList[i][1] - supportList[i][2] - supportList[i][3] - absZ
+        let z2 = tempInput.ELsub + tempInput.footHeight - absZ
+        let modelpts = [[], []]
+        let pts1 = [{ x: 0, y: z2 },
+        { x: 0, y: z1 },
+        { x: tempInput.supportDepth, y: z1 },
+        { x: tempInput.supportDepth, y: z2 }];
+
+        if (i < supportList.length - 1) {
+            let width = (supportList[i] + supportList[i + 1]) / 2
+            let nCp = ToGlobalPoint(abutPoints[0], { x: width, y: 0 })
+            if (i === 0) {
+                pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(abutPoints[0], pt)))
+                pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(nCp, pt)))
+            } else {
+                let width0 = (supportList[i-1] + supportList[i]) / 2
+                let nCp0 = ToGlobalPoint(abutPoints[0], { x: width0, y: 0 })
+                pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(nCp0, pt)))
+                pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(nCp, pt)))
+            }
+
+        } else {
+                let width0 = (supportList[i-1] + supportList[i]) / 2
+                let nCp0 = ToGlobalPoint(abutPoints[0], { x: width0, y: 0 })
+                pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(nCp0, pt)))
+                pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(abutPoints[2], pt)))
+        }
+        model["part" + i] = { "points": modelpts, }
+    }
+
     let abutDepth = 2500; // 거더높이 + 하부플렌지두께 + 솔플레이트두께 + 받침높이 + 페데스탈높이 중 최대깊이
     let abutHeight = 5000; // 추후에는 삭제해야 할듯함.
     let points = []
@@ -46,12 +88,12 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportDat
         { x: -tempInput.backWallThick, y: -tempInput.approachHeight },
         { x: -tempInput.backWallThick, y: -tempInput.backWallHeight },
         { x: -tempInput.backWallThick + tempInput.backHaunchThick, y: -tempInput.backWallHeight - tempInput.backHaunchHeight },
-        { x: -tempInput.backWallThick + tempInput.backHaunchThick, y: -totalH + tempInput.backHaunchHeight },
-        { x: -tempInput.backWallThick + tempInput.backHaunchThick - tempInput.footLengthB, y: -totalH + tempInput.backHaunchHeight },
+        { x: -tempInput.backWallThick + tempInput.backHaunchThick, y: -totalH + tempInput.footHeight },
+        { x: -tempInput.backWallThick + tempInput.backHaunchThick - tempInput.footLengthB, y: -totalH + tempInput.footHeight },
         { x: -tempInput.backWallThick + tempInput.backHaunchThick - tempInput.footLengthB, y: -totalH },
         { x: tempInput.supportDepth + tempInput.footLengthf, y: -totalH },
-        { x: tempInput.supportDepth + tempInput.footLengthf, y: -totalH + tempInput.backHaunchHeight },
-        { x: tempInput.supportDepth, y: -totalH + tempInput.backHaunchHeight },
+        { x: tempInput.supportDepth + tempInput.footLengthf, y: -totalH + tempInput.footHeight },
+        { x: tempInput.supportDepth, y: -totalH + tempInput.footHeight },
         { x: tempInput.supportDepth, y: -totalH + tempInput.backHaunchHeight + abutHeight },
         { x: 0, y: -totalH + tempInput.backHaunchHeight + abutHeight },
         ]);
@@ -60,8 +102,8 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportDat
     model["Start"]["ptGroup"] = [[0, 1, 2, 13], [2, 3, 4, 5, 13], [5, 6, 13], [6, 11, 12, 13], [7, 8, 9, 10]]; //11, 12번 노드가 삭제되고 13번 노드의 높이가 바닥으로 내려가야함.
     //우선 직각인 날개벽을 예시로함
     for (let index of [0, 2]) {
-        let nameKey = index ===0?"left" : "right";        
-        let sign = index ===0? 1 : -1;        
+        let nameKey = index === 0 ? "left" : "right";
+        let sign = index === 0 ? 1 : -1;
         let pt1 = {};
         let pt2 = {};
         // let npt = [];
