@@ -89,8 +89,8 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
     }
     model["leftWing"] = { "points": [wingPt1, wingPt2], "ptGroup": [[0, 7, 8, 9], [0, 1, 2, 6, 7], [2, 3, 4, 5, 6]] }
 
-    let theta = Math.atan2(points[0][4].y - points[0][5].y, points[0][4].x - points[0][5].x) + Math.PI/2;
-    Math.tan(theta/2) * tempInput.wingHaunch
+    let theta = Math.atan2(points[0][4].y - points[0][5].y, points[0][4].x - points[0][5].x);
+    Math.tan(theta/2  - Math.PI/4) * tempInput.wingHaunch // 추후 방향을 고려하여 일반화 필요함
     let HPt = []
     for (let i of [4, 5, 6, 7]) {
         dx = tempInput.wingHaunch * sin
