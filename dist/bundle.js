@@ -11525,7 +11525,7 @@
                   pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(nCp0, pt)));
                   pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(abutPoints[2], pt)));
           }
-          model["part" + i] = { "points": modelpts, };
+          model["part" + i.toFixed(0)] = { "points": modelpts, };
       }
       let abutHeight = 5000; // 추후에는 삭제해야 할듯함.
       let points = [];

@@ -72,7 +72,7 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportDat
                 pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(nCp0, pt)))
                 pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(abutPoints[2], pt)))
         }
-        model["part" + i] = { "points": modelpts, }
+        model["part" + i.toFixed(0)] = { "points": modelpts, }
     }
 
     let abutDepth = 2500; // 거더높이 + 하부플렌지두께 + 솔플레이트두께 + 받침높이 + 페데스탈높이 중 최대깊이
