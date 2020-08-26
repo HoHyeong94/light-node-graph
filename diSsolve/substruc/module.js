@@ -98,9 +98,9 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
         pt2 = wingPt2[i];
         let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2)
         let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2)
-        let pt1 = {x : wingPt[i].x +dx, y : wingPt[i].y +dy, z : wingPt[i].z+dz}
-        let pt2 = DividingPoint(pt1, pt2, tempInput.wingHaunch * l / l2D);
-        HPt.push([wingPt2[i],pt1, pt2 ]);
+        let hpt1 = {x : wingPt[i].x +dx, y : wingPt[i].y +dy, z : wingPt[i].z+dz}
+        let hpt2 = DividingPoint(pt1, pt2, tempInput.wingHaunch * l / l2D);
+        HPt.push([wingPt2[i],hpt1, hpt2 ]);
     }
     model["leftWingH1"] = { "points": HPt, }
     return model
