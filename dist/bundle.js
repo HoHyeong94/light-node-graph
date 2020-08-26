@@ -10130,6 +10130,10 @@
       for (let index in supportData) {
           name = supportData[index][0]; //.point
           type = supportData[index][1]; //.type
+          width = supportData[index][3];
+          height = supportData[index][4];
+          thickness = supportData[index][5];
+
           let offset = supportData[index][2]; //.offset
           point = gridPoint[name];
           girderHeight = - sectionPointDict[name].forward.lflangeSide[1];
@@ -10138,7 +10142,8 @@
           let newPoint = {
               x: point.x - (Math.cos(skew) * (-1) * point.normalSin - Math.sin(skew) * point.normalCos) * offset,
               y: point.y - (Math.sin(skew) * (-1) * point.normalSin + Math.cos(skew) * point.normalCos) * offset,
-              z: point.z - girderHeight
+              z: point.z - girderHeight,
+              offset : point.offset + offset
           };
           if (isFixed && name !== fixedPoint[0].point) {
 
@@ -10157,11 +10162,9 @@
               basePointName: name,
               key: "SPPT" + index,
               type: dof[type], //[x,y,z,rx,ry,rz]
+              solePlateThck : thickness,
           };
 
-          width = supportData[index][3];
-          height = supportData[index][4];
-          thickness = supportData[index][5];
           let  pointAng = Math.atan2(-point.normalSin, point.normalCos);
           let dA = data[index].angle - pointAng;
           let cos = Math.cos(dA);
@@ -11459,7 +11462,7 @@
       let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
       return [leftPoint, masterPoint, rightPoint]
   }
-  function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLayout) {
+  function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportData) {
       let model = {}; // for loftModel
       const tempInput = {
           backWallThick: 800,
@@ -11483,7 +11486,7 @@
           wingGradient: 0.02,
           wingHaunch: 300,
       };
-      let abutHeight = 5000;
+      let abutHeight = 5000; // 추후에는 삭제해야 할듯함.
       let points = [];
       model["Start"] = { "points": [], "ptGroup": [] };
       for (let index in abutPoints) {
@@ -11506,7 +11509,7 @@
           ]);
           points[index].forEach(npt => model["Start"]["points"][index].push(ToGlobalPoint3(abutPoints[index], npt)));
       }
-      model["Start"]["ptGroup"] = [[0, 1, 2, 13], [2, 3, 4, 5, 13], [5, 6, 13], [6, 11, 12, 13], [7, 8, 9, 10]];
+      model["Start"]["ptGroup"] = [[0, 1, 2, 13], [2, 3, 4, 5, 13], [5, 6, 13], [6, 11, 12, 13], [7, 8, 9, 10]]; //11, 12번 노드가 삭제되고 13번 노드의 높이가 바닥으로 내려가야함.
       //우선 직각인 날개벽을 예시로함
       for (let index of [0, 2]) {
           let nameKey = index ===0?"left" : "right";        
@@ -11590,7 +11593,7 @@
       this.addInput("abutPoint","arr");
       this.addInput("abutInput","abutInput");
       this.addInput("sectionPointDict","sectionPointDict");
-      this.addInput("supportLayout","arr");
+      this.addInput("supportData","supportData");
       this.addOutput("model","model");
     }
     

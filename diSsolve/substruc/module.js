@@ -9,7 +9,7 @@ export function AbutPointGen(girderLayout, masterLine, slabLayout) {
     let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
     return [leftPoint, masterPoint, rightPoint]
 }
-export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLayout) {
+export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportData) {
     let model = {}; // for loftModel
     const tempInput = {
         backWallThick: 800,
@@ -34,7 +34,7 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
         wingHaunch: 300,
     };
     let abutDepth = 2500; // 거더높이 + 하부플렌지두께 + 솔플레이트두께 + 받침높이 + 페데스탈높이 중 최대깊이
-    let abutHeight = 5000;
+    let abutHeight = 5000; // 추후에는 삭제해야 할듯함.
     let points = []
     model["Start"] = { "points": [], "ptGroup": [] }
     for (let index in abutPoints) {
@@ -57,7 +57,7 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
         ]);
         points[index].forEach(npt => model["Start"]["points"][index].push(ToGlobalPoint3(abutPoints[index], npt)))
     }
-    model["Start"]["ptGroup"] = [[0, 1, 2, 13], [2, 3, 4, 5, 13], [5, 6, 13], [6, 11, 12, 13], [7, 8, 9, 10]];
+    model["Start"]["ptGroup"] = [[0, 1, 2, 13], [2, 3, 4, 5, 13], [5, 6, 13], [6, 11, 12, 13], [7, 8, 9, 10]]; //11, 12번 노드가 삭제되고 13번 노드의 높이가 바닥으로 내려가야함.
     //우선 직각인 날개벽을 예시로함
     for (let index of [0, 2]) {
         let nameKey = index ===0?"left" : "right";        

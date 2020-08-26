@@ -16,7 +16,7 @@ export function AbutPoint(){
     this.addInput("abutPoint","arr");
     this.addInput("abutInput","abutInput");
     this.addInput("sectionPointDict","sectionPointDict");
-    this.addInput("supportLayout","arr");
+    this.addInput("supportData","supportData");
     this.addOutput("model","model");
   }
   
