@@ -11508,64 +11508,69 @@
       }
       model["Start"]["ptGroup"] = [[0, 1, 2, 13], [2, 3, 4, 5, 13], [5, 6, 13], [6, 11, 12, 13], [7, 8, 9, 10]];
       //우선 직각인 날개벽을 예시로함
-      let pt1 = {};
-      let pt2 = {};
-      // let npt = [];
-      let wingPoints = [
-          { x: points[0][0].x - tempInput.wingLength, y: points[0][0].y - tempInput.wingLength * tempInput.wingGradient },
-          { x: points[0][0].x - tempInput.wingLength, y: points[0][0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1 },
-          { x: points[0][7].x, y: points[0][0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1 - tempInput.wingH2 },
-          points[0][7], points[0][6], points[0][5], points[0][4], points[0][3], points[0][2], points[0][1]];
+      for (let index of [0, 2]) {
+          let nameKey = index ===0?"left" : "right";        
+          let sign = index ===0? 1 : -1;        
+          let pt1 = {};
+          let pt2 = {};
+          // let npt = [];
+          let wingPoints = [
+              { x: points[index][0].x - tempInput.wingLength, y: points[index][0].y - tempInput.wingLength * tempInput.wingGradient },
+              { x: points[index][0].x - tempInput.wingLength, y: points[index][0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1 },
+              { x: points[index][7].x, y: points[index][0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1 - tempInput.wingH2 },
+              points[index][7], points[index][6], points[index][5], points[index][4], points[index][3], points[index][2], points[index][1]];
 
-      let wingPt1 = [];
-      wingPoints.forEach(pt => wingPt1.push(ToGlobalPoint3(abutPoints[0], pt)));
-      let cos = abutPoints[0].normalCos;
-      let sin = abutPoints[0].normalSin;
-      let dx = tempInput.wingWallThick * cos;
-      let dy = tempInput.wingWallThick * sin;
-      let dz = tempInput.wingWallThick * abutPoints[0].gradientY;
-      // console.log(wingPoints, wingPt1)
-      let wingPt2 = [{ x: wingPt1[0].x + dx, y: wingPt1[0].y + dy, z: wingPt1[0].z +dz},
-      { x: wingPt1[1].x + dx, y: wingPt1[1].y + dy, z: wingPt1[1].z },
-      { x: wingPt1[2].x + dx, y: wingPt1[2].y + dy, z: wingPt1[2].z },
-      { x: wingPt1[3].x + dx, y: wingPt1[3].y + dy, z: wingPt1[3].z },];
-      for (let i of [6, 5, 4, 3, 2, 1]) {
-          pt1 = model["Start"]["points"][0][i];
-          pt2 = model["Start"]["points"][1][i];
-          let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
-          let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
-          wingPt2.push(DividingPoint(pt1, pt2, tempInput.wingWallThick * l / l2D));
-      }
-      model["leftWing"] = { "points": [wingPt1, wingPt2], "ptGroup": [[0, 7, 8, 9], [0, 1, 2, 6, 7], [2, 3, 4, 5, 6]] };
+          let wingPt1 = [];
+          wingPoints.forEach(pt => wingPt1.push(ToGlobalPoint3(abutPoints[index], pt)));
+          let cos = abutPoints[index].normalCos;
+          let sin = abutPoints[index].normalSin;
+          let dx = sign * tempInput.wingWallThick * cos;
+          let dy = sign * tempInput.wingWallThick * sin;
+          let dz = sign * tempInput.wingWallThick * abutPoints[index].gradientY;
+          // console.log(wingPoints, wingPt1)
+          let wingPt2 = [{ x: wingPt1[0].x + dx, y: wingPt1[0].y + dy, z: wingPt1[0].z + dz },
+          { x: wingPt1[1].x + dx, y: wingPt1[1].y + dy, z: wingPt1[1].z },
+          { x: wingPt1[2].x + dx, y: wingPt1[2].y + dy, z: wingPt1[2].z },
+          { x: wingPt1[3].x + dx, y: wingPt1[3].y + dy, z: wingPt1[3].z },];
+          for (let i of [6, 5, 4, 3, 2, 1]) {
+              pt1 = model["Start"]["points"][index][i];
+              pt2 = model["Start"]["points"][1][i];
+              let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
+              let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
+              wingPt2.push(DividingPoint(pt1, pt2, tempInput.wingWallThick * l / l2D));
+          }
+          model[nameKey + "Wing"] = { "points": [wingPt1, wingPt2], "ptGroup": [[0, 7, 8, 9], [0, 1, 2, 6, 7], [2, 3, 4, 5, 6]] };
 
-      let theta = Math.atan2(points[0][4].y - points[0][5].y, points[0][4].x - points[0][5].x);
-      // Math.tan(theta/2) * tempInput.wingHaunch // 추후 방향을 고려하여 일반화 필요함
-      let HPt = [];
-      dx = tempInput.wingHaunch * sin;
-      dy = - tempInput.wingHaunch * cos;
-      for (let i of [4, 5, 6, 7]) {
-          dz = i === 5 || i === 6? - Math.tan(theta/2   - Math.PI/4) * tempInput.wingHaunch : 0;
-          pt1 = wingPt1[i];
-          pt2 = wingPt2[i];
-          let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
-          let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
-          let hpt1 = {x : wingPt2[i].x +dx, y : wingPt2[i].y +dy, z : wingPt2[i].z+dz};
-          let hpt2 = DividingPoint(pt1, pt2, (tempInput.wingWallThick + tempInput.wingHaunch) * l / l2D);
-          HPt.push([wingPt2[i],hpt1, hpt2 ]);
+          let theta = Math.atan2(points[index][4].y - points[index][5].y, points[index][4].x - points[index][5].x);
+          // Math.tan(theta/2) * tempInput.wingHaunch // 추후 방향을 고려하여 일반화 필요함
+          let HPt = [];
+          dx = tempInput.wingHaunch * sin;
+          dy = - tempInput.wingHaunch * cos;
+          for (let i of [4, 5, 6, 7]) {
+              dz = i === 5 || i === 6 ? - Math.tan(theta / 2 - Math.PI / 4) * tempInput.wingHaunch : 0;
+              pt1 = wingPt1[i];
+              pt2 = wingPt2[i];
+              let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
+              let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
+              let hpt1 = { x: wingPt2[i].x + dx, y: wingPt2[i].y + dy, z: wingPt2[i].z + dz };
+              let hpt2 = DividingPoint(pt1, pt2, (tempInput.wingWallThick + tempInput.wingHaunch) * l / l2D);
+              HPt.push([wingPt2[i], hpt1, hpt2]);
+          }
+          let HPt2 = [];
+          for (let i of [8, 9]) {
+              dz = i === 9 ? - tempInput.wingHaunch * tempInput.wingGradient : 0;
+              pt1 = wingPt1[i];
+              pt2 = wingPt2[i];
+              let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
+              let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
+              let hpt1 = { x: wingPt2[i].x + dx, y: wingPt2[i].y + dy, z: wingPt2[i].z + dz };
+              let hpt2 = DividingPoint(pt1, pt2, (tempInput.wingWallThick + tempInput.wingHaunch) * l / l2D);
+              HPt2.push([wingPt2[i], hpt1, hpt2]);
+          }
+          model[nameKey + "WingH1"] = { "points": HPt, };
+          model[nameKey + "WingH2"] = { "points": HPt2, };
       }
-      let HPt2 = [];
-      for (let i of [8,9]) {
-          dz = i === 9? - tempInput.wingHaunch * tempInput.wingGradient : 0;
-          pt1 = wingPt1[i];
-          pt2 = wingPt2[i];
-          let l = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2 + (pt1.z - pt2.z) ** 2);
-          let l2D = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
-          let hpt1 = {x : wingPt2[i].x +dx, y : wingPt2[i].y +dy, z : wingPt2[i].z+dz};
-          let hpt2 = DividingPoint(pt1, pt2, (tempInput.wingWallThick + tempInput.wingHaunch) * l / l2D);
-          HPt2.push([wingPt2[i],hpt1, hpt2 ]);
-      }
-      model["leftWingH1"] = { "points": HPt, };
-      model["leftWingH2"] = { "points": HPt2, };
+
       return model
   }
 
