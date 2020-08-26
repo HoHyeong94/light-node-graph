@@ -36,7 +36,7 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportDat
     let supportList = [];
     for (let key in supportData) {
         if (supportData[key].basePointName.substr(2, 2) === "S1") {
-            supportList.push([supportData[key].point.offset, supportData[key].point.z, supportData[key].solePlateThck], 400);
+            supportList.push([supportData[key].point.offset, supportData[key].point.z, supportData[key].solePlateThck, 400]);
         }
     }
     supportList.sort(function (a, b) { return a[0] < b[0] ? -1 : 1; });
