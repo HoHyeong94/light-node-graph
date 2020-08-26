@@ -55,22 +55,23 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportDat
 
         if (i < supportList.length - 1) {
             let width = (supportList[i][0] + supportList[i + 1][0]) / 2
-            let nCp = ToGlobalPoint(abutPoints[0], { x: width, y: 0 })
+            let nCp = ToGlobalPoint(abutPoints[0], { x: width, y: 0 }) - abutPoints[0].offset
             if (i === 0) {
                 pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(abutPoints[0], pt)))
                 pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(nCp, pt)))
             } else {
-                let width0 = (supportList[i-1][0] + supportList[i][0]) / 2
+                let width0 = (supportList[i-1][0] + supportList[i][0]) / 2  - abutPoints[0].offset
                 let nCp0 = ToGlobalPoint(abutPoints[0], { x: width0, y: 0 })
                 pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(nCp0, pt)))
                 pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(nCp, pt)))
             }
 
         } else {
-                let width0 = (supportList[i-1][0] + supportList[i][0]) / 2
+                let width0 = (supportList[i-1][0] + supportList[i][0]) / 2  - abutPoints[0].offset
                 let nCp0 = ToGlobalPoint(abutPoints[0], { x: width0, y: 0 })
+                let nCp1 = ToGlobalPoint(abutPoints[0], { x: abutPoints[2].offset - abutPoints[0].offset, y: 0 })
                 pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(nCp0, pt)))
-                pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(abutPoints[2], pt)))
+                pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(nCp1, pt)))
         }
         model["part" + i.toFixed(0)] = { "points": modelpts, }
     }
