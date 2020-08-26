@@ -39,7 +39,7 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
     for (let index in abutPoints) {
         model["Start"]["points"].push([]);
         let totalH = abutPoints[index].z - tempInput.ELsub
-        points = [{ x: 0, y: 0 },//시점을 기준으로 시계반대방향 순
+        points.push([{ x: 0, y: 0 },//시점을 기준으로 시계반대방향 순
         { x: -tempInput.backWallThick + tempInput.approachDepth, y: 0 },
         { x: -tempInput.backWallThick + tempInput.approachDepth, y: -tempInput.approachHeight },
         { x: -tempInput.backWallThick, y: -tempInput.approachHeight },
@@ -53,8 +53,8 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
         { x: tempInput.supportDepth, y: -totalH + tempInput.backHaunchHeight },
         { x: tempInput.supportDepth, y: -totalH + tempInput.backHaunchHeight + abutHeight },
         { x: 0, y: -totalH + tempInput.backHaunchHeight + abutHeight },
-        ];
-        points.forEach(npt => model["Start"]["points"][index].push(ToGlobalPoint3(abutPoints[index], npt)))
+        ]);
+        points[index].forEach(npt => model["Start"]["points"][index].push(ToGlobalPoint3(abutPoints[index], npt)))
     }
     model["Start"]["ptGroup"] = [[0, 1, 2, 13], [2, 3, 4, 5, 13], [5, 6, 13], [6, 11, 12, 13], [7, 8, 9, 10]];
     //우선 직각인 날개벽을 예시로함
@@ -62,10 +62,10 @@ export function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportLay
     let pt2 = {};
     // let npt = [];
     let wingPoints = [
-                    {x : points[0].x - tempInput.wingLength ,y: points[0].y - tempInput.wingLength * tempInput.wingGradient},
-                    {x : points[0].x - tempInput.wingLength ,y: points[0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1},
-                    {x : points[7].x ,y: points[0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1 - tempInput.wingH2},
-                    points[7], points[6], points[5], points[4], points[3], points[2], points[1]]
+                    {x : points[0][0].x - tempInput.wingLength ,y: points[0][0].y - tempInput.wingLength * tempInput.wingGradient},
+                    {x : points[0][0].x - tempInput.wingLength ,y: points[0][0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1},
+                    {x : points[0][7].x ,y: points[0][0].y - tempInput.wingLength * tempInput.wingGradient - tempInput.wingH1 - tempInput.wingH2},
+                    points[0][7], points[0][6], points[0][5], points[0][4], points[0][3], points[0][2], points[0][1]]
 
     let wingPt1 = [];
     wingPoints.forEach(pt => wingPt1.push(ToGlobalPoint3(abutPoints[0],pt)))
