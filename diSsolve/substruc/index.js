@@ -3,12 +3,14 @@ import { AbutModelGen, AbutPointGen } from "./module"
 export function AbutPoint(){
     this.addInput("girderLayout","girderLayout");
     this.addInput("slabLayout","arr");
-    this.addOutput("abutPoint","arr");
+    this.addOutput("startAbutPoint","arr");
+    this.addOutput("endAbutPoint","arr");
   }
   
   AbutPoint.prototype.onExecute = function() {
     const result = AbutPointGen(this.getInputData(0), this.getInputData(1))
-    this.setOutputData(0, result)
+    this.setOutputData(0, result.start)
+    this.setOutputData(0, result.end)
   }
 
   export function AbutModel(){

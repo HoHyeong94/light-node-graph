@@ -11460,7 +11460,14 @@
       let rightOffset = slabLayout[0][4];
       let leftPoint = ToGlobalPoint(masterPoint, {x:leftOffset, y : masterPoint.leftGradient * leftOffset});//OffsetPoint(masterPoint, masterLine, leftOffset);
       let rightPoint = ToGlobalPoint(masterPoint, {x:rightOffset, y : masterPoint.rightGradient * rightOffset});//OffsetPoint(masterPoint, masterLine, rightOffset);
-      return [leftPoint, masterPoint, rightPoint]
+
+      let masterPoint1 = girderLayout.endPoint;
+      let leftOffset1 = slabLayout[slabLayout.length -1][3];
+      let rightOffset1 = slabLayout[slabLayout.length -1][4];
+      let leftPoint1 = ToGlobalPoint(masterPoint, {x:leftOffset1, y : masterPoint1.leftGradient * leftOffset1});//OffsetPoint(masterPoint, masterLine, leftOffset);
+      let rightPoint1 = ToGlobalPoint(masterPoint, {x:rightOffset1, y : masterPoint1.rightGradient * rightOffset1});//OffsetPoint(masterPoint, masterLine, rightOffset);
+
+      return {start : [leftPoint, masterPoint, rightPoint], end : [leftPoint1, masterPoint1, rightPoint1]}
   }
   function AbutModelGen(abutPoints, abutInput, supportData) {
       let model = {}; // for loftModel
@@ -11493,41 +11500,44 @@
           }
       }
       supportList.sort(function (a, b) { return a[0] < b[0] ? -1 : 1; });
-
-      let absZ = abutPoints[0].z;
-      let cos = - abutPoints[0].normalSin;
-      let sin = abutPoints[0].normalCos;
+      let absZ = abutPoints[1].z;
+      let upt0 = [];
+      let lpt0 = [];
+      let upt1 = [];
+      let lpt1 = [];
       for (let i = 0; i < supportList.length; i++) {
           let z1 = supportList[i][1] - supportList[i][2] - supportList[i][3] - absZ;
           let z2 = tempInput.ELsub + tempInput.footHeight - absZ;
-          let modelpts = [[], []];
-          let pts1 = [{ x: 0, y: z2 },
-          { x: 0, y: z1 },
-          { x: tempInput.supportDepth, y: z1 },
-          { x: tempInput.supportDepth, y: z2 }];
-
-          if (i < supportList.length - 1) {
-              let width = (supportList[i][0] + supportList[i + 1][0]) / 2 - abutPoints[0].offset;
-              let nCp = ToGlobalPoint(abutPoints[0], { x: width, y: 0 }); 
-              if (i === 0) {
-                  pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(abutPoints[0], pt)));
-                  pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(nCp, pt)));
-              } else {
-                  let width0 = (supportList[i-1][0] + supportList[i][0]) / 2  - abutPoints[0].offset;
-                  let nCp0 = ToGlobalPoint(abutPoints[0], { x: width0, y: 0 });
-                  pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(nCp0, pt)));
-                  pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(nCp, pt)));
-              }
-
+          let x0 = 0;
+          let x1 = 0;
+          if (i === 0){
+              x0 = abutPoints[0].offset;
+              x1 = (supportList[i][0] + supportList[i + 1][0]) / 2; 
+          }else if (i === supportList.length -1){
+              x0 = (supportList[i-1][0] + supportList[i][0]) / 2;
+              x1 = abutPoints[2].offset;
           } else {
-                  let width0 = (supportList[i-1][0] + supportList[i][0]) / 2  - abutPoints[0].offset;
-                  let nCp0 = ToGlobalPoint(abutPoints[0], { x: width0, y: 0 });
-                  let nCp1 = ToGlobalPoint(abutPoints[0], { x: abutPoints[2].offset - abutPoints[0].offset, y: 0 });
-                  pts1.forEach(pt => modelpts[0].push(ToGlobalPoint3(nCp0, pt)));
-                  pts1.forEach(pt => modelpts[1].push(ToGlobalPoint3(nCp1, pt)));
+              x0 = (supportList[i-1][0] + supportList[i][0]) / 2;
+              x1 = (supportList[i][0] + supportList[i + 1][0]) / 2; 
           }
-          model["part" + i.toFixed(0)] = { "points": modelpts, };
+          let nCp0 = ToGlobalPoint(abutPoints[1], { x: x0, y: 0 }); 
+          let nCp1 = ToGlobalPoint(abutPoints[1], { x: x1, y: 0 });
+          upt0.push(ToGlobalPoint3(nCp0, { x: 0, y: z1 }));
+          upt0.push(ToGlobalPoint3(nCp1, { x: 0, y: z1 }));
+          upt1.push(ToGlobalPoint3(nCp0, { x: tempInput.supportDepth, y: z1 }));
+          upt1.push(ToGlobalPoint3(nCp1, { x: tempInput.supportDepth, y: z1 }));
+          lpt0.push(ToGlobalPoint3(nCp0, { x: 0, y: z2 }));
+          lpt0.push(ToGlobalPoint3(nCp1, { x: 0, y: z2 }));
+          lpt1.push(ToGlobalPoint3(nCp0, { x: tempInput.supportDepth, y: z2 }));
+          lpt1.push(ToGlobalPoint3(nCp1, { x: tempInput.supportDepth, y: z2 }));
       }
+      let ptGroup = [];
+      let ptNum = supportList.length * 2;
+      for (let i = 0; i<ptNum; i+=2){
+          ptGroup.push([i, i+1, ptNum -(i + 2), ptNum -( i+1 )]);
+      }
+      model["wall"] = { "points": [[...upt0, ...lpt0.reverse()],[...upt1, ...lpt1.reverse()]],"ptGroup" : ptGroup };
+
       let points = [];
       model["Start"] = { "points": [], "ptGroup": [] };
       for (let index in abutPoints) {
@@ -11550,12 +11560,13 @@
           ]);
           points[index].forEach(npt => model["Start"]["points"][index].push(ToGlobalPoint3(abutPoints[index], npt)));
       }
-      model["Start"]["ptGroup"] = [[0, 1, 2, 5, 6, 11], [2, 3, 4, 5], [7, 8, 9, 10]]; //11, 12번 노드가 삭제되고 13번 노드의 높이가 바닥으로 내려가야함.
+      model["Start"]["ptGroup"] = [[0, 1, 2, 5, 6, 11], [2, 3, 4, 5], [7, 8, 9, 10]]; 
       //우선 직각인 날개벽을 예시로함
       for (let index of [0, 2]) {
           let nameKey = index === 0 ? "left" : "right";
           let sign = index === 0 ? 1 : -1;
           let pt1 = {};
+
           let pt2 = {};
           // let npt = [];
           let wingPoints = [
@@ -11621,12 +11632,14 @@
   function AbutPoint(){
       this.addInput("girderLayout","girderLayout");
       this.addInput("slabLayout","arr");
-      this.addOutput("abutPoint","arr");
+      this.addOutput("startAbutPoint","arr");
+      this.addOutput("endAbutPoint","arr");
     }
     
     AbutPoint.prototype.onExecute = function() {
       const result = AbutPointGen(this.getInputData(0), this.getInputData(1));
-      this.setOutputData(0, result);
+      this.setOutputData(0, result.start);
+      this.setOutputData(0, result.end);
     };
 
     function AbutModel(){
