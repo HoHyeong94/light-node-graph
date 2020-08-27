@@ -10,7 +10,7 @@ export function AbutPoint(){
   AbutPoint.prototype.onExecute = function() {
     const result = AbutPointGen(this.getInputData(0), this.getInputData(1))
     this.setOutputData(0, result.start)
-    this.setOutputData(0, result.end)
+    this.setOutputData(1, result.end)
   }
 
   export function AbutModel(){

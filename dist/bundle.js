@@ -11465,8 +11465,8 @@
       let masterPoint1 = girderLayout.endPoint;
       let leftOffset1 = slabLayout[slabLayout.length -1][3];
       let rightOffset1 = slabLayout[slabLayout.length -1][4];
-      let leftPoint1 = ToGlobalPoint(masterPoint, {x:leftOffset1, y : masterPoint1.leftGradient * leftOffset1});//OffsetPoint(masterPoint, masterLine, leftOffset);
-      let rightPoint1 = ToGlobalPoint(masterPoint, {x:rightOffset1, y : masterPoint1.rightGradient * rightOffset1});//OffsetPoint(masterPoint, masterLine, rightOffset);
+      let leftPoint1 = ToGlobalPoint(masterPoint1, {x:leftOffset1, y : masterPoint1.leftGradient * leftOffset1});//OffsetPoint(masterPoint, masterLine, leftOffset);
+      let rightPoint1 = ToGlobalPoint(masterPoint1, {x:rightOffset1, y : masterPoint1.rightGradient * rightOffset1});//OffsetPoint(masterPoint, masterLine, rightOffset);
       leftPoint1["offset"] = leftOffset1;
       rightPoint1["offset"] = rightOffset1;
 
@@ -11642,7 +11642,7 @@
     AbutPoint.prototype.onExecute = function() {
       const result = AbutPointGen(this.getInputData(0), this.getInputData(1));
       this.setOutputData(0, result.start);
-      this.setOutputData(0, result.end);
+      this.setOutputData(1, result.end);
     };
 
     function AbutModel(){

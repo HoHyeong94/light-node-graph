@@ -12,8 +12,8 @@ export function AbutPointGen(girderLayout, slabLayout) {
     let masterPoint1 = girderLayout.endPoint
     let leftOffset1 = slabLayout[slabLayout.length -1][3]
     let rightOffset1 = slabLayout[slabLayout.length -1][4]
-    let leftPoint1 = ToGlobalPoint(masterPoint, {x:leftOffset1, y : masterPoint1.leftGradient * leftOffset1})//OffsetPoint(masterPoint, masterLine, leftOffset);
-    let rightPoint1 = ToGlobalPoint(masterPoint, {x:rightOffset1, y : masterPoint1.rightGradient * rightOffset1})//OffsetPoint(masterPoint, masterLine, rightOffset);
+    let leftPoint1 = ToGlobalPoint(masterPoint1, {x:leftOffset1, y : masterPoint1.leftGradient * leftOffset1})//OffsetPoint(masterPoint, masterLine, leftOffset);
+    let rightPoint1 = ToGlobalPoint(masterPoint1, {x:rightOffset1, y : masterPoint1.rightGradient * rightOffset1})//OffsetPoint(masterPoint, masterLine, rightOffset);
     leftPoint1["offset"] = leftOffset1;
     rightPoint1["offset"] = rightOffset1;
 
