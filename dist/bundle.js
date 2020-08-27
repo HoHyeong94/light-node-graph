@@ -11454,15 +11454,15 @@
       this.setOutputData(0, result);
   };
 
-  function AbutPointGen(girderLayout, masterLine, slabLayout) {
+  function AbutPointGen(girderLayout, slabLayout) {
       let masterPoint = girderLayout.startPoint;
       let leftOffset = slabLayout[0][3];
       let rightOffset = slabLayout[0][4];
-      let leftPoint = OffsetPoint(masterPoint, masterLine, leftOffset);
-      let rightPoint = OffsetPoint(masterPoint, masterLine, rightOffset);
+      let leftPoint = ToGlobalPoint(masterPoint, {x:leftOffset, y : masterPoint.leftGradient * leftOffset});//OffsetPoint(masterPoint, masterLine, leftOffset);
+      let rightPoint = ToGlobalPoint(masterPoint, {x:rightOffset, y : masterPoint.rightGradient * rightOffset});//OffsetPoint(masterPoint, masterLine, rightOffset);
       return [leftPoint, masterPoint, rightPoint]
   }
-  function AbutModelGen(abutPoints, abutInput, sectionPointDict, supportData) {
+  function AbutModelGen(abutPoints, abutInput, supportData) {
       let model = {}; // for loftModel
       const tempInput = {
           backWallThick: 800,
@@ -11528,7 +11528,6 @@
           }
           model["part" + i.toFixed(0)] = { "points": modelpts, };
       }
-      let abutHeight = 5000; // 추후에는 삭제해야 할듯함.
       let points = [];
       model["Start"] = { "points": [], "ptGroup": [] };
       for (let index in abutPoints) {
@@ -11545,13 +11544,13 @@
           { x: -tempInput.backWallThick + tempInput.backHaunchThick - tempInput.footLengthB, y: -totalH },
           { x: tempInput.supportDepth + tempInput.footLengthf, y: -totalH },
           { x: tempInput.supportDepth + tempInput.footLengthf, y: -totalH + tempInput.footHeight },
-          { x: tempInput.supportDepth, y: -totalH + tempInput.footHeight },
-          { x: tempInput.supportDepth, y: -totalH + tempInput.backHaunchHeight + abutHeight },
-          { x: 0, y: -totalH + tempInput.backHaunchHeight + abutHeight },
+          // { x: tempInput.supportDepth, y: -totalH + tempInput.footHeight },
+          // { x: tempInput.supportDepth, y: -totalH + tempInput.backHaunchHeight + abutHeight },
+          { x: 0, y: -totalH + tempInput.footHeight }, //+ tempInput.backHaunchHeight + abutHeight },
           ]);
           points[index].forEach(npt => model["Start"]["points"][index].push(ToGlobalPoint3(abutPoints[index], npt)));
       }
-      model["Start"]["ptGroup"] = [[0, 1, 2, 13], [2, 3, 4, 5, 13], [5, 6, 13], [6, 11, 12, 13], [7, 8, 9, 10]]; //11, 12번 노드가 삭제되고 13번 노드의 높이가 바닥으로 내려가야함.
+      model["Start"]["ptGroup"] = [[0, 1, 2, 5, 6, 11], [2, 3, 4, 5], [7, 8, 9, 10]]; //11, 12번 노드가 삭제되고 13번 노드의 높이가 바닥으로 내려가야함.
       //우선 직각인 날개벽을 예시로함
       for (let index of [0, 2]) {
           let nameKey = index === 0 ? "left" : "right";
@@ -11621,26 +11620,24 @@
 
   function AbutPoint(){
       this.addInput("girderLayout","girderLayout");
-      this.addInput("masterLine","line");
       this.addInput("slabLayout","arr");
       this.addOutput("abutPoint","arr");
     }
     
     AbutPoint.prototype.onExecute = function() {
-      const result = AbutPointGen(this.getInputData(0), this.getInputData(1), this.getInputData(2));
+      const result = AbutPointGen(this.getInputData(0), this.getInputData(1));
       this.setOutputData(0, result);
     };
 
     function AbutModel(){
       this.addInput("abutPoint","arr");
       this.addInput("abutInput","abutInput");
-      this.addInput("sectionPointDict","sectionPointDict");
       this.addInput("supportData","supportData");
       this.addOutput("model","model");
     }
     
     AbutModel.prototype.onExecute = function() {
-      const result = AbutModelGen(this.getInputData(0), this.getInputData(1), this.getInputData(2),this.getInputData(3));
+      const result = AbutModelGen(this.getInputData(0), this.getInputData(1), this.getInputData(2));
       this.setOutputData(0, result);
     };
 
