@@ -8,6 +8,7 @@ export function AbutPointGen(girderLayout, slabLayout) {
     let leftPoint = ToGlobalPoint(masterPoint, {x:leftOffset, y : masterPoint.leftGradient * leftOffset})//OffsetPoint(masterPoint, masterLine, leftOffset);
     let rightPoint = ToGlobalPoint(masterPoint, {x:rightOffset, y : masterPoint.rightGradient * rightOffset})//OffsetPoint(masterPoint, masterLine, rightOffset);
     leftPoint["offset"] = leftOffset;
+    masterPoint["offset"] = 0;
     rightPoint["offset"] = rightOffset;
     let masterPoint1 = girderLayout.endPoint
     let leftOffset1 = slabLayout[slabLayout.length -1][3]
@@ -15,6 +16,7 @@ export function AbutPointGen(girderLayout, slabLayout) {
     let leftPoint1 = ToGlobalPoint(masterPoint1, {x:leftOffset1, y : masterPoint1.leftGradient * leftOffset1})//OffsetPoint(masterPoint, masterLine, leftOffset);
     let rightPoint1 = ToGlobalPoint(masterPoint1, {x:rightOffset1, y : masterPoint1.rightGradient * rightOffset1})//OffsetPoint(masterPoint, masterLine, rightOffset);
     leftPoint1["offset"] = leftOffset1;
+    masterPoint1["offset"] = 0;
     rightPoint1["offset"] = rightOffset1;
 
     return {start : [leftPoint, masterPoint, rightPoint], end : [leftPoint1, masterPoint1, rightPoint1]}
@@ -82,8 +84,8 @@ export function AbutModelGen(abutPoints, abutInput, supportData) {
         lpt1.push(ToGlobalPoint3(nCp1, { x: tempInput.supportDepth, y: z2 }))
     }
     let ptGroup = []
-    let ptNum = supportList.length * 2
-    for (let i = 0; i<ptNum; i+=2){
+    let ptNum = supportList.length * 4
+    for (let i = 0; i<ptNum/2; i+=2){
         ptGroup.push([i, i+1, ptNum -(i + 2), ptNum -( i+1 )])
     }
     model["wall"] = { "points": [[...upt0, ...lpt0.reverse()],[...upt1, ...lpt1.reverse()]],"ptGroup" : ptGroup }
@@ -131,7 +133,7 @@ export function AbutModelGen(abutPoints, abutInput, supportData) {
         let sin = abutPoints[index].normalSin;
         let dx = sign * tempInput.wingWallThick * cos;
         let dy = sign * tempInput.wingWallThick * sin;
-        let dz = sign * tempInput.wingWallThick * abutPoints[index].gradientY;
+        let dz = sign * tempInput.wingWallThick * (abutPoints[index].z - abutPoints[0].z)/abutPoints[index].offset;
         // console.log(wingPoints, wingPt1)
         let wingPt2 = [{ x: wingPt1[0].x + dx, y: wingPt1[0].y + dy, z: wingPt1[0].z + dz },
         { x: wingPt1[1].x + dx, y: wingPt1[1].y + dy, z: wingPt1[1].z },
