@@ -11460,12 +11460,15 @@
       let rightOffset = slabLayout[0][4];
       let leftPoint = ToGlobalPoint(masterPoint, {x:leftOffset, y : masterPoint.leftGradient * leftOffset});//OffsetPoint(masterPoint, masterLine, leftOffset);
       let rightPoint = ToGlobalPoint(masterPoint, {x:rightOffset, y : masterPoint.rightGradient * rightOffset});//OffsetPoint(masterPoint, masterLine, rightOffset);
-
+      leftPoint["offset"] = leftOffset;
+      rightPoint["offset"] = rightOffset;
       let masterPoint1 = girderLayout.endPoint;
       let leftOffset1 = slabLayout[slabLayout.length -1][3];
       let rightOffset1 = slabLayout[slabLayout.length -1][4];
       let leftPoint1 = ToGlobalPoint(masterPoint, {x:leftOffset1, y : masterPoint1.leftGradient * leftOffset1});//OffsetPoint(masterPoint, masterLine, leftOffset);
       let rightPoint1 = ToGlobalPoint(masterPoint, {x:rightOffset1, y : masterPoint1.rightGradient * rightOffset1});//OffsetPoint(masterPoint, masterLine, rightOffset);
+      leftPoint1["offset"] = leftOffset1;
+      rightPoint1["offset"] = rightOffset1;
 
       return {start : [leftPoint, masterPoint, rightPoint], end : [leftPoint1, masterPoint1, rightPoint1]}
   }
