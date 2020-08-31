@@ -53,10 +53,10 @@ export function AbutModelGen(abutPoints, abutInput, supportData) {
     };
 
 
-    let pedestal = [{x : 0,y: 0}, {x : tempInput.pdestalHeight, Y:0}, {x : tempInput.pdestalHeight, Y:tempInput.pedestaldepth},
-        {x : tempInput.pedestalblockOut, Y:tempInput.pedestaldepth}, 
-        {x : tempInput.pedestalblockOut, Y:tempInput.pedestaldepth - tempInput.pedestalblockOut},
-        {x : 0, Y:tempInput.pedestaldepth - tempInput.pedestalblockOut},];
+    let pedestal = [{x : 0,y: 0}, {x : tempInput.pedestalHeight, y:0}, {x : tempInput.pedestalHeight, y:tempInput.pedestaldepth},
+        {x : tempInput.pedestalblockOut, y:tempInput.pedestaldepth}, 
+        {x : tempInput.pedestalblockOut, y:tempInput.pedestaldepth - tempInput.pedestalblockOut},
+        {x : 0, y:tempInput.pedestaldepth - tempInput.pedestalblockOut},];
 
     
     let supportList = [];
