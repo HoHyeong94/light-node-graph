@@ -23,7 +23,7 @@ export function AbutPointGen(girderLayout, slabLayout) {
     return {start : [leftPoint, masterPoint, rightPoint], end : [leftPoint1, masterPoint1, rightPoint1]}
 }
 export function AbutModelGen(abutPoints, abutInput, supportData) {
-    let part = {}
+    let part = {"start" : {}}
     let model = {}; // for loftModel
     const tempInput = {
         backWallThick: 800,
@@ -66,12 +66,12 @@ export function AbutModelGen(abutPoints, abutInput, supportData) {
         }
     }
     let absZ = abutPoints[1].z;
-    
+
     supportList.sort(function (a, b) { return a[0] < b[0] ? -1 : 1; });
     for (let i = 0; i < supportList.length; i++) {
         let z1 = supportList[i][1] - supportList[i][2] - supportList[i][3] - absZ
         let cp = ToGlobalPoint(abutPoints[1], { x: supportList[i][0], y: z1 }) 
-        part["pedestal" + i.toFixed(0)] = hPlateGen(pedestal, cp, tempInput.pedestalWidth, - tempInput.pedestalWidth/2,90, Math.PI/2, Math.PI/2,null,null,null)
+        part["start"]["pedestal" + i.toFixed(0)] = hPlateGen(pedestal, cp, tempInput.pedestalWidth, - tempInput.pedestalWidth/2,90, Math.PI/2, Math.PI/2,null,null,null)
     }
     
     
