@@ -1,5 +1,6 @@
 import { ToGlobalPoint, ToGlobalPoint3, DividingPoint } from "../geometryModule"
 import { OffsetPoint } from "../line/module"
+import { hPlateGen } from "../stiffner/module"
 
 export function AbutPointGen(girderLayout, slabLayout) {
     let masterPoint = girderLayout.startPoint
@@ -22,6 +23,7 @@ export function AbutPointGen(girderLayout, slabLayout) {
     return {start : [leftPoint, masterPoint, rightPoint], end : [leftPoint1, masterPoint1, rightPoint1]}
 }
 export function AbutModelGen(abutPoints, abutInput, supportData) {
+    let part = {}
     let model = {}; // for loftModel
     const tempInput = {
         backWallThick: 800,
@@ -44,15 +46,35 @@ export function AbutModelGen(abutPoints, abutInput, supportData) {
         wingL1: 2600,
         wingGradient: 0.02,
         wingHaunch: 300,
+        pedestalWidth : 1200,
+        pedestaldepth : 120,
+        pedestalHeight : 1200,
+        pedestalblockOut : 50,
     };
+
+
+    let pedestal = [{x : 0,y: 0}, {x : tempInput.pdestalHeight, Y:0}, {x : tempInput.pdestalHeight, Y:tempInput.pedestaldepth},
+        {x : tempInput.pedestalblockOut, Y:tempInput.pedestaldepth}, 
+        {x : tempInput.pedestalblockOut, Y:tempInput.pedestaldepth - tempInput.pedestalblockOut},
+        {x : 0, Y:tempInput.pedestaldepth - tempInput.pedestalblockOut},];
+
+    
     let supportList = [];
     for (let key in supportData) {
         if (supportData[key].basePointName.substr(2, 2) === "S1") {
             supportList.push([supportData[key].point.offset, supportData[key].point.z, supportData[key].solePlateThck, 400]);
         }
     }
-    supportList.sort(function (a, b) { return a[0] < b[0] ? -1 : 1; });
     let absZ = abutPoints[1].z;
+    
+    supportList.sort(function (a, b) { return a[0] < b[0] ? -1 : 1; });
+    for (let i = 0; i < supportList.length; i++) {
+        let z1 = supportList[i][1] - supportList[i][2] - supportList[i][3] - absZ
+        let cp = ToGlobalPoint(abutPoints[1], { x: supportList[i][0], y: z1 }) 
+        part["pedestal" + i.toFixed(0)] = hPlateGen(pedestal, cp, tempInput.pedestalWidth, - tempInput.pedestalWidth/2,90, Math.PI/2, Math.PI/2,null,null,null)
+    }
+    
+    
     let upt0 = []
     let lpt0 = []
     let upt1 = []
@@ -178,5 +200,5 @@ export function AbutModelGen(abutPoints, abutInput, supportData) {
         model[nameKey + "WingH2"] = { "points": HPt2, }
     }
 
-    return model
+    return {model, part}
 }
