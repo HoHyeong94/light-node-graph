@@ -1456,8 +1456,8 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   // webPoint => lweb + rweb  inner 4points(bl, tl, br, tr)
   // dia6에서 가져옴 200811
   let result = {}
-  let isLeft = true;
-  let sign = isLeft ? 1 : -1;
+  // let isLeft = true;
+  let sign = diaSection.isLeft ? 1 : -1;
   let dsi = diaSection
   // dsi = {
   //   "webThickness": 16,
