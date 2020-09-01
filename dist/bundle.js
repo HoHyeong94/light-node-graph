@@ -5171,7 +5171,7 @@
     // dia6에서 가져옴 200811
     let result = {};
     // let isLeft = true;
-    let sign = diaSection.isLeft ? 1 : -1;
+    let sign = diaSection.holeCenterOffset <0 ? 1 : -1;
     let dsi = diaSection;
     // dsi = {
     //   "webThickness": 16,
