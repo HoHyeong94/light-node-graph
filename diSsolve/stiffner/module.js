@@ -1458,58 +1458,35 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   let result = {}
   let isLeft = true;
   let sign = isLeft ? 1 : -1;
-  let dsi = {
-    webThickness: diaSection.plateThickness,
-    hstiffWidth: diaSection.hStiffWidth,
-    hstiffWidth2: diaSection.vStiffWidth,
-    hstiffThickness: diaSection.hStiffThickness,
-    hstiffHeight: diaSection.hStiffBottomOffset,
-    scallopRadius: diaSection.scallopRadius,
-    ribHoleD: 42,
-    ribHoleR: 25,
-    holeBottomY: diaSection.holeBottomOffset, //y축은 중앙이 기준
-    holeCenterOffset: sign * diaSection.holeRightOffset - sign * diaSection.holeWidth / 2,
-    holeWidth: sign * diaSection.holeWidth,
-    holeHeight: diaSection.holeHeight,
-    holeFilletR: diaSection.holeFilletR,
-    holeStiffThickness: diaSection.holeVstiffnerThickness,
-    holeStiffhl: diaSection.holeHstiffnerLength,
-    holeStiffvl: diaSection.holeVstiffnerLength,
-    holeStiffmargin: diaSection.holeStiffSpacing,
-    holeStiffHeight: diaSection.holeVstiffnerhight,
-    supportStiffLayout: diaSection.vStiffLayout,
-    supportStiffWidth: diaSection.vStiffWidth,
-    supportStiffThickness: diaSection.vStiffThickness,
-  } //  임시 입력변수
+  let dsi = diaSection
+  // dsi = {
+  //   "webThickness": 16,
+  //   "hstiffWidth": 300,
+  //   "hstiffWidth2": 160,
+  //   "hstiffThickness": 12,
+  //   "hstiffHeight": 304,
+  //   "scallopRadius": 35,
+  //   "ribHoleD": 42,
+  //   "ribHoleR": 25,
+  //   "holeBottomY": 520, 
+  //   "holeCenterOffset": -500,
+  //   "holeWidth": 450,
+  //   "holeHeight": 1000,
+  //   "holeFilletR": 100,
+  //   "holeStiffThickness": 10,
+  //   "holeStiffhl": 600,
+  //   "holeStiffvl": 1160,
+  //   "holeStiffmargin": 20,
+  //   "holeStiffHeight": 100,
+  //   "supportStiffLayout": [-150,150],
+  //   "supportStiffWidth": 160,
+  //   "supportStiffThickness": 16,
+  //   "topPlateWidth" : 380,
+  //   "topPlateThickness" : 10
+  // } 
 
-  // const plateThickness = diaSection.plateThickness;
-  // const holeBottomOffset = diaSection.holeBottomOffset;
-  // const holeCenterOffset = diaSection.holeRightOffset - diaSection.holeWidth / 2;
-  // const holeFilletR = diaSection.holeFilletR;
-  // const holeHeight = diaSection.holeHeight;
-  // const holeWidth = diaSection.holeWidth;
-  // const vStiffThickness = diaSection.vStiffThickness;
-  // const vStiffWidth = diaSection.vStiffWidth;
-  // const vStiffLayout = diaSection.vStiffLayout;
-  const topPlateWidth = diaSection.topPlateWidth;
-  const topPlateThickness = diaSection.topPlateThickness;
-
-  // const hStiffThickness = diaSection.hStiffThickness
-  // const hStiffWidth = diaSection.hStiffWidth
-  // const hStiffBottomOffset = diaSection.hStiffBottomOffset
-  // let longiRibHeight = diaSection.longiRibHeight;
-  // let longiRibRayout = diaSection.longiRibRayout;
-  // const holeVstiffnerThickness = diaSection.holeVstiffnerThickness
-  // const holeVstiffnerhight = diaSection.holeVstiffnerhight
-  // const holeVstiffnerLength = diaSection.holeVstiffnerLength
-  // const holeHstiffnerThickness = diaSection.holeHstiffnerThickness
-  // const holeStiffHeight = diaSection.holeHstiffnerHeight
-  // const holeStiffhl = diaSection.holeHstiffnerLength
-  // const holeStiffmargin = diaSection.holeStiffSpacing
-  // // added letiables
-  // let scallopRadius = diaSection.scallopRadius;
-
-
+  const holeWidth = sign * dsi.holeWidth
+  
   const bl = webPoints[0];
   const tl = webPoints[1];
   const br = webPoints[2];
@@ -1520,7 +1497,7 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   const cosec = Math.abs(1 / Math.sin(skew * Math.PI / 180));
   const cot = Math.abs(1 / Math.tan(skew * Math.PI / 180));
   const ang90 = Math.PI / 2
-
+  
   let urib2 = urib
   urib2.ribHoleD = dsi.ribHoleD
   urib2.ribHoleR = dsi.ribHoleR
@@ -1529,8 +1506,8 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   lrib2.ribHoleR = dsi.ribHoleR
   lrib.type = 1; //하부리브 스캘럽
  //사다리꼴 모양의 윗변이 아랫변보다 항상 100이 더 크게 설정함. 향후 비율에 따라 수정이 필요
-  let holeRect = [{ x: dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY }, { x: -dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY },
-  { x: -dsi.holeWidth / 2 + dsi.holeCenterOffset - sign * 100, y: bl.y + dsi.holeBottomY + dsi.holeHeight }, { x: dsi.holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight }];
+  let holeRect = [{ x: holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY }, { x: -holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY },
+  { x: -holeWidth / 2 + dsi.holeCenterOffset - sign * 100, y: bl.y + dsi.holeBottomY + dsi.holeHeight }, { x: holeWidth / 2 + dsi.holeCenterOffset, y: bl.y + dsi.holeBottomY + dsi.holeHeight }];
   let holePoints = [];
   holePoints.push(...Fillet2D(holeRect[0], holeRect[1], holeRect[2], dsi.holeFilletR, 4));
   holePoints.push(...Fillet2D(holeRect[1], holeRect[2], holeRect[3], dsi.holeFilletR, 4));
@@ -1554,7 +1531,7 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   // { x: dsi.holeCenterOffset + sign * dsi.holeStiffhl / 2, y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin },
   // { x: dsi.holeCenterOffset - sign * (dsi.holeStiffhl / 2 + 100), y: bl.y + dsi.holeBottomY + dsi.holeHeight + dsi.holeStiffmargin }]
   result["hstiff2"] = hPlateGenV2(hstiff2, point, holeCenter2, dsi.holeStiffThickness, 0, point.skew, 0, 0, ang90, ang90, true, [1, 2])
-  let holeCenter3 = { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign * (100 / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  let holeCenter3 = { x: dsi.holeCenterOffset - holeWidth / 2 - sign * (100 / 2 + dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
   let vstiff1 = [{ x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 }, { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 },
   { x: dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }, { x: -dsi.holeStiffvl / 2, y: -dsi.webThickness / 2 - dsi.holeStiffHeight }];
   let vStiffRad = Math.atan(sign * dsi.holeHeight / 100)
@@ -1564,16 +1541,16 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   // let x2 = 0;
   // let y1 = dsi.holeStiffvl / 2;
   // let y2 = - dsi.holeStiffvl / 2;
-  // let vstiff2D1 = [{ x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x1 * vcos - y1 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x1 * vsin + y1 * vcos },
-  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign * ( 100/2 + dsi.holeStiffmargin) + x1 * vcos - y2 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x1 * vsin + y2 * vcos },
-  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x2 * vcos - y2 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x2 * vsin + y2 * vcos },
-  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x2 * vcos - y1 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x2 * vsin + y1 * vcos }]
+  // let vstiff2D1 = [{ x: dsi.holeCenterOffset - holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x1 * vcos - y1 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x1 * vsin + y1 * vcos },
+  // { x: dsi.holeCenterOffset - holeWidth / 2 - sign * ( 100/2 + dsi.holeStiffmargin) + x1 * vcos - y2 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x1 * vsin + y2 * vcos },
+  // { x: dsi.holeCenterOffset - holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x2 * vcos - y2 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x2 * vsin + y2 * vcos },
+  // { x: dsi.holeCenterOffset - holeWidth / 2 - sign* ( 100/2 + dsi.holeStiffmargin) + x2 * vcos - y1 * vsin, y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + x2 * vsin + y1 * vcos }]
   result["vstiff1"] = hPlateGenV2(vstiff1, point, holeCenter3, dsi.holeStiffThickness, 0, point.skew, 0, vStiffRad, ang90, ang90, true, [1, 2])
-  let holeCenter4 = { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
-  // let vstiff2D2 = [{ x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
-  // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
-  // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
-  // { x: dsi.holeCenterOffset + dsi.holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
+  let holeCenter4 = { x: dsi.holeCenterOffset + holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 }
+  // let vstiff2D2 = [{ x: dsi.holeCenterOffset + holeWidth / 2 + sign * (dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset + holeWidth / 2 + sign * (dsi.holeStiffmargin + dsi.holeStiffThickness), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset + holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2 },
+  // { x: dsi.holeCenterOffset + holeWidth / 2 + sign * (dsi.holeStiffmargin), y: bl.y + dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 }]
   result["vstiff2"] = hPlateGenV2(vstiff1, point, holeCenter4, dsi.holeStiffThickness, 0, point.skew, 0, Math.PI / 2, ang90, ang90, true, null)
 
 
@@ -1595,11 +1572,11 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
 
   let hStiffCenter = { x: 0, y: bl.y + dsi.hstiffHeight };
   // let h1 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.hstiffWidth - dsi.webThickness / 2 },
-  //    { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
-  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: - dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.webThickness / 2 }];
+  //    { x: dsi.holeCenterOffset - holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: -dsi.holeStiffHeight - dsi.webThickness / 2 },
+  // { x: dsi.holeCenterOffset - holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: - dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: - dsi.webThickness / 2 }];
   // result["h1"] = hPlateGen(h1, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, 0, point.skew, 0, 0);
-  // let h11 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.hstiffWidth + dsi.webThickness / 2 }, { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.holeStiffHeight + dsi.webThickness / 2 },
-  // { x: dsi.holeCenterOffset - dsi.holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.webThickness / 2 }];
+  // let h11 = [{ x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.hstiffWidth + dsi.webThickness / 2 }, { x: dsi.holeCenterOffset - holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.holeStiffHeight + dsi.webThickness / 2 },
+  // { x: dsi.holeCenterOffset - holeWidth / 2 - dsi.holeStiffmargin - dsi.holeStiffThickness, y: dsi.webThickness / 2 }, { x: bl.x + lwCot * dsi.hstiffHeight, y: dsi.webThickness / 2 }];
   // result["h11"] = hPlateGen(h11, ToGlobalPoint(point, hStiffCenter), dsi.hstiffThickness, 0, point.skew, 0, 0);
 
   let w0 = dsi.webThickness / 2;
@@ -1610,8 +1587,8 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   let hx = [[bl.x + lwCot * dsi.hstiffHeight, w2], [br.x + rwCot * dsi.hstiffHeight, w2]];
   if (dsi.hstiffHeight < dsi.holeBottomY + dsi.holeHeight / 2 + dsi.holeStiffvl / 2 && dsi.hstiffHeight > dsi.holeBottomY + dsi.holeHeight / 2 - dsi.holeStiffvl / 2) {
     let dx = (dsi.hstiffHeight - dsi.holeBottomY) / dsi.holeHeight * 100
-    hx.push([dsi.holeCenterOffset - dsi.holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness + dx), w1],
-      [dsi.holeCenterOffset + dsi.holeWidth / 2 + sign *(dsi.holeStiffmargin + dsi.holeStiffThickness), w1])
+    hx.push([dsi.holeCenterOffset - holeWidth / 2 - sign*(dsi.holeStiffmargin + dsi.holeStiffThickness + dx), w1],
+      [dsi.holeCenterOffset + holeWidth / 2 + sign *(dsi.holeStiffmargin + dsi.holeStiffThickness), w1])
   }
   for (let i in dsi.supportStiffLayout) {
     hx.push([dsi.supportStiffLayout[i] - dsi.supportStiffThickness / 2, w3]);
@@ -1655,15 +1632,15 @@ export function boxDiaHole1(webPoints, point, skew, uflange, urib, lrib, diaSect
   if (uflange[0].length > 0) {
     // let topPlate2D = PlateRestPoint(uflange[0][1], uflange[1][1], gtan, gtan, topPlateThickness);
     let topPlate = [
-      { x: uflange[0][1].x, y: topPlateWidth / 2 },
-      { x: uflange[0][1].x, y: - topPlateWidth / 2 },
-      { x: uflange[1][1].x, y: - topPlateWidth / 2 },
-      { x: uflange[1][1].x, y: topPlateWidth / 2 },
+      { x: uflange[0][1].x, y: dsi.topPlateWidth / 2 },
+      { x: uflange[0][1].x, y: - dsi.topPlateWidth / 2 },
+      { x: uflange[1][1].x, y: - dsi.topPlateWidth / 2 },
+      { x: uflange[1][1].x, y: dsi.topPlateWidth / 2 },
     ]
     // let cp = ToGlobalPoint(point, { x: 0, y: tl.y - tl.x * gradient })
     let cp2 = { x: 0, y: tl.y - tl.x * gradient }
     const ang90 = Math.PI / 2
-    result['topPlate'] = hPlateGenV2(topPlate, point, cp2, topPlateThickness, 0, skew, 0, -gradRadian, ang90, ang90, true, [0, 1])
+    result['topPlate'] = hPlateGenV2(topPlate, point, cp2, dsi.topPlateThickness, 0, skew, 0, -gradRadian, ang90, ang90, true, [0, 1])
   }
   return result
 }
