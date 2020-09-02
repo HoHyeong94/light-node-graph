@@ -10010,7 +10010,6 @@
 
       if (sa.isClosedTop === false) {
           let hb = sa.horizontal_bracing;
-          console.log(hb);
           let bracing_length = Math.Sqrt(hb.d0 ** 2 + sa.B2 ** 2);
           //tr = material.Steel.elast / material.Steel.shear_elast * .lamda * .B2 / (bracing_length ^ 3 / .horizontal_bracing.Area + 2 / 3 * .B2 / (.b_2 * .t2))
           let tr = materials[2][1] / materials[2][2] * hb.d0 * sa.B2 / (bracing_length ** 3 / hb.dbArea + 2 / 3 * sa.B2 / (sa.wuf * sa.tuf)); //<--- 임시로 작성
@@ -10300,7 +10299,6 @@
               let key = girderStation[i][j].key;
               let sa = sectionPointDict[key].forward.input;
               let sa2 = sectionPointDict[key].backward.input;
-              console.log(key, sa,sa2);
               sectionPropDict[key] = { forward: {}, backward: {} };
               sectionPropDict[key].forward = DCBsection(sa, materials);
               sectionPropDict[key].backward = DCBsection(sa2, materials);
