@@ -170,6 +170,7 @@ export function DCBsection(sa, materials) {
 
     if (sa.isClosedTop === false) {
         let hb = sa.horizontal_bracingbracing
+        console.log(hb)
         let bracing_length = Math.Sqrt(hb.d0 ** 2 + sa.B2 ** 2)
         //tr = material.Steel.elast / material.Steel.shear_elast * .lamda * .B2 / (bracing_length ^ 3 / .horizontal_bracing.Area + 2 / 3 * .B2 / (.b_2 * .t2))
         let tr = materials[2][1] / materials[2][2] * hb.d0 * sa.B2 / (bracing_length ** 3 / hb.dbArea + 2 / 3 * sa.B2 / (sa.wuf * sa.tuf)) //<--- 임시로 작성
