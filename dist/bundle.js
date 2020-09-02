@@ -2348,6 +2348,7 @@
           forward.lRibH = lRib[0][3];
           let layout = lRib[0][4].split(',');
           layout.forEach(elem => forward.lRibLO.push(elem.trim()*1));
+          console.log(forward.lRibLO);
           // forward.lRibLO = layout
       }
       lRib = girderBaseInfo.lRib.filter(function (element) {
@@ -2358,7 +2359,7 @@
           backward.lRibH = lRib[0][3];
           let layout = lRib[0][4].split(',');
           layout.forEach(elem => forward.lRibLO.push(elem.trim()*1));
-          backward.lRibLO = layout;
+          // backward.lRibLO = layout
       }
 
       return { forward, backward }
