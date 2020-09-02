@@ -2463,12 +2463,12 @@
               
               if (centerLineStations[i].key === "CRK0"){
                   let gridName = "G" + (j * 1 + 1) + "K1";
-                  lw = UflangePoint(pointDict[gridName], pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+                  lw = UflangePoint(pointDict[gridName], pointDict, girderBaseInfo, slabInfo, slabLayout);
               } else if (centerLineStations[i].key === "CRK7"){
                   let dummyPoint = LineMatch2(pointDict["CRK6"], masterLine, girderLine);
-                  lw = UflangePoint(dummyPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+                  lw = UflangePoint(dummyPoint, pointDict, girderBaseInfo, slabInfo, slabLayout);
               } else {
-                  lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
+                  lw = UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout);
               }
               lw.forEach(elem => glw.push({ x: elem.x + girderPoint.offset, y: elem.y + girderPoint.z }));
               //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
