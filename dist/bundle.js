@@ -2336,7 +2336,7 @@
           backward.uRibThk = uRib[0][2];
           backward.uRibH = uRib[0][3];
           let layout = uRib[0][4].split(',');
-          layout.forEach(elem => forward.uRibLO.push(elem.trim()*1));
+          layout.forEach(elem => backward.uRibLO.push(elem.trim()*1));
           // backward.uRibLO = layout
       }
 
@@ -2358,7 +2358,7 @@
           backward.lRibThk = lRib[0][2];
           backward.lRibH = lRib[0][3];
           let layout = lRib[0][4].split(',');
-          layout.forEach(elem => forward.lRibLO.push(elem.trim()*1));
+          layout.forEach(elem => backward.lRibLO.push(elem.trim()*1));
           // backward.lRibLO = layout
       }
 
