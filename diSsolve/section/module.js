@@ -347,7 +347,8 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     if (uRib.length > 0) {
         forward.uRibThk = uRib[0][2]
         forward.uRibH = uRib[0][3]
-        forward.uRibLO = uRib[0][4]
+        let layout = uRib[0][4].split(',')
+        layout.forEach(elem => forward.uRibLO.push(elem.trim()*1))
     }
     uRib = girderBaseInfo.uRib.filter(function (element) {
         return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
@@ -355,7 +356,9 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     if (uRib.length > 0) {
         backward.uRibThk = uRib[0][2]
         backward.uRibH = uRib[0][3]
-        backward.uRibLO = uRib[0][4]
+        let layout = uRib[0][4].split(',')
+        layout.forEach(elem => forward.uRibLO.push(elem.trim()*1))
+        // backward.uRibLO = layout
     }
 
     var lRib = girderBaseInfo.lRib.filter(function (element) {
@@ -364,7 +367,9 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     if (lRib.length > 0) {
         forward.lRibThk = lRib[0][2]
         forward.lRibH = lRib[0][3]
-        forward.lRibLO = lRib[0][4]
+        let layout = lRib[0][4].split(',')
+        layout.forEach(elem => forward.lRibLO.push(elem.trim()*1))
+        // forward.lRibLO = layout
     }
     lRib = girderBaseInfo.lRib.filter(function (element) {
         return (station > pointDict[element[0]].masterStationNumber && station <= pointDict[element[1]].masterStationNumber)
@@ -372,7 +377,9 @@ export function PointSectionInfo(station, skew, girderBaseInfo, slabLayout, poin
     if (lRib.length > 0) {
         backward.lRibThk = lRib[0][2]
         backward.lRibH = lRib[0][3]
-        backward.lRibLO = lRib[0][4]
+        let layout = lRib[0][4].split(',')
+        layout.forEach(elem => forward.lRibLO.push(elem.trim()*1))
+        // backward.lRibLO = layout
     }
 
     return { forward, backward }
