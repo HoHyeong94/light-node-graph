@@ -460,6 +460,7 @@ export function AllSectionGenerator(girderStation, sectionPointDict, materials, 
             let key = girderStation[i][j].key
             let sa = sectionPointDict[key].forward.input
             let sa2 = sectionPointDict[key].backward.input
+            console.log(key, sa,sa2)
             sectionPropDict[key] = { forward: {}, backward: {} }
             sectionPropDict[key].forward = DCBsection(sa, materials)
             sectionPropDict[key].backward = DCBsection(sa2, materials)
