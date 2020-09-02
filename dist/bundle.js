@@ -4123,9 +4123,9 @@
     for (let i in layout) {
       let newPoint = ToGlobalPoint2(point, { x: 0, y: layout[i] });
       result["left1" + i] = vPlateGen(leftPoints, newPoint, thickness, [], 15, null, null, [], [3, 0], [1, 2, 4, 0]);
-      result["left2" + i] = vPlateGen(leftPoints2, newPoint, thickness, [], 15, null, null, [], [3, 0], null);
+      // result["left2" + i] = vPlateGen(leftPoints2, newPoint, thickness, [], 15, null, null, [], [3, 0], null)
       result["right1" + i] = vPlateGen(rightPoints, newPoint, thickness, [], 15, null, null, [], [3, 0], null);
-      result["right2" + i] = vPlateGen(rightPoints2, newPoint, thickness, [], 15, null, null, [], [3, 0], null);
+      // result["right2" + i] = vPlateGen(rightPoints2, newPoint, thickness, [], 15, null, null, [], [3, 0], null)
     }
     return result
   }
