@@ -1995,11 +1995,14 @@
               let girderIndex = k.substr(1, 1) - 1;
               let baseInput = {};
               let station = point.masterStationNumber;
-              let isFlat = girderBaseInfo[girderIndex].section.isFlat;
+              // let isFlat = girderBaseInfo[girderIndex].section.isFlat;
+              let isFlat = girderBaseInfo.section.isFlat;
               let gradient = isFlat ? 0 : point.gradientY;
               let skew = point.skew;
-              let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
-              let sectionInfo = girderBaseInfo[girderIndex].section;
+              // let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
+              let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict);
+              // let sectionInfo = girderBaseInfo[girderIndex].section;
+              let sectionInfo = girderBaseInfo.section;
 
               const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
               //   const height = pointSectionInfo.forward.height + centerThickness;
