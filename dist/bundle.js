@@ -10009,7 +10009,7 @@
       //비틀림 강성 계산을 위한 수평브레이싱 등가 두께 계산
 
       if (sa.isClosedTop === false) {
-          let hb = sa.horizontal_bracingbracing;
+          let hb = sa.horizontal_bracing;
           console.log(hb);
           let bracing_length = Math.Sqrt(hb.d0 ** 2 + sa.B2 ** 2);
           //tr = material.Steel.elast / material.Steel.shear_elast * .lamda * .B2 / (bracing_length ^ 3 / .horizontal_bracing.Area + 2 / 3 * .B2 / (.b_2 * .t2))
