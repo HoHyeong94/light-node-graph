@@ -4069,7 +4069,9 @@
   function jackup0(webPoints, point, jackupData) {
     //ds 입력변수
     let result = {};
-    let layout = jackupData[1];
+    let layout = [];
+    let l1 =jackupData[1].split(',');
+    l1.forEach(elem => layout.push(elem.trim()*1));
     let length = jackupData[2];
     let height = jackupData[3];
     let thickness = jackupData[4];
