@@ -1995,14 +1995,11 @@
               let girderIndex = k.substr(1, 1) - 1;
               let baseInput = {};
               let station = point.masterStationNumber;
-              // let isFlat = girderBaseInfo[girderIndex].section.isFlat;
-              let isFlat = girderBaseInfo.section.isFlat;
+              let isFlat = girderBaseInfo[girderIndex].section.isFlat;
               let gradient = isFlat ? 0 : point.gradientY;
               let skew = point.skew;
-              // let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
-              let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo, slabLayout, pointDict);
-              // let sectionInfo = girderBaseInfo[girderIndex].section;
-              let sectionInfo = girderBaseInfo.section;
+              let pointSectionInfo = PointSectionInfo(station, skew, girderBaseInfo[girderIndex], slabLayout, pointDict);
+              let sectionInfo = girderBaseInfo[girderIndex].section;
 
               const centerThickness = slabInfo.slabThickness + slabInfo.haunchHeight; //  slab변수 추가
               //   const height = pointSectionInfo.forward.height + centerThickness;
@@ -2361,7 +2358,7 @@
           backward.lRibH = lRib[0][3];
           let layout = lRib[0][4].split(',');
           layout.forEach(elem => forward.lRibLO.push(elem.trim()*1));
-          // backward.lRibLO = layout
+          backward.lRibLO = layout;
       }
 
       return { forward, backward }
@@ -2463,12 +2460,12 @@
               
               if (centerLineStations[i].key === "CRK0"){
                   let gridName = "G" + (j * 1 + 1) + "K1";
-                  lw = UflangePoint(pointDict[gridName], pointDict, girderBaseInfo, slabInfo, slabLayout);
+                  lw = UflangePoint(pointDict[gridName], pointDict, girderBaseInfo[j], slabInfo, slabLayout);
               } else if (centerLineStations[i].key === "CRK7"){
                   let dummyPoint = LineMatch2(pointDict["CRK6"], masterLine, girderLine);
-                  lw = UflangePoint(dummyPoint, pointDict, girderBaseInfo, slabInfo, slabLayout);
+                  lw = UflangePoint(dummyPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
               } else {
-                  lw = UflangePoint(girderPoint, pointDict, girderBaseInfo, slabInfo, slabLayout);
+                  lw = UflangePoint(girderPoint, pointDict, girderBaseInfo[j], slabInfo, slabLayout);
               }
               lw.forEach(elem => glw.push({ x: elem.x + girderPoint.offset, y: elem.y + girderPoint.z }));
               //haunch포인트에 대한 내용을 위의함수에 포함하여야 함. 
