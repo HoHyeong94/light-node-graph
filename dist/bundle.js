@@ -3789,9 +3789,9 @@
       let skew = sectionPointDict[gridkey].forward.skew;
       let urib = sectionPointDict[gridkey].forward.input.Urib;
       let lrib = sectionPointDict[gridkey].forward.input.Lrib;
-      if (diaphragmLayout[i][section] == "diaType1") {
+      if (diaphragmLayout[i][section].includes("diaType1")) {
         result[gridkey] = uBoxDia1(webPoints, gridPoint[gridkey], skew, uflangePoints, uflange, lrib, diaSection, sectionDB);
-      } else if (diaphragmLayout[i][section] == "diaType2" || diaphragmLayout[i][section] == "diaType2-2") {
+      } else if (diaphragmLayout[i][section].includes("diaType2")) {
         result[gridkey] = boxDiaHole1(webPoints, gridPoint[gridkey], skew, uflange, urib, lrib, diaSection);
       } else if (diaphragmLayout[i][section] == "DYdia0") {
         result[gridkey] = DYdia0(
