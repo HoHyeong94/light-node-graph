@@ -7710,7 +7710,9 @@
 
       let pNum = model.points[0].length;
       let geometry = new global.THREE.Geometry();
+      console.log(model.points.length);
       for (let i in model.points) {
+          console.log(i, model.points[i]);
           model.points[i].forEach(function (Point) {
               geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
           });
