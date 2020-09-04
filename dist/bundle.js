@@ -11729,12 +11729,12 @@
           { x: l2 / 2, y: - slabThickness - h1 }, { x: l2 / 2, y: - slabThickness },
       ];
 
-      let pts0 = [{x : -endShape.b0/2, y : pts0[0].y }, ...pts, {x :endShape.b0/2, y : pts0[0].y }];
+      let pts0 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }];
       let cp = girderPoint["G1S1"];
       let newPts0 = [];
       pts0.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
 
-      let pts1 = [{x : -endShape.b1/2, y : pts1[0].y }, ...pts, {x :endShape.b1/2, y : pts1[0].y }];
+      let pts1 = [{x : -endShape.b1/2, y : pts[0].y }, ...pts, {x :endShape.b1/2, y : pts[0].y }];
       cp = pointDict[shapeData[0][0]];
       let newPts1 = [];
       pts1.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
