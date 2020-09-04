@@ -909,11 +909,6 @@ export function PolyRegion(points, meshMaterial, initPoint) {
         iter++;
         if (iter > pNum) { break; }
     }
-
-
-    for (let j = 1; j < pNum - 1; j++) {
-        geometry.faces.push(new THREE.Face3(0, j, j + 1));
-    }
     geometry.computeFaceNormals();
     return new THREE.Mesh(geometry, meshMaterial)
 }
