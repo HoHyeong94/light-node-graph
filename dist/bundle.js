@@ -7767,11 +7767,10 @@
   function PolyRegion(points, meshMaterial) {
       let pNum = points.length;
       let geometry = new global.THREE.Geometry();
-      for (let i in model.points) {
-          model.points[i].forEach(function (Point) {
+      points.forEach(function (Point) {
               geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
           });
-      }
+      
       for (let j = 1; j < pNum - 1; j++) {
           geometry.faces.push(new global.THREE.Face3(0, j, j + 1));
       }
