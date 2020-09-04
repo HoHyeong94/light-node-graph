@@ -1,4 +1,4 @@
-(function (global) {
+(function (global$1) {
   'use strict';
 
   // ["horizon", "vertical", "superElevation" ,"girderLayoutInput", "SEShape", "girderBaseInfo" , "xbeamLayout", "xbeamSectionList", "diaphragmLayout", "diaphragmSectionList", "vStiffLayout", "vStiffSectionList", "hBracingLayout", "hBracingSectionList", ]
@@ -664,7 +664,7 @@
   HorizonInput.prototype.onExecute = function() {
     this.setOutputData(0,horizon);
   };
-  global.LiteGraph.registerNodeType("HMInput/Horizon", HorizonInput);
+  global$1.LiteGraph.registerNodeType("HMInput/Horizon", HorizonInput);
 
   function VerticalInput(){
     this.addOutput("vertical","vertical");
@@ -672,7 +672,7 @@
   VerticalInput.prototype.onExecute = function() {
     this.setOutputData(0,vertical);
   };
-  global.LiteGraph.registerNodeType("HMInput/vertical", VerticalInput);
+  global$1.LiteGraph.registerNodeType("HMInput/vertical", VerticalInput);
 
   function SuperElevationInput(){
     this.addOutput("superElevation","superElevation");
@@ -680,7 +680,7 @@
   SuperElevationInput.prototype.onExecute = function() {
     this.setOutputData(0,superElevation);
   };
-  global.LiteGraph.registerNodeType("HMInput/superElevation", SuperElevationInput);
+  global$1.LiteGraph.registerNodeType("HMInput/superElevation", SuperElevationInput);
 
 
   function GirderLayoutInput(){
@@ -689,7 +689,7 @@
   GirderLayoutInput.prototype.onExecute = function() {
     this.setOutputData(0,girderLayoutInput);
   };
-  global.LiteGraph.registerNodeType("HMInput/girderLayoutInput", GirderLayoutInput);
+  global$1.LiteGraph.registerNodeType("HMInput/girderLayoutInput", GirderLayoutInput);
 
   function SEShapeInput(){
     this.addOutput("SEShape","SEShape");
@@ -697,7 +697,7 @@
   SEShapeInput.prototype.onExecute = function() {
     this.setOutputData(0,SEShape);
   };
-  global.LiteGraph.registerNodeType("HMInput/SEShape", SEShapeInput);
+  global$1.LiteGraph.registerNodeType("HMInput/SEShape", SEShapeInput);
 
   function GirderBaseInfo(){
     this.addOutput("girderBaseInfo","girderBaseInfo");
@@ -705,7 +705,7 @@
   GirderBaseInfo.prototype.onExecute = function() {
     this.setOutputData(0,girderBaseInfo);
   };
-  global.LiteGraph.registerNodeType("HMInput/girderBaseInfo", GirderBaseInfo);
+  global$1.LiteGraph.registerNodeType("HMInput/girderBaseInfo", GirderBaseInfo);
 
 
   function DiaphragmInput(){
@@ -716,7 +716,7 @@
     this.setOutputData(0,diaphragmLayout);
     this.setOutputData(1,diaphragmSectionList);
   };
-  global.LiteGraph.registerNodeType("HMInput/diaphragmInput", DiaphragmInput);
+  global$1.LiteGraph.registerNodeType("HMInput/diaphragmInput", DiaphragmInput);
 
   function VStiffInput(){
     this.addOutput("vStiffLayout","vStiffLayout");
@@ -726,7 +726,7 @@
     this.setOutputData(0,vStiffLayout);
     this.setOutputData(1,vStiffSectionList);
   };
-  global.LiteGraph.registerNodeType("HMInput/vStiffInput", VStiffInput);
+  global$1.LiteGraph.registerNodeType("HMInput/vStiffInput", VStiffInput);
 
 
 
@@ -746,7 +746,7 @@
     this.setOutputData(4,height);
     this.setOutputData(5,taperedPoint);
   };
-  global.LiteGraph.registerNodeType("HMInput/gridPointInput", GridPointInput);
+  global$1.LiteGraph.registerNodeType("HMInput/gridPointInput", GridPointInput);
   //git
 
   const MasterLineData = (horizon, VerticalDataList, superElevation, beginStation) => {
@@ -1895,10 +1895,10 @@
 
   function scallop(point1,point2,point3,radius,smoothness){
     let points = [];
-    let v1 = new global.THREE.Vector2(point1.x - point2.x, point1.y - point2.y).normalize();
-    let v2 = new global.THREE.Vector2(point3.x - point2.x, point3.y - point2.y).normalize();
+    let v1 = new global$1.THREE.Vector2(point1.x - point2.x, point1.y - point2.y).normalize();
+    let v2 = new global$1.THREE.Vector2(point3.x - point2.x, point3.y - point2.y).normalize();
     for (let i = 0; i < smoothness+1 ; i++){
-      let v3 = new global.THREE.Vector2().addVectors(v1.clone().multiplyScalar(smoothness - i), v2.clone().multiplyScalar(i)).setLength(radius);
+      let v3 = new global$1.THREE.Vector2().addVectors(v1.clone().multiplyScalar(smoothness - i), v2.clone().multiplyScalar(i)).setLength(radius);
       points.push({x: v3.x + point2.x, y: v3.y +point2.y});
     }
     return points
@@ -2595,15 +2595,15 @@
     let result = [[], []];
 
     for (let ii = 0; ii < 2; ii++) {
-      let p1 = new global.THREE.Vector3(plt1[0][ii + 1].x, plt1[0][ii + 1].y, plt1[0][ii + 1].z);
-      let p2 = new global.THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
-      let p3 = new global.THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
+      let p1 = new global$1.THREE.Vector3(plt1[0][ii + 1].x, plt1[0][ii + 1].y, plt1[0][ii + 1].z);
+      let p2 = new global$1.THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
+      let p3 = new global$1.THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
       filletPoint[ii] = fillet3D(p1, p2, p3, radius, smoothness);
     }
     for (let ii = 0; ii < 2; ii++) {
-      let p1 = new global.THREE.Vector3(plt1[1][ii + 1].x, plt1[1][ii + 1].y, plt1[1][ii + 1].z);
-      let p2 = new global.THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
-      let p3 = new global.THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
+      let p1 = new global$1.THREE.Vector3(plt1[1][ii + 1].x, plt1[1][ii + 1].y, plt1[1][ii + 1].z);
+      let p2 = new global$1.THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
+      let p3 = new global$1.THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
       filletPoint[ii + 2] = fillet3D(p1, p2, p3, radius, smoothness);
     }
     for (let jj = 0; jj < smoothness + 2; jj++) {
@@ -2628,15 +2628,15 @@
     let result = [[], []];
 
     for (let ii = 0; ii < 1; ii++) {
-      let p1 = new global.THREE.Vector3(plt1[0][ii + 1].x, plt1[0][ii + 1].y, plt1[0][ii + 1].z);
-      let p2 = new global.THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
-      let p3 = new global.THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
+      let p1 = new global$1.THREE.Vector3(plt1[0][ii + 1].x, plt1[0][ii + 1].y, plt1[0][ii + 1].z);
+      let p2 = new global$1.THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
+      let p3 = new global$1.THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
       filletPoint[ii] = fillet3D(p1, p2, p3, radius, smoothness);
     }
     for (let ii = 0; ii < 1; ii++) {
-      let p1 = new global.THREE.Vector3(plt1[1][ii + 1].x, plt1[1][ii + 1].y, plt1[1][ii + 1].z);
-      let p2 = new global.THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
-      let p3 = new global.THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
+      let p1 = new global$1.THREE.Vector3(plt1[1][ii + 1].x, plt1[1][ii + 1].y, plt1[1][ii + 1].z);
+      let p2 = new global$1.THREE.Vector3(plt2[1][ii + 1].x, plt2[1][ii + 1].y, plt2[1][ii + 1].z);
+      let p3 = new global$1.THREE.Vector3(plt2[0][ii + 1].x, plt2[0][ii + 1].y, plt2[0][ii + 1].z);
       filletPoint[ii + 1] = fillet3D(p1, p2, p3, radius, smoothness);
     }
     for (let jj = 0; jj < smoothness + 2; jj++) {
@@ -3292,12 +3292,12 @@
   function fillet3D(point1, point2, point3, radius, smoothness) {
     // let points = [point1, point2, point3]
     let newPoints = [];
-    let v1 = new global.THREE.Vector3();
-    let v2 = new global.THREE.Vector3();
-    let v3 = new global.THREE.Vector3();
-    let vc1 = new global.THREE.Vector3();
-    let vc2 = new global.THREE.Vector3();
-    let center = new global.THREE.Vector3();
+    let v1 = new global$1.THREE.Vector3();
+    let v2 = new global$1.THREE.Vector3();
+    let v3 = new global$1.THREE.Vector3();
+    let vc1 = new global$1.THREE.Vector3();
+    let vc2 = new global$1.THREE.Vector3();
+    let center = new global$1.THREE.Vector3();
     let ang;
     let l1;
 
@@ -3307,15 +3307,15 @@
     l1 = radius / Math.sin(ang / 2);
     v3.addVectors(v1, v2).setLength(l1);
     center.addVectors(point2, v3);
-    let p1 = new global.THREE.Vector3().addVectors(point2, v1.multiplyScalar(radius / Math.tan(ang / 2)));
-    let p2 = new global.THREE.Vector3().addVectors(point2, v2.multiplyScalar(radius / Math.tan(ang / 2)));
+    let p1 = new global$1.THREE.Vector3().addVectors(point2, v1.multiplyScalar(radius / Math.tan(ang / 2)));
+    let p2 = new global$1.THREE.Vector3().addVectors(point2, v2.multiplyScalar(radius / Math.tan(ang / 2)));
     vc1.subVectors(p1, center);
     vc2.subVectors(p2, center);
 
     newPoints.push(p1);
     for (let j = 0; j < smoothness; j++) {
-      let dirVec = new global.THREE.Vector3().addVectors(vc1.clone().multiplyScalar(smoothness - j), vc2.clone().multiplyScalar(j + 1)).setLength(radius);
-      newPoints.push(new global.THREE.Vector3().addVectors(center, dirVec));
+      let dirVec = new global$1.THREE.Vector3().addVectors(vc1.clone().multiplyScalar(smoothness - j), vc2.clone().multiplyScalar(j + 1)).setLength(radius);
+      newPoints.push(new global$1.THREE.Vector3().addVectors(center, dirVec));
     }
     newPoints.push(p2);
     //let line2 = new THREE.Line(newGeometry,line.material);
@@ -5484,7 +5484,7 @@
     let rotation = (right) ? Math.PI / 2 : -Math.PI / 2;
     let cos = Math.cos(rotation);
     let sin = Math.sin(rotation);
-    let curve = new global.THREE.ArcCurve(0, scallopHeight, scallopRadius, Math.PI, 0, true);
+    let curve = new global$1.THREE.ArcCurve(0, scallopHeight, scallopRadius, Math.PI, 0, true);
     let curvePoint = curve.getPoints(8);
     let ps = [];
     ps.push({ x: -sideToplength / 2, y: sideTopwidth });
@@ -5556,7 +5556,7 @@
     if (urib) {
       for (let i = 0; i < urib.layout.length; i++) {
         upperPoints.push({ x: urib.layout[i] * cosec - urib.ribHoleD, y: tl.y + gradient * (urib.layout[i] - urib.ribHoleD - tl.x) });
-        let curve = new global.THREE.ArcCurve(urib.layout[i] * cosec, tl.y + gradient * (urib.layout[i] - tl.x) - urib.height, urib.ribHoleR, Math.PI, 0, false);
+        let curve = new global$1.THREE.ArcCurve(urib.layout[i] * cosec, tl.y + gradient * (urib.layout[i] - tl.x) - urib.height, urib.ribHoleR, Math.PI, 0, false);
         let dummyVectors = curve.getPoints(8);
         for (let i = 0; i < dummyVectors.length; i++) {
           upperPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y });
@@ -5569,7 +5569,7 @@
       if (lrib.type == 0) {
         for (let i = 0; i < lrib.layout.length; i++) {
           lowerPoints.push({ x: lrib.layout[i] * cosec - lrib.ribHoleD, y: bl.y + gradient2 * (lrib.layout[i] - lrib.ribHoleD - bl.x) });
-          let curve = new global.THREE.ArcCurve(lrib.layout[i] * cosec, bl.y + gradient2 * (lrib.layout[i] - bl.x) + lrib.height, lrib.ribHoleR, Math.PI, 0, true);
+          let curve = new global$1.THREE.ArcCurve(lrib.layout[i] * cosec, bl.y + gradient2 * (lrib.layout[i] - bl.x) + lrib.height, lrib.ribHoleR, Math.PI, 0, true);
           let dummyVectors = curve.getPoints(8);
           for (let i = 0; i < dummyVectors.length; i++) {
             lowerPoints.push({ x: dummyVectors[i].x, y: dummyVectors[i].y });
@@ -6936,33 +6936,33 @@
   // import { analysisOutput } from "../DB/module"
 
   function AnalysisModel(node, frame) {
-      let modelGroup = new global.THREE.Group();
-      let selfweightGroup = new global.THREE.Group();
-      let slabweightGroup = new global.THREE.Group();
-      let barrierGroup = new global.THREE.Group();
-      let pavementGroup = new global.THREE.Group();
-      let laneGroup = new global.THREE.Group();
+      let modelGroup = new global$1.THREE.Group();
+      let selfweightGroup = new global$1.THREE.Group();
+      let slabweightGroup = new global$1.THREE.Group();
+      let barrierGroup = new global$1.THREE.Group();
+      let pavementGroup = new global$1.THREE.Group();
+      let laneGroup = new global$1.THREE.Group();
 
 
 
       let layer = 2; //frame Layer
-      let material = new global.THREE.PointsMaterial({ color: 0xff0000, size: 300 });
-      let geometry = new global.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
+      let material = new global$1.THREE.PointsMaterial({ color: 0xff0000, size: 300 });
+      let geometry = new global$1.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
       let initPoint = node.node.data[0].coord;
-      let greenLine = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });
-      let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
-      let yellowLine = new global.THREE.LineBasicMaterial({ color: 0xffff00 });
-      let circleMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffff00 });
-      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
-      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let greenLine = new global$1.THREE.LineBasicMaterial({ color: 0x00ff00 });
+      let aquaLine = new global$1.THREE.LineBasicMaterial({ color: 0x00ffff });
+      let yellowLine = new global$1.THREE.LineBasicMaterial({ color: 0xffff00 });
+      let circleMaterial = new global$1.THREE.MeshBasicMaterial({ color: 0xffff00 });
+      let redDotLine = new global$1.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
+      let redLine = new global$1.THREE.LineBasicMaterial({ color: 0xff0000 });
       let elemDict = {};
       for (let i in node.node.data) {
-          let pt = new global.THREE.Vector3(
+          let pt = new global$1.THREE.Vector3(
               node.node.data[i].coord[0] - initPoint[0],
               node.node.data[i].coord[1] - initPoint[1],
               node.node.data[i].coord[2] - initPoint[2]);
           geometry.vertices.push(pt);
-          let text = new global.SpriteText(node.node.data[i].nodeNum, 150);
+          let text = new global$1.SpriteText(node.node.data[i].nodeNum, 150);
           text.position.set(pt.x, pt.y, pt.z);
           text.layers.set(layer);
           text.backgroundColor = "red";
@@ -6973,21 +6973,21 @@
           let mNum = node.rigid.data[i].master - 1;
           for (let j in node.rigid.data[i].slave) {
               let sNum = node.rigid.data[i].slave[j] - 1;
-              let geo = new global.THREE.Geometry();
+              let geo = new global$1.THREE.Geometry();
               geo.vertices.push(geometry.vertices[mNum], geometry.vertices[sNum]);
-              modelGroup.add(new global.THREE.Line(geo, aquaLine));
+              modelGroup.add(new global$1.THREE.Line(geo, aquaLine));
           }
       }
 
       for (let i in frame.frame.data) {
-          let geo = new global.THREE.Geometry();
+          let geo = new global$1.THREE.Geometry();
           let iNum = frame.frame.data[i].iNode - 1;
           let jNum = frame.frame.data[i].jNode - 1;
           elemDict[frame.frame.data[i].number] = [iNum, jNum];
           geo.vertices.push(geometry.vertices[iNum], geometry.vertices[jNum]);
-          modelGroup.add(new global.THREE.Line(geo, greenLine));
+          modelGroup.add(new global$1.THREE.Line(geo, greenLine));
 
-          let text = new global.SpriteText(frame.frame.data[i].number, 150, "red");
+          let text = new global$1.SpriteText(frame.frame.data[i].number, 150, "red");
           text.position.set(
               (geometry.vertices[iNum].x + geometry.vertices[jNum].x) / 2,
               (geometry.vertices[iNum].y + geometry.vertices[jNum].y) / 2,
@@ -6999,75 +6999,75 @@
 
       // group.add(new THREE.Points(geometry, material));
       for (let i in frame.selfWeight.data) {
-          let geo = new global.THREE.Geometry();
+          let geo = new global$1.THREE.Geometry();
           let ivec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][0]];
           let jvec = geometry.vertices[elemDict[frame.selfWeight.data[i].elem][1]];
           let izload = frame.selfWeight.data[i].Uzp[0] * 0.2;
           let jzload = frame.selfWeight.data[i].Uzp[1] * 0.2;
           geo.vertices.push(ivec,
-              new global.THREE.Vector3(ivec.x, ivec.y, ivec.z + izload),
-              new global.THREE.Vector3(jvec.x, jvec.y, jvec.z + jzload),
+              new global$1.THREE.Vector3(ivec.x, ivec.y, ivec.z + izload),
+              new global$1.THREE.Vector3(jvec.x, jvec.y, jvec.z + jzload),
               jvec);
-          selfweightGroup.add(new global.THREE.Line(geo, aquaLine));
+          selfweightGroup.add(new global$1.THREE.Line(geo, aquaLine));
       }
 
       for (let i in frame.slabWeight.data) {
-          let geo = new global.THREE.Geometry();
+          let geo = new global$1.THREE.Geometry();
           let ivec = geometry.vertices[elemDict[frame.slabWeight.data[i].elem][0]];
           let jvec = geometry.vertices[elemDict[frame.slabWeight.data[i].elem][1]];
           let a = frame.slabWeight.data[i].RD[0];
           let b = frame.slabWeight.data[i].RD[1];
-          let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
-          let njvec = new global.THREE.Vector3(ivec.x * (1 - b) + jvec.x * b, ivec.y * (1 - b) + jvec.y * b, ivec.z * (1 - b) + jvec.z * b);
+          let nivec = new global$1.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
+          let njvec = new global$1.THREE.Vector3(ivec.x * (1 - b) + jvec.x * b, ivec.y * (1 - b) + jvec.y * b, ivec.z * (1 - b) + jvec.z * b);
           let izload = -1 * frame.slabWeight.data[i].Uzp[0] * 10;
           let jzload = -1 * frame.slabWeight.data[i].Uzp[1] * 10;
           geo.vertices.push(nivec,
-              new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload),
-              new global.THREE.Vector3(njvec.x, njvec.y, njvec.z + jzload),
+              new global$1.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload),
+              new global$1.THREE.Vector3(njvec.x, njvec.y, njvec.z + jzload),
               njvec);
-          slabweightGroup.add(new global.THREE.Line(geo, aquaLine));
+          slabweightGroup.add(new global$1.THREE.Line(geo, aquaLine));
       }
 
       for (let i in frame.barrier.data) {
-          let geo = new global.THREE.Geometry();
+          let geo = new global$1.THREE.Geometry();
           let ivec = geometry.vertices[elemDict[frame.barrier.data[i].elem][0]];
           let jvec = geometry.vertices[elemDict[frame.barrier.data[i].elem][1]];
           let a = frame.barrier.data[i].RD;
-          let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
+          let nivec = new global$1.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
           let izload = -1 * frame.barrier.data[i].Uz / 10;
           geo.vertices.push(nivec,
-              new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload));
-          barrierGroup.add(new global.THREE.Line(geo, aquaLine));
+              new global$1.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload));
+          barrierGroup.add(new global$1.THREE.Line(geo, aquaLine));
       }
 
       for (let i in frame.pavement.data) {
-          let geo = new global.THREE.Geometry();
+          let geo = new global$1.THREE.Geometry();
           let ivec = geometry.vertices[elemDict[frame.pavement.data[i].elem][0]];
           let jvec = geometry.vertices[elemDict[frame.pavement.data[i].elem][1]];
           let a = frame.pavement.data[i].RD[0];
           let b = frame.pavement.data[i].RD[1];
-          let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
-          let njvec = new global.THREE.Vector3(ivec.x * (1 - b) + jvec.x * b, ivec.y * (1 - b) + jvec.y * b, ivec.z * (1 - b) + jvec.z * b);
+          let nivec = new global$1.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
+          let njvec = new global$1.THREE.Vector3(ivec.x * (1 - b) + jvec.x * b, ivec.y * (1 - b) + jvec.y * b, ivec.z * (1 - b) + jvec.z * b);
           let izload = -1 * frame.pavement.data[i].Uzp[0] * 10;
           let jzload = -1 * frame.pavement.data[i].Uzp[1] * 10;
           geo.vertices.push(nivec,
-              new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload),
-              new global.THREE.Vector3(njvec.x, njvec.y, njvec.z + jzload),
+              new global$1.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload),
+              new global$1.THREE.Vector3(njvec.x, njvec.y, njvec.z + jzload),
               njvec);
-          pavementGroup.add(new global.THREE.Line(geo, aquaLine));
+          pavementGroup.add(new global$1.THREE.Line(geo, aquaLine));
       }
 
       for (let i in frame.laneList) {
-          let geo = new global.THREE.Geometry();
+          let geo = new global$1.THREE.Geometry();
           for (let j in frame.laneList[i]) {
               let loadData = frame[frame.laneList[i][j]].data[0];
               let ivec = geometry.vertices[elemDict[loadData.elem][0]];
               let jvec = geometry.vertices[elemDict[loadData.elem][1]];
               let a = loadData.RD;
-              let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
+              let nivec = new global$1.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
               geo.vertices.push(nivec);
           }
-          let line = new global.THREE.Line(geo, redDotLine);
+          let line = new global$1.THREE.Line(geo, redDotLine);
           line.computeLineDistances();
           laneGroup.add(line);
       }
@@ -7080,43 +7080,43 @@
           let nodeNum = node.boundary.data[i].nodeNum - 1;
           let vec = geometry.vertices[nodeNum];
           let localData = node.local.data.find(function (elem) { return elem.nodeNum === node.boundary.data[i].nodeNum });
-          let geo = new global.THREE.Geometry();
+          let geo = new global$1.THREE.Geometry();
           if (node.boundary.data[i].DOF[0] === false) {
               geo.vertices.push(
-                  new global.THREE.Vector3(-1000, 0, 0),
-                  new global.THREE.Vector3(1000, 0, 0),
-                  new global.THREE.Vector3(-1000, 0, 0),
-                  new global.THREE.Vector3(-1000 + arrow, arrow, 0),
-                  new global.THREE.Vector3(-1000, 0, 0),
-                  new global.THREE.Vector3(-1000 + arrow, -arrow, 0),
-                  new global.THREE.Vector3(1000, 0, 0),
-                  new global.THREE.Vector3(1000 - arrow, arrow, 0),
-                  new global.THREE.Vector3(1000, 0, 0),
-                  new global.THREE.Vector3(1000 - arrow, -arrow, 0),
+                  new global$1.THREE.Vector3(-1000, 0, 0),
+                  new global$1.THREE.Vector3(1000, 0, 0),
+                  new global$1.THREE.Vector3(-1000, 0, 0),
+                  new global$1.THREE.Vector3(-1000 + arrow, arrow, 0),
+                  new global$1.THREE.Vector3(-1000, 0, 0),
+                  new global$1.THREE.Vector3(-1000 + arrow, -arrow, 0),
+                  new global$1.THREE.Vector3(1000, 0, 0),
+                  new global$1.THREE.Vector3(1000 - arrow, arrow, 0),
+                  new global$1.THREE.Vector3(1000, 0, 0),
+                  new global$1.THREE.Vector3(1000 - arrow, -arrow, 0),
               );
           }
           if (node.boundary.data[i].DOF[1] === false) {
               geo.vertices.push(
-                  new global.THREE.Vector3(0, -1000, 0),
-                  new global.THREE.Vector3(0, 1000, 0),
-                  new global.THREE.Vector3(0, -1000, 0),
-                  new global.THREE.Vector3(arrow, -1000 + arrow, 0),
-                  new global.THREE.Vector3(0, -1000, 0),
-                  new global.THREE.Vector3(-arrow, -1000 + arrow, 0),
-                  new global.THREE.Vector3(0, 1000, 0),
-                  new global.THREE.Vector3(arrow, 1000 - arrow, 0),
-                  new global.THREE.Vector3(0, 1000, 0),
-                  new global.THREE.Vector3(-arrow, 1000 - arrow, 0),
+                  new global$1.THREE.Vector3(0, -1000, 0),
+                  new global$1.THREE.Vector3(0, 1000, 0),
+                  new global$1.THREE.Vector3(0, -1000, 0),
+                  new global$1.THREE.Vector3(arrow, -1000 + arrow, 0),
+                  new global$1.THREE.Vector3(0, -1000, 0),
+                  new global$1.THREE.Vector3(-arrow, -1000 + arrow, 0),
+                  new global$1.THREE.Vector3(0, 1000, 0),
+                  new global$1.THREE.Vector3(arrow, 1000 - arrow, 0),
+                  new global$1.THREE.Vector3(0, 1000, 0),
+                  new global$1.THREE.Vector3(-arrow, 1000 - arrow, 0),
               );
           }
           if (node.boundary.data[i].DOF[0] && node.boundary.data[i].DOF[1]) {
-              let circle = new global.THREE.CircleGeometry(arrow, 16);
+              let circle = new global$1.THREE.CircleGeometry(arrow, 16);
               circle.translate(vec.x, vec.y, vec.z);
-              modelGroup.add(new global.THREE.Mesh(circle, circleMaterial));
+              modelGroup.add(new global$1.THREE.Mesh(circle, circleMaterial));
           }
           geo.rotateZ(localData.ANG * Math.PI / 180);
           geo.translate(vec.x, vec.y, vec.z);
-          modelGroup.add(new global.THREE.LineSegments(geo, yellowLine));
+          modelGroup.add(new global$1.THREE.LineSegments(geo, yellowLine));
 
           // group.add(arrow)
       }
@@ -7125,15 +7125,15 @@
   }
 
   function AnalysisResult(node, frame, output, loadCase, forceNum) {
-      let group = new global.THREE.Group();
-      let geometry = new global.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
+      let group = new global$1.THREE.Group();
+      let geometry = new global$1.THREE.Geometry(); // 추후에 bufferGeometry로 변경요망
       let initPoint = node.node.data[0].coord;
-      let greenLine = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });
-      let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
-      let yellowLine = new global.THREE.LineBasicMaterial({ color: 0xffff00 });
-      let circleMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffff00 });
-      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
-      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let greenLine = new global$1.THREE.LineBasicMaterial({ color: 0x00ff00 });
+      let aquaLine = new global$1.THREE.LineBasicMaterial({ color: 0x00ffff });
+      let yellowLine = new global$1.THREE.LineBasicMaterial({ color: 0xffff00 });
+      let circleMaterial = new global$1.THREE.MeshBasicMaterial({ color: 0xffff00 });
+      let redDotLine = new global$1.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
+      let redLine = new global$1.THREE.LineBasicMaterial({ color: 0xff0000 });
       let elemDict = {};
       let analysisOutput = { "force": [] };
       if (output) {
@@ -7142,7 +7142,7 @@
 
       // console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum)
       for (let i in node.node.data) {
-          let pt = new global.THREE.Vector3(
+          let pt = new global$1.THREE.Vector3(
               node.node.data[i].coord[0] - initPoint[0],
               node.node.data[i].coord[1] - initPoint[1],
               node.node.data[i].coord[2] - initPoint[2]);
@@ -7176,19 +7176,19 @@
       for (let elemNum in analysisOutput["force"]) {
           let ivec = geometry.vertices[elemDict[elemNum][0]];
           let jvec = geometry.vertices[elemDict[elemNum][1]];
-          let geo = new global.THREE.Geometry();
+          let geo = new global$1.THREE.Geometry();
           for (let seg in analysisOutput["force"][elemNum]) {
               let a = seg * 1;
-              let nivec = new global.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
+              let nivec = new global$1.THREE.Vector3(ivec.x * (1 - a) + jvec.x * a, ivec.y * (1 - a) + jvec.y * a, ivec.z * (1 - a) + jvec.z * a);
               let izload = analysisOutput["force"][elemNum][seg][loadCase][forceNum] * scaler;
               if (seg === "0.00000") {
-                  geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z));
+                  geo.vertices.push(new global$1.THREE.Vector3(nivec.x, nivec.y, nivec.z));
               }
-              geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload));
+              geo.vertices.push(new global$1.THREE.Vector3(nivec.x, nivec.y, nivec.z + izload));
               if (seg === "1.00000") {
-                  geo.vertices.push(new global.THREE.Vector3(nivec.x, nivec.y, nivec.z));
+                  geo.vertices.push(new global$1.THREE.Vector3(nivec.x, nivec.y, nivec.z));
               }
-              group.add(new global.THREE.Line(geo, redLine));
+              group.add(new global$1.THREE.Line(geo, redLine));
           }
       }
 
@@ -7223,42 +7223,42 @@
   }
 
   function LineView(linepoints, initPoint, color) {
-      var group = new global.THREE.Group();
-      var geometry = new global.THREE.Geometry();
+      var group = new global$1.THREE.Group();
+      var geometry = new global$1.THREE.Geometry();
       const xInit = initPoint.x;
       const yInit = initPoint.y;
       const zInit = initPoint.z;
       for (let i = 0; i < linepoints.length; i++) {
           geometry.vertices.push(
-              new global.THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
+              new global$1.THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
       }
       var colorCode = color ? color : 0xffff00;  //  : 
-      var line = new global.THREE.Line(
-          geometry, new global.THREE.LineBasicMaterial({ color: parseInt(colorCode, 16) })
+      var line = new global$1.THREE.Line(
+          geometry, new global$1.THREE.LineBasicMaterial({ color: parseInt(colorCode, 16) })
       );
       group.add(line);
       return group
   }
 
   function LineMesh(linepoints, initPoint, color) {
-      let geometry = new global.THREE.Geometry();
+      let geometry = new global$1.THREE.Geometry();
       const xInit = initPoint.x;
       const yInit = initPoint.y;
       const zInit = initPoint.z;
       for (let i = 0; i < linepoints.length; i++) {
           geometry.vertices.push(
-              new global.THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
+              new global$1.THREE.Vector3(linepoints[i].x - xInit, linepoints[i].y - yInit, linepoints[i].z - zInit));
       }
       let colorCode = color ? color : 0xffff00;  //  : 
-      let line = new global.THREE.Line(
-          geometry, new global.THREE.LineBasicMaterial({ color: parseInt(colorCode, 16) })
+      let line = new global$1.THREE.Line(
+          geometry, new global$1.THREE.LineBasicMaterial({ color: parseInt(colorCode, 16) })
       );
       return line
   }
 
 
   function SteelBoxView(steelBoxDict, initPoint) {
-      let group = new global.THREE.Group();
+      let group = new global$1.THREE.Group();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0x00ff00,
       //     emissive: 0x44aa44,
@@ -7267,34 +7267,34 @@
       //     transparent: false,
       //     wireframe : false
       //   } );
-      let meshMaterial = new global.THREE.MeshNormalMaterial();
-      meshMaterial.side = global.THREE.DoubleSide;
+      let meshMaterial = new global$1.THREE.MeshNormalMaterial();
+      meshMaterial.side = global$1.THREE.DoubleSide;
       for (let key in steelBoxDict) {
           if (!key.includes("Side")) {
               steelBoxDict[key]["points"].forEach(function (plist) {
                   if (plist.length > 0) {
-                      let geometry = new global.THREE.Geometry();
+                      let geometry = new global$1.THREE.Geometry();
                       for (let i = 0; i < plist.length; i++) {
-                          geometry.vertices.push(new global.THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z));
+                          geometry.vertices.push(new global$1.THREE.Vector3(plist[i].x - initPoint.x, plist[i].y - initPoint.y, plist[i].z - initPoint.z));
                       }
 
                       for (let i = 0; i < plist.length / 4 - 1; i++) {
                           for (let j = 0; j < 4; j++) {
                               let k = j + 1 === 4 ? 0 : j + 1;
-                              geometry.faces.push(new global.THREE.Face3(i * 4 + j, i * 4 + k, (i + 1) * 4 + j));
-                              geometry.faces.push(new global.THREE.Face3(i * 4 + k, (i + 1) * 4 + k, (i + 1) * 4 + j));
+                              geometry.faces.push(new global$1.THREE.Face3(i * 4 + j, i * 4 + k, (i + 1) * 4 + j));
+                              geometry.faces.push(new global$1.THREE.Face3(i * 4 + k, (i + 1) * 4 + k, (i + 1) * 4 + j));
                           }
                           if (i === 0) {
-                              geometry.faces.push(new global.THREE.Face3(0, 1, 2));
-                              geometry.faces.push(new global.THREE.Face3(0, 2, 3));
+                              geometry.faces.push(new global$1.THREE.Face3(0, 1, 2));
+                              geometry.faces.push(new global$1.THREE.Face3(0, 2, 3));
                           } else if (i === (plist.length / 4 - 2)) {
-                              geometry.faces.push(new global.THREE.Face3((i + 1) * 4, (i + 1) * 4 + 1, (i + 1) * 4 + 2));
-                              geometry.faces.push(new global.THREE.Face3((i + 1) * 4, (i + 1) * 4 + 2, (i + 1) * 4 + 3));
+                              geometry.faces.push(new global$1.THREE.Face3((i + 1) * 4, (i + 1) * 4 + 1, (i + 1) * 4 + 2));
+                              geometry.faces.push(new global$1.THREE.Face3((i + 1) * 4, (i + 1) * 4 + 2, (i + 1) * 4 + 3));
                           }
                       }
 
                       geometry.computeFaceNormals();
-                      group.add(new global.THREE.Mesh(geometry, meshMaterial));
+                      group.add(new global$1.THREE.Mesh(geometry, meshMaterial));
                   }
               });
           }
@@ -7303,7 +7303,7 @@
   }
 
   function DiaView(diaDict, initPoint) {
-      var group = new global.THREE.Group();
+      var group = new global$1.THREE.Group();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0x00ffff,
       //     emissive: 0x44aaaa,
@@ -7312,14 +7312,14 @@
       //     transparent: false,
       //     wireframe : false
       //   } );
-      var boltMaterial = new global.THREE.MeshLambertMaterial({
+      var boltMaterial = new global$1.THREE.MeshLambertMaterial({
           color: 0xffffff,
           emissive: 0x000000,
           opacity: 1,
           transparent: false,
           wireframe: false
       });
-      var meshMaterial = new global.THREE.MeshNormalMaterial();
+      var meshMaterial = new global$1.THREE.MeshNormalMaterial();
       for (let diakey in diaDict) {
           for (let partkey in diaDict[diakey]) {
               if (partkey !== "point") {
@@ -7355,28 +7355,28 @@
   }
 
   function diaMesh(point, shapeNode, Thickness, zPosition, rotationX, rotationY, hole, initPoint, meshMaterial) {
-      var shape = new global.THREE.Shape();
+      var shape = new global$1.THREE.Shape();
       var shapeNodeVectors = [];
       for (let i = 0; i < shapeNode.length; i++) {
-          shapeNodeVectors.push(new global.THREE.Vector2(shapeNode[i].x, shapeNode[i].y));
+          shapeNodeVectors.push(new global$1.THREE.Vector2(shapeNode[i].x, shapeNode[i].y));
       }
       shape.setFromPoints(shapeNodeVectors);
       if (hole.length > 0) {
           var holeVectors = [];
           for (let i = 0; i < hole.length; i++) {
-              holeVectors.push(new global.THREE.Vector2(hole[i].x, hole[i].y));
+              holeVectors.push(new global$1.THREE.Vector2(hole[i].x, hole[i].y));
           }
-          var holeShape = new global.THREE.Shape();
+          var holeShape = new global$1.THREE.Shape();
           holeShape.setFromPoints(holeVectors);
           shape.holes.push(holeShape);
       }
 
-      var geometry = new global.THREE.ExtrudeBufferGeometry(shape, { depth: Thickness, steps: 1, bevelEnabled: false });
-      var mesh = new global.THREE.Mesh(geometry, meshMaterial);
+      var geometry = new global$1.THREE.ExtrudeBufferGeometry(shape, { depth: Thickness, steps: 1, bevelEnabled: false });
+      var mesh = new global$1.THREE.Mesh(geometry, meshMaterial);
       var rad = Math.atan2(- point.normalCos, point.normalSin) + Math.PI / 2;  //+ 
 
       mesh.rotation.set(rotationX, rotationY, 0); //(rotationY - 90)*Math.PI/180
-      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0, 0, 1), rad);
+      mesh.rotateOnWorldAxis(new global$1.THREE.Vector3(0, 0, 1), rad);
       mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z);
       mesh.translateZ(zPosition);
       return mesh
@@ -7445,8 +7445,8 @@
   // }
 
   function DeckPointView(deckPointDict, initPoint, opacity) {
-      let group = new global.THREE.Group();
-      var meshMaterial = new global.THREE.MeshLambertMaterial({
+      let group = new global$1.THREE.Group();
+      var meshMaterial = new global$1.THREE.MeshLambertMaterial({
           color: 0x000000,
           emissive: 0x777777,
           opacity: opacity,
@@ -7457,13 +7457,13 @@
       // let meshMaterial = new THREE.MeshNormalMaterial()
       //     meshMaterial.side = THREE.DoubleSide
       let pNum = deckPointDict[0].slabUpperPoints.length + deckPointDict[0].slabLowerPoints.length;
-      let geometry = new global.THREE.Geometry();
+      let geometry = new global$1.THREE.Geometry();
       for (let key in deckPointDict) {
           deckPointDict[key].slabUpperPoints.forEach(function (Point) {
-              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+              geometry.vertices.push(new global$1.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
           });
           deckPointDict[key].slabLowerPoints.reverse().forEach(function (Point) {
-              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+              geometry.vertices.push(new global$1.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
           });
       }
 
@@ -7471,8 +7471,8 @@
       for (let i = 0; i < deckPointDict.length - 1; i++) {
           for (let j = 0; j < pNum; j++) {
               let k = j === pNum - 1 ? 0 : j + 1;
-              geometry.faces.push(new global.THREE.Face3(i * pNum + j, i * pNum + k, (i + 1) * pNum + j));
-              geometry.faces.push(new global.THREE.Face3(i * pNum + k, (i + 1) * pNum + k, (i + 1) * pNum + j));
+              geometry.faces.push(new global$1.THREE.Face3(i * pNum + j, i * pNum + k, (i + 1) * pNum + j));
+              geometry.faces.push(new global$1.THREE.Face3(i * pNum + k, (i + 1) * pNum + k, (i + 1) * pNum + j));
           }
           if (i === 0) {
               // let numList = []
@@ -7511,34 +7511,34 @@
               //         break; }
               //     br++;
               // }
-              geometry.faces.push(new global.THREE.Face3(0, pNum - 1, 1));
-              geometry.faces.push(new global.THREE.Face3(1, 3, 2));
+              geometry.faces.push(new global$1.THREE.Face3(0, pNum - 1, 1));
+              geometry.faces.push(new global$1.THREE.Face3(1, 3, 2));
               for (let j = 1; j < pNum - 3; j++) {
-                  geometry.faces.push(new global.THREE.Face3(pNum - j, pNum - j - 1, 1));
+                  geometry.faces.push(new global$1.THREE.Face3(pNum - j, pNum - j - 1, 1));
               }
           }
           else if (i === deckPointDict.length - 2) {
-              geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + 1, (i + 2) * pNum - 1));
-              geometry.faces.push(new global.THREE.Face3((i + 1) * pNum + 1, (i + 1) * pNum + 2, (i + 1) * pNum + 3));
+              geometry.faces.push(new global$1.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + 1, (i + 2) * pNum - 1));
+              geometry.faces.push(new global$1.THREE.Face3((i + 1) * pNum + 1, (i + 1) * pNum + 2, (i + 1) * pNum + 3));
               for (let j = 1; j < pNum - 3; j++) {
-                  geometry.faces.push(new global.THREE.Face3((i + 2) * pNum - j, (i + 1) * pNum + 1, (i + 2) * pNum - j - 1));
+                  geometry.faces.push(new global$1.THREE.Face3((i + 2) * pNum - j, (i + 1) * pNum + 1, (i + 2) * pNum - j - 1));
               }
           }
       }
       geometry.computeFaceNormals();
-      group.add(new global.THREE.Mesh(geometry, meshMaterial));
+      group.add(new global$1.THREE.Mesh(geometry, meshMaterial));
 
       return group
   }
 
   function boltView(spliceDict, initPoint) {
-      var group = new global.THREE.Group();
+      var group = new global$1.THREE.Group();
       // var meshMaterial = new THREE.MeshNormalMaterial()
-      var meshMaterial = new global.THREE.MeshLambertMaterial({
+      var meshMaterial = new global$1.THREE.MeshLambertMaterial({
           color: 0xffffff,
           emissive: 0x000000,
           opacity: 1,
-          side: global.THREE.DoubleSide,
+          side: global$1.THREE.DoubleSide,
           transparent: false,
           wireframe: false
       });
@@ -7583,11 +7583,11 @@
 
   function boltMesh(point, bolt, zPosition, rotationX, rotationY, XYtranslate, initPoint, meshMaterial) {
       var radius = bolt.size / 2;
-      var geometry = new global.THREE.CylinderBufferGeometry(radius, radius, bolt.t * 2 + bolt.l, 6, 1);
-      var mesh = new global.THREE.Mesh(geometry, meshMaterial);
+      var geometry = new global$1.THREE.CylinderBufferGeometry(radius, radius, bolt.t * 2 + bolt.l, 6, 1);
+      var mesh = new global$1.THREE.Mesh(geometry, meshMaterial);
       var rad = Math.atan2(- point.normalCos, point.normalSin) + Math.PI / 2;  //+ 
       mesh.rotation.set(rotationX, rotationY, Math.PI / 2); //(rotationY - 90)*Math.PI/180
-      mesh.rotateOnWorldAxis(new global.THREE.Vector3(0, 0, 1), rad);
+      mesh.rotateOnWorldAxis(new global$1.THREE.Vector3(0, 0, 1), rad);
       mesh.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z);
       mesh.translateY(zPosition);
       mesh.translateX(XYtranslate[1]);
@@ -7596,8 +7596,8 @@
   }
 
   function StudMeshView(studList, initPoint) {
-      let group = new global.THREE.Group();
-      var meshMaterial = new global.THREE.MeshNormalMaterial();
+      let group = new global$1.THREE.Group();
+      var meshMaterial = new global$1.THREE.MeshNormalMaterial();
       // var meshMaterial = new THREE.MeshLambertMaterial( {
       //     color: 0xffffff,
       //     emissive: 0x000000,
@@ -7607,8 +7607,8 @@
       //     wireframe : false
       // } );
       for (let i in studList) {
-          var geometry = new global.THREE.CylinderBufferGeometry(studList[i].stud.dia / 2, studList[i].stud.dia / 2, studList[i].stud.height, 8, 1);
-          var geometry2 = new global.THREE.CylinderBufferGeometry(studList[i].stud.headDia / 2, studList[i].stud.headDia / 2, studList[i].stud.headDepth, 8, 1);
+          var geometry = new global$1.THREE.CylinderBufferGeometry(studList[i].stud.dia / 2, studList[i].stud.dia / 2, studList[i].stud.height, 8, 1);
+          var geometry2 = new global$1.THREE.CylinderBufferGeometry(studList[i].stud.headDia / 2, studList[i].stud.headDia / 2, studList[i].stud.headDepth, 8, 1);
           let rotationX = Math.atan(studList[i].gradientX);
           let rotationY = Math.atan(studList[i].gradientY);
           let instanceList = [];
@@ -7616,8 +7616,8 @@
           for (let j in studList[i].points) {
               let point = studList[i].points[j];
               // instance mesh test
-              let dummy = new global.THREE.Object3D();
-              let dummy2 = new global.THREE.Object3D();
+              let dummy = new global$1.THREE.Object3D();
+              let dummy2 = new global$1.THREE.Object3D();
               dummy.rotation.set(rotationX + Math.PI / 2, rotationY, 0);
               dummy.position.set(point.x - initPoint.x, point.y - initPoint.y, point.z - initPoint.z);
               dummy.translateY(studList[i].stud.height / 2);
@@ -7643,10 +7643,10 @@
               // }
 
           }
-          let mesh = new global.THREE.InstancedMesh(geometry, meshMaterial, instanceList.length);
-          let mesh2 = new global.THREE.InstancedMesh(geometry2, meshMaterial, instanceList2.length);
-          mesh.instanceMatrix.setUsage(global.THREE.DynamicDrawUsage);
-          mesh2.instanceMatrix.setUsage(global.THREE.DynamicDrawUsage);
+          let mesh = new global$1.THREE.InstancedMesh(geometry, meshMaterial, instanceList.length);
+          let mesh2 = new global$1.THREE.InstancedMesh(geometry2, meshMaterial, instanceList2.length);
+          mesh.instanceMatrix.setUsage(global$1.THREE.DynamicDrawUsage);
+          mesh2.instanceMatrix.setUsage(global$1.THREE.DynamicDrawUsage);
           for (let i in instanceList) {
               mesh.setMatrixAt(i, instanceList[i].matrix);
           }
@@ -7662,8 +7662,8 @@
   }
 
   function barrierSectionView(deckSection, initPoint, opacity) {
-      let group = new global.THREE.Group();
-      var meshMaterial = new global.THREE.MeshLambertMaterial({
+      let group = new global$1.THREE.Group();
+      var meshMaterial = new global$1.THREE.MeshLambertMaterial({
           color: 0x000000,
           emissive: 0x777777,
           opacity: opacity,
@@ -7675,47 +7675,47 @@
       //     meshMaterial.side = THREE.DoubleSide
 
       let pNum = deckSection[0].points.length;
-      let geometry = new global.THREE.Geometry();
+      let geometry = new global$1.THREE.Geometry();
       for (let key in deckSection) {
           deckSection[key].points.forEach(function (Point) {
-              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+              geometry.vertices.push(new global$1.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
           });
       }
 
       for (let i = 0; i < deckSection.length - 1; i++) {
           for (let j = 0; j < pNum - 1; j++) {
-              geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + j + 1));
-              geometry.faces.push(new global.THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
+              geometry.faces.push(new global$1.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + j + 1));
+              geometry.faces.push(new global$1.THREE.Face3(i * pNum + j + 1, (i + 1) * pNum + j, (i + 1) * pNum + j + 1));
           }
           if (i === 0) {
               for (let j = 1; j < pNum - 1; j++) {
-                  geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
+                  geometry.faces.push(new global$1.THREE.Face3(i, i + j, i + j + 1));
               }
           } else if (i === deckSection.length - 2) {
               for (let j = 1; j < pNum - 1; j++) {
-                  geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+                  geometry.faces.push(new global$1.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
               }
           }
       }
       geometry.computeFaceNormals();
-      group.add(new global.THREE.Mesh(geometry, meshMaterial));
+      group.add(new global$1.THREE.Mesh(geometry, meshMaterial));
       return group
   }
 
 
   function LoftModelView(model, initPoint) {
-      let group = new global.THREE.Group();
-      let meshMaterial = new global.THREE.MeshNormalMaterial();
-      meshMaterial.side = global.THREE.DoubleSide;
+      let group = new global$1.THREE.Group();
+      let meshMaterial = new global$1.THREE.MeshNormalMaterial();
+      meshMaterial.side = global$1.THREE.DoubleSide;
 
       let pNum = model.points[0].length;
-      let geometry = new global.THREE.Geometry();
+      let geometry = new global$1.THREE.Geometry();
       if (model.points.length === 1) {
           group.add(PolyRegion(model.points[0], meshMaterial, initPoint));
       } else {
           for (let i in model.points) {
               model.points[i].forEach(function (Point) {
-                  geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+                  geometry.vertices.push(new global$1.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
               });
           }
       }
@@ -7723,8 +7723,8 @@
           for (let j = 0; j < pNum; j++) {
               let k = j < pNum - 1 ? j + 1 : 0;
               if (k > 0 || model.closed === undefined || model.closed === true) {
-                  geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + k));
-                  geometry.faces.push(new global.THREE.Face3(i * pNum + k, (i + 1) * pNum + j, (i + 1) * pNum + k));
+                  geometry.faces.push(new global$1.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + k));
+                  geometry.faces.push(new global$1.THREE.Face3(i * pNum + k, (i + 1) * pNum + j, (i + 1) * pNum + k));
               }
           }
           if (model.cap === undefined || model.cap === true) {
@@ -7732,14 +7732,14 @@
                   if (i === 0) {
                       for (let g in model.ptGroup) {
                           for (let j = 1; j < model.ptGroup[g].length - 1; j++) {
-                              geometry.faces.push(new global.THREE.Face3(model.ptGroup[g][0], model.ptGroup[g][j], model.ptGroup[g][j + 1]));
+                              geometry.faces.push(new global$1.THREE.Face3(model.ptGroup[g][0], model.ptGroup[g][j], model.ptGroup[g][j + 1]));
                           }
                       }
                   }
                   if (i === model.points.length - 2) {
                       for (let g in model.ptGroup) {
                           for (let j = 1; j < model.ptGroup[g].length - 1; j++) {
-                              geometry.faces.push(new global.THREE.Face3((i + 1) * pNum + model.ptGroup[g][0],
+                              geometry.faces.push(new global$1.THREE.Face3((i + 1) * pNum + model.ptGroup[g][0],
                                   (i + 1) * pNum + model.ptGroup[g][j + 1], (i + 1) * pNum + model.ptGroup[g][j]));
                           }
                       }
@@ -7747,69 +7747,83 @@
               } else {
                   if (i === 0) {
                       for (let j = 1; j < pNum - 1; j++) {
-                          geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
+                          geometry.faces.push(new global$1.THREE.Face3(i, i + j, i + j + 1));
                       }
                   }
                   if (i === model.points.length - 2) {
                       for (let j = 1; j < pNum - 1; j++) {
-                          geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+                          geometry.faces.push(new global$1.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
                       }
                   }
               }
           }
       }
       geometry.computeFaceNormals();
-      group.add(new global.THREE.Mesh(geometry, meshMaterial));
+      group.add(new global$1.THREE.Mesh(geometry, meshMaterial));
       return group
   }
 
 
   function PolyRegion(points, meshMaterial, initPoint) {
       let pNum = points.length;
-      let geometry = new global.THREE.Geometry();
+      let geometry = new global$1.THREE.Geometry();
       points.forEach(function (Point) {
-          geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+          geometry.vertices.push(new global$1.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
       });
 
-      let vec = [];
       let numlist = [];
       for (let i = 0; i < pNum; i++) {
           numlist.push(i);
       }
-      let normalVec = [0,-1,0];
+      let normalVec = [0, -1, 0];
       let iter = 0;
       console.log(numlist);
       while (numlist.length > 3) {
-          console.log(numlist);
+          console.log(iter, numlist);
+          let vec = [];
           for (let i = 0; i < numlist.length; i++) {
-              let k = i < numlist.length- 1 ? i + 1 : 0;
-              vec.push({x :points[numlist[k]].x - points[numlist[i]].x, 
-                  y : points[numlist[k]].y - points[numlist[i]].y, 
-                  z :points[numlist[k]].z - points[numlist[i]].z});
+              let k = i < numlist.length - 1 ? i + 1 : 0;
+              vec.push({
+                  x: points[numlist[k]].x - points[numlist[i]].x,
+                  y: points[numlist[k]].y - points[numlist[i]].y,
+                  z: points[numlist[k]].z - points[numlist[i]].z
+              });
           }
           let removeIndex = [];
-          for (i = 0; i < numlist.length; i++){
+          let diagonal = [];
+          for (let j = 0; j < numlist.length; j++) {
 
-              let j = i < numlist.length- 1 ? i + 1 : 0;
-              let k = j < numlist.length -1 ? j + 1 : 0;
+              let i = j === 0 ? numlist.length - 1 : j - 1;
 
-              let tempVec = [vec[i].y*vec[j].z - vec[i].z*vec[j].y,vec[i].z*vec[j].x - vec[i].x*vec[j].z, vec[i].x*vec[j].y - vec[i].y*vec[j].x];
-              let dotVec = tempVec[0]*normalVec[0] + tempVec[1]*normalVec[1] * tempVec[2]*normalVec[2];
-      
-              if (Math.abs(dotVec) < 0.000000001){
-                  removeIndex.push(j);
-              } else if ( dotVec > 0.000000001){
-                  geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
-                  removeIndex.push(j);
+              let tempVec = [vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x];
+              let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
+              // console.log(tempVec, dotVec);
+              // console.log(vec[i],vec[j])
+              if (iter === 0) {
+                  if (Math.abs(dotVec) < 0.000000001) {
+                      removeIndex.push(j);
+                  }
+              } else {
+                  if (dotVec > 0.000000001) {
+                      diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
+                  } else {
+                      diagonal.push(1000000);
+                  }
               }
           }
-          removeIndex.sort(function(a,b){ return b-a}); // 내림차순 정렬
-
-          for (let i in removeIndex){
-              numlist.splice(removeIndex[i],1);
+          if (diagonal.length > 0) {
+              let j = diagonal.indexOf(Math.min(...diagonal));
+              let i = j === 0 ? numlist.length - 1 : j - 1;
+              let k = j < numlist.length - 1 ? j + 1 : 0;
+              geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
+              numlist.splice(j, 1);
           }
-          iter ++; 
-          if (iter >5){ break;}
+          removeIndex.sort(function (a, b) { return b - a }); // 내림차순 정렬
+          for (let i in removeIndex) {
+              numlist.splice(removeIndex[i], 1);
+          }
+          iter++;
+          if (iter > pNum) { break; }
       }
 
 
@@ -7817,7 +7831,7 @@
       //     geometry.faces.push(new THREE.Face3(0, j, j + 1));
       // }
       geometry.computeFaceNormals();
-      return new global.THREE.Mesh(geometry, meshMaterial)
+      return new global$1.THREE.Mesh(geometry, meshMaterial)
   }
 
   function LineViewer() {
@@ -7835,7 +7849,7 @@
     // console.log(this.getInputData(1) ? true : false)
     // console.log(initPoint, color)
     let mesh = LineView(points, initPoint, color);
-    global.sceneAdder({name:"line", layer:2, mesh:mesh, meta:{part:"line"}});
+    global$1.sceneAdder({name:"line", layer:2, mesh:mesh, meta:{part:"line"}});
 
     // sceneAdder({ layer: 2, mesh: mesh }, "line");
     // sceneAdder(mesh, [2, "line","total"])
@@ -7850,7 +7864,7 @@
     const steeBoxDict = this.getInputData(0);
     const initPoint = this.getInputData(1);
     const group = SteelBoxView(steeBoxDict, initPoint);
-    global.sceneAdder({name:"steelbox", layer:0, mesh:group, meta:{part:"steelbox"}});
+    global$1.sceneAdder({name:"steelbox", layer:0, mesh:group, meta:{part:"steelbox"}});
 
     // sceneAdder({ layer: 0, mesh: group }, "steelbox");
     // sceneAdder(group, [0, "steelBox","total"])
@@ -7869,7 +7883,7 @@
     const group = DiaView(diaDict, initPoint);
     // let n = Math.random().toFixed(5)
     // console.log("random", n)
-    global.sceneAdder({name:`${keyName}`, layer:0, mesh:group, meta:{part:`${keyName}`}});
+    global$1.sceneAdder({name:`${keyName}`, layer:0, mesh:group, meta:{part:`${keyName}`}});
 
     // sceneAdder({ layer: 0, mesh: group }, keyName);
     // sceneAdder(group, [0, "Part", keyName])
@@ -7901,7 +7915,7 @@
   }
 
   DeckView.prototype.onExecute = function () {
-    global.sceneAdder({name:"deck", layer:0, mesh:DeckPointView(this.getInputData(0), this.getInputData(1), this.getInputData(2)), meta:{part:"deck"}});
+    global$1.sceneAdder({name:"deck", layer:0, mesh:DeckPointView(this.getInputData(0), this.getInputData(1), this.getInputData(2)), meta:{part:"deck"}});
     // sceneAdder({
     //   layer: 0,
     //   mesh: DeckPointView(this.getInputData(0), this.getInputData(1), this.getInputData(2))
@@ -7921,7 +7935,7 @@
     for (let key in this.getInputData(0)) {
       let boltMesh = boltView(this.getInputData(0)[key], this.getInputData(1));
       if (boltMesh) {
-        global.sceneAdder({name:`bolt${key}`, layer:0, mesh:boltMesh, meta:{part:"bolt"}});
+        global$1.sceneAdder({name:`bolt${key}`, layer:0, mesh:boltMesh, meta:{part:"bolt"}});
         // boltMesh.userData["element"] = "bolt"
         // sceneAdder({ layer: 0, mesh: boltMesh }, "bolt" + key);
         // sceneAdder(boltMesh, [0, "bolt", key]);
@@ -7935,7 +7949,7 @@
   }
 
   StudView.prototype.onExecute = function () {
-    global.sceneAdder({name:"stud", layer:0, mesh:StudMeshView(this.getInputData(0), this.getInputData(1)), meta:{part:"stud"}});
+    global$1.sceneAdder({name:"stud", layer:0, mesh:StudMeshView(this.getInputData(0), this.getInputData(1)), meta:{part:"stud"}});
 
     // sceneAdder({
     //   layer: 0,
@@ -7954,7 +7968,7 @@
     const decPoint = this.getInputData(0);
     for (let key in decPoint) {
       let tmpMesh = barrierSectionView(decPoint[key], this.getInputData(1), this.getInputData(2));
-      global.sceneAdder({name:`Barrier${key}`, layer:0, mesh:tmpMesh, meta:{part:"Barrier"}});
+      global$1.sceneAdder({name:`Barrier${key}`, layer:0, mesh:tmpMesh, meta:{part:"Barrier"}});
 
       // tmpMesh.userData["element"] = "Barrier"
       // sceneAdder({
@@ -7975,7 +7989,7 @@
     const model = this.getInputData(0);
     for (let key in model) {
       let tmpMesh = LoftModelView(model[key], this.getInputData(1));
-      global.sceneAdder({name:this.getInputData(2) + key, layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
+      global$1.sceneAdder({name:this.getInputData(2) + key, layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
     }
   };
 
@@ -7987,8 +8001,8 @@
 
   RebarView.prototype.onExecute = function () {
     const deckRebar = this.getInputData(0);
-    let group1 = new global.THREE.Group();
-    let group2 = new global.THREE.Group();
+    let group1 = new global$1.THREE.Group();
+    let group2 = new global$1.THREE.Group();
 
     for (let i in deckRebar.r1) {
       group1.add(LineMesh(deckRebar.r1[i], this.getInputData(1), 0xff00ff));
@@ -7998,8 +8012,8 @@
       group2.add(LineMesh(deckRebar.r2[i], this.getInputData(1), 0x00ff00));
       // sceneAdder(LineView(deckRebar.r2[i], this.getInputData(1),0x00ff00), [0, "rebar2", i])
     }
-    global.sceneAdder({name:"rebar1", layer:0, mesh:group1, meta:{part:"rebar"}});
-    global.sceneAdder({name:"rebar2", layer:0, mesh:group2, meta:{part:"rebar"}});
+    global$1.sceneAdder({name:"rebar1", layer:0, mesh:group1, meta:{part:"rebar"}});
+    global$1.sceneAdder({name:"rebar2", layer:0, mesh:group2, meta:{part:"rebar"}});
 
     // sceneAdder({ layer: 0, mesh: group1 }, "rebar1")
     // sceneAdder({ layer: 0, mesh: group2 }, "rebar2")
@@ -8029,7 +8043,7 @@
   AnalysisView.prototype.onExecute = function () {
     let result = AnalysisModel(this.getInputData(0),this.getInputData(1));
     for (let key in result){
-    global.sceneAdder({name:key, layer:2, mesh:result[key], meta:{part:key}});
+    global$1.sceneAdder({name:key, layer:2, mesh:result[key], meta:{part:key}});
     }
     // sceneAdder({ layer : 2, mesh : result}, "analysisModel");
     // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
@@ -8046,7 +8060,7 @@
 
   AnalysisResultView.prototype.onExecute = function () {
     let result = AnalysisResult(this.getInputData(0),this.getInputData(1),this.getInputData(2),this.getInputData(3),this.getInputData(4));
-    global.sceneAdder({name:`Result${this.getInputData(3)}${this.getInputData(4)}`, layer:2, mesh:result, meta:{part:`Result${this.getInputData(3)}${this.getInputData(4)}`}});
+    global$1.sceneAdder({name:`Result${this.getInputData(3)}${this.getInputData(4)}`, layer:2, mesh:result, meta:{part:`Result${this.getInputData(3)}${this.getInputData(4)}`}});
 
     // sceneAdder({ layer : 2, mesh : result}, "Result" + this.getInputData(3) + this.getInputData(4));
     // sceneAdder(AnalysisModel(this.getInputData(0),this.getInputData(1)),[2, "analysis", "total"]);
@@ -8057,12 +8071,12 @@
 
   function GirderLayoutView(girderLayout) { //종단/평면선형에서의 거더 배치 뷰
       let scale = 0.01; // scale 은 추후 외부에서 받아오는 변수로 지정할 계획임
-      let group = new global.THREE.Group();
+      let group = new global$1.THREE.Group();
       let skewLength = 5000;
-      let aquaLine = new global.THREE.LineBasicMaterial({ color: 0x00ffff });
-      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
-      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
-      let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+      let aquaLine = new global$1.THREE.LineBasicMaterial({ color: 0x00ffff });
+      let redLine = new global$1.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let redDotLine = new global$1.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 30, gapSize: 10, });
+      let textMaterial = new global$1.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
       let leftLine = [];
       let rightLine = [];
       let label = [];
@@ -8128,7 +8142,7 @@
       group.add(LineMesh$1(rightLine, aquaLine));
       group.add(LabelInsert(label, textMaterial, layerNum));  //layer number is 3
 
-      let group2 = new global.THREE.Group();
+      let group2 = new global$1.THREE.Group();
       let vl = girderLayout.masterLine.VerticalDataList;
       initPoint = { x: vl[0][0], y: vl[0][1] };
       let xscale = 0.003;//종단선형뷰하고 동일한 스케일을 유지하도록
@@ -8160,13 +8174,13 @@
       let yscale = 0.02;
       let fontSize = 80;
       let layerNum = 4;
-      let group = new global.THREE.Group();
-      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
-      let blueLine = new global.THREE.LineBasicMaterial({ color: 0x0000ff });
-      let greenLine = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });
-      let whiteLine = new global.THREE.LineBasicMaterial({ color: 0xffffff });
-      let grayLine = new global.THREE.LineBasicMaterial({ color: 0x888888 });
-      let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+      let group = new global$1.THREE.Group();
+      let redLine = new global$1.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let blueLine = new global$1.THREE.LineBasicMaterial({ color: 0x0000ff });
+      let greenLine = new global$1.THREE.LineBasicMaterial({ color: 0x00ff00 });
+      let whiteLine = new global$1.THREE.LineBasicMaterial({ color: 0xffffff });
+      let grayLine = new global$1.THREE.LineBasicMaterial({ color: 0x888888 });
+      let textMaterial = new global$1.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
 
       let vl = masterLine.VerticalDataList;
       let points = [];
@@ -8305,14 +8319,14 @@
 
   function LineDrawView(masterLine, slaveLines) {  //평면선형 그리기
       let scale = 0.01;
-      let group = new global.THREE.Group();
+      let group = new global$1.THREE.Group();
       let IPpoints = [];
       let linePoints = [];
       let label = [];
-      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
-      let blueLine = new global.THREE.LineBasicMaterial({ color: 0x0000ff });
-      let whiteLine = new global.THREE.LineBasicMaterial({ color: 0xffffff });
-      let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+      let redLine = new global$1.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let blueLine = new global$1.THREE.LineBasicMaterial({ color: 0x0000ff });
+      let whiteLine = new global$1.THREE.LineBasicMaterial({ color: 0xffffff });
+      let textMaterial = new global$1.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
       let fontSize = 80;
       let segName = { 0: "ETC", 1: "BTC", 2: "BC", 3: "EC" };
 
@@ -8370,10 +8384,10 @@
 
 
       for (let i = 0; i < IPpoints.length; i++) {
-          let circle = new global.THREE.EllipseCurve(IPpoints[i].x, IPpoints[i].y, 20, 20);
+          let circle = new global$1.THREE.EllipseCurve(IPpoints[i].x, IPpoints[i].y, 20, 20);
           let cp = circle.getPoints(16);
-          let circlegeo = new global.THREE.Geometry().setFromPoints(cp);
-          let IPCircle = new global.THREE.Line(circlegeo, redLine);
+          let circlegeo = new global$1.THREE.Geometry().setFromPoints(cp);
+          let IPCircle = new global$1.THREE.Line(circlegeo, redLine);
           group.add(IPCircle);
           let ipName = i === 0 ? "BP" : i === (IPpoints.length - 1) ? "EP" : "IP" + i;
           label.push({
@@ -8392,15 +8406,15 @@
   }
 
   function LabelInsert(label, textMaterial, layer) {
-      let group = new global.THREE.Group();
-      var loader = new global.THREE.FontLoader();
+      let group = new global$1.THREE.Group();
+      var loader = new global$1.THREE.FontLoader();
       loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
           // loader.load('fonts/noto_sans_kr_regular.json', function (font) {
           // console.log(font)
           // var font = {generateShapes:(messagem , num)=>{}}
           for (let i in label) {
               var shapes = font.generateShapes(label[i].text, label[i].fontSize);
-              var geometry = new global.THREE.ShapeBufferGeometry(shapes);
+              var geometry = new global$1.THREE.ShapeBufferGeometry(shapes);
               if (label[i].align === "left") {
                   geometry.translate(0, -label[i].fontSize / 2, 0);
               }
@@ -8416,7 +8430,7 @@
               }
               geometry.translate(label[i].anchor[0], label[i].anchor[1], 0);
               // make shape ( N.B. edge view not visible )
-              let textMesh = new global.THREE.Mesh(geometry, textMaterial);
+              let textMesh = new global$1.THREE.Mesh(geometry, textMaterial);
               textMesh.layers.set(layer);
               group.add(textMesh);
           }
@@ -8772,7 +8786,7 @@
   }
 
   function roundedRect(x, y, rot, width, height, radius, lineMaterial) { //마크 테두리
-      let shape = new global.THREE.Shape();
+      let shape = new global$1.THREE.Shape();
       shape.moveTo(-width / 2, -height / 2 + radius);
       shape.lineTo(-width / 2, height / 2 - radius);
       shape.quadraticCurveTo(-width / 2, height / 2, -width / 2 + radius, height / 2);
@@ -8783,11 +8797,11 @@
       shape.lineTo(-width / 2 + radius, -height / 2);
       shape.quadraticCurveTo(-width / 2, -height / 2, -width / 2, -height / 2 + radius);
       let points = shape.getPoints();
-      let geometry = new global.THREE.BufferGeometry().setFromPoints(points);
+      let geometry = new global$1.THREE.BufferGeometry().setFromPoints(points);
       geometry.rotateZ(rot);
       geometry.translate(x, y, 0);
       // console.log("geo", geometry)
-      return new global.THREE.Line(geometry, lineMaterial)
+      return new global$1.THREE.Line(geometry, lineMaterial)
   }
 
   function PointToDraw(point, scale, initPoint, rotate, xOffset, yOffset) { //DrawingPointConverter
@@ -8800,10 +8814,10 @@
 
   function GridMarkView(girderStation, scale, initPoint, rotate, layout, girderIndex) {   //그리드 마크와 보조선 그리기 + 치수선도 포함해서 그릭기
 
-      let redLine = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
-      let redDotLine = new global.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
-      let geo = new global.THREE.Geometry();
-      let dimgeo = new global.THREE.Geometry();
+      let redLine = new global$1.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let redDotLine = new global$1.THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 300, gapSize: 100, });
+      let geo = new global$1.THREE.Geometry();
+      let dimgeo = new global$1.THREE.Geometry();
       let fontSize = 80;
       let meshes = [];
       let labels = [];
@@ -8871,8 +8885,8 @@
                           p1 = PointToDraw(gridObj.point, scale, initPoint, rotate, -1000, w[k]);
                       }
                       dimgeo.vertices.push(
-                          new global.THREE.Vector3(p2.x, p2.y, 0),
-                          new global.THREE.Vector3(p1.x, p1.y, 0));
+                          new global$1.THREE.Vector3(p2.x, p2.y, 0),
+                          new global$1.THREE.Vector3(p1.x, p1.y, 0));
                       labels.push({
                           text: dimName[k],
                           anchor: [anchor.x, anchor.y, 0],
@@ -8885,13 +8899,13 @@
           }
           if (j === 0 || j === girderStation.length - 1) { //거더총길이
               dimgeo.vertices.push(
-                  new global.THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
-                  new global.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
+                  new global$1.THREE.Vector3(dimLine[0][j].x, dimLine[0][j].y, 0),
+                  new global$1.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0));
           }
           if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP")) {   //현장이음부
               dimgeo.vertices.push(
-                  new global.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0),
-                  new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
+                  new global$1.THREE.Vector3(dimLine[1][j].x, dimLine[1][j].y, 0),
+                  new global$1.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
               if (j !== 0) {
                   let dimProp = splineProp(dummy1, gridObj.point);
                   // console.log("spline", dimProp,dummy1,gridObj.point)
@@ -8908,8 +8922,8 @@
           }
           if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("TF")) { //상부플렌지 이음
               dimgeo.vertices.push(
-                  new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
-                  new global.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0));
+                  new global$1.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0),
+                  new global$1.THREE.Vector3(dimLine[3][j].x, dimLine[3][j].y, 0));
               if (j !== 0) {
                   let dimProp = splineProp(dummy2, gridObj.point);
                   let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[2] + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
@@ -8925,8 +8939,8 @@
           }
           if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("BF")) {  //하부플렌지 이음
               dimgeo.vertices.push(
-                  new global.THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
-                  new global.THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
+                  new global$1.THREE.Vector3(dimLine[4][j].x, dimLine[4][j].y, 0),
+                  new global$1.THREE.Vector3(dimLine[5][j].x, dimLine[5][j].y, 0));
               if (j !== 0) {
                   let dimProp = splineProp(dummy4, gridObj.point);
                   let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[5] + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
@@ -8942,8 +8956,8 @@
           if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("SP") || gridObj.key.includes("WF")) {   //웹플렌지 이음
               // let pt1 = { x: totalLength * scale, y: (sideViewOffset + 1.4 * markOffset) * scale, z: 0 }
               dimgeo.vertices.push(
-                  new global.THREE.Vector3(dimLine[6][j].x, dimLine[6][j].y, 0),
-                  new global.THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
+                  new global$1.THREE.Vector3(dimLine[6][j].x, dimLine[6][j].y, 0),
+                  new global$1.THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0));
               // new THREE.Vector3(totalLength * scale, (sideViewOffset + 1.2 * markOffset) * scale, 0),
               // new THREE.Vector3(pt1.x, pt1.y, pt1.z));
               if (j !== 0) {
@@ -8962,8 +8976,8 @@
           if (j === 0 || j === girderStation.length - 1 || gridObj.key.includes("V") || gridObj.key.includes("D") || gridObj.key.substr(2, 1) === "S"
               && gridObj.key.substr(3, 1) !== "P") {  // 그리드 기호에 대해서 한번 대대적인 수정이 필요할 것으로 판단됨
               dimgeo.vertices.push(//치수선 라벨
-                  new global.THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0),
-                  new global.THREE.Vector3(dimLine[8][j].x, dimLine[8][j].y, 0));
+                  new global$1.THREE.Vector3(dimLine[7][j].x, dimLine[7][j].y, 0),
+                  new global$1.THREE.Vector3(dimLine[8][j].x, dimLine[8][j].y, 0));
               if (j !== 0) {
                   let position = { x: (totalLength + dummyLength2) / 2 * scale, y: (w[7] + fontSize * 0.75) * scale };
                   labels.push({
@@ -8993,8 +9007,8 @@
               let pt1 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, markOffset + markTop - 100);
               let pt2 = PointToDraw(gridObj.point, scale, initPoint, rotate, 0, - markOffset + 100);
               geo.vertices.push(
-                  new global.THREE.Vector3(pt1.x, pt1.y, 0),
-                  new global.THREE.Vector3(pt2.x, pt2.y, 0));
+                  new global$1.THREE.Vector3(pt1.x, pt1.y, 0),
+                  new global$1.THREE.Vector3(pt2.x, pt2.y, 0));
 
               // side View gridMark
               position = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (300 + markTop) * scale, z: 0 };
@@ -9008,8 +9022,8 @@
               pt1 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset + (200 + markTop) * scale, z: 0 };
               pt2 = { x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 };
               geo.vertices.push(
-                  new global.THREE.Vector3(pt1.x, pt1.y, 0),
-                  new global.THREE.Vector3(pt2.x, pt2.y, 0));
+                  new global$1.THREE.Vector3(pt1.x, pt1.y, 0),
+                  new global$1.THREE.Vector3(pt2.x, pt2.y, 0));
 
 
           }
@@ -9025,9 +9039,9 @@
       // meshes.push(LineMesh(dimWF, redLine,0))
       // dimLine.forEach(function (dim) { meshes.push(LineMesh(dim, redLine, 0)) });
       // }
-      let segLine = new global.THREE.LineSegments(geo, redLine);
+      let segLine = new global$1.THREE.LineSegments(geo, redLine);
       segLine.computeLineDistances();
-      let dimSegLine = new global.THREE.LineSegments(dimgeo, redLine);
+      let dimSegLine = new global$1.THREE.LineSegments(dimgeo, redLine);
       meshes.push(segLine);
       meshes.push(dimSegLine);
 
@@ -9036,14 +9050,14 @@
 
   // r is rotation angle to radian
   function topDraw(steelBoxDict, hBracing, diaDict, vstiffDict, xbeamDict, gridPoint, initPoint, girderStation) {
-      let group = new global.THREE.Group();
+      let group = new global$1.THREE.Group();
       const hBracingDict = hBracing.hBracingDict;
       const hBracingPlateDict = hBracing.hBracingPlateDict;
 
       let sc = 0.500;
       let r = Math.PI - Math.atan((gridPoint["G1K6"].y - gridPoint["G1K1"].y) / (gridPoint["G1K6"].x - gridPoint["G1K1"].x));
-      let aqua = new global.THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
-      let green = new global.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+      let aqua = new global$1.THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
+      let green = new global$1.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
       let topPlate = GeneralPlanView(steelBoxDict, ["TopPlate"], 4, 0, 1, sc, initPoint, r, aqua);
       topPlate.forEach(function (mesh) { group.add(mesh); });
       let webPlate = GeneralPlanView(steelBoxDict, ["LeftWeB", "RightWeB"], 4, 1, 2, sc, initPoint, r, green);
@@ -9100,7 +9114,7 @@
       //     girderOffset : 24000,
       //     gridMarkWidth : 1500,
       // }
-      let group = new global.THREE.Group();
+      let group = new global$1.THREE.Group();
       // let layerNum = 5;
       let scale = layout.scale;
       let girderOffset = layout.girderOffset * scale;
@@ -9114,7 +9128,7 @@
               mesh.position.set(0, -i * girderOffset, 0);
               group.add(mesh);
           }); 
-          let label = LabelInsert(gridMark.labels, new global.THREE.MeshBasicMaterial({ color: 0xffffff }), layout.layer);
+          let label = LabelInsert(gridMark.labels, new global$1.THREE.MeshBasicMaterial({ color: 0xffffff }), layout.layer);
           label.position.set(0, -i * girderOffset, 0);
           group.add(label);
       }
@@ -9122,8 +9136,8 @@
   }
 
   function XbeamSection(xbeamDict, girderStation, layout) {
-      let group = new global.THREE.Group();
-      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+      let group = new global$1.THREE.Group();
+      let lineMaterial = new global$1.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
       let scale = layout.scale;
       let girderOffset = layout.girderOffset * scale;  //24000;
       let sideViewOffset = layout.sideViewOffset * scale; // -8000 * scale;
@@ -9169,7 +9183,7 @@
 
   function PartGeneralDraw(diaDict, girderStation, layout) {
       
-      let group = new global.THREE.Group();
+      let group = new global$1.THREE.Group();
       // let layerNum = 5;
           // let layout = {
       //     layer : 5,
@@ -9183,7 +9197,7 @@
       let girderOffset = layout.girderOffset * scale;
       let sideViewOffset = layout.sideViewOffset * scale;
       let sectionViewOffset = layout.sectionViewOffset * scale;
-      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+      let lineMaterial = new global$1.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
       let initPoint = [];
       let endPoint = [];
       let rotate = [];
@@ -9241,9 +9255,9 @@
 
   function PartTopMesh(Part, scale, initPoint, rotate) {
       let meshes = [];
-      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
-      let green = new global.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
-      let red = new global.THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
+      let lineMaterial = new global$1.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+      let green = new global$1.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+      let red = new global$1.THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
 
       // let index = i.substr(1, 1) * 1 - 1; //거더번호
       // let rotationY = Part.rotationY;
@@ -9264,9 +9278,9 @@
       if (Part.bolt) {
           if (Part.bolt.isUpper === false) { //복부에 위치하는 볼트의 경우 모두 상단기준면임을 근거로 함. 2020.7.7 by drlim
               let boltDia = Part.bolt.dia;
-              let circle = new global.THREE.EllipseCurve(0, 0, boltDia / 2, boltDia / 2);
+              let circle = new global$1.THREE.EllipseCurve(0, 0, boltDia / 2, boltDia / 2);
               let cp = circle.getPoints(16);
-              let circlegeo = new global.THREE.Geometry().setFromPoints(cp);
+              let circlegeo = new global$1.THREE.Geometry().setFromPoints(cp);
               // if (Part.bolt.isUpper === false) { //복부에 위치하는 볼트의 경우 모두 상단기준면임을 근거로 함. 2020.7.7 by drlim
               let rot = Math.atan2(centerPoint.normalCos, - centerPoint.normalSin) + rotate;
               let lcos = Math.cos(rot);
@@ -9295,7 +9309,7 @@
                   points.push({ x: pt.x + (lsin * boltDia) * scale, y: pt.y - (lcos * boltDia) * scale });
               });
               newPt.forEach(function (pt) {
-                  let boltCircle = new global.THREE.Line(circlegeo, green);
+                  let boltCircle = new global$1.THREE.Line(circlegeo, green);
                   boltCircle.position.set(pt.x, pt.y, 0);
                   meshes.push(boltCircle);
               });
@@ -9309,8 +9323,8 @@
   function PartSideMesh(Part, scale, initPoint, rotate) {
       let meshes = [];
       // let lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
-      let green = new global.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
-      let red = new global.THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
+      let green = new global$1.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+      let red = new global$1.THREE.MeshBasicMaterial({ color: 0xff0000 });   // white 0xffffff
       let rotationY = Part.rotationY;
       let centerPoint = Part.point;
       // let cos = Math.cos(Part.rotationY)
@@ -9329,9 +9343,9 @@
 
           if (Part.bolt) {
               let boltDia = Part.bolt.dia;
-              let circle = new global.THREE.EllipseCurve(0, 0, boltDia / 2, boltDia / 2);
+              let circle = new global$1.THREE.EllipseCurve(0, 0, boltDia / 2, boltDia / 2);
               let cp = circle.getPoints(16);
-              let circlegeo = new global.THREE.Geometry().setFromPoints(cp);
+              let circlegeo = new global$1.THREE.Geometry().setFromPoints(cp);
 
               if (rotationY > Math.PI / 4 || rotationY < -Math.PI / 4) {
                   // let dz = 0
@@ -9346,7 +9360,7 @@
                       points.push({ x: X + (x - boltDia) * scale, y: Y + (y * Math.sin(rotationY)) * scale });
                       points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) + boltDia) * scale });
                       points.push({ x: X + (x) * scale, y: Y + (y * Math.sin(rotationY) - boltDia) * scale });
-                      let boltCircle = new global.THREE.Line(circlegeo, green);
+                      let boltCircle = new global$1.THREE.Line(circlegeo, green);
                       boltCircle.position.set(X + x * scale, Y + (y * Math.sin(rotationY)) * scale, 0);
                       meshes.push(boltCircle);
                   }
@@ -9361,7 +9375,7 @@
 
   function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict, deckPointDict, layout) {
       
-      let group = new global.THREE.Group();
+      let group = new global$1.THREE.Group();
       // let layerNum = 5;
           // let layout = {
       //     layer : 5,
@@ -9377,10 +9391,10 @@
       let sectionViewOffset = layout.sectionViewOffset * scale;
       // let gridMarkWidth = layout.gridMarkWidth * scale; // unit : mm
 
-      let aqua = new global.THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
-      let green = new global.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
-      let white = new global.THREE.MeshBasicMaterial({ color: 0xffffff });
-      let magenta = new global.THREE.MeshBasicMaterial({ color: 0xff00ff });
+      let aqua = new global$1.THREE.MeshBasicMaterial({ color: 0x00ffff });   // white 0xffffff
+      let green = new global$1.THREE.MeshBasicMaterial({ color: 0x00ff00 });   // white 0xffffff
+      let white = new global$1.THREE.MeshBasicMaterial({ color: 0xffffff });
+      let magenta = new global$1.THREE.MeshBasicMaterial({ color: 0xff00ff });
 
       for (let i = 0; i < girderStation.length; i++) {
           let initPoint = girderStation[i][0].point;
@@ -9490,10 +9504,10 @@
       let points = [];
       let z1 = z ? z : 0;
       for (let i in point0) {
-          points.push(new global.THREE.Vector3(point0[i].x, point0[i].y, z1));
+          points.push(new global$1.THREE.Vector3(point0[i].x, point0[i].y, z1));
       }
-      let geometry = new global.THREE.Geometry().setFromPoints(points);
-      let result = new global.THREE.Line(geometry, lineMaterial);
+      let geometry = new global$1.THREE.Geometry().setFromPoints(points);
+      let result = new global$1.THREE.Line(geometry, lineMaterial);
       result.computeLineDistances();
       return result
   }
@@ -9502,10 +9516,10 @@
       let points = [];
       let z1 = z ? z : 0;
       for (let i in point0) {
-          points.push(new global.THREE.Vector3(point0[i].x, point0[i].y, z1));
+          points.push(new global$1.THREE.Vector3(point0[i].x, point0[i].y, z1));
       }
-      let geometry = new global.THREE.Geometry().setFromPoints(points);
-      let result = new global.THREE.LineSegments(geometry, lineMaterial);
+      let geometry = new global$1.THREE.Geometry().setFromPoints(points);
+      let result = new global$1.THREE.LineSegments(geometry, lineMaterial);
       result.computeLineDistances();
       return result
   }
@@ -9514,16 +9528,16 @@
   function sectionMesh(point0, lineMaterial) {
       let points = [];
       for (let i in point0) {
-          points.push(new global.THREE.Vector3(point0[i].x, point0[i].y, 0));
+          points.push(new global$1.THREE.Vector3(point0[i].x, point0[i].y, 0));
       }
-      let geometry = new global.THREE.Geometry().setFromPoints(points);
-      return new global.THREE.LineLoop(geometry, lineMaterial)
+      let geometry = new global$1.THREE.Geometry().setFromPoints(points);
+      return new global$1.THREE.LineLoop(geometry, lineMaterial)
   }
 
   function GirderSectionView(deckPointDict, sectionPointDict, girderStation, scale, yoffset) {
       let meshes = [];
       let labels = [];
-      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+      let lineMaterial = new global$1.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
       let xoffset = 20000;
       let initZ = [];
       let girderNum = girderStation.length;
@@ -9588,10 +9602,10 @@
       let titlePosition = 1000;
       let titleSize = 100;
       // let group = []
-      let group = new global.THREE.Group();
+      let group = new global$1.THREE.Group();
       let label = [];
-      let textMaterial = new global.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
-      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
+      let textMaterial = new global$1.THREE.MeshBasicMaterial({ color: 0xffffff });   // white 0xffffff
+      let lineMaterial = new global$1.THREE.LineBasicMaterial({ color: 0x00ffff });    // green 0x00ff00
       // let red = new THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
       // let green = new THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
 
@@ -9601,10 +9615,10 @@
           fontSize: titleSize
       });
 
-      let circle = new global.THREE.EllipseCurve(0, titlePosition, titleSize * 2.5, titleSize * 2.5);
+      let circle = new global$1.THREE.EllipseCurve(0, titlePosition, titleSize * 2.5, titleSize * 2.5);
       let cp = circle.getPoints(16);
-      let circlegeo = new global.THREE.Geometry().setFromPoints(cp);
-      let titleCircle = new global.THREE.Line(circlegeo, lineMaterial);
+      let circlegeo = new global$1.THREE.Geometry().setFromPoints(cp);
+      let titleCircle = new global$1.THREE.Line(circlegeo, lineMaterial);
       group.add(titleCircle);
 
       for (var key in sectionPoint) {
@@ -9675,13 +9689,13 @@
 
   function DiaSectionMesh(diaPoint, lineMaterial) {
       let boltSize = 22; // 추후 외부에서 가져와야함, 20200708 by drlim 
-      let boltcircle = new global.THREE.EllipseCurve(0, 0, boltSize / 2, boltSize / 2);
+      let boltcircle = new global$1.THREE.EllipseCurve(0, 0, boltSize / 2, boltSize / 2);
       let boltcp = boltcircle.getPoints(16);
-      let boltcirclegeo = new global.THREE.Geometry().setFromPoints(boltcp);
+      let boltcirclegeo = new global$1.THREE.Geometry().setFromPoints(boltcp);
 
 
-      let red = new global.THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
-      let green = new global.THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
+      let red = new global$1.THREE.LineBasicMaterial({ color: 0xff0000 });    // green 0x00ff00
+      let green = new global$1.THREE.LineBasicMaterial({ color: 0x00ff00 });    // green 0x00ff00
 
       let meshes = [];
       let pts = [];
@@ -9707,7 +9721,7 @@
           points.push({ x: pt.x - (boltSize), y: pt.y });
           points.push({ x: pt.x, y: pt.y + (boltSize) });
           points.push({ x: pt.x, y: pt.y - (boltSize) });
-          let boltCircle = new global.THREE.Line(boltcirclegeo, green);
+          let boltCircle = new global$1.THREE.Line(boltcirclegeo, green);
           boltCircle.position.set(pt.x, pt.y, 0);
           // boltCircle.translateX(pt.x)
           // boltCircle.translateY(pt.y)
@@ -9723,7 +9737,7 @@
   // 치수선 생성 프로그램 선, caption으로 구성해야할 듯함
   // 다수의 포인트(points)의 연속된 치수선을 생성하는 모듈
   function Dimension(points, index, scale, valueScale, isHorizontal, isTopOrRight, offsetIndex) {
-      let lineMaterial = new global.THREE.LineBasicMaterial({ color: 0xff0000 });
+      let lineMaterial = new global$1.THREE.LineBasicMaterial({ color: 0xff0000 });
       let sign = (isTopOrRight) ? 1 : -1;
       // let dim = {models:{}, paths:{}}
       let add = 200 * scale * sign;
@@ -9794,7 +9808,7 @@
       //     sceneAdder({layer:1, mesh:group[j]},"section" + value + j);
       // }
       group.position.set(i*offset, -5000 * this.getInputData(3),0);
-      global.sceneAdder({name:`section${value}`, layer:1, mesh:group, meta:metaData});
+      global$1.sceneAdder({name:`section${value}`, layer:1, mesh:group, meta:metaData});
       // sceneAdder(group,[1, "section", value]);
       // // svgAll.models[value].origin = [i * offset, 0];
       i += 1;
@@ -9822,7 +9836,7 @@
     let group = topDraw(this.getInputData(0),this.getInputData(1), this.getInputData(2), this.getInputData(3), this.getInputData(4),this.getInputData(5),this.getInputData(6), this.getInputData(7));
     // topDraw(steelBoxDict,hBracingDict, diaDict, vstiffDict, nameToPointDict,initPoint)
     group.position.set(0,-offset,0);
-    global.sceneAdder({name:"topView", layer:6, mesh:group, meta:{part:"topView"}});
+    global$1.sceneAdder({name:"topView", layer:6, mesh:group, meta:{part:"topView"}});
 
     // sceneAdder(group,[6, "topView", "total"]);
   };
@@ -9837,7 +9851,7 @@
 
   GirderGeneralView1.prototype.on3DExecute = function() {
     let group = GirderGeneralDraw1(this.getInputData(0),this.getInputData(1));
-    global.sceneAdder({name:"GirderGeneralView1", layer:this.getInputData(1).layer, mesh:group, meta:{part:"GirderGeneralView"}});
+    global$1.sceneAdder({name:"GirderGeneralView1", layer:this.getInputData(1).layer, mesh:group, meta:{part:"GirderGeneralView"}});
     // sceneAdder({layer:this.getInputData(1).layer, mesh:group},"GirderGeneralView1");
     // sceneAdder(group, [this.getInputData(1), "GirderGeneralView1", "total"] );
   };
@@ -9855,7 +9869,7 @@
 
   GirderGeneralView2.prototype.on3DExecute = function() {
     let group = GirderGeneralDraw2(this.getInputData(0),this.getInputData(1),this.getInputData(2), this.getInputData(3), this.getInputData(4));
-    global.sceneAdder({name:"GirderGeneralView2", layer:this.getInputData(4).layer, mesh:group, meta:{part:"GirderGeneralView"}});
+    global$1.sceneAdder({name:"GirderGeneralView2", layer:this.getInputData(4).layer, mesh:group, meta:{part:"GirderGeneralView"}});
 
     // sceneAdder({layer:this.getInputData(4).layer, mesh:group},"GirderGeneralView2");
     // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
@@ -9877,7 +9891,7 @@
     let layer = this.getInputData(2).layer;
     let key = this.getInputData(3);
     // console.log("check", layer,key)
-    global.sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
+    global$1.sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
 
     // sceneAdder({layer:layer, mesh:group},key);
     // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
@@ -9899,7 +9913,7 @@
     let layer = this.getInputData(2).layer;
     let key = this.getInputData(3);
     // console.log("check", layer,key)
-    global.sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
+    global$1.sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
 
     // sceneAdder({layer:layer, mesh:group},key);
     // sceneAdder(group, [this.getInputData(4), "GirderGeneralView2", "total"]);
@@ -9936,7 +9950,7 @@
 
   LineDraw.prototype.on3DExecute = function() {
     let group = LineDrawView(this.getInputData(0),this.getInputData(1));
-    global.sceneAdder({name:"LineView", layer:3, mesh:group, meta:{part:"LineView"}});
+    global$1.sceneAdder({name:"LineView", layer:3, mesh:group, meta:{part:"LineView"}});
 
     // sceneAdder({layer:3, mesh:group},"LineView")
     // sceneAdder(group, [3, "LineView", "total"])
@@ -9951,7 +9965,7 @@
 
   LineSideDraw.prototype.on3DExecute = function() {
     let group = LineSideView(this.getInputData(0));
-    global.sceneAdder({name:"LineSideView", layer:4, mesh:group, meta:{part:"LineSideView"}});
+    global$1.sceneAdder({name:"LineSideView", layer:4, mesh:group, meta:{part:"LineSideView"}});
 
     // sceneAdder({layer:4, mesh:group},"LineSideView")
     // sceneAdder(group, [4, "LineSideView", "total"]);
@@ -9966,8 +9980,8 @@
 
   GirderLayoutDraw.prototype.on3DExecute = function() {
     let group = GirderLayoutView(this.getInputData(0));
-    global.sceneAdder({name:"GirderLayout", layer:3, mesh:group.plan, meta:{part:"GirderLayout"}});
-    global.sceneAdder({name:"GirderLayoutSide", layer:4, mesh:group.side, meta:{part:"GirderLayoutSide"}});
+    global$1.sceneAdder({name:"GirderLayout", layer:3, mesh:group.plan, meta:{part:"GirderLayout"}});
+    global$1.sceneAdder({name:"GirderLayoutSide", layer:4, mesh:group.side, meta:{part:"GirderLayoutSide"}});
 
     // sceneAdder({layer:3, mesh:group.plan},"GirderLayout")
     // sceneAdder({layer:4, mesh:group.side},"GirderLayoutSide")
@@ -11834,62 +11848,62 @@
   // import { defaultValues } from "./defaultValues";
 
 
-  global.LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
-  global.LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
-  global.LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
-  global.LiteGraph.registerNodeType("nexivil/GridStationList", StationList);
-  global.LiteGraph.registerNodeType("nexivil/SectionPoint", SectionPoint);
-  global.LiteGraph.registerNodeType("nexivil/DeckPoint", DeckPoint);
-  global.LiteGraph.registerNodeType("nexivil/MaterialQntt", MaterialQntt);
+  global$1.LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
+  global$1.LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
+  global$1.LiteGraph.registerNodeType("nexivil/gridPoint", GridPoint);
+  global$1.LiteGraph.registerNodeType("nexivil/GridStationList", StationList);
+  global$1.LiteGraph.registerNodeType("nexivil/SectionPoint", SectionPoint);
+  global$1.LiteGraph.registerNodeType("nexivil/DeckPoint", DeckPoint);
+  global$1.LiteGraph.registerNodeType("nexivil/MaterialQntt", MaterialQntt);
 
-  global.LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
-  global.LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
-  global.LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
-  global.LiteGraph.registerNodeType("HMECS/hBracing", HBracing);
-  global.LiteGraph.registerNodeType("HMECS/JackupDict", JackupDict);
-  global.LiteGraph.registerNodeType("HMECS/HstiffDict",HstiffDict);
-  global.LiteGraph.registerNodeType("HMECS/xbeam", Xbeam);
-  global.LiteGraph.registerNodeType("nexivil/support",Support);
-  global.LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
-  global.LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
-  global.LiteGraph.registerNodeType("nexivil/CompositeJoint",CompositeJoint);
-  global.LiteGraph.registerNodeType("nexivil/CompositeFrame",CompositeFrame);
-  global.LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
-  global.LiteGraph.registerNodeType("nexivil/AbutModel",AbutModel);
-  global.LiteGraph.registerNodeType("nexivil/AbutPoint",AbutPoint);
+  global$1.LiteGraph.registerNodeType("HMECS/steelBox", SteelBox);
+  global$1.LiteGraph.registerNodeType("HMECS/vStiffDict", VstiffDict);
+  global$1.LiteGraph.registerNodeType("HMECS/diaDict", DiaDict);
+  global$1.LiteGraph.registerNodeType("HMECS/hBracing", HBracing);
+  global$1.LiteGraph.registerNodeType("HMECS/JackupDict", JackupDict);
+  global$1.LiteGraph.registerNodeType("HMECS/HstiffDict",HstiffDict);
+  global$1.LiteGraph.registerNodeType("HMECS/xbeam", Xbeam);
+  global$1.LiteGraph.registerNodeType("nexivil/support",Support);
+  global$1.LiteGraph.registerNodeType("nexivil/sapJoint",SapJoint);
+  global$1.LiteGraph.registerNodeType("nexivil/sapFrame",SapFrame);
+  global$1.LiteGraph.registerNodeType("nexivil/CompositeJoint",CompositeJoint);
+  global$1.LiteGraph.registerNodeType("nexivil/CompositeFrame",CompositeFrame);
+  global$1.LiteGraph.registerNodeType("nexivil/SectionDB",SectionDB);
+  global$1.LiteGraph.registerNodeType("nexivil/AbutModel",AbutModel);
+  global$1.LiteGraph.registerNodeType("nexivil/AbutPoint",AbutPoint);
 
-  global.LiteGraph.registerNodeType("HMECS/splice", SplicePart);
-  global.LiteGraph.registerNodeType("HMECS/barrier", BarrierPoint);
-  global.LiteGraph.registerNodeType("HMECS/DeckRebar", DeckRebar);
-  global.LiteGraph.registerNodeType("HMECS/Stud", Stud);
+  global$1.LiteGraph.registerNodeType("HMECS/splice", SplicePart);
+  global$1.LiteGraph.registerNodeType("HMECS/barrier", BarrierPoint);
+  global$1.LiteGraph.registerNodeType("HMECS/DeckRebar", DeckRebar);
+  global$1.LiteGraph.registerNodeType("HMECS/Stud", Stud);
 
 
-  global.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
-  global.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
-  global.LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/LineView",LineViewer);
+  global$1.LiteGraph.registerNodeType("3DVIEW/steelPlateView", SteelPlateView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/diaPhragmView", DiaPhragmView);
   // LiteGraph.registerNodeType("3DVIEW/HorBracingView", HorBracingView);
-  global.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
-  global.LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
-  global.LiteGraph.registerNodeType("3DVIEW/BarrierView", BarrierView);
-  global.LiteGraph.registerNodeType("3DVIEW/SpliceBoltView", SpliceBoltView);
-  global.LiteGraph.registerNodeType("3DVIEW/RebarView", RebarView);
-  global.LiteGraph.registerNodeType("3DVIEW/StudView", StudView);
-  global.LiteGraph.registerNodeType("3DVIEW/AnalysisView", AnalysisView);
-  global.LiteGraph.registerNodeType("3DVIEW/AnalysisResultView", AnalysisResultView);
-  global.LiteGraph.registerNodeType("3DVIEW/LoftView", LoftView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/initPoint", InitPoint);
+  global$1.LiteGraph.registerNodeType("3DVIEW/deckView", DeckView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/BarrierView", BarrierView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/SpliceBoltView", SpliceBoltView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/RebarView", RebarView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/StudView", StudView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/AnalysisView", AnalysisView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/AnalysisResultView", AnalysisResultView);
+  global$1.LiteGraph.registerNodeType("3DVIEW/LoftView", LoftView);
 
-  global.LiteGraph.registerNodeType("Drawing/SectionView", SectionViewer );
-  global.LiteGraph.registerNodeType("Drawing/TopView", TopViewer );
+  global$1.LiteGraph.registerNodeType("Drawing/SectionView", SectionViewer );
+  global$1.LiteGraph.registerNodeType("Drawing/TopView", TopViewer );
   // LiteGraph.registerNodeType("Drawing/SideView", SideViewer );
-  global.LiteGraph.registerNodeType("Drawing/LineDraw", LineDraw );
-  global.LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
-  global.LiteGraph.registerNodeType("Drawing/GirderLayoutDraw", GirderLayoutDraw );
-  global.LiteGraph.registerNodeType("Drawing/GirderGeneralView1", GirderGeneralView1 );
-  global.LiteGraph.registerNodeType("Drawing/GirderGeneralView2", GirderGeneralView2 );
-  global.LiteGraph.registerNodeType("Drawing/PartGeneralView", PartGeneralView );
-  global.LiteGraph.registerNodeType("Drawing/XbeamGeneralView", XbeamGeneralView );
-  global.LiteGraph.registerNodeType("PSC/IGirder", IGirder );
-  global.LiteGraph.registerNodeType("PSC/GirderPoint", GirderPoint );
+  global$1.LiteGraph.registerNodeType("Drawing/LineDraw", LineDraw );
+  global$1.LiteGraph.registerNodeType("Drawing/LineSideDraw", LineSideDraw );
+  global$1.LiteGraph.registerNodeType("Drawing/GirderLayoutDraw", GirderLayoutDraw );
+  global$1.LiteGraph.registerNodeType("Drawing/GirderGeneralView1", GirderGeneralView1 );
+  global$1.LiteGraph.registerNodeType("Drawing/GirderGeneralView2", GirderGeneralView2 );
+  global$1.LiteGraph.registerNodeType("Drawing/PartGeneralView", PartGeneralView );
+  global$1.LiteGraph.registerNodeType("Drawing/XbeamGeneralView", XbeamGeneralView );
+  global$1.LiteGraph.registerNodeType("PSC/IGirder", IGirder );
+  global$1.LiteGraph.registerNodeType("PSC/GirderPoint", GirderPoint );
 
 
   // const {
@@ -11917,4 +11931,4 @@
   // }
   // LiteGraph.registerNodeType("nexivil/Horizon", HorizonInput);
 
-}(global));
+}(global$1));
