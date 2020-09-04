@@ -11712,8 +11712,8 @@
     };
 
   function IGirder(){
-      this.addInput("girderPoint","arr");
       this.addInput("pointDict","pointDict");
+      this.addInput("shapeData","arr");
       this.addOutput("model","model");
     }
     
