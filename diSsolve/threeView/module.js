@@ -872,27 +872,27 @@ export function PolyRegion(points, meshMaterial, initPoint) {
         }
         let removeIndex = [];
         let diagonal = [];
-        // for (let j = 0; j < numlist.length; j++) {
+        for (let j = 0; j < numlist.length; j++) {
 
-        //     let i = j === 0 ? numlist.length - 1 : j - 1;
-        //     let k = j < numlist.length - 1 ? j + 1 : 0;
+            let i = j === 0 ? numlist.length - 1 : j - 1;
+            let k = j < numlist.length - 1 ? j + 1 : 0;
 
-        //     let tempVec = [vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x];
-        //     let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
-        //     // console.log(tempVec, dotVec);
-        //     // console.log(vec[i],vec[j])
-        //     if (iter === 0) {
-        //         if (Math.abs(dotVec) < 0.000000001) {
-        //             removeIndex.push(j);
-        //         }
-        //     } else {
-        //         if (dotVec > 0.000000001) {
-        //             diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
-        //         } else {
-        //             diagonal.push(1000000)
-        //         }
-        //     }
-        // }
+            let tempVec = [vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x];
+            let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
+            // console.log(tempVec, dotVec);
+            // console.log(vec[i],vec[j])
+            if (iter === 0) {
+                if (Math.abs(dotVec) < 0.000000001) {
+                    removeIndex.push(j);
+                }
+            } else {
+                if (dotVec > 0.000000001) {
+                    diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
+                } else {
+                    diagonal.push(1000000)
+                }
+            }
+        }
         // if (diagonal.length > 0) {
         //     let j = diagonal.indexOf(Math.min(...diagonal))
         //     let i = j === 0 ? numlist.length - 1 : j - 1;
