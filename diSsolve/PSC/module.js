@@ -10,12 +10,21 @@ const shapeData = [
     ["G1P1", 160, 100, 920, 120, 200, 240, 230, 330],
 ]
 
-export function IGirderSection(girderPoint, shapeData) {
+export function GirderPointGen(pointData){
+    let result = {}
+    for (let i in pointData){
+        let [name, benchmark, offset] = pointData[i];
+        result[name] = { x: 0, y: offset, z: 2000, normalCos: 1, normalSin: 0 }
+    }
+    return result
+}
+
+export function IGirderSection(pointDict, shapeData) {
     let model = {"girder":{"points":[], "ptGroup" : []}};
     let slabThickness = 300; //슬래브두께 + 헌치 + 포장두께 
     for (let i in shapeData) {
         let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[i];
-        let cp = girderPoint[name];
+        let cp = pointDict[name];
         let pts = [
             { x: -l1 / 2 - l2, y: - slabThickness }, { x: -l1 / 2 - l2, y: - slabThickness - h1 },
             { x: -l1 / 2, y: - slabThickness - h1 - h2 }, { x: -l1 / 2, y: - slabThickness - h1 - h2 - h3 },

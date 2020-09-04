@@ -1,4 +1,4 @@
-import { IGirderSection } from "./module"
+import { IGirderSection, GirderPointGen } from "./module"
 
 const girderPoint = {
     "G1P0": { x: 0, y: 0, z: 2000, normalCos: 1, normalSin: 0 }, // masterStationNumber, girderStation이 없어서 toglobalPoint 함수에서 에러 발생여부 파악 그리고 예외처리
@@ -11,13 +11,24 @@ const shapeData = [
     ["G1P1", 160, 100, 920, 120, 200, 240, 230, 330],
 ]
 
+
+export function GirderPoint(){
+    this.addInput("pointData","arr");
+    this.addOutput("pointDict","pointDict");
+  }
+  
+  GirderPoint.prototype.onExecute = function() {
+    const result = GirderPointGen(this.getInputData(0))
+    this.setOutputData(0, result)
+  }
+
 export function IGirder(){
     this.addInput("girderPoint","arr");
-    this.addInput("shapeData","arr");
+    this.addInput("pointDict","pointDict");
     this.addOutput("model","model");
   }
   
   IGirder.prototype.onExecute = function() {
-    const result = IGirderSection(girderPoint, shapeData)
+    const result = IGirderSection(this.getInputData(0), this.getInputData(1))
     this.setOutputData(0, result)
   }
