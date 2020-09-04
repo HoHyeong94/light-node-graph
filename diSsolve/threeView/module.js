@@ -859,6 +859,7 @@ export function PolyRegion(points, meshMaterial, initPoint) {
     }
     let normalVec = [0,-1,0];
     let iter = 0;
+    console.log(numlist);
     while (numlist.lenth > 3) {
         for (let i = 0; i < numlist.length; i++) {
             let k = i < numlist.length- 1 ? i + 1 : 0;
@@ -877,9 +878,9 @@ export function PolyRegion(points, meshMaterial, initPoint) {
             crossVec.push(tempVec);
             let dotVec = tempVec[0]*normalVec[0] + tempVec[1]*normalVec[1] * tempVec[2]*normalVec[2];
             console.log(crossVec, dotVec)
-            if (Math.abs(dotVec) < 0.001){
+            if (Math.abs(dotVec) < 0.000000001){
                 removeIndex.push(j);
-            } else if ( dotVec > 0.001){
+            } else if ( dotVec > 0.000000001){
                 geometry.faces.push(new THREE.Face3(numlist[i], numlist[j], numlist[k]));
                 removeIndex.push(j);
             }

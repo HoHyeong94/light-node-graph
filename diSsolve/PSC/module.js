@@ -81,8 +81,6 @@ export function IGirderSection(pointDict, shapeData) {
     let newPts1 = [];
     pts2.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
     
-    console.log(pts1, pts2)
-    
     model["end1"] = { points : [newPts0, newPts1], closed : false, cap : false};
     model["cap1"] = { points : [cap1]}
 
