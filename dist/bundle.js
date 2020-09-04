@@ -7785,6 +7785,7 @@
                   y : points[numlist[k]].y - points[numlist[i]].y, 
                   z :points[numlist[k]].z - points[numlist[i]].z});
           }
+          let crossVec = [];
           let removeIndex = [];
           for (i = 0; i < numlist.length; i++){
 
@@ -7792,8 +7793,9 @@
               let k = j < numlist.length -1 ? j + 1 : 0;
 
               let tempVec = [vec[i].y*vec[j].z - vec[i].z*vec[j].y,vec[i].z*vec[j].x - vec[i].x*vec[j].z, vec[i].x*vec[j].y - vec[i].y*vec[j].x];
+              crossVec.push(tempVec);
               let dotVec = tempVec[0]*normalVec[0] + tempVec[1]*normalVec[1] * tempVec[2]*normalVec[2];
-
+              console.log(crossVec, dotVec);
               if (Math.abs(dotVec) < 0.001){
                   removeIndex.push(j);
               } else if ( dotVec > 0.001){
@@ -7807,7 +7809,7 @@
               numlist.splice(removeIndex[i],1);
           }
           iter ++; 
-          if (iter >100){ break;}
+          if (iter >5){ break;}
       }
 
 
