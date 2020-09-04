@@ -11746,7 +11746,7 @@
       
       console.log(pts0, pts1);
 
-      model["end1"] = { points : [pts0, pts1], closed : false, cap : false};
+      model["end1"] = { points : [newPts0, newPts1], closed : false, cap : false};
 
       return model
   }
