@@ -792,7 +792,7 @@ export function LoftModelView(model, initPoint) {
     let pNum = model.points[0].length
     let geometry = new THREE.Geometry();
     if (model.points.length === 1) {
-        group.add(PolyRegion(model.points[0], meshMaterial))
+        group.add(PolyRegion(model.points[0], meshMaterial, initPoint))
     } else {
         for (let i in model.points) {
             model.points[i].forEach(function (Point) {
@@ -845,7 +845,7 @@ export function LoftModelView(model, initPoint) {
 }
 
 
-export function PolyRegion(points, meshMaterial) {
+export function PolyRegion(points, meshMaterial, initPoint) {
     let pNum = points.length
     let geometry = new THREE.Geometry();
     points.forEach(function (Point) {
