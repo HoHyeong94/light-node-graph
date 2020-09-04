@@ -11673,7 +11673,7 @@
       let model = {"girder":{"points":[]}};
       let slabThickness = 300; //슬래브두께 + 헌치 + 포장두께 
       for (let i in shapeData) {
-          let [name, h1, h2, h3, h4, h5, l1, l2, l3] = girderPoint[shapeData[i]];
+          let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[i];
           let cp = girderPoint[name];
           let pts = [
               { x: -l1 / 2 - l2, y: - slabThickness }, { x: -l1 / 2 - l2, y: - slabThickness - h1 },
