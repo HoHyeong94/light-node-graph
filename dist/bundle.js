@@ -11673,8 +11673,8 @@
       let result = {};
       console.log(pointData);
       for (let i in pointData){
-          let [name, benchmark, offset] = pointData[i];
-          result[name] = { x: 0, y: offset, z: 2000, normalCos: 1, normalSin: 0 };
+          // let [name, benchmark, offset] = pointData[i];
+          result[pointData[i][0]] = { x: 0, y: offset, z: pointData[i][2], normalCos: 1, normalSin: 0 };
       }
       return result
   }
