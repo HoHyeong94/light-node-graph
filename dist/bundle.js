@@ -7710,12 +7710,15 @@
 
       let pNum = model.points[0].length;
       let geometry = new global.THREE.Geometry();
-      for (let i in model.points) {
-          model.points[i].forEach(function (Point) {
-              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
-          });
+      if (model.points.length === 1) {
+          group.add(PolyRegion(model.points[0], meshMaterial));
+      } else {
+          for (let i in model.points) {
+              model.points[i].forEach(function (Point) {
+                  geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+              });
+          }
       }
-
       for (let i = 0; i < model.points.length - 1; i++) {
           for (let j = 0; j < pNum; j++) {
               let k = j < pNum - 1 ? j + 1 : 0;
@@ -7758,6 +7761,21 @@
       geometry.computeFaceNormals();
       group.add(new global.THREE.Mesh(geometry, meshMaterial));
       return group
+  }
+
+
+  function PolyRegion(points, meshMaterial) {
+      let pNum = points.length;
+      let geometry = new global.THREE.Geometry();
+      for (let i in model.points) {
+          model.points[i].forEach(function (Point) {
+              geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
+          });
+      }
+      for (let j = 1; j < pNum - 1; j++) {
+          geometry.faces.push(new global.THREE.Face3(0, j, j + 1));
+      }
+      return new global.THREE.Mesh(geometry, meshMaterial)
   }
 
   function LineViewer() {
@@ -11729,19 +11747,25 @@
           { x: l2 / 2, y: - slabThickness - h1 }, { x: l2 / 2, y: - slabThickness },
       ];
 
-      let pts0 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }];
+      
+      let pts0 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }, 
+      {x :endShape.b0/2, y : pts[0].y - endShape.h0 }, {x :- endShape.b0/2, y : pts[0].y - endShape.h0 } ];
+      let pts1 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }];
       let cp = girderPoint["G1S1"];
+      let cap1 = [];
+      pts0.forEach(pt => cap1.push(ToGlobalPoint(cp,pt)));
       let newPts0 = [];
-      pts0.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
+      pts1.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
 
-      let pts1 = [{x : -endShape.b1/2, y : pts[0].y }, ...pts, {x :endShape.b1/2, y : pts[0].y }];
+      let pts2 = [{x : -endShape.b1/2, y : pts[0].y }, ...pts, {x :endShape.b1/2, y : pts[0].y }];
       cp = pointDict[shapeData[0][0]];
       let newPts1 = [];
-      pts1.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
+      pts2.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
       
-      console.log(pts0, pts1);
-
+      console.log(pts1, pts2);
+      
       model["end1"] = { points : [newPts0, newPts1], closed : false, cap : false};
+      model["cap1"] = { points : [cap1]};
 
       return model
   }

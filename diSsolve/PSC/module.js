@@ -66,19 +66,25 @@ export function IGirderSection(pointDict, shapeData) {
         { x: l2 / 2, y: - slabThickness - h1 }, { x: l2 / 2, y: - slabThickness },
     ];
 
-    let pts0 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }]
+    
+    let pts0 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }, 
+    {x :endShape.b0/2, y : pts[0].y - endShape.h0 }, {x :- endShape.b0/2, y : pts[0].y - endShape.h0 } ]
+    let pts1 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }]
     let cp = girderPoint["G1S1"]
+    let cap1 = [];
+    pts0.forEach(pt => cap1.push(ToGlobalPoint(cp,pt)));
     let newPts0 = [];
-    pts0.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
+    pts1.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
 
-    let pts1 = [{x : -endShape.b1/2, y : pts[0].y }, ...pts, {x :endShape.b1/2, y : pts[0].y }]
+    let pts2 = [{x : -endShape.b1/2, y : pts[0].y }, ...pts, {x :endShape.b1/2, y : pts[0].y }]
     cp = pointDict[shapeData[0][0]];
     let newPts1 = [];
-    pts1.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
+    pts2.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
     
-    console.log(pts0, pts1)
-
-    model["end1"] = { points : [newPts0, newPts1], closed : false, cap : false}
+    console.log(pts1, pts2)
+    
+    model["end1"] = { points : [newPts0, newPts1], closed : false, cap : false};
+    model["cap1"] = { points : [cap1]}
 
     return model
 }

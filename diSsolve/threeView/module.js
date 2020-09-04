@@ -791,12 +791,15 @@ export function LoftModelView(model, initPoint) {
 
     let pNum = model.points[0].length
     let geometry = new THREE.Geometry();
-    for (let i in model.points) {
-        model.points[i].forEach(function (Point) {
-            geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
-        })
+    if (model.points.length === 1) {
+        group.add(PolyRegion(model.points[0], meshMaterial))
+    } else {
+        for (let i in model.points) {
+            model.points[i].forEach(function (Point) {
+                geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
+            })
+        }
     }
-
     for (let i = 0; i < model.points.length - 1; i++) {
         for (let j = 0; j < pNum; j++) {
             let k = j < pNum - 1 ? j + 1 : 0
@@ -839,4 +842,19 @@ export function LoftModelView(model, initPoint) {
     geometry.computeFaceNormals();
     group.add(new THREE.Mesh(geometry, meshMaterial));
     return group
+}
+
+
+export function PolyRegion(points, meshMaterial) {
+    let pNum = points.length
+    let geometry = new THREE.Geometry();
+    for (let i in model.points) {
+        model.points[i].forEach(function (Point) {
+            geometry.vertices.push(new THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z))
+        })
+    }
+    for (let j = 1; j < pNum - 1; j++) {
+        geometry.faces.push(new THREE.Face3(0, j, j + 1));
+    }
+    return new THREE.Mesh(geometry, meshMaterial)
 }
