@@ -7779,7 +7779,7 @@
       let normalVec = [0,-1,0];
       let iter = 0;
       console.log(numlist);
-      while (numlist.lenth > 3) {
+      while (numlist.length > 3) {
           console.log(numlist);
           for (let i = 0; i < numlist.length; i++) {
               let k = i < numlist.length- 1 ? i + 1 : 0;
