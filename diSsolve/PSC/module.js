@@ -55,15 +55,15 @@ export function IGirderSection(pointDict, shapeData) {
     }
 
     let pts0 = model.girder.points[0];
-    pts0.splice(0,0,{x : -b0/2, y : pts0[0].y });
-    pts0.push({x :b0/2, y : pts0[0].y });
+    pts0.splice(0,0,{x : -endShape.b0/2, y : pts0[0].y });
+    pts0.push({x :endShape.b0/2, y : pts0[0].y });
     let cp = girderPoint["G1S1"]
     let newPts0 = [];
     pts0.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
 
     let pts1 = model.girder.points[0];
-    pts1.splice(0,0,{x : -b1/2, y : pts1[0].y });
-    pts1.push({x :b1/2, y : pts1[0].y });
+    pts1.splice(0,0,{x : -endShape.b1/2, y : pts1[0].y });
+    pts1.push({x :endShape.b1/2, y : pts1[0].y });
     cp = pointDict[shapeData[0][0]];
     let newPts1 = [];
     pts1.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
