@@ -903,7 +903,7 @@ export function PolyRegion(points, meshMaterial, initPoint) {
             let j = diagonal.indexOf(Math.min(...diagonal))
             let i = j === 0 ? numlist.length - 1 : j - 1;
             let k = j < numlist.length - 1 ? j + 1 : 0;
-            geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
+            geometry.faces.push(new THREE.Face3(numlist[i], numlist[j], numlist[k]));
             numlist.splice(j, 1);
         }
         iter++;
