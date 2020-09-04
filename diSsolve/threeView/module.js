@@ -893,16 +893,18 @@ export function PolyRegion(points, meshMaterial, initPoint) {
                 }
             }
         }
-        // if (diagonal.length > 0) {
-        //     let j = diagonal.indexOf(Math.min(...diagonal))
-        //     let i = j === 0 ? numlist.length - 1 : j - 1;
-        //     let k = j < numlist.length - 1 ? j + 1 : 0;
-        //     geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
-        //     numlist.splice(j, 1)
-        // }
+      
         removeIndex.sort(function (a, b) { return b - a }); // 내림차순 정렬
         for (let i in removeIndex) {
             numlist.splice(removeIndex[i], 1);
+        }
+
+        if (diagonal.length > 0) {
+            let j = diagonal.indexOf(Math.min(...diagonal))
+            let i = j === 0 ? numlist.length - 1 : j - 1;
+            let k = j < numlist.length - 1 ? j + 1 : 0;
+            geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
+            numlist.splice(j, 1);
         }
         iter++;
         if (iter > pNum) { break; }
