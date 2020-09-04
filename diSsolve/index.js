@@ -19,6 +19,8 @@ import { DeckRebar } from "./rebar/index"
 import { Stud } from "./stud/index"
 import { MaterialQntt } from "./quantity/index"
 import { AbutModel, AbutPoint } from "./substruc/index"
+import { IGirder } from "./PSC/index"
+
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -74,6 +76,7 @@ LiteGraph.registerNodeType("Drawing/GirderGeneralView1", GirderGeneralView1 );
 LiteGraph.registerNodeType("Drawing/GirderGeneralView2", GirderGeneralView2 );
 LiteGraph.registerNodeType("Drawing/PartGeneralView", PartGeneralView );
 LiteGraph.registerNodeType("Drawing/XbeamGeneralView", XbeamGeneralView );
+LiteGraph.registerNodeType("PSC/IGirder", IGirder );
 
 
 
