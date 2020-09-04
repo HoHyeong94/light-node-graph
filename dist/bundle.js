@@ -7780,13 +7780,13 @@
       let iter = 0;
       console.log(numlist);
       while (numlist.lenth > 3) {
+          console.log(numlist);
           for (let i = 0; i < numlist.length; i++) {
               let k = i < numlist.length- 1 ? i + 1 : 0;
               vec.push({x :points[numlist[k]].x - points[numlist[i]].x, 
                   y : points[numlist[k]].y - points[numlist[i]].y, 
                   z :points[numlist[k]].z - points[numlist[i]].z});
           }
-          let crossVec = [];
           let removeIndex = [];
           for (i = 0; i < numlist.length; i++){
 
@@ -7794,9 +7794,8 @@
               let k = j < numlist.length -1 ? j + 1 : 0;
 
               let tempVec = [vec[i].y*vec[j].z - vec[i].z*vec[j].y,vec[i].z*vec[j].x - vec[i].x*vec[j].z, vec[i].x*vec[j].y - vec[i].y*vec[j].x];
-              crossVec.push(tempVec);
               let dotVec = tempVec[0]*normalVec[0] + tempVec[1]*normalVec[1] * tempVec[2]*normalVec[2];
-              console.log(crossVec, dotVec);
+      
               if (Math.abs(dotVec) < 0.000000001){
                   removeIndex.push(j);
               } else if ( dotVec > 0.000000001){
