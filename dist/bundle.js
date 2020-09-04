@@ -7710,9 +7710,7 @@
 
       let pNum = model.points[0].length;
       let geometry = new global.THREE.Geometry();
-      console.log(model.points.length);
       for (let i in model.points) {
-          console.log(i, model.points[i]);
           model.points[i].forEach(function (Point) {
               geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
           });
@@ -11720,6 +11718,7 @@
       };
 
       let pts0 = model.girder.points[0];
+      
       pts0.splice(0,0,{x : -endShape.b0/2, y : pts0[0].y });
       pts0.push({x :endShape.b0/2, y : pts0[0].y });
       let cp = girderPoint["G1S1"];
@@ -11733,6 +11732,8 @@
       let newPts1 = [];
       pts1.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
       
+      console.log(pts0, pts1);
+
       model["end1"] = { points : [pts0, pts1], closed : false, cap : false};
 
       return model

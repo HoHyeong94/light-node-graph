@@ -55,6 +55,7 @@ export function IGirderSection(pointDict, shapeData) {
     }
 
     let pts0 = model.girder.points[0];
+    
     pts0.splice(0,0,{x : -endShape.b0/2, y : pts0[0].y });
     pts0.push({x :endShape.b0/2, y : pts0[0].y });
     let cp = girderPoint["G1S1"]
@@ -68,6 +69,8 @@ export function IGirderSection(pointDict, shapeData) {
     let newPts1 = [];
     pts1.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
     
+    console.log(pts0, pts1)
+
     model["end1"] = { points : [pts0, pts1], closed : false, cap : false}
 
     return model
