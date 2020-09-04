@@ -11687,7 +11687,7 @@
   }
 
   function IGirderSection(pointDict, shapeData) {
-      let model = { "girder": { "points": [], "ptGroup": [] } , "cap" : false};
+      let model = { "girder": { "points": [], "ptGroup": [], "cap" : false} };
       let slabThickness = 300; //슬래브두께 + 헌치 + 포장두께 
       for (let i in shapeData) {
           if (shapeData[i][0]) {
