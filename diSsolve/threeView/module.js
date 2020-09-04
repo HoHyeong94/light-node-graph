@@ -900,10 +900,10 @@ export function PolyRegion(points, meshMaterial, initPoint) {
         //     geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
         //     numlist.splice(j, 1)
         // }
-        // removeIndex.sort(function (a, b) { return b - a }); // 내림차순 정렬
-        // for (let i in removeIndex) {
-        //     numlist.splice(removeIndex[i], 1);
-        // }
+        removeIndex.sort(function (a, b) { return b - a }); // 내림차순 정렬
+        for (let i in removeIndex) {
+            numlist.splice(removeIndex[i], 1);
+        }
         iter++;
         if (iter > pNum) { break; }
     }
