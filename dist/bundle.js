@@ -7774,6 +7774,7 @@
       for (let j = 1; j < pNum - 1; j++) {
           geometry.faces.push(new global.THREE.Face3(0, j, j + 1));
       }
+      geometry.computeFaceNormals();
       return new global.THREE.Mesh(geometry, meshMaterial)
   }
 
