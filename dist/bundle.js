@@ -7721,34 +7721,38 @@
       for (let i = 0; i < model.points.length - 1; i++) {
           for (let j = 0; j < pNum; j++) {
               let k = j < pNum - 1 ? j + 1 : 0;
-              geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + k));
-              geometry.faces.push(new global.THREE.Face3(i * pNum + k, (i + 1) * pNum + j, (i + 1) * pNum + k));
+              if (k > 0 || model.closed === undefined || model.closed === true) {
+                  geometry.faces.push(new global.THREE.Face3(i * pNum + j, (i + 1) * pNum + j, i * pNum + k));
+                  geometry.faces.push(new global.THREE.Face3(i * pNum + k, (i + 1) * pNum + j, (i + 1) * pNum + k));
+              }
           }
-          if (model.ptGroup) {
-              if (i === 0) {
-                  for (let g in model.ptGroup) {
-                      for (let j = 1; j < model.ptGroup[g].length - 1; j++) {
-                          geometry.faces.push(new global.THREE.Face3(model.ptGroup[g][0], model.ptGroup[g][j], model.ptGroup[g][j + 1]));
+          if (model.cap === undefined || model.cap === true) {
+              if (model.ptGroup) {
+                  if (i === 0) {
+                      for (let g in model.ptGroup) {
+                          for (let j = 1; j < model.ptGroup[g].length - 1; j++) {
+                              geometry.faces.push(new global.THREE.Face3(model.ptGroup[g][0], model.ptGroup[g][j], model.ptGroup[g][j + 1]));
+                          }
                       }
                   }
-              }
-              if (i === model.points.length - 2) {
-                  for (let g in model.ptGroup) {
-                      for (let j = 1; j < model.ptGroup[g].length - 1; j++) {
-                          geometry.faces.push(new global.THREE.Face3((i + 1) * pNum + model.ptGroup[g][0],
-                              (i + 1) * pNum + model.ptGroup[g][j + 1], (i + 1) * pNum + model.ptGroup[g][j]));
+                  if (i === model.points.length - 2) {
+                      for (let g in model.ptGroup) {
+                          for (let j = 1; j < model.ptGroup[g].length - 1; j++) {
+                              geometry.faces.push(new global.THREE.Face3((i + 1) * pNum + model.ptGroup[g][0],
+                                  (i + 1) * pNum + model.ptGroup[g][j + 1], (i + 1) * pNum + model.ptGroup[g][j]));
+                          }
                       }
                   }
-              }
-          } else {
-              if (i === 0) {
-                  for (let j = 1; j < pNum - 1; j++) {
-                      geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
+              } else {
+                  if (i === 0) {
+                      for (let j = 1; j < pNum - 1; j++) {
+                          geometry.faces.push(new global.THREE.Face3(i, i + j, i + j + 1));
+                      }
                   }
-              }
-              if (i === model.points.length - 2) {
-                  for (let j = 1; j < pNum - 1; j++) {
-                      geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+                  if (i === model.points.length - 2) {
+                      for (let j = 1; j < pNum - 1; j++) {
+                          geometry.faces.push(new global.THREE.Face3((i + 1) * pNum, (i + 1) * pNum + j + 1, (i + 1) * pNum + j));
+                      }
                   }
               }
           }
