@@ -43,5 +43,32 @@ export function IGirderSection(pointDict, shapeData) {
             model.girder.ptGroup = [[0, 1, 2, 9, 10, 11], [2, 3, 8, 9], [3, 4, 5, 6, 7, 8]]
         }
     }
+    const girderPoint = {
+        "G1S1": { x: 0, y: 0, z: 2000, normalCos: 1, normalSin: 0 }, // masterStationNumber, girderStation이 없어서 toglobalPoint 함수에서 에러 발생여부 파악 그리고 예외처리
+        "G1S2": { x: 0, y: 30000, z: 2000, normalCos: 1, normalSin: 0 },
+    }
+    const endShape = {
+        b0 : 600,
+        b1 : 500,
+        h0 : 1400,
+        h1 : 1300
+    }
+
+    let pts0 = model.girder.points[0];
+    pts0.splice(0,0,{x : -b0/2, y : pts0[0].y });
+    pts0.push({x :b0/2, y : pts0[0].y });
+    let cp = girderPoint["G1S1"]
+    let newPts0 = [];
+    pts0.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
+
+    let pts1 = model.girder.points[0];
+    pts1.splice(0,0,{x : -b1/2, y : pts1[0].y });
+    pts1.push({x :b1/2, y : pts1[0].y });
+    cp = pointDict[shapeData[0][0]];
+    let newPts1 = [];
+    pts1.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
+    
+    model["end1"] = { points : [pts0, pts1], closed : false, cap : false}
+
     return model
 }
