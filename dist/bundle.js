@@ -7770,55 +7770,59 @@
       points.forEach(function (Point) {
           geometry.vertices.push(new global.THREE.Vector3(Point.x - initPoint.x, Point.y - initPoint.y, Point.z - initPoint.z));
       });
+
+      let numlist = [];
+      for (let i = 0; i < pNum; i++) {
+          numlist.push(i);
+      }
+      let iter = 0;
       // console.log(numlist);
-      // while (numlist.length > 3) {
-      //     console.log(iter, numlist);
-      //     let vec = [];
-      //     for (let i = 0; i < numlist.length; i++) {
-      //         let k = i < numlist.length - 1 ? i + 1 : 0;
-      //         vec.push({
-      //             x: points[numlist[k]].x - points[numlist[i]].x,
-      //             y: points[numlist[k]].y - points[numlist[i]].y,
-      //             z: points[numlist[k]].z - points[numlist[i]].z
-      //         });
-      //     }
-      //     let removeIndex = [];
-      //     let diagonal = [];
-      //     for (let j = 0; j < numlist.length; j++) {
+      while (numlist.length > 3) {
+          console.log(iter, numlist);
+          let vec = [];
+          for (let i = 0; i < numlist.length; i++) {
+              let k = i < numlist.length - 1 ? i + 1 : 0;
+              vec.push({
+                  x: points[numlist[k]].x - points[numlist[i]].x,
+                  y: points[numlist[k]].y - points[numlist[i]].y,
+                  z: points[numlist[k]].z - points[numlist[i]].z
+              });
+          }
+          // for (let j = 0; j < numlist.length; j++) {
 
-      //         let i = j === 0 ? numlist.length - 1 : j - 1;
-      //         let k = j < numlist.length - 1 ? j + 1 : 0;
+          //     let i = j === 0 ? numlist.length - 1 : j - 1;
+          //     let k = j < numlist.length - 1 ? j + 1 : 0;
 
-      //         let tempVec = [vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x];
-      //         let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
-      //         // console.log(tempVec, dotVec);
-      //         // console.log(vec[i],vec[j])
-      //         if (iter === 0) {
-      //             if (Math.abs(dotVec) < 0.000000001) {
-      //                 removeIndex.push(j);
-      //             }
-      //         } else {
-      //             if (dotVec > 0.000000001) {
-      //                 diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
-      //             } else {
-      //                 diagonal.push(1000000)
-      //             }
-      //         }
-      //     }
-      //     if (diagonal.length > 0) {
-      //         let j = diagonal.indexOf(Math.min(...diagonal))
-      //         let i = j === 0 ? numlist.length - 1 : j - 1;
-      //         let k = j < numlist.length - 1 ? j + 1 : 0;
-      //         geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
-      //         numlist.splice(j, 1)
-      //     }
-      //     removeIndex.sort(function (a, b) { return b - a }); // 내림차순 정렬
-      //     for (let i in removeIndex) {
-      //         numlist.splice(removeIndex[i], 1);
-      //     }
-      //     iter++;
-      //     if (iter > pNum) { break; }
-      // }
+          //     let tempVec = [vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x];
+          //     let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
+          //     // console.log(tempVec, dotVec);
+          //     // console.log(vec[i],vec[j])
+          //     if (iter === 0) {
+          //         if (Math.abs(dotVec) < 0.000000001) {
+          //             removeIndex.push(j);
+          //         }
+          //     } else {
+          //         if (dotVec > 0.000000001) {
+          //             diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
+          //         } else {
+          //             diagonal.push(1000000)
+          //         }
+          //     }
+          // }
+          // if (diagonal.length > 0) {
+          //     let j = diagonal.indexOf(Math.min(...diagonal))
+          //     let i = j === 0 ? numlist.length - 1 : j - 1;
+          //     let k = j < numlist.length - 1 ? j + 1 : 0;
+          //     geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
+          //     numlist.splice(j, 1)
+          // }
+          // removeIndex.sort(function (a, b) { return b - a }); // 내림차순 정렬
+          // for (let i in removeIndex) {
+          //     numlist.splice(removeIndex[i], 1);
+          // }
+          iter++;
+          if (iter > pNum) { break; }
+      }
 
 
       for (let j = 1; j < pNum - 1; j++) {
