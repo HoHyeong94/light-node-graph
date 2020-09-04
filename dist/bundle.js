@@ -11671,9 +11671,9 @@
 
   function GirderPointGen(pointData){
       let result = {};
-      console.log(pointData);
       for (let i in pointData){
           // let [name, benchmark, offset] = pointData[i];
+          console.log(pointData[i][0], pointData[i][2]);
           result[pointData[i][0]] = { x: 0, y: pointData[i][2], z: 2000 , normalCos: 1, normalSin: 0 };
       }
       return result
