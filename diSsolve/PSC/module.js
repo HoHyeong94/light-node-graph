@@ -52,7 +52,7 @@ export function IGirderSection(pointDict, shapeData) {
         b0: 600,
         b1: 500,
         h0: 1400,
-        h1: 1300,
+        h1: 1400,
         d: 200
     }
 
