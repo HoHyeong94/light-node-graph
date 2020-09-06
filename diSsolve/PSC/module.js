@@ -88,14 +88,14 @@ export function IGirderSection(pointDict, shapeData) {
     model["cap1"] = { points: [cap1] }
 
 
-    const tendon = [{ x: 0, y: 1125, h: 600, alpha: 7 },
-    { x: 0, y: 750, h: 600, alpha: 5 },
-    { x: 0, y: 375, h: 600, alpha: 2 },]
+    const tendon = [{ x: 0, y: 1125, h: 350, alpha: 7 },
+    { x: 0, y: 750, h: 350, alpha: 5 },
+    { x: 0, y: 375, h: 350, alpha: 2 },]
     let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2;
     let tendonRegionL = [];
     let tendonRegionR = [];
     let k = tendon.length - 1;
-    for (let i in tendon) {
+    for (let i = 0; i< tendon.length;i++) {
         let rad = tendon[i].alpha * Math.PI / 180
         let dz = [- tendon[i].h / 2 * Math.tan(rad), tendon[i].h / 2 * Math.tan(rad)]
         if (i === 0) {
