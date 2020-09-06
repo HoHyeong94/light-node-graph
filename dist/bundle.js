@@ -7805,8 +7805,8 @@
 
       let iter = 0;
       // console.log(numlist);
-      while (numlist.length > 3) {
-          // console.log(iter, numlist);
+      while (numlist.length > 2) {
+           console.log(iter, numlist);
           let vec = [];
           for (let i = 0; i < numlist.length; i++) {
               let k = i < numlist.length - 1 ? i + 1 : 0;
