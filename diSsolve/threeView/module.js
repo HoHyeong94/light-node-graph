@@ -857,10 +857,11 @@ export function PolyRegion(points, meshMaterial, initPoint) {
         numlist.push(i);
     }
     let normalVec = [0, -1, 0];
+    console.log(PolygonNormalVector(points))
     let iter = 0;
     // console.log(numlist);
     while (numlist.length > 3) {
-        console.log(iter, numlist);
+        // console.log(iter, numlist);
         let vec = [];
         for (let i = 0; i < numlist.length; i++) {
             let k = i < numlist.length - 1 ? i + 1 : 0;
@@ -893,7 +894,7 @@ export function PolyRegion(points, meshMaterial, initPoint) {
                 }
             }
         }
-      
+
         removeIndex.sort(function (a, b) { return b - a }); // 내림차순 정렬
         for (let i in removeIndex) {
             numlist.splice(removeIndex[i], 1);
@@ -911,4 +912,44 @@ export function PolyRegion(points, meshMaterial, initPoint) {
     }
     geometry.computeFaceNormals();
     return new THREE.Mesh(geometry, meshMaterial)
+}
+
+export function PolygonNormalVector(points) {
+    let vec = [];
+    let err = 0.0000001
+
+    for (let i = 0; i < points.length; i++) {
+        let k = i < points.length - 1 ? i + 1 : 0;
+        vec.push({
+            x: points[k].x - points[i].x,
+            y: points[k].y - points[i].y,
+            z: points[k].z - points[i].z
+        });
+    }
+    let normals = [];
+    for (let j = 0; j < vec.length; j++) {
+        let i = j === 0 ? vec.length - 1 : j - 1;
+        // let k = j < numlist.length - 1 ? j + 1 : 0;
+        normals.push([vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x]);
+        // let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
+    }
+    let pos = 1;
+    let neg = 0;
+    for (let i = 1; i < normals.length; i++) {
+        let dot = normals[0][0] * normals[i][0] + normals[0][1] * normals[i][1] + normals[0][2] * normals[i][2]
+        if (dot > err) {
+            pos++
+        } else if (dot < -err) {
+            neg++
+        }
+    }
+
+    let l = VectorLength(...normals[0])
+    let sign = pos > neg? 1 : -1;
+    let result = [normals[0][0]*sign/l,normals[0][1]*sign/l,normals[0][2]*sign/l ]
+    return result
+}
+
+export function VectorLength(x, y, z){
+ return Math.sqrt(x**2 + y**2 + z**2);
 }
