@@ -112,10 +112,9 @@ export function IGirderSection(pointDict, shapeData) {
             tendonRegionR.push(ToGlobalPoint3D(cp, { x: endShape.b1 / 2 + dz[1] * tanX, y: -slabThickness - endShape.h1, z: dz[1] }));
         }
     }
-
-    model["tendonCap1"] = { points: [tendonRegionL, tendonRegionR], closed: false, cap: false };
-    model["leftCap1"] = { points: [[cap1[0], cap1[1], ...tendonRegionL]] };
     let n = cap1.length -1
+    model["tendonCap1"] = { points: [[...tendonRegionL,cap1[1]],[...tendonRegionR,cap1[n-1]]], closed: false, cap: false };
+    model["leftCap1"] = { points: [[cap1[0], cap1[1], ...tendonRegionL]] };
     model["rightCap1"] = { points: [[cap1[n], cap1[n-1], ...tendonRegionR]] };
 
     return model
