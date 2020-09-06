@@ -7838,8 +7838,8 @@
                           if (ii !== i && ii !== j && ii !== k) {
                               if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
                                   innerCheck = true;
-                                  console.log("innerPoint", numlist[ii]);
-                              }
+                                  console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii]);
+                                                         }
                           }
                       }
                       if (innerCheck) {
@@ -7863,13 +7863,13 @@
               let i = j === 0 ? numlist.length - 1 : j - 1;
               let k = j < numlist.length - 1 ? j + 1 : 0;
               geometry.faces.push(new global.THREE.Face3(numlist[i], numlist[j], numlist[k]));
-              for (let ii = 0; ii < numlist.length; ii++) {
-                  if (ii !== i && ii !== j && ii !== k) {
-                      if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
-                          console.log("innerPoint", numlist[ii]);
-                      }
-                  }
-              }
+              // for (let ii = 0; ii < numlist.length; ii++) {
+              //     if (ii !== i && ii !== j && ii !== k) {
+              //         if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
+              //             console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii])
+              //         }
+              //     }
+              // }
               numlist.splice(j, 1);
           }
           iter++;
