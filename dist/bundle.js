@@ -7806,7 +7806,7 @@
       let iter = 0;
       // console.log(numlist);
       while (numlist.length > 2) {
-           console.log(iter, numlist);
+          console.log(iter, numlist);
           let vec = [];
           for (let i = 0; i < numlist.length; i++) {
               let k = i < numlist.length - 1 ? i + 1 : 0;
@@ -7944,16 +7944,26 @@
           normals.push([vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x]);
           // let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
       }
+
+      let newNormals = [];
+      normals.forEach(function (v) {
+          if (err < VectorLength(...v)) {
+              newNormals.push(v);
+          }
+      });
       // 위의 값 중에 체크포인트가 한변의 연장선상에 있으면 예외가 발생함
       let dots = [];
       let result = true;
-      for (let i = 0; i < points.length; i++) {
-          let k = i < points.length - 1 ? i + 1 : 0;
-          dots.push(normals[i][0] * normals[k][0] + normals[i][1] * normals[k][1] + normals[i][2] * normals[k][2]);
+      for (let i = 0; i < newNormals.length; i++) {
+          let k = i < newNormals.length - 1 ? i + 1 : 0;
+          dots.push(newNormals[i][0] * newNormals[k][0] + newNormals[i][1] * newNormals[k][1] + newNormals[i][2] * newNormals[k][2]);
       }
-
-      if (dots[0] * dots[1] < -err || dots[1] * dots[2] < -err || dots[2] * dots[0] < -err) {
-          result = false;
+      for (let i = 0; i < dots.length; i++) {
+          let k = i < dots.length - 1 ? i + 1 : 0;
+          if (dots[i] * dots[k] < -err) {
+              result = false;
+              break;
+          }
       }
 
       return result
