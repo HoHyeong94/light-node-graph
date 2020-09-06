@@ -856,8 +856,8 @@ export function PolyRegion(points, meshMaterial, initPoint) {
     for (let i = 0; i < pNum; i++) {
         numlist.push(i);
     }
-    let normalVec = [0, -1, 0];
-    console.log(PolygonNormalVector(points))
+    let normalVec = PolygonNormalVector(points)//[0, -1, 0];
+  
     let iter = 0;
     // console.log(numlist);
     while (numlist.length > 3) {
@@ -933,10 +933,17 @@ export function PolygonNormalVector(points) {
         normals.push([vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x]);
         // let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
     }
+
+    let newNormals = [];
+    normals.forEach(function(v){
+        if (err < VectorLength(...v)){
+            newNormals.push(v)
+        }
+    } )
     let pos = 1;
     let neg = 0;
-    for (let i = 1; i < normals.length; i++) {
-        let dot = normals[0][0] * normals[i][0] + normals[0][1] * normals[i][1] + normals[0][2] * normals[i][2]
+    for (let i = 1; i < newNormals.length; i++) {
+        let dot = newNormals[0][0] * newNormals[i][0] + newNormals[0][1] * newNormals[i][1] + newNormals[0][2] * newNormals[i][2]
         if (dot > err) {
             pos++
         } else if (dot < -err) {
@@ -944,12 +951,16 @@ export function PolygonNormalVector(points) {
         }
     }
 
-    let l = VectorLength(...normals[0])
+    let l = VectorLength(...newNormals[0])
     let sign = pos > neg? 1 : -1;
-    let result = [normals[0][0]*sign/l,normals[0][1]*sign/l,normals[0][2]*sign/l ]
+    let result = [newNormals[0][0]*sign/l,newNormals[0][1]*sign/l,newNormals[0][2]*sign/l ]
     return result
 }
 
 export function VectorLength(x, y, z){
  return Math.sqrt(x**2 + y**2 + z**2);
+}
+
+export function innerTriangle(point1, point2, point3, checkPoint){
+    
 }
