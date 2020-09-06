@@ -7965,6 +7965,9 @@
               break;
           }
       }
+      if(result){
+          console.log(newNormals, dots);
+      }
 
       return result
   }

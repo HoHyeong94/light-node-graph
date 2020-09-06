@@ -1021,6 +1021,9 @@ export function InnerPointCheck(point1, point2, point3, checkPoint) { //삼각�
             break;
         }
     }
+    if(result){
+        console.log(newNormals, dots)
+    }
 
     return result
 }
