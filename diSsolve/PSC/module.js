@@ -70,8 +70,9 @@ export function IGirderSection(pointDict, shapeData) {
     ];
 
 
-    let pts0 = [{ x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness },
-    { x: endShape.b0 / 2, y: -slabThickness - endShape.h0 }, { x: - endShape.b0 / 2, y: -slabThickness - endShape.h0 }]
+    let pts0 = [{ x: - endShape.b0 / 2, y: -slabThickness - endShape.h0 },
+        { x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness },
+    { x: endShape.b0 / 2, y: -slabThickness - endShape.h0 }, ]
     let pts1 = [{ x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness }]
     let cp = girderPoint["G1S1"]
     let cap1 = [];
@@ -113,5 +114,9 @@ export function IGirderSection(pointDict, shapeData) {
     }
 
     model["tendonCap1"] = { points: [tendonRegionL, tendonRegionR], closed: false, cap: false };
+    model["leftCap1"] = { points: [[newPts0[0], newPts0[1], ...tendonRegionL]] };
+    let n = newPts0.length -1
+    model["rightCap1"] = { points: [[newPts0[n], newPts0[n-1], ...tendonRegionL]] };
+
     return model
 }
