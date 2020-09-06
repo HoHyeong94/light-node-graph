@@ -11853,15 +11853,25 @@
       let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2 ;
       let tendonRegionL = [];
       let tendonRegionR = [];
+      let k = tendon.length - 1;
       for (let i in tendon){
           let rad = tendon[i].alpha * Math.PI/180;
           let dz = [- tendon[i].h / 2 * Math.tan(rad) , tendon[i].h / 2 * Math.tan(rad) ];
-       tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[0] * tanX , y : bottomY + tendon[i].y, z : dz[0]}));
-       tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[1] * tanX , y : bottomY + tendon[i].y, z : dz[1]}));
-       tendonRegionR.push(ToGlobalPoint3D(cp, { x : endShape.b1 / 2 + dz[0] * tanX , y : bottomY + tendon[i].y, z : dz[0]}));
-       tendonRegionR.push(ToGlobalPoint3D(cp,{ x : endShape.b1 / 2 + dz[1] * tanX , y : bottomY + tendon[i].y, z : dz[1]}));
+      if ( i===0){
+          tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[0] * tanX , y : -slabThickness, z : dz[0]}));   
+          tendonRegionR.push(ToGlobalPoint3D(cp, { x : endShape.b1 / 2 + dz[0] * tanX , y : -slabThickness, z : dz[0]}));
+      }
+       tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[0] * tanX , y : bottomY + tendon[i].y + tendon[i].h / 2, z : dz[0]}));
+       tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[1] * tanX , y : bottomY + tendon[i].y - tendon[i].h / 2, z : dz[1]}));
+       tendonRegionR.push(ToGlobalPoint3D(cp, { x : endShape.b1 / 2 + dz[0] * tanX , y : bottomY + tendon[i].y + tendon[i].h / 2, z : dz[0]}));
+       tendonRegionR.push(ToGlobalPoint3D(cp,{ x : endShape.b1 / 2 + dz[1] * tanX , y : bottomY + tendon[i].y - tendon[i].h / 2, z : dz[1]}));
   }
-  model["tendonCap1"] = { points : [tendonRegionL, tendonRegionR], closed : false, cap : false};
+      if ( i===k){
+          tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[1] * tanX , y : -slabThickness - endShape.h1, z : dz[1]}));   
+          tendonRegionR.push(ToGlobalPoint3D(cp, { x : endShape.b1 / 2 + dz[1] * tanX , y : -slabThickness - endShape.h1, z : dz[1]}));
+      }
+
+      model["tendonCap1"] = { points : [tendonRegionL, tendonRegionR], closed : false, cap : false};
       return model
   }
 
