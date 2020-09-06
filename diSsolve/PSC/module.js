@@ -70,7 +70,7 @@ export function IGirderSection(pointDict, shapeData) {
     ];
 
 
-    let pts0 = [{ x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness.y },
+    let pts0 = [{ x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness },
     { x: endShape.b0 / 2, y: -slabThickness - endShape.h0 }, { x: - endShape.b0 / 2, y: -slabThickness - endShape.h0 }]
     let pts1 = [{ x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness }]
     let cp = girderPoint["G1S1"]
