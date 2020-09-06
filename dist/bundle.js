@@ -11811,7 +11811,7 @@
           b0: 600,
           b1: 500,
           h0: 1400,
-          h1: 1400,
+          h1: 1300,
           d: 200
       };
 
@@ -11829,9 +11829,9 @@
       ];
 
 
-      let pts0 = [{ x: -endShape.b0 / 2, y: pts[0].y }, ...pts, { x: endShape.b0 / 2, y: pts[0].y },
-      { x: endShape.b0 / 2, y: pts[0].y - endShape.h0 }, { x: - endShape.b0 / 2, y: pts[0].y - endShape.h0 }];
-      let pts1 = [{ x: -endShape.b0 / 2, y: pts[0].y }, ...pts, { x: endShape.b0 / 2, y: pts[0].y }];
+      let pts0 = [{ x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness.y },
+      { x: endShape.b0 / 2, y: -slabThickness - endShape.h0 }, { x: - endShape.b0 / 2, y: -slabThickness - endShape.h0 }];
+      let pts1 = [{ x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness }];
       let cp = girderPoint["G1S1"];
       let cap1 = [];
       pts0.forEach(pt => cap1.push(ToGlobalPoint(cp, pt)));
@@ -11847,9 +11847,9 @@
       model["cap1"] = { points: [cap1] };
 
 
-      const tendon = [{ x: 0, y: 1125, h: 350, alpha: 7 },
-      { x: 0, y: 750, h: 350, alpha: 5 },
-      { x: 0, y: 375, h: 350, alpha: 2 },];
+      const tendon = [{ x: 0, y: 1125, h: 300, alpha: 7 },
+      { x: 0, y: 750, h: 300, alpha: 5 },
+      { x: 0, y: 375, h: 300, alpha: 2 },];
       let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2;
       let tendonRegionL = [];
       let tendonRegionR = [];
