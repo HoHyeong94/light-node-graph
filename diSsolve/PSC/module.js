@@ -113,7 +113,7 @@ export function IGirderSection(pointDict, shapeData) {
         }
     }
     let n = cap1.length -1
-    model["tendonCap1"] = { points: [[...tendonRegionL,cap1[1]],[...tendonRegionR,cap1[n-1]]], closed: false, cap: false };
+    model["tendonCap1"] = { points: [[...tendonRegionL,cap1[0]],[...tendonRegionR,cap1[n]]], closed: false, cap: false };
     model["leftCap1"] = { points: [[cap1[0], cap1[1], ...tendonRegionL]] };
     model["rightCap1"] = { points: [[cap1[n], cap1[n-1], ...tendonRegionR]] };
 
