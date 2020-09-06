@@ -1015,8 +1015,8 @@ export function InnerPointCheck(point1, point2, point3, checkPoint) { //삼각�
         dots.push(newNormals[i][0] * newNormals[k][0] + newNormals[i][1] * newNormals[k][1] + newNormals[i][2] * newNormals[k][2])
     }
     for (let i = 0; i < dots.length; i++) {
-        let k = i < dots.length - 1 ? i + 1 : 0;
-        if (dots[i] * dots[k] < -err) {
+        // let k = i < dots.length - 1 ? i + 1 : 0;
+        if (dots[i] < -err) {
             result = false;
             break;
         }
