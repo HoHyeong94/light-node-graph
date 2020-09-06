@@ -857,7 +857,7 @@ export function PolyRegion(points, meshMaterial, initPoint) {
         numlist.push(i);
     }
     let normalVec = PolygonNormalVector(points)//[0, -1, 0];
-  
+
     let iter = 0;
     // console.log(numlist);
     while (numlist.length > 3) {
@@ -905,6 +905,13 @@ export function PolyRegion(points, meshMaterial, initPoint) {
             let i = j === 0 ? numlist.length - 1 : j - 1;
             let k = j < numlist.length - 1 ? j + 1 : 0;
             geometry.faces.push(new THREE.Face3(numlist[i], numlist[j], numlist[k]));
+            for (let ii = 0; ii < numlist.length; ii++) {
+                if (ii !== i && ii !== j && ii !== k) {
+                    if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
+                        console.log("innerPoint", numlist[ii])
+                    }
+                }
+            }
             numlist.splice(j, 1);
         }
         iter++;
@@ -935,11 +942,11 @@ export function PolygonNormalVector(points) {
     }
 
     let newNormals = [];
-    normals.forEach(function(v){
-        if (err < VectorLength(...v)){
+    normals.forEach(function (v) {
+        if (err < VectorLength(...v)) {
             newNormals.push(v)
         }
-    } )
+    })
     let pos = 1;
     let neg = 0;
     for (let i = 1; i < newNormals.length; i++) {
@@ -952,15 +959,45 @@ export function PolygonNormalVector(points) {
     }
 
     let l = VectorLength(...newNormals[0])
-    let sign = pos > neg? 1 : -1;
-    let result = [newNormals[0][0]*sign/l,newNormals[0][1]*sign/l,newNormals[0][2]*sign/l ]
+    let sign = pos > neg ? 1 : -1;
+    let result = [newNormals[0][0] * sign / l, newNormals[0][1] * sign / l, newNormals[0][2] * sign / l]
     return result
 }
 
-export function VectorLength(x, y, z){
- return Math.sqrt(x**2 + y**2 + z**2);
+export function VectorLength(x, y, z) {
+    return Math.sqrt(x ** 2 + y ** 2 + z ** 2);
 }
 
-export function innerTriangle(point1, point2, point3, checkPoint){
-    
+export function InnerPointCheck(point1, point2, point3, checkPoint) { //삼각형(point1, point2, point3)의 내부에(모서리 포함) checkPoint가 있으면 true 출력
+    let vec = [];
+    let err = 0.0000001
+    const points = [point1, point2, point3]
+    for (let i = 0; i < points.length; i++) {
+        let k = i < points.length - 1 ? i + 1 : 0;
+        vec.push({
+            x: checkPoint.x - points[i].x,
+            y: checkPoint.y - points[i].y,
+            z: checkPoint.z - points[i].z
+        });
+    }
+    let normals = [];
+    for (let j = 0; j < vec.length; j++) {
+        let i = j === 0 ? vec.length - 1 : j - 1;
+        // let k = j < numlist.length - 1 ? j + 1 : 0;
+        normals.push([vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x]);
+        // let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
+    }
+    // 위의 값 중에 체크포인트가 한변의 연장선상에 있으면 예외가 발생함
+    let dots = [];
+    let result = true;
+    for (let i = 0; i < points.length; i++) {
+        let k = i < points.length - 1 ? i + 1 : 0;
+        dots.push(normals[i][0] * normals[k][0] + normals[i][1] * normals[k][1] + normals[i][2] * normals[k][2])
+    }
+
+    if (dots[0] * dots[1] < -err || dots[1] * dots[2] < -err || dots[2] * dots[0] < -err) {
+        result = false
+    }
+
+    return result
 }
