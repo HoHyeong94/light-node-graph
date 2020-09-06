@@ -7821,6 +7821,7 @@
           for (let j = 0; j < numlist.length; j++) {
 
               let i = j === 0 ? numlist.length - 1 : j - 1;
+              let k = j < numlist.length - 1 ? j + 1 : 0;
 
               let tempVec = [vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x];
               let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
@@ -7832,7 +7833,20 @@
                   }
               } else {
                   if (dotVec > 0.000000001) {
-                      diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
+                      let innerCheck = false;
+                      for (let ii = 0; ii < numlist.length; ii++) {
+                          if (ii !== i && ii !== j && ii !== k) {
+                              if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
+                                  innerCheck = true;
+                                  console.log("innerPoint", numlist[ii]);
+                              }
+                          }
+                      }
+                      if (innerCheck) {
+                          diagonal.push(1000000);
+                      } else {
+                          diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
+                      }
                   } else {
                       diagonal.push(1000000);
                   }

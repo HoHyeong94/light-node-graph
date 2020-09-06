@@ -898,12 +898,12 @@ export function PolyRegion(points, meshMaterial, initPoint) {
                         }
                     }
                     if (innerCheck) {
-                        diagonal.push(1000000)
+                        diagonal.push(1000000);
                     } else {
                         diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
                     }
                 } else {
-                    diagonal.push(1000000)
+                    diagonal.push(1000000);
                 }
             }
         }
