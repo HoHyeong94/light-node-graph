@@ -888,7 +888,20 @@ export function PolyRegion(points, meshMaterial, initPoint) {
                 }
             } else {
                 if (dotVec > 0.000000001) {
-                    diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
+                    let innerCheck = false;
+                    for (let ii = 0; ii < numlist.length; ii++) {
+                        if (ii !== i && ii !== j && ii !== k) {
+                            if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
+                                innerCheck = true
+                                console.log("innerPoint", numlist[ii])
+                            }
+                        }
+                    }
+                    if (innerCheck) {
+                        diagonal.push(1000000)
+                    } else {
+                        diagonal.push(Math.sqrt((vec[i].x + vec[j].x) ** 2 + (vec[i].y + vec[j].y) ** 2 + (vec[i].z + vec[j].z) ** 2));
+                    }
                 } else {
                     diagonal.push(1000000)
                 }
