@@ -1,4 +1,5 @@
-import { ToGlobalPoint } from "../geometryModule"
+import { ToGlobalPoint, ToGlobalPoint3D } from "../geometryModule"
+import { DiaShapeDict } from "../stiffner/module"
 const girderPoint = {
     "G1P0": { x: 0, y: 0, z: 2000, normalCos: 1, normalSin: 0 }, // masterStationNumber, girderStation이 없어서 toglobalPoint 함수에서 에러 발생여부 파악 그리고 예외처리
     "G1P1": { x: 0, y: 40000, z: 2000, normalCos: 1, normalSin: 0 },
@@ -23,7 +24,7 @@ export function GirderPointGen(pointData) {
 
 export function IGirderSection(pointDict, shapeData) {
     let model = { "girder": { "points": [], "ptGroup": [], "cap" : false} };
-    let slabThickness = 300; //슬래브두께 + 헌치 + 포장두께 
+    let slabThickness = 300; //슬래브두께 + 헌치 + 포장두께
     for (let i in shapeData) {
         if (shapeData[i][0]) {
             let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[i];
@@ -51,11 +52,13 @@ export function IGirderSection(pointDict, shapeData) {
         b0 : 600,
         b1 : 500,
         h0 : 1400,
-        h1 : 1300
+        h1 : 1300,
+        d : 200
     }
 
 
     let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[0];
+    let bottomY = -slabThickness - h1 - h2 -h3 -h4 - h5;
     let pts = [
         { x: - l2 / 2, y: - slabThickness }, { x: - l2 / 2, y: - slabThickness - h1 },
         { x: -l1 / 2, y: - slabThickness - h1 - h2 }, { x: -l1 / 2, y: - slabThickness - h1 - h2 - h3 },
@@ -84,5 +87,21 @@ export function IGirderSection(pointDict, shapeData) {
     model["end1"] = { points : [newPts0, newPts1], closed : false, cap : false};
     model["cap1"] = { points : [cap1]}
 
+
+    const tendon = [{ x : 0, y : 1125, h : 600, alpha : 7 },
+        { x : 0, y : 750,  h :600, alpha : 5},
+        { x : 0, y : 375,  h : 600, alpha : 2 },]
+    let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2 ;
+    let tendonRegionL = [];
+    let tendonRegionR = [];
+    for (let i in tendon){
+        let rad = tendon[i].alpha * Math.PI/180
+        let dz = [- tendon[i].h / 2 * Math.tan(rad) , tendon[i].h / 2 * Math.tan(rad) ]
+     tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[0] * tanX , y : bottomY + tendon[i].y, z : dz[0]}));
+     tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[1] * tanX , y : bottomY + tendon[i].y, z : dz[1]}));
+     tendonRegionR.push(ToGlobalPoint3D(cp, { x : endShape.b1 / 2 + dz[0] * tanX , y : bottomY + tendon[i].y, z : dz[0]}));
+     tendonRegionR.push(ToGlobalPoint3D(cp,{ x : endShape.b1 / 2 + dz[1] * tanX , y : bottomY + tendon[i].y, z : dz[1]}));
+}
+model["tendonCap1"] = { points : [tendonRegionL, tendonRegionR], closed : false, cap : false};
     return model
 }

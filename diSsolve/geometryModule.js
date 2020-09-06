@@ -1,5 +1,31 @@
 import { THREE } from "global";
 
+export function ToGlobalPoint3D(Point, node3D){
+  let newPoint = {
+      x:0, y:0, z:0
+  }
+  const cos = Point.normalCos;
+  const sin = Point.normalSin;
+  // let skewCot = 0;
+  // let skew = Point.skew? Point.skew : 90;
+  // if (Point.skew !=90){
+  //     skewCot = - 1 / Math.tan(skew * Math.PI/180) 
+  // };
+  let X = node3D.x
+  let Y = - node3D.z; 
+  let Z = node3D.y
+
+  newPoint.x = Point.x + X * cos - Y*sin;
+  newPoint.y = Point.y + X * sin + Y*cos;
+  newPoint.z = Point.z + Z;
+  // newPoint.s = Point.masterStationNumber;
+  // newPoint.skew = skew;
+  // newPoint.normalCos = cos;
+  // newPoint.normalSin = sin;
+  // newPoint.girderStation = Point.girderStation;
+  return newPoint
+}
+
 export function ToGlobalPoint(Point, node2D){
     let newPoint = {
         x:0, y:0, z:0
