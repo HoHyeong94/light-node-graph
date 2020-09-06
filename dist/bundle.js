@@ -11782,7 +11782,7 @@
   }
 
   function IGirderSection(pointDict, shapeData) {
-      let model = { "girder": { "points": [], "ptGroup": [], "cap" : false} };
+      let model = { "girder": { "points": [], "ptGroup": [], "cap": false } };
       let slabThickness = 300; //슬래브두께 + 헌치 + 포장두께
       for (let i in shapeData) {
           if (shapeData[i][0]) {
@@ -11808,16 +11808,16 @@
           "G1S2": { x: 0, y: 30000, z: 2000, normalCos: 1, normalSin: 0 },
       };
       const endShape = {
-          b0 : 600,
-          b1 : 500,
-          h0 : 1400,
-          h1 : 1300,
-          d : 200
+          b0: 600,
+          b1: 500,
+          h0: 1400,
+          h1: 1300,
+          d: 200
       };
 
 
       let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[0];
-      let bottomY = -slabThickness - h1 - h2 -h3 -h4 - h5;
+      let bottomY = -slabThickness - h1 - h2 - h3 - h4 - h5;
       let pts = [
           { x: - l2 / 2, y: - slabThickness }, { x: - l2 / 2, y: - slabThickness - h1 },
           { x: -l1 / 2, y: - slabThickness - h1 - h2 }, { x: -l1 / 2, y: - slabThickness - h1 - h2 - h3 },
@@ -11828,50 +11828,50 @@
           { x: l2 / 2, y: - slabThickness - h1 }, { x: l2 / 2, y: - slabThickness },
       ];
 
-      
-      let pts0 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }, 
-      {x :endShape.b0/2, y : pts[0].y - endShape.h0 }, {x :- endShape.b0/2, y : pts[0].y - endShape.h0 } ];
-      let pts1 = [{x : -endShape.b0/2, y : pts[0].y }, ...pts, {x :endShape.b0/2, y : pts[0].y }];
+
+      let pts0 = [{ x: -endShape.b0 / 2, y: pts[0].y }, ...pts, { x: endShape.b0 / 2, y: pts[0].y },
+      { x: endShape.b0 / 2, y: pts[0].y - endShape.h0 }, { x: - endShape.b0 / 2, y: pts[0].y - endShape.h0 }];
+      let pts1 = [{ x: -endShape.b0 / 2, y: pts[0].y }, ...pts, { x: endShape.b0 / 2, y: pts[0].y }];
       let cp = girderPoint["G1S1"];
       let cap1 = [];
-      pts0.forEach(pt => cap1.push(ToGlobalPoint(cp,pt)));
+      pts0.forEach(pt => cap1.push(ToGlobalPoint(cp, pt)));
       let newPts0 = [];
       pts1.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
 
-      let pts2 = [{x : -endShape.b1/2, y : pts[0].y }, ...pts, {x :endShape.b1/2, y : pts[0].y }];
+      let pts2 = [{ x: -endShape.b1 / 2, y: pts[0].y }, ...pts, { x: endShape.b1 / 2, y: pts[0].y }];
       cp = pointDict[shapeData[0][0]];
       let newPts1 = [];
       pts2.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
-      
-      model["end1"] = { points : [newPts0, newPts1], closed : false, cap : false};
-      model["cap1"] = { points : [cap1]};
+
+      model["end1"] = { points: [newPts0, newPts1], closed: false, cap: false };
+      model["cap1"] = { points: [cap1] };
 
 
-      const tendon = [{ x : 0, y : 1125, h : 600, alpha : 7 },
-          { x : 0, y : 750,  h :600, alpha : 5},
-          { x : 0, y : 375,  h : 600, alpha : 2 },];
-      let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2 ;
+      const tendon = [{ x: 0, y: 1125, h: 600, alpha: 7 },
+      { x: 0, y: 750, h: 600, alpha: 5 },
+      { x: 0, y: 375, h: 600, alpha: 2 },];
+      let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2;
       let tendonRegionL = [];
       let tendonRegionR = [];
       let k = tendon.length - 1;
-      for (let i in tendon){
-          let rad = tendon[i].alpha * Math.PI/180;
-          let dz = [- tendon[i].h / 2 * Math.tan(rad) , tendon[i].h / 2 * Math.tan(rad) ];
-      if ( i===0){
-          tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[0] * tanX , y : -slabThickness, z : dz[0]}));   
-          tendonRegionR.push(ToGlobalPoint3D(cp, { x : endShape.b1 / 2 + dz[0] * tanX , y : -slabThickness, z : dz[0]}));
-      }
-       tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[0] * tanX , y : bottomY + tendon[i].y + tendon[i].h / 2, z : dz[0]}));
-       tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[1] * tanX , y : bottomY + tendon[i].y - tendon[i].h / 2, z : dz[1]}));
-       tendonRegionR.push(ToGlobalPoint3D(cp, { x : endShape.b1 / 2 + dz[0] * tanX , y : bottomY + tendon[i].y + tendon[i].h / 2, z : dz[0]}));
-       tendonRegionR.push(ToGlobalPoint3D(cp,{ x : endShape.b1 / 2 + dz[1] * tanX , y : bottomY + tendon[i].y - tendon[i].h / 2, z : dz[1]}));
-  }
-      if ( i===k){
-          tendonRegionL.push(ToGlobalPoint3D(cp, { x : - endShape.b1 / 2 - dz[1] * tanX , y : -slabThickness - endShape.h1, z : dz[1]}));   
-          tendonRegionR.push(ToGlobalPoint3D(cp, { x : endShape.b1 / 2 + dz[1] * tanX , y : -slabThickness - endShape.h1, z : dz[1]}));
+      for (let i in tendon) {
+          let rad = tendon[i].alpha * Math.PI / 180;
+          let dz = [- tendon[i].h / 2 * Math.tan(rad), tendon[i].h / 2 * Math.tan(rad)];
+          if (i === 0) {
+              tendonRegionL.push(ToGlobalPoint3D(cp, { x: - endShape.b1 / 2 - dz[0] * tanX, y: -slabThickness, z: dz[0] }));
+              tendonRegionR.push(ToGlobalPoint3D(cp, { x: endShape.b1 / 2 + dz[0] * tanX, y: -slabThickness, z: dz[0] }));
+          }
+          tendonRegionL.push(ToGlobalPoint3D(cp, { x: - endShape.b1 / 2 - dz[0] * tanX, y: bottomY + tendon[i].y + tendon[i].h / 2, z: dz[0] }));
+          tendonRegionL.push(ToGlobalPoint3D(cp, { x: - endShape.b1 / 2 - dz[1] * tanX, y: bottomY + tendon[i].y - tendon[i].h / 2, z: dz[1] }));
+          tendonRegionR.push(ToGlobalPoint3D(cp, { x: endShape.b1 / 2 + dz[0] * tanX, y: bottomY + tendon[i].y + tendon[i].h / 2, z: dz[0] }));
+          tendonRegionR.push(ToGlobalPoint3D(cp, { x: endShape.b1 / 2 + dz[1] * tanX, y: bottomY + tendon[i].y - tendon[i].h / 2, z: dz[1] }));
+          if (i === k) {
+              tendonRegionL.push(ToGlobalPoint3D(cp, { x: - endShape.b1 / 2 - dz[1] * tanX, y: -slabThickness - endShape.h1, z: dz[1] }));
+              tendonRegionR.push(ToGlobalPoint3D(cp, { x: endShape.b1 / 2 + dz[1] * tanX, y: -slabThickness - endShape.h1, z: dz[1] }));
+          }
       }
 
-      model["tendonCap1"] = { points : [tendonRegionL, tendonRegionR], closed : false, cap : false};
+      model["tendonCap1"] = { points: [tendonRegionL, tendonRegionR], closed: false, cap: false };
       return model
   }
 
