@@ -11988,9 +11988,9 @@
       }
 
       model["tendonCap1"] = { points: [tendonRegionL, tendonRegionR], closed: false, cap: false };
-      model["leftCap1"] = { points: [[newPts0[0], newPts0[1], ...tendonRegionL]] };
-      let n = newPts0.length -1;
-      model["rightCap1"] = { points: [[newPts0[n], newPts0[n-1], ...tendonRegionL]] };
+      model["leftCap1"] = { points: [[cap1[0], cap1[1], ...tendonRegionL]] };
+      let n = cap1.length -1;
+      model["rightCap1"] = { points: [[cap1[n], cap1[n-1], ...tendonRegionR]] };
 
       return model
   }
