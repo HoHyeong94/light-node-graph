@@ -11944,7 +11944,7 @@
               let cp = pointDict[name];
               let z = i===0? upperZ :i===shapeData.length -1 ? -upperZ : 0; 
               let pts = [
-                  { x: - b1 / 2, y: - slabThickness, z : z },
+                  { x: - endShape.b1 / 2, y: - slabThickness, z : z },
                   { x: - l2 / 2, y: - slabThickness, z : 0 }, { x: - l2 / 2, y: - slabThickness - h1, z : 0 },
                   { x: -l1 / 2, y: - slabThickness - h1 - h2, z : 0 }, { x: -l1 / 2, y: - slabThickness - h1 - h2 - h3, z : 0 },
                   { x: - l3 / 2, y: - slabThickness - h1 - h2 - h3 - h4, z : 0 },
@@ -11952,7 +11952,7 @@
                   { x: l3 / 2, y: - slabThickness - h1 - h2 - h3 - h4, z : 0 },
                   { x: l1 / 2, y: - slabThickness - h1 - h2 - h3, z : 0 }, { x: l1 / 2, y: - slabThickness - h1 - h2, z : 0 },
                   { x: l2 / 2, y: - slabThickness - h1, z : 0 }, { x: l2 / 2, y: - slabThickness, z : 0 },
-                  { x: b1 / 2, y: - slabThickness, z : z },
+                  { x: endShape.b1 / 2, y: - slabThickness, z : z },
               ];
               let newPts = [];
               pts.forEach(pt => newPts.push(ToGlobalPoint3D(cp, pt)));
