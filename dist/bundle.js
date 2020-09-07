@@ -11912,8 +11912,6 @@
 
 
       let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2;
-      let tendonRegionL = [];
-      let tendonRegionR = [];
       let k = tendon.length - 1;
       let upperZ = 0;
       let cp = pointDict[shapeData[0][0]];
@@ -11979,7 +11977,9 @@
       for (let j = 0; j < 2; j++) {
           let sign = j ===0? 1:-1;
           let centerPoint = j ===0? cp:cp2;
-
+          let tendonRegionL = [];
+          let tendonRegionR = [];
+      
           for (let i = 0; i < tendon.length; i++) {
               let rad = tendon[i].alpha * Math.PI / 180;
               let dz = [- tendon[i].h / 2 * Math.tan(rad), tendon[i].h / 2 * Math.tan(rad)];
