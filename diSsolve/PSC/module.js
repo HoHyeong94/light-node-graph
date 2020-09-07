@@ -44,7 +44,9 @@ export function IGirderSection(pointDict, shapeData) {
 
     let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2;
     let k = tendon.length - 1;
-    let upperZ = 0;
+    let rad = tendon[i].alpha * Math.PI / 180
+    let dz = [- tendon[i].h / 2 * Math.tan(rad), tendon[i].h / 2 * Math.tan(rad)]
+
     let cp = pointDict[shapeData[0][0]];
     let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[0];
     let bottomY = -slabThickness - h1 - h2 - h3 - h4 - h5;
@@ -53,8 +55,8 @@ export function IGirderSection(pointDict, shapeData) {
         if (shapeData[i][0]) {
             let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[i];
             let cp = pointDict[name];
-            let z = i === 0 ? upperZ : i === shapeData.length - 1 ? -upperZ : 0;
-            let dx = upperZ * tanX
+            let z = i === 0 ? dz[0] : i === (shapeData.length - 1) ? -dz[0] : 0;
+            let dx = dz[0] * tanX
             let pts = [
                 { x: - endShape.b1 / 2 - dx, y: - slabThickness, z: z },
                 { x: - l2 / 2, y: - slabThickness, z: 0 }, { x: - l2 / 2, y: - slabThickness - h1, z: 0 },
@@ -112,12 +114,9 @@ export function IGirderSection(pointDict, shapeData) {
         let tendonRegionR = [];
     
         for (let i = 0; i < tendon.length; i++) {
-            let rad = tendon[i].alpha * Math.PI / 180
-            let dz = [- tendon[i].h / 2 * Math.tan(rad), tendon[i].h / 2 * Math.tan(rad)]
             if (i === 0) {
                 tendonRegionL.push(ToGlobalPoint3D(centerPoint, { x: - endShape.b1 / 2 - dz[0] * tanX, y: -slabThickness, z: sign * dz[0] }));
                 tendonRegionR.push(ToGlobalPoint3D(centerPoint, { x: endShape.b1 / 2 + dz[0] * tanX, y: -slabThickness, z: sign * dz[0] }));
-                upperZ = dz[0];
             }
             tendonRegionL.push(ToGlobalPoint3D(centerPoint, { x: - endShape.b1 / 2 - dz[0] * tanX, y: bottomY + tendon[i].y + tendon[i].h / 2, z: sign * dz[0] }));
             tendonRegionL.push(ToGlobalPoint3D(centerPoint, { x: - endShape.b1 / 2 - dz[1] * tanX, y: bottomY + tendon[i].y - tendon[i].h / 2, z: sign * dz[1] }));
