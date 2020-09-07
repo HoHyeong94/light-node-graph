@@ -11942,9 +11942,10 @@
           if (shapeData[i][0]) {
               let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[i];
               let cp = pointDict[name];
-              let z = i===0? upperZ :i===shapeData.length -1 ? -upperZ : 0; 
+              let z = i===0? upperZ :i===shapeData.length -1 ? -upperZ : 0;
+              let dx = upperZ * tanX;
               let pts = [
-                  { x: - endShape.b1 / 2, y: - slabThickness, z : z },
+                  { x: - endShape.b1 / 2 - dx , y: - slabThickness, z : z },
                   { x: - l2 / 2, y: - slabThickness, z : 0 }, { x: - l2 / 2, y: - slabThickness - h1, z : 0 },
                   { x: -l1 / 2, y: - slabThickness - h1 - h2, z : 0 }, { x: -l1 / 2, y: - slabThickness - h1 - h2 - h3, z : 0 },
                   { x: - l3 / 2, y: - slabThickness - h1 - h2 - h3 - h4, z : 0 },
@@ -11952,7 +11953,7 @@
                   { x: l3 / 2, y: - slabThickness - h1 - h2 - h3 - h4, z : 0 },
                   { x: l1 / 2, y: - slabThickness - h1 - h2 - h3, z : 0 }, { x: l1 / 2, y: - slabThickness - h1 - h2, z : 0 },
                   { x: l2 / 2, y: - slabThickness - h1, z : 0 }, { x: l2 / 2, y: - slabThickness, z : 0 },
-                  { x: endShape.b1 / 2, y: - slabThickness, z : z },
+                  { x: endShape.b1 / 2 + dx, y: - slabThickness, z : z },
               ];
               let newPts = [];
               pts.forEach(pt => newPts.push(ToGlobalPoint3D(cp, pt)));
@@ -11977,7 +11978,9 @@
       { x: endShape.b0 / 2, y: -slabThickness - endShape.h0 },];
       let cap1 = [];
       pts0.forEach(pt => cap1.push(ToGlobalPoint3D(cp, {x:pt.x, y:pt.y,z:endShape.d})));
-
+      let cap2 = [];
+      let cp2 = pointDict[shapeData[shapeData.length-1][0]];
+      pts0.forEach(pt => cap2.push(ToGlobalPoint3D(cp2, {x:pt.x, y:pt.y,z:-endShape.d})));
       // let pts1 = [{ x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness }]
       // let newPts0 = [];
       // pts1.forEach(pt => newPts0.push(ToGlobalPoint(cp, pt)));
@@ -11987,9 +11990,9 @@
       // pts2.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
 
       model["end1"] = { points: [cap1.slice(1,cap1.length-1), model.girder.points[0]], closed: false, cap: false };
+      model["end2"] = { points: [cap2.slice(1,cap1.length-1), model.girder.points[model.girder.points.length-1]], closed: false, cap: false };
       model["cap1"] = { points: [cap1] };
-
-
+      model["cap2"] = { points: [cap2] };
 
       let n = cap1.length - 1;
       model["tendonCap1"] = { points: [[...tendonRegionL, cap1[0]], [...tendonRegionR, cap1[n]]], closed: false, cap: false };
