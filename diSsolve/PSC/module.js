@@ -44,8 +44,8 @@ export function IGirderSection(pointDict, shapeData) {
 
     let tanX = (endShape.b0 - endShape.b1) / endShape.d / 2;
     let k = tendon.length - 1;
-    let rad = tendon[i].alpha * Math.PI / 180
-    let dz = [- tendon[i].h / 2 * Math.tan(rad), tendon[i].h / 2 * Math.tan(rad)]
+    let rad0 = tendon[0].alpha * Math.PI / 180
+    let dz0 = - tendon[0].h / 2 * Math.tan(rad0)
 
     let cp = pointDict[shapeData[0][0]];
     let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[0];
@@ -55,8 +55,8 @@ export function IGirderSection(pointDict, shapeData) {
         if (shapeData[i][0]) {
             let [name, h1, h2, h3, h4, h5, l1, l2, l3] = shapeData[i];
             let cp = pointDict[name];
-            let z = i === 0 ? dz[0] : i === (shapeData.length - 1) ? -dz[0] : 0;
-            let dx = dz[0] * tanX
+            let z = i === 0 ? dz0 : i === (shapeData.length - 1) ? -dz0 : 0;
+            let dx = dz0 * tanX
             let pts = [
                 { x: - endShape.b1 / 2 - dx, y: - slabThickness, z: z },
                 { x: - l2 / 2, y: - slabThickness, z: 0 }, { x: - l2 / 2, y: - slabThickness - h1, z: 0 },
@@ -108,12 +108,14 @@ export function IGirderSection(pointDict, shapeData) {
     model["cap2"] = { points: [cap2] }
 
     for (let j = 0; j < 2; j++) {
-        let sign = j ===0? 1:-1;
-        let centerPoint = j ===0? cp:cp2;
+        let sign = j === 0 ? 1 : -1;
+        let centerPoint = j === 0 ? cp : cp2;
         let tendonRegionL = [];
         let tendonRegionR = [];
-    
+
         for (let i = 0; i < tendon.length; i++) {
+            let rad = tendon[i].alpha * Math.PI / 180
+            let dz = [- tendon[i].h / 2 * Math.tan(rad), tendon[i].h / 2 * Math.tan(rad)]
             if (i === 0) {
                 tendonRegionL.push(ToGlobalPoint3D(centerPoint, { x: - endShape.b1 / 2 - dz[0] * tanX, y: -slabThickness, z: sign * dz[0] }));
                 tendonRegionR.push(ToGlobalPoint3D(centerPoint, { x: endShape.b1 / 2 + dz[0] * tanX, y: -slabThickness, z: sign * dz[0] }));
@@ -128,11 +130,11 @@ export function IGirderSection(pointDict, shapeData) {
             }
         }
 
-        let cap = j ===0? cap1:cap2;
+        let cap = j === 0 ? cap1 : cap2;
         let n = cap.length - 1
-        model["tendonCap" + (j+1).toString()] = { points: [[...tendonRegionL, cap[0]], [...tendonRegionR, cap[n]]], closed: false, cap: false };
-        model["leftCap" + (j+1).toString()] = { points: [[cap[0], cap[1], ...tendonRegionL]] };
-        model["rightCap" + (j+1).toString()] = { points: [[cap[n], cap[n - 1], ...tendonRegionR]] };
+        model["tendonCap" + (j + 1).toString()] = { points: [[...tendonRegionL, cap[0]], [...tendonRegionR, cap[n]]], closed: false, cap: false };
+        model["leftCap" + (j + 1).toString()] = { points: [[cap[0], cap[1], ...tendonRegionL]] };
+        model["rightCap" + (j + 1).toString()] = { points: [[cap[n], cap[n - 1], ...tendonRegionR]] };
     }
     return model
 }
