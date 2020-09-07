@@ -103,7 +103,7 @@ export function IGirderSection(pointDict, shapeData) {
     // pts2.forEach(pt => newPts1.push(ToGlobalPoint(cp, pt)));
 
     model["end1"] = { points: [cap1.slice(1, cap1.length - 1), model.girder.points[0]], closed: false, cap: false };
-    model["end2"] = { points: [cap2.slice(1, cap1.length - 1), model.girder.points[model.girder.points.length - 1]], closed: false, cap: false };
+    model["end2"] = { points: [cap2.slice(1, cap2.length - 1), model.girder.points[model.girder.points.length - 1]], closed: false, cap: false };
     model["cap1"] = { points: [cap1] }
     model["cap2"] = { points: [cap2] }
 
