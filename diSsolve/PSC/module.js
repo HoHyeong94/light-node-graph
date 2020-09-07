@@ -47,6 +47,8 @@ export function IGirderSection(pointDict, shapeData) {
     let tendonRegionR = [];
     let k = tendon.length - 1;
     let upperZ = 0;
+    let cp = pointDict[shapeData[0][0]];
+
     for (let i = 0; i < tendon.length; i++) {
         let rad = tendon[i].alpha * Math.PI / 180
         let dz = [- tendon[i].h / 2 * Math.tan(rad), tendon[i].h / 2 * Math.tan(rad)]
@@ -101,8 +103,6 @@ export function IGirderSection(pointDict, shapeData) {
         { x: l2 / 2, y: - slabThickness - h1 }, { x: l2 / 2, y: - slabThickness },
     ];
 
-
-    let cp = pointDict[shapeData[0][0]];
     let pts0 = [{ x: - endShape.b0 / 2, y: -slabThickness - endShape.h0 },
     { x: -endShape.b0 / 2, y: -slabThickness }, ...pts, { x: endShape.b0 / 2, y: -slabThickness },
     { x: endShape.b0 / 2, y: -slabThickness - endShape.h0 },]
