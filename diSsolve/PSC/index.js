@@ -18,6 +18,7 @@ export function GirderPoint(){
   }
   
   GirderPoint.prototype.onExecute = function() {
+    console.log(this.getInputData(0))
     const result = GirderPointGen(this.getInputData(0))
     this.setOutputData(0, result)
   }
