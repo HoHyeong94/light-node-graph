@@ -31,6 +31,8 @@ export function IGirder(){
   }
   
   IGirder.prototype.onExecute = function() {
+    console.log("호형ㅁㄴㅇㄹasdf")
+    console.log(pointDick)
     const result = IGirderSection(this.getInputData(0), this.getInputData(1))
     this.setOutputData(0, result)
   }
