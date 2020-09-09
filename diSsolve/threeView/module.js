@@ -788,6 +788,7 @@ export function LoftModelView(model, initPoint) {
     let group = new THREE.Group();
     let meshMaterial = new THREE.MeshNormalMaterial()
     meshMaterial.side = THREE.DoubleSide
+    console.log("로프트 뷰 test")
     console.log(model.points[0])
     let pNum = model.points[0].length
     let geometry = new THREE.Geometry();
