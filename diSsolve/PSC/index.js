@@ -32,8 +32,9 @@ export function IGirder(){
   }
   
   IGirder.prototype.onExecute = function() {
-    //console.log("호형ㅁㄴㅇㄹasdf")
+    console.log("호형ㅁㄴㅇㄹasdf")
     //console.log(this.getInputData(0))
     const result = IGirderSection(this.getInputData(0), this.getInputData(1))
     this.setOutputData(0, result)
+    console.log(result)
   }
