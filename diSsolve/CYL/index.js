@@ -5,6 +5,7 @@ export function Cylinderview() {
     this.addInput("top", "number");
     this.addInput("bottom","number")
     this.addInput("height", "number");
+    
   }
 
 
@@ -16,5 +17,5 @@ Cylinderview.prototype.onExecute = function () {
     sceneAdder(tmpMesh);
     
     //console.log(tmpMesh)
-    console.log(getInputData(2))
+    //console.log(getInputData(2))
   }
