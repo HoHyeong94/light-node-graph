@@ -1,4 +1,4 @@
-import { sceneAdder, THREE } from "global";
+import { scene, THREE } from "global";
 import {CylinderModelView } from "./module"
 
 export function Cylinderview() {
@@ -14,7 +14,7 @@ Cylinderview.prototype.onExecute = function () {
     
     
     let tmpMesh = CylinderModelView(this.getInputData(0), this.getInputData(1),this.getInputData(2))
-    sceneAdder(tmpMesh);
+    scene(tmpMesh);
     
     //console.log(tmpMesh)
     //console.log(getInputData(2))
