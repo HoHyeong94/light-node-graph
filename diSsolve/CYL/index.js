@@ -13,7 +13,7 @@ export function Cylinderview() {
 Cylinderview.prototype.onExecute = function () {
     
     
-    let tmpMesh = CylinderModelView(getInputData(0), getInputData(1),getInputData(2))
+    let tmpMesh = CylinderModelView(this.getInputData(0), this.getInputData(1),this.getInputData(2))
     sceneAdder(tmpMesh);
     
     //console.log(tmpMesh)
