@@ -156,7 +156,6 @@ export function LoftView() {
 LoftView.prototype.onExecute = function () {
   console.log("로프트뷰 콘솔 시작")
   console.log(this.getInputData(0))
-
   console.log(this.getInputData(1))
   console.log(this.getInputData(2))
   const model = this.getInputData(0)
@@ -165,7 +164,7 @@ LoftView.prototype.onExecute = function () {
     sceneAdder({name:this.getInputData(2) + key, layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
   }
   //console.log(tmpMesh)
-  console.log(getInputData(2))
+  //console.log(getInputData(2))
 }
 
 
