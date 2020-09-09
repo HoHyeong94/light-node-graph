@@ -9,7 +9,7 @@ export function CylinderModelView(top, buttom, height) {
     //var cylinder = new THREE.Mesh( geometry, material );
     geometry.computeFaceNormals();
     let mesh = new THREE.Mesh(geometry, meshMaterial)
-    //mesh.setPosition(-300,0,300)
+    mesh.setPosition(-300,0,300)
     group.add(new THREE.Mesh(geometry, meshMaterial));
 
     return group
