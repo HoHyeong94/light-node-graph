@@ -164,8 +164,8 @@ LoftView.prototype.onExecute = function () {
     let tmpMesh = LoftModelView(model[key], this.getInputData(1))
     sceneAdder({name:this.getInputData(2) + key, layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
   }
-  //console.log(tmpMesh)
- // console.log(getInputData(2))
+  console.log(tmpMesh)
+  console.log(getInputData(2))
 }
 
 
