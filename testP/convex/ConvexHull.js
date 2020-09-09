@@ -49,13 +49,13 @@ var ConvexHull = ( function () {
 
 			if ( Array.isArray( points ) !== true ) {
 
-				console.error( 'THREE.ConvexHull: Points parameter is not an array.' );
+				//console.error( 'THREE.ConvexHull: Points parameter is not an array.' );
 
 			}
 
 			if ( points.length < 4 ) {
 
-				console.error( 'THREE.ConvexHull: The algorithm needs at least four points.' );
+				//console.error( 'THREE.ConvexHull: The algorithm needs at least four points.' );
 
 			}
 

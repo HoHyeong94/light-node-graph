@@ -112,7 +112,7 @@ PartGeneralView.prototype.on3DExecute = function() {
   let group = PartGeneralDraw(this.getInputData(0),this.getInputData(1),this.getInputData(2))
   let layer = this.getInputData(2).layer;
   let key = this.getInputData(3);
-  // console.log("check", layer,key)
+  // //console.log("check", layer,key)
   sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
 
   // sceneAdder({layer:layer, mesh:group},key);
@@ -134,7 +134,7 @@ XbeamGeneralView.prototype.on3DExecute = function() {
   let group = XbeamSection(this.getInputData(0),this.getInputData(1),this.getInputData(2))
   let layer = this.getInputData(2).layer;
   let key = this.getInputData(3);
-  // console.log("check", layer,key)
+  // //console.log("check", layer,key)
   sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
 
   // sceneAdder({layer:layer, mesh:group},key);

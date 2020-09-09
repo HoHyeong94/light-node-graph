@@ -665,7 +665,7 @@ export function SteelBoxDict2(girderStationList, sectionPointDict, entrance) {
         }
         // FisB = true;
         // for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false }
-        // console.log("check", pk1, pk2, FisB, L3)
+        // //console.log("check", pk1, pk2, FisB, L3)
         if (L3 == false || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
           for (let k in L2){
             L2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point2, element)));

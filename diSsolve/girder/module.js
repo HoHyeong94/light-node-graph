@@ -344,7 +344,7 @@ export function GridStationList(pointDict) {
       let gridObj = gs[i][j];
       if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length };
       totalLength += segLength;
-      // console.log("totalLength", totalLength)
+      // //console.log("totalLength", totalLength)
       dummy0 = gridObj.point;
       gs[i][j]["point"]["girderStation"] = totalLength
     }

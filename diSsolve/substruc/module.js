@@ -156,7 +156,7 @@ export function AbutModelGen(abutPoints, abutInput, supportData) {
         let dx = sign * tempInput.wingWallThick * cos;
         let dy = sign * tempInput.wingWallThick * sin;
         let dz = sign * tempInput.wingWallThick * (abutPoints[index].z - abutPoints[0].z)/abutPoints[index].offset;
-        // console.log(wingPoints, wingPt1)
+        // //console.log(wingPoints, wingPt1)
         let wingPt2 = [{ x: wingPt1[0].x + dx, y: wingPt1[0].y + dy, z: wingPt1[0].z + dz },
         { x: wingPt1[1].x + dx, y: wingPt1[1].y + dy, z: wingPt1[1].z },
         { x: wingPt1[2].x + dx, y: wingPt1[2].y + dy, z: wingPt1[2].z },

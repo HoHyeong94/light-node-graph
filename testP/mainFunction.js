@@ -102,7 +102,7 @@ export function Main(
   // for (let pt in gridPoint.nameToPointDict){
   //     gridPoint.nameToPointDict[pt].z = VerticalPositionGenerator(VerticalDataList, SuperElevation,gridPoint.nameToPointDict[pt])
   // }
-  // console.log(gridPoint);
+  // //console.log(gridPoint);
   let supportAngle = SupportAngleCalculator(addedValues.supportFixed, addedValues.supportData, gridPoint.nameToPointDict)
     // immer 로 감쌌기 때문에 ... .length 가 없을수 있다 ...
   //gridPoint.stationDictList[index].length
@@ -128,7 +128,7 @@ export function Main(
       }
     }
   }
-  console.log(sectionPointDict)
+  //console.log(sectionPointDict)
   
   // let deckPointDict = {};
   // for (let i in sectionPointDict){
@@ -137,7 +137,7 @@ export function Main(
 
 
 
-  // console.log(sectionInfo)
+  // //console.log(sectionInfo)
   
   let diaDict = DiaShapeDict(
     sectionPointDict,
@@ -298,7 +298,7 @@ export function SteelBoxDict(gridPointList,stationDictList,nameToPointDict, sect
             L1 = sectionPointDict[pk1].forward[Ribkey]
             L2 = sectionPointDict[pk2].backward[Ribkey]
             L3 = sectionPointDict[pk2].forward[Ribkey]
-            console.log(L1,L2,L3)
+            //console.log(L1,L2,L3)
             L1.forEach(element => steelBoxDict[keyname]["points"][0].push(ToGlobalPoint(point1, element)))
             FisB = true;
             for (let i in L2){ FisB = L3? (L2[i] !== L3[i]? false :true):false }

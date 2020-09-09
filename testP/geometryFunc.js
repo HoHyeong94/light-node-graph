@@ -936,7 +936,7 @@ export function XbeamSection(iPoint, jPoint, iSectionPoint, jSectionPoint, xbeam
     hole:[],
     point:iPoint
   }
-  // console.log('icos:', iCos)   
+  // //console.log('icos:', iCos)   
   return result
 }
 
@@ -1088,7 +1088,7 @@ export function XbeamSectionK(iPoint, jPoint, iSectionPoint, jSectionPoint, xbea
     hole:[],
     point:centerPoint
   }
-  // console.log(result)
+  // //console.log(result)
 
   result['bottomFrame1'] = {
     points:bottomFrame[0],

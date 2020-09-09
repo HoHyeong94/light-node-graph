@@ -50,7 +50,7 @@ export function GirderLayoutGenerator(girderLayoutInput, hLine, VerticalDataList
         girderInfoList.push(girderInfo)
         i += 1
     }
-    //console.log(supportDataList)
+    ////console.log(supportDataList)
     result.centralSupportPoint.push(PointGenerator(supportStation, result.masterLine,supportDataList[0].angle))
     for (i = 1; i < supportDataList.length; i++) {
             supportStation = supportStation + supportDataList[i].spanLength
@@ -107,7 +107,7 @@ export function GirderLayoutGenerator(girderLayoutInput, hLine, VerticalDataList
 //             let diaStation = girderLayout.centralSupportPoint[j].masterStationNumber + remainder;
 //             let vStiffStation = diaStation - diaphragmDistance/2;
 //             let connectStation = vStiffStation - diaphragmDistance/4;
-//             //console.log(minStation,maxStation,diaStation,vStiffStation,connectStation)
+//             ////console.log(minStation,maxStation,diaStation,vStiffStation,connectStation)
 //              while(minStation + md < diaStation ){
 //                  diaStation -=diaphragmDistance
 //                 };
@@ -149,7 +149,7 @@ function SupportSkewPointGenerator(centralSupportPoint, masterLine, girderLine, 
         let dummyPoint = LineMatch(centralSupportPoint[i], masterLine, girderLine, skew, VerticalDataList, SuperElevation)
         resultPoint.push(dummyPoint)
     } else {
-      console.log('Skew value is not available');
+      //console.log('Skew value is not available');
       resultPoint = null;
     }
 }   
@@ -417,7 +417,7 @@ export function GridPointGenerator2(masterLine,girderLayout, SEShape, startSkew,
 //             }
 //             pts.push(...skewedStation);
 //             pts.sort();
-//             // console.log(pts)
+//             // //console.log(pts)
 //             ptsList.push(pts);
 //             stationDict.push(stationToNameDict)
 //         }

@@ -59,8 +59,8 @@ export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
       input: mLine.inputs,
       points: hLine[girderDataList[j]]
     };
-    // console.log("GirderInfo")
-    // console.log(girderInfo)
+    // //console.log("GirderInfo")
+    // //console.log(girderInfo)
 
     // girderInfo.girderLine = OffsetLine(
     //   girderDataList[j].alignOffset,
@@ -71,7 +71,7 @@ export function GirderLayoutGenerator(girderLayoutInput, mLine, hLine) {
     girderInfoList.push(girderInfo);
     i += 1;
   }
-  //console.log(supportDataList)
+  ////console.log(supportDataList)
   result.centralSupportPoint.push(
     PointGenerator(supportStation, result.masterLine, supportDataList[0][0])
   );
@@ -141,7 +141,7 @@ function SupportSkewPointGenerator(
       );
       resultPoint.push(dummyPoint);
     } else {
-      console.log("Skew value is not available");
+      //console.log("Skew value is not available");
       resultPoint = null;
     }
   }

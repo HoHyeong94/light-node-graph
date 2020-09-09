@@ -3,7 +3,7 @@ import {PointLength, hBracingPlate} from './geometryFunc'
 import {ToGlobalPoint, ToGlobalPoint2} from './threejsDisplay'
 
 function ShapePlanView(partDict, nameToPointDict, partkeyNameList, index1, index2, sc, initPoint,r, color){
-    // console.log(partDict)
+    // //console.log(partDict)
     let result = {models:{},layer:color };
     for (let pk in partDict){
         let point = nameToPointDict[pk]

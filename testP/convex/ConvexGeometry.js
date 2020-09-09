@@ -36,7 +36,7 @@ var ConvexBufferGeometry = function ( points ) {
 
 	if ( ConvexHull === undefined ) {
 
-		console.error( 'THREE.ConvexBufferGeometry: ConvexBufferGeometry relies on ConvexHull' );
+		//console.error( 'THREE.ConvexBufferGeometry: ConvexBufferGeometry relies on ConvexHull' );
 
 	}
 

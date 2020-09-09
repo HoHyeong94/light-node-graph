@@ -206,7 +206,7 @@ export function AnalysisResult(node, frame, output, loadCase, forceNum) {
         analysisOutput = output;
     }
 
-    // console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum)
+    // //console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum)
     for (let i in node.node.data) {
         let pt = new THREE.Vector3(
             node.node.data[i].coord[0] - initPoint[0],
@@ -284,7 +284,7 @@ export function AnalysisResult(node, frame, output, loadCase, forceNum) {
     //     }
     // }
 
-    // console.log("newSapOutput", analysisOutput)
+    // //console.log("newSapOutput", analysisOutput)
     return group
 }
 
@@ -549,7 +549,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             // let v1 = new THREE.Vector3(geometry.vertices[0].x - geometry.vertices[pNum - 1].x, geometry.vertices[0].y - geometry.vertices[pNum - 1].y, geometry.vertices[0].z - geometry.vertices[pNum - 1].z)
             // let v2 = new THREE.Vector3(geometry.vertices[1].x - geometry.vertices[0].x, geometry.vertices[1].y - geometry.vertices[0].y, geometry.vertices[1].z - geometry.vertices[0].z)
             // v1.cross(v2)
-            // console.log("check", v1, pNum, numList)
+            // //console.log("check", v1, pNum, numList)
             // geometry.faces.push(new THREE.Face3(pNum - 1, 0, 1));
             // while (numList.length > 2) {
             //     let eraseList = [];
@@ -561,7 +561,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             //         let b1 = new THREE.Vector3(a2.x - a1.x, a2.y - a1.y, a2.z - a1.z);
             //         let b2 = new THREE.Vector3(a3.x - a2.x, a3.y - a2.y, a3.z - a2.z);
             //         b1.cross(b2)
-            //         console.log("check", b1, b1.length(), v1, v1.length())
+            //         //console.log("check", b1, b1.length(), v1, v1.length())
             //         if (b1.length() < 10) {
             //             eraseList.push(numList[j + 1])
             //         } else {
@@ -575,7 +575,7 @@ export function DeckPointView(deckPointDict, initPoint, opacity) {
             //     }
             //     eraseList.forEach(num => numList.splice(numList.indexOf(num), 1))
             //     if (br > 100) { 
-            //         console.log("check", br)
+            //         //console.log("check", br)
             //         break; }
             //     br++;
             // }
@@ -637,7 +637,7 @@ export function boltView(spliceDict, initPoint) {
         }
     }
     // }
-    // console.log("dummyList",dummyList)
+    // //console.log("dummyList",dummyList)
     // let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
     // mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
     // for (let i in dummyList){
@@ -859,9 +859,9 @@ export function PolyRegion(points, meshMaterial, initPoint) {
     let normalVec = PolygonNormalVector(points)//[0, -1, 0];
 
     let iter = 0;
-    // console.log(numlist);
+    // //console.log(numlist);
     while (numlist.length > 2) {
-        console.log(iter, numlist);
+        // //console.log(iter, numlist);
         let vec = [];
         for (let i = 0; i < numlist.length; i++) {
             let k = i < numlist.length - 1 ? i + 1 : 0;
@@ -880,8 +880,8 @@ export function PolyRegion(points, meshMaterial, initPoint) {
 
             let tempVec = [vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x];
             let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
-            // console.log(tempVec, dotVec);
-            // console.log(vec[i],vec[j])
+            // //console.log(tempVec, dotVec);
+            // //console.log(vec[i],vec[j])
             if (iter === 0) {
                 if (Math.abs(dotVec) < 0.000000001) {
                     removeIndex.push(j);
@@ -893,7 +893,7 @@ export function PolyRegion(points, meshMaterial, initPoint) {
                         if (ii !== i && ii !== j && ii !== k) {
                             if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
                                 innerCheck = true;
-                                console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii]);
+                                //console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii]);
                                                        }
                         }
                     }
@@ -921,7 +921,7 @@ export function PolyRegion(points, meshMaterial, initPoint) {
             // for (let ii = 0; ii < numlist.length; ii++) {
             //     if (ii !== i && ii !== j && ii !== k) {
             //         if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
-            //             console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii])
+            //             //console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii])
             //         }
             //     }
             // }
@@ -1022,7 +1022,7 @@ export function InnerPointCheck(point1, point2, point3, checkPoint) { //삼각�
         }
     }
     if(result){
-        console.log(newNormals, dots)
+        //console.log(newNormals, dots)
     }
 
     return result

@@ -501,7 +501,7 @@ function fillet3D(point1, point2, point3, radius, smoothness) {
     let ang
     let l1
   
-       //console.log(points[i].x);
+       ////console.log(points[i].x);
       v1.subVectors(point1, point2).normalize();
       v2.subVectors(point3, point2).normalize();
       ang = Math.acos(v1.dot(v2))

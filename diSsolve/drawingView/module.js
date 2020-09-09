@@ -349,7 +349,7 @@ function LabelInsert(label, textMaterial, layer) {
     var loader = new THREE.FontLoader();
     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
         // loader.load('fonts/noto_sans_kr_regular.json', function (font) {
-        // console.log(font)
+        // //console.log(font)
         // var font = {generateShapes:(messagem , num)=>{}}
         for (let i in label) {
             var shapes = font.generateShapes(label[i].text, label[i].fontSize);
@@ -378,7 +378,7 @@ function LabelInsert(label, textMaterial, layer) {
 }
 
 function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc, initPoint, r, lineMaterial) { //횡단면도 그리기
-    // console.log(partDict)    
+    // //console.log(partDict)    
     // let result = {models:{},layer:color };
     let meshes = [];
 
@@ -739,7 +739,7 @@ function roundedRect(x, y, rot, width, height, radius, lineMaterial) { //마크 
     let geometry = new THREE.BufferGeometry().setFromPoints(points)
     geometry.rotateZ(rot)
     geometry.translate(x, y, 0)
-    // console.log("geo", geometry)
+    // //console.log("geo", geometry)
     return new THREE.Line(geometry, lineMaterial)
 }
 
@@ -793,7 +793,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
         // if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length };
         // totalLength += segLength;
         totalLength = gridObj.point.girderStation
-        // console.log("totalLength", totalLength)
+        // //console.log("totalLength", totalLength)
         dummy0 = gridObj.point;
         girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
         girderSideLine.push({ x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 })
@@ -850,7 +850,7 @@ export function GridMarkView(girderStation, scale, initPoint, rotate, layout, gi
                 new THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
             if (j !== 0) {
                 let dimProp = splineProp(dummy1, gridObj.point)
-                // console.log("spline", dimProp,dummy1,gridObj.point)
+                // //console.log("spline", dimProp,dummy1,gridObj.point)
                 let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] + fontSize * 0.75)   //fontSize에 대한 값을 scale 적용않고 정의
                 labels.push({
                     text: dimProp.length.toFixed(0),
@@ -1417,7 +1417,7 @@ export function GirderGeneralDraw2(sectionPointDict, girderStation, steelBoxDict
 
 //     var loader = new THREE.FontLoader();
 //     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-//         // console.log(font)
+//         // //console.log(font)
 //         // var font = {generateShapes:(messagem , num)=>{}}
 //         for (let i in label) {
 //             var shapes = font.generateShapes(label[i].text, label[i].fontSize);
@@ -1500,7 +1500,7 @@ export function GirderSectionView(deckPointDict, sectionPointDict, girderStation
             let sectionPoint = sectionPointDict[girderPoint.key]
             for (let key in sectionPoint.forward) {
                 if (key === "uflange" || key === "lflange" || key === "web" || key === "URib" || key === "LRib") {
-                    // console.log("check",sectionPoint)
+                    // //console.log("check",sectionPoint)
                     for (let k in sectionPoint.forward[key]) {
                         if (sectionPoint.forward[key][k].length > 0) {
                             let pts = [];
@@ -1571,7 +1571,7 @@ export function sectionView(sectionName, sectionPoint, diaPoint) { //횡단면�
 
     for (var key in sectionPoint) {
         if (key === "uflange" || key === "lflange" || key === "web" || key === "URib" || key === "LRib") {
-            // console.log("check",sectionPoint)
+            // //console.log("check",sectionPoint)
             for (let k in sectionPoint[key]) {
                 if (sectionPoint[key][k].length > 0) {
                     group.add(sectionMesh(sectionPoint[key][k], lineMaterial))

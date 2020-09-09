@@ -783,7 +783,7 @@
   };
 
   const LineGenerator2 = (horizonDataList,beginStation) => {
-    // console.time("for loop");
+    // //console.time("for loop");
     let lineResult = {
       vectors: [],
       curves: [],
@@ -1683,7 +1683,7 @@
       for (let j = 0; j < gs[i].length; j++) {
         let gridObj = gs[i][j];
         if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length; }      totalLength += segLength;
-        // console.log("totalLength", totalLength)
+        // //console.log("totalLength", totalLength)
         dummy0 = gridObj.point;
         gs[i][j]["point"]["girderStation"] = totalLength;
       }
@@ -3275,7 +3275,7 @@
           }
           // FisB = true;
           // for (let i in L2) { FisB = L3 ? (L2[i] !== L3[i] ? false : true) : false }
-          // console.log("check", pk1, pk2, FisB, L3)
+          // //console.log("check", pk1, pk2, FisB, L3)
           if (L3 == false || pk2.substr(2, 2) === "SP" || pk2.substr(2, 2) === "K6" ) {
             for (let k in L2){
               L2[k].forEach(element => steelBoxDict[keyname]["points"][k].push(ToGlobalPoint(point2, element)));
@@ -3530,7 +3530,7 @@
     //   spliceAxis: "x", isUpper: true
     // }
     let bXRad = Math.atan(iPoint.gradientX + iSectionPoint.input.gradientlf);
-    // console.log("check", bXRad)
+    // //console.log("check", bXRad)
 
     if (iSectionPoint.lflange[2].length > 0) { //폐합
       let lx1 = Math.sqrt((iSectionPoint.web[0][0].x - lPoint.x) ** 2 + (iSectionPoint.web[0][0].y - lPoint.y) ** 2);
@@ -5724,7 +5724,7 @@
           topView.push({ x: gpt.x - dx + dx2, y: gpt.y + dy + dy2 });
         }
       }
-      // console.log("check", topView)
+      // //console.log("check", topView)
     }
     if (side2D || side2D === 0) {
       let cos = Math.cos(rotationX);
@@ -5790,7 +5790,7 @@
           topView.push({ x: gpt.x - dx + dx2, y: gpt.y + dy + dy2 });
         }
       }
-      // console.log("check", topView)
+      // //console.log("check", topView)
     }
     if (side2D || side2D === 0) {
       let cos = Math.cos(rotationX);
@@ -7166,7 +7166,7 @@
           analysisOutput = output;
       }
 
-      // console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum)
+      // //console.log("analysisOutput", analysisOutput["force"], loadCase, forceNum)
       for (let i in node.node.data) {
           let pt = new global.THREE.Vector3(
               node.node.data[i].coord[0] - initPoint[0],
@@ -7244,7 +7244,7 @@
       //     }
       // }
 
-      // console.log("newSapOutput", analysisOutput)
+      // //console.log("newSapOutput", analysisOutput)
       return group
   }
 
@@ -7507,7 +7507,7 @@
               // let v1 = new THREE.Vector3(geometry.vertices[0].x - geometry.vertices[pNum - 1].x, geometry.vertices[0].y - geometry.vertices[pNum - 1].y, geometry.vertices[0].z - geometry.vertices[pNum - 1].z)
               // let v2 = new THREE.Vector3(geometry.vertices[1].x - geometry.vertices[0].x, geometry.vertices[1].y - geometry.vertices[0].y, geometry.vertices[1].z - geometry.vertices[0].z)
               // v1.cross(v2)
-              // console.log("check", v1, pNum, numList)
+              // //console.log("check", v1, pNum, numList)
               // geometry.faces.push(new THREE.Face3(pNum - 1, 0, 1));
               // while (numList.length > 2) {
               //     let eraseList = [];
@@ -7519,7 +7519,7 @@
               //         let b1 = new THREE.Vector3(a2.x - a1.x, a2.y - a1.y, a2.z - a1.z);
               //         let b2 = new THREE.Vector3(a3.x - a2.x, a3.y - a2.y, a3.z - a2.z);
               //         b1.cross(b2)
-              //         console.log("check", b1, b1.length(), v1, v1.length())
+              //         //console.log("check", b1, b1.length(), v1, v1.length())
               //         if (b1.length() < 10) {
               //             eraseList.push(numList[j + 1])
               //         } else {
@@ -7533,7 +7533,7 @@
               //     }
               //     eraseList.forEach(num => numList.splice(numList.indexOf(num), 1))
               //     if (br > 100) { 
-              //         console.log("check", br)
+              //         //console.log("check", br)
               //         break; }
               //     br++;
               // }
@@ -7595,7 +7595,7 @@
           }
       }
       // }
-      // console.log("dummyList",dummyList)
+      // //console.log("dummyList",dummyList)
       // let mesh = new THREE.InstancedMesh(geometry, meshMaterial,dummyList.length)
       // mesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
       // for (let i in dummyList){
@@ -7804,9 +7804,9 @@
       let normalVec = PolygonNormalVector(points);//[0, -1, 0];
 
       let iter = 0;
-      // console.log(numlist);
+      // //console.log(numlist);
       while (numlist.length > 2) {
-          console.log(iter, numlist);
+          //console.log(iter, numlist);
           let vec = [];
           for (let i = 0; i < numlist.length; i++) {
               let k = i < numlist.length - 1 ? i + 1 : 0;
@@ -7825,8 +7825,8 @@
 
               let tempVec = [vec[i].y * vec[j].z - vec[i].z * vec[j].y, vec[i].z * vec[j].x - vec[i].x * vec[j].z, vec[i].x * vec[j].y - vec[i].y * vec[j].x];
               let dotVec = tempVec[0] * normalVec[0] + tempVec[1] * normalVec[1] + tempVec[2] * normalVec[2];
-              // console.log(tempVec, dotVec);
-              // console.log(vec[i],vec[j])
+              // //console.log(tempVec, dotVec);
+              // //console.log(vec[i],vec[j])
               if (iter === 0) {
                   if (Math.abs(dotVec) < 0.000000001) {
                       removeIndex.push(j);
@@ -7838,7 +7838,7 @@
                           if (ii !== i && ii !== j && ii !== k) {
                               if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
                                   innerCheck = true;
-                                  console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii]);
+                                  //console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii]);
                                                          }
                           }
                       }
@@ -7866,7 +7866,7 @@
               // for (let ii = 0; ii < numlist.length; ii++) {
               //     if (ii !== i && ii !== j && ii !== k) {
               //         if (InnerPointCheck(points[numlist[i]], points[numlist[j]], points[numlist[k]], points[numlist[ii]])) {
-              //             console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii])
+              //             //console.log("triangle", numlist[i], numlist[j], numlist[k], "innerPoint", numlist[ii])
               //         }
               //     }
               // }
@@ -7966,7 +7966,7 @@
           }
       }
       if(result){
-          console.log(newNormals, dots);
+          //console.log(newNormals, dots);
       }
 
       return result
@@ -7984,8 +7984,8 @@
     const points = this.getInputData(0);
     const initPoint = this.getInputData(1) ? this.getInputData(1) : points[0];
     const color = this.getInputData(2);
-    // console.log(this.getInputData(1) ? true : false)
-    // console.log(initPoint, color)
+    // //console.log(this.getInputData(1) ? true : false)
+    // //console.log(initPoint, color)
     let mesh = LineView(points, initPoint, color);
     global.sceneAdder({name:"line", layer:2, mesh:mesh, meta:{part:"line"}});
 
@@ -8020,7 +8020,7 @@
     const keyName = this.getInputData(2);
     const group = DiaView(diaDict, initPoint);
     // let n = Math.random().toFixed(5)
-    // console.log("random", n)
+    // //console.log("random", n)
     global.sceneAdder({name:`${keyName}`, layer:0, mesh:group, meta:{part:`${keyName}`}});
 
     // sceneAdder({ layer: 0, mesh: group }, keyName);
@@ -8548,7 +8548,7 @@
       var loader = new global.THREE.FontLoader();
       loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
           // loader.load('fonts/noto_sans_kr_regular.json', function (font) {
-          // console.log(font)
+          // //console.log(font)
           // var font = {generateShapes:(messagem , num)=>{}}
           for (let i in label) {
               var shapes = font.generateShapes(label[i].text, label[i].fontSize);
@@ -8577,7 +8577,7 @@
   }
 
   function ShapePlanView(partDict, pointDict, partkeyNameList, index1, index2, sc, initPoint, r, lineMaterial) { //횡단면도 그리기
-      // console.log(partDict)    
+      // //console.log(partDict)    
       // let result = {models:{},layer:color };
       let meshes = [];
 
@@ -8938,7 +8938,7 @@
       let geometry = new global.THREE.BufferGeometry().setFromPoints(points);
       geometry.rotateZ(rot);
       geometry.translate(x, y, 0);
-      // console.log("geo", geometry)
+      // //console.log("geo", geometry)
       return new global.THREE.Line(geometry, lineMaterial)
   }
 
@@ -8989,7 +8989,7 @@
           // if (j !== 0) { segLength = splineProp(dummy0, gridObj.point).length };
           // totalLength += segLength;
           totalLength = gridObj.point.girderStation;
-          // console.log("totalLength", totalLength)
+          // //console.log("totalLength", totalLength)
           dummy0 = gridObj.point;
           girderLine.push(PointToDraw(gridObj.point, scale, initPoint, rotate, 0, 0));
           girderSideLine.push({ x: totalLength * scale, y: (gridObj.point.z - initPoint.z) * scale + sideViewOffset, z: 0 });
@@ -9046,7 +9046,7 @@
                   new global.THREE.Vector3(dimLine[2][j].x, dimLine[2][j].y, 0));
               if (j !== 0) {
                   let dimProp = splineProp(dummy1, gridObj.point);
-                  // console.log("spline", dimProp,dummy1,gridObj.point)
+                  // //console.log("spline", dimProp,dummy1,gridObj.point)
                   let position = PointToDraw(dimProp.midPoint, scale, initPoint, rotate, 0, w[1] + fontSize * 0.75);   //fontSize에 대한 값을 scale 적용않고 정의
                   labels.push({
                       text: dimProp.length.toFixed(0),
@@ -9611,7 +9611,7 @@
 
   //     var loader = new THREE.FontLoader();
   //     loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
-  //         // console.log(font)
+  //         // //console.log(font)
   //         // var font = {generateShapes:(messagem , num)=>{}}
   //         for (let i in label) {
   //             var shapes = font.generateShapes(label[i].text, label[i].fontSize);
@@ -9694,7 +9694,7 @@
               let sectionPoint = sectionPointDict[girderPoint.key];
               for (let key in sectionPoint.forward) {
                   if (key === "uflange" || key === "lflange" || key === "web" || key === "URib" || key === "LRib") {
-                      // console.log("check",sectionPoint)
+                      // //console.log("check",sectionPoint)
                       for (let k in sectionPoint.forward[key]) {
                           if (sectionPoint.forward[key][k].length > 0) {
                               let pts = [];
@@ -9761,7 +9761,7 @@
 
       for (var key in sectionPoint) {
           if (key === "uflange" || key === "lflange" || key === "web" || key === "URib" || key === "LRib") {
-              // console.log("check",sectionPoint)
+              // //console.log("check",sectionPoint)
               for (let k in sectionPoint[key]) {
                   if (sectionPoint[key][k].length > 0) {
                       group.add(sectionMesh(sectionPoint[key][k], lineMaterial));
@@ -10028,7 +10028,7 @@
     let group = PartGeneralDraw(this.getInputData(0),this.getInputData(1),this.getInputData(2));
     let layer = this.getInputData(2).layer;
     let key = this.getInputData(3);
-    // console.log("check", layer,key)
+    // //console.log("check", layer,key)
     global.sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
 
     // sceneAdder({layer:layer, mesh:group},key);
@@ -10050,7 +10050,7 @@
     let group = XbeamSection(this.getInputData(0),this.getInputData(1),this.getInputData(2));
     let layer = this.getInputData(2).layer;
     let key = this.getInputData(3);
-    // console.log("check", layer,key)
+    // //console.log("check", layer,key)
     global.sceneAdder({name:`${key}`, layer:layer, mesh:group, meta:{part:`${key}`}});
 
     // sceneAdder({layer:layer, mesh:group},key);
@@ -10340,7 +10340,7 @@
           let offset = supportData[index][2]; //.offset
           point = gridPoint[name];
           girderHeight = - sectionPointDict[name].forward.lflangeSide[1];
-          // console.log(name, point)
+          // //console.log(name, point)
           let skew = point.skew * Math.PI / 180;
           let newPoint = {
               x: point.x - (Math.cos(skew) * (-1) * point.normalSin - Math.sin(skew) * point.normalCos) * offset,
@@ -10781,7 +10781,7 @@
               }
           }
       }
-      // console.log("new", frameInput.girderElemList)
+      // //console.log("new", frameInput.girderElemList)
       // return { frame, section, material, selfWeight, slabWeight, pavement, barrier, ...lane, laneList, girderElemList : frameInput.girderElemList }
       return { frameInput: { frame, section, material, selfWeight, slabWeight, pavement, barrier }, girderElemList: frameInput.girderElemList }
   }
@@ -11246,7 +11246,7 @@
               }
           });
           
-          // console.log(ZOffsetLine(deckSection.slab2[18].points,70))
+          // //console.log(ZOffsetLine(deckSection.slab2[18].points,70))
           let iMax = bPts.length - 1;
           let spt = longiRebarEndPoints(bPts[0], bPts[1], rebar2[rNum][startOffset], true);
           let ept = longiRebarEndPoints(bPts[iMax - 1], bPts[iMax], rebar2[rNum][endOffset], false);
@@ -11811,7 +11811,7 @@
           let dx = sign * tempInput.wingWallThick * cos;
           let dy = sign * tempInput.wingWallThick * sin;
           let dz = sign * tempInput.wingWallThick * (abutPoints[index].z - abutPoints[0].z)/abutPoints[index].offset;
-          // console.log(wingPoints, wingPt1)
+          // //console.log(wingPoints, wingPt1)
           let wingPt2 = [{ x: wingPt1[0].x + dx, y: wingPt1[0].y + dy, z: wingPt1[0].z + dz },
           { x: wingPt1[1].x + dx, y: wingPt1[1].y + dy, z: wingPt1[1].z },
           { x: wingPt1[2].x + dx, y: wingPt1[2].y + dy, z: wingPt1[2].z },
