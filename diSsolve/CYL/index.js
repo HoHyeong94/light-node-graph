@@ -16,5 +16,5 @@ LoftView.prototype.onExecute = function () {
     sceneAdder(tmpMesh);
     
     //console.log(tmpMesh)
-    //console.log(getInputData(2))
+    console.log(getInputData(2))
   }
