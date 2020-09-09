@@ -22,6 +22,7 @@ export function GirderPoint(){
     //console.log(this.getInputData(0))
     const result = GirderPointGen(this.getInputData(0))
     this.setOutputData(0, result)
+    console.log(this.setOutputData(0,result))
   }
 
 export function IGirder(){
