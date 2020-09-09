@@ -1,7 +1,7 @@
 import { sceneAdder, THREE } from "global";
-import {LoftModelView } from "./module"
+import {CylinderModelView } from "./module"
 
-export function LoftView() {
+export function Cylinderview() {
     this.addInput("top", "number");
     this.addInput("bottom","number")
     this.addInput("height", "number");
@@ -9,10 +9,10 @@ export function LoftView() {
 
 
   
-LoftView.prototype.onExecute = function () {
+Cylinderview.prototype.onExecute = function () {
     
     
-    let tmpMesh = LoftModelView(getInputData(0), getInputData(1),getInputData(2))
+    let tmpMesh = CylinderModelView(getInputData(0), getInputData(1),getInputData(2))
     sceneAdder(tmpMesh);
     
     //console.log(tmpMesh)
