@@ -11,9 +11,9 @@ export function CylinderModelView(top,buttom,height) {
     const mesh = new THREE.Mesh(geometry, meshMaterial)
     const mesh1 = new THREE.Mesh(geometry, meshMaterial)
     const mesh2= new THREE.Mesh(geometry, meshMaterial)
-    mesh.position.set(0,250,500)
-    mesh1.position.set(0,250,1000)
-    mesh2.position.set(0,250,1500)
+    mesh.position.set(0,200,500)
+    mesh1.position.set(0,200,1000)
+    mesh2.position.set(0,200,1500)
 
     console.log("메쉬위치")
     console.log(mesh)
