@@ -4,7 +4,7 @@ import { THREE, SpriteText } from "global";
 
 export function CylinderModelView(top,buttom,height) {
     const group = new THREE.Group();
-    const geometry = new THREE.CylinderGeometry(top,buttom,height);
+    const geometry = new THREE.CylinderGeometry(top,buttom,height,32,8);
     const meshMaterial = new THREE.MeshNormalMaterial()
    
     geometry.computeFaceNormals();
