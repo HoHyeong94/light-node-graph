@@ -7,9 +7,9 @@ export function VectorModelView(point1,point2,point3) {
     const meshMaterial = new THREE.MeshNormalMaterial()
     //meshMaterial.wireFrame = true
 
-    geometry.vertices.push(new THREE.Vector3(-50, -50, 0));
-    geometry.vertices.push(new THREE.Vector3(50, -50, 0));
-    geometry.vertices.push(new THREE.Vector3(50, 50, 0));
+    geometry.vertices.push(new THREE.Vector3(point1));
+    geometry.vertices.push(new THREE.Vector3(point2));
+    geometry.vertices.push(new THREE.Vector3(point3));
     geometry.computeFaceNormals();
 
     const face = new THREE.Face3(0, 1, 2)
