@@ -2,9 +2,9 @@ import { THREE, SpriteText } from "global";
 
 
 
-export function CylinderModelView(top, buttom, height) {
+export function CylinderModelView(length) {
     let group = new THREE.Group();
-    let geometry = new THREE.CylinderGeometry( top, buttom, height);
+    let geometry = new THREE.CylinderGeometry( length);
     let meshMaterial = new THREE.MeshNormalMaterial()
     //var cylinder = new THREE.Mesh( geometry, material );
     geometry.computeFaceNormals();
