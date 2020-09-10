@@ -12,7 +12,7 @@ export function CylinderModelView(top,buttom,height) {
     const mesh1 = new THREE.Mesh(geometry, meshMaterial)
     const mesh2= new THREE.Mesh(geometry, meshMaterial)
     mesh.position.set(0,200,600)
-    //mesh.rotate.x=-1
+    mesh.rotate.x=90
     mesh1.position.set(0,200,950)
     mesh2.position.set(0,200,1300)
 
