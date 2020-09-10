@@ -14,7 +14,7 @@ export function VectorView() {
   
 VectorView.prototype.onExecute = function () {
     console.log("시작")
-    console.log(getInputData(0))
+    console.log(this.getInputData(0))
     let tmpMesh = VectorModelView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
     sceneAdder({name:'vec', layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
     
@@ -22,3 +22,4 @@ VectorView.prototype.onExecute = function () {
     //console.log(getInputData(2))
   }
 
+  
