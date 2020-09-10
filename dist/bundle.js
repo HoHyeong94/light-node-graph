@@ -7733,8 +7733,12 @@
       let group = new global.THREE.Group();
       let meshMaterial = new global.THREE.MeshNormalMaterial();
       meshMaterial.side = global.THREE.DoubleSide;
-
+      console.log("로프트 뷰 test");
+      console.log(model.points[0]);
+      console.log(model.points);
+      
       let pNum = model.points[0].length;
+      console.log(pNum);
       let geometry = new global.THREE.Geometry();
       if (model.points.length === 1) {
           group.add(PolyRegion(model.points[0], meshMaterial, initPoint));
@@ -7806,7 +7810,7 @@
       let iter = 0;
       // //console.log(numlist);
       while (numlist.length > 2) {
-          //console.log(iter, numlist);
+          // //console.log(iter, numlist);
           let vec = [];
           for (let i = 0; i < numlist.length; i++) {
               let k = i < numlist.length - 1 ? i + 1 : 0;
@@ -7965,9 +7969,6 @@
               break;
           }
       }
-      if(result){
-          //console.log(newNormals, dots);
-      }
 
       return result
   }
@@ -8124,11 +8125,17 @@
   }
 
   LoftView.prototype.onExecute = function () {
+    console.log("로프트뷰 콘솔 시작");
+    console.log(this.getInputData(0));
+    console.log(this.getInputData(1));
+    console.log(this.getInputData(2));
     const model = this.getInputData(0);
     for (let key in model) {
       let tmpMesh = LoftModelView(model[key], this.getInputData(1));
       global.sceneAdder({name:this.getInputData(2) + key, layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
     }
+    //console.log(tmpMesh)
+    //console.log(getInputData(2))
   };
 
 
@@ -10687,7 +10694,7 @@
                       laneOffset.push(currentPoints[0].offset + laneData[k].offset);
                   } else if (laneData[k].baseLine === "rightDeck") {
                       laneOffset.push(currentPoints[currentPoints.length - 1].offset - laneData[k].offset);
-                  } // 거더에 대한 모든 기준 포인트가 저장되어야 함.
+                  } else ; // 거더에 대한 모든 기준 포인트가 저장되어야 함.
               }
 
               for (let j = 0; j < currentPoints.length - 1; j++) {
@@ -12014,8 +12021,11 @@
     }
     
     GirderPoint.prototype.onExecute = function() {
+      console.log("호형 ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ");
+      console.log(this.getInputData(0));
       const result = GirderPointGen(this.getInputData(0));
       this.setOutputData(0, result);
+      console.log(result);
     };
 
   function IGirder(){
@@ -12025,12 +12035,116 @@
     }
     
     IGirder.prototype.onExecute = function() {
+      console.log("호형ㅁㄴㅇㄹasdf");
+      console.log(this.getInputData(0));
+      console.log(this.getInputData(1));
       const result = IGirderSection(this.getInputData(0), this.getInputData(1));
       this.setOutputData(0, result);
+      console.log(result);
+    };
+
+  function CylinderModelView(top,buttom,height) {
+      const group = new global.THREE.Group();
+      const geometry = new global.THREE.CylinderGeometry(top,buttom,height,32,8);
+      const meshMaterial = new global.THREE.MeshNormalMaterial();
+     
+      geometry.computeFaceNormals();
+      const mesh = new global.THREE.Mesh(geometry, meshMaterial);
+      const mesh1 = new global.THREE.Mesh(geometry, meshMaterial);
+      const mesh2= new global.THREE.Mesh(geometry, meshMaterial);
+      mesh.position.set(0,200,600);
+      mesh.rotation.x=Math.PI/2;
+      mesh1.position.set(0,200,950);
+      mesh1.rotation.z=Math.PI/2;
+      mesh2.position.set(0,200,1300);
+
+      console.log("메쉬위치");
+      console.log(mesh);
+      console.log(mesh.position);
+      
+
+      group.add(mesh,mesh1,mesh2);
+      //group.position.set(0,250,500)
+      console.log("그룹위치");
+      console.log(group);
+      console.log(group.position);
+      return group
+  }
+
+  function Cylinderview() {
+      this.addInput("top", "number");
+      this.addInput("bottom","number");
+      this.addInput("height", "number");
+      
+    }
+
+
+    
+  Cylinderview.prototype.onExecute = function () {
+      
+      
+      let tmpMesh = CylinderModelView(this.getInputData(0),this.getInputData(1),this.getInputData(2));
+      global.sceneAdder({name:'cy', layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
+      
+      //console.log(tmpMesh)
+      //console.log(getInputData(2))
+    };
+
+  function VectorModelView(point1,point2,point3) {
+      const group = new global.THREE.Group();
+      const geometry = new global.THREE.Geometry();
+      const meshMaterial = new global.THREE.MeshNormalMaterial();
+      meshMaterial.side = global.THREE.DoubleSide;
+      //meshMaterial.wireFrame = true
+
+      geometry.vertices.push(new global.THREE.Vector3(point1[0][0],point1[0][1],point1[0][2]));
+      geometry.vertices.push(new global.THREE.Vector3(point2[0][0],point2[0][1],point2[0][2]));
+      geometry.vertices.push(new global.THREE.Vector3(point3[0][0],point3[0][1],point3[0][2]));
+      
+      const face = new global.THREE.Face3(0, 1, 2);
+      geometry.faces.push(face);
+      geometry.computeFaceNormals();
+      const mesh = new global.THREE.Mesh(geometry, meshMaterial);
+      //const mesh1 = new THREE.Mesh(geometry, meshMaterial)
+      //const mesh2= new THREE.Mesh(geometry, meshMaterial)
+      mesh.position.set(0,200,600);
+      /*mesh.rotation.x=Math.PI/2
+      mesh1.position.set(0,200,950)
+      mesh1.rotation.z=Math.PI/2
+      mesh2.position.set(0,200,1300)*/
+
+      console.log("메쉬위치");
+      console.log(mesh);
+      console.log(mesh.position);
+      
+      group.add(mesh);
+      //group.position.set(0,250,500)
+      console.log("그룹위치");
+      console.log(group);
+      console.log(group.position);
+      return group
+  }
+
+  function VectorView() {
+      this.addInput("point1", "arr");
+      this.addInput("point2","arr");
+      this.addInput("point3", "arr");
+      
+    }
+
+
+    
+  VectorView.prototype.onExecute = function () {
+      console.log("시작");
+      console.log(this.getInputData(0));
+      let tmpMesh = VectorModelView(this.getInputData(0),this.getInputData(1),this.getInputData(2));
+      global.sceneAdder({name:'vec', layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
+      
+      //console.log(tmpMesh)
+      //console.log(getInputData(2))
     };
 
   // import { defaultValues } from "./defaultValues";
-
 
   global.LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
   global.LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -12088,6 +12202,12 @@
   global.LiteGraph.registerNodeType("Drawing/XbeamGeneralView", XbeamGeneralView );
   global.LiteGraph.registerNodeType("PSC/IGirder", IGirder );
   global.LiteGraph.registerNodeType("PSC/GirderPoint", GirderPoint );
+  global.LiteGraph.registerNodeType("CYL/Cylinderview",Cylinderview);
+  global.LiteGraph.registerNodeType("vectorcm/VectorView",VectorView);
+
+
+
+
 
 
   // const {
