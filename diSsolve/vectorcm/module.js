@@ -2,7 +2,7 @@ import { THREE, SpriteText } from "global";
 
 
 export function VectorModelView(point1,point2,point3) {
-    //const group = new THREE.Group();
+    const group = new THREE.Group();
     const geometry = new THREE.geometry();
     const meshMaterial = new THREE.MeshNormalMaterial()
     //meshMaterial.wireFrame = true
