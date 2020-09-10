@@ -1,4 +1,4 @@
-import { sceneAdder, THREE } from "global";
+import { sceneAdder, THREE } from "global"
 import {CylinderModelView } from "./module"
 
 export function Cylinderview() {
