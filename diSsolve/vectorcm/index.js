@@ -12,7 +12,7 @@ export function VectorView() {
 
 
   
-Cylinderview.prototype.onExecute = function () {
+VectorView.prototype.onExecute = function () {
     
     
     let tmpMesh = VectorModelView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
