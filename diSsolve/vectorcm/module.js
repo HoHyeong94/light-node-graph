@@ -14,7 +14,7 @@ export function VectorModelView(point1,point2,point3) {
 
     const face = new THREE.Face3(0, 1, 2)
     geometry.faces.push(face)
-
+    geometry.computeFaceNormals();
     const mesh = new THREE.Mesh(geometry, meshMaterial)
     //const mesh1 = new THREE.Mesh(geometry, meshMaterial)
     //const mesh2= new THREE.Mesh(geometry, meshMaterial)
@@ -28,7 +28,7 @@ export function VectorModelView(point1,point2,point3) {
     console.log(mesh)
     console.log(mesh.position)
     
-
+geometry.computeFaceNormals();
     group.add(mesh);
     //group.position.set(0,250,500)
     console.log("그룹위치")
