@@ -16,7 +16,7 @@ export function CylinderModelView(top,buttom,height) {
     
 
     group.add(new THREE.Mesh(geometry, meshMaterial));
-    group.position.set(1000,0,0)
+    group.position.set(0,100,100)
     console.log("그룹위치")
     console.log(group)
     console.log(group.position)
