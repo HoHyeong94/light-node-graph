@@ -14,7 +14,7 @@ export function CylinderModelView(top,buttom,height) {
     mesh.position.set(0,200,600)
     mesh.rotation.x=Math.PI/2
     mesh1.position.set(0,200,950)
-    mesh1.rotation.y=Math.PI
+    mesh1.rotation.z=Math.PI/2
     mesh2.position.set(0,200,1300)
 
     console.log("메쉬위치")
