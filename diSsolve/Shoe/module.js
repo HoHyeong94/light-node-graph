@@ -2,7 +2,7 @@ import { THREE, SpriteText } from "global";
 
 
 
-export function ShoeModelView(length,rotate,position) {
+export function ShoeModelView(length,rotate,pos) {
     
     const group = new THREE.Group();
     const mergedGeo = new THREE.Geometry();
@@ -26,16 +26,12 @@ export function ShoeModelView(length,rotate,position) {
     mesh3.updateMatrix()
     mergedGeo.merge(mesh3.geometry,mesh3.matrix)
 
-        
-   
-    
     mergedGeo.computeFaceNormals();
     
-   
-
     const mesh = new THREE.Mesh(mergedGeo, meshMaterial)
     
-    mesh.position.set(position.x,position.y,position.z)
+    mesh.position.set(pos.x,pos.y,pos.z)
+
     mesh.rotation.x=rotate.x
     mesh.rotation.y=rotate.y
     mesh.rotation.z=rotate.z
