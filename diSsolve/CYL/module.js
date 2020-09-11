@@ -2,9 +2,9 @@ import { THREE, SpriteText } from "global";
 
 
 
-export function CylinderModelView(top,buttom,height) {
+export function CylinderModelView(length,rotate) {
     const group = new THREE.Group();
-    const geometry = new THREE.CylinderGeometry(top,buttom,height,32,8);
+    const geometry = new THREE.CylinderGeometry(length[0],length[1],length[2],32,8);
     const meshMaterial = new THREE.MeshNormalMaterial()
    
     geometry.computeFaceNormals();
@@ -12,10 +12,13 @@ export function CylinderModelView(top,buttom,height) {
     const mesh1 = new THREE.Mesh(geometry, meshMaterial)
     const mesh2= new THREE.Mesh(geometry, meshMaterial)
     mesh.position.set(0,200,600)
-    mesh.rotation.x=Math.PI/2
-    mesh1.position.set(0,200,950)
-    mesh1.rotation.z=Math.PI/2
-    mesh2.position.set(0,200,1300)
+    mesh.rotation.x=rotate.x
+    mesh.rotation.y=rotate.y
+    mesh.rotation.z=rotate.z
+
+    //mesh1.position.set(0,200,950)
+   //mesh1.rotation.z=Math.PI/2
+    //mesh2.position.set(0,200,1300)
 
     console.log("메쉬위치")
     console.log(mesh)
