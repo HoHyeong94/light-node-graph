@@ -13,14 +13,13 @@ export function CylinderModelView(length,rotate,position) {
     geometry.computeFaceNormals();
     const mesh = new THREE.Mesh(geometry, meshMaterial)
     
-    mesh.position.set(positon.x,position.y,position.z)
+    mesh.position.set(position.x,position.y,position.z)
     mesh.rotation.x=rotate.x
     mesh.rotation.y=rotate.y
     mesh.rotation.z=rotate.z
 
 
     group.add(mesh);
-    //group.position.set(0,250,500)
     console.log("그룹위치")
     console.log(group)
     console.log(group.position)
