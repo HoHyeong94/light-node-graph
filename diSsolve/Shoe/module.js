@@ -17,7 +17,7 @@ export function ShoeModelView(length,rotate,pos) {
 
 
     const mesh1 = new THREE.Mesh(outGeometry1, meshMaterial)
-    mesh1.position.set(0,0,0)s
+    mesh1.position.set(0,0,0)
     mesh1.updateMatrix()
     mergedGeo.merge(mesh1.geometry,mesh1.matrix)
 
