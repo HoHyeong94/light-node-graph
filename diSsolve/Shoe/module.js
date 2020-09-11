@@ -10,11 +10,11 @@ export function ShoeModelView(length,rotate,pos) {
     const InGeometry = new THREE.BoxBufferGeometry(length.width-10,length.Inheight,length.depth-10)
     const outGeometry2 = new THREE.BoxBufferGeometry(length.width,length.height,length.depth);
     const meshMaterial = new THREE.MeshNormalMaterial()
-    /*
+    
     console.log(length)
     console.log(rotate)
     console.log(pos)
-    */
+    
 
 
     const mesh1 = new THREE.Mesh(outGeometry1, meshMaterial)
