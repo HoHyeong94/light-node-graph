@@ -1,7 +1,7 @@
 import { sceneAdder, THREE } from "global"
 import {ShoeModelView} from "./module"
 
-export function Shoeview() {
+export function ShoeView() {
     //this.addInput("length", "number");
     //this.addInput("thickness","number")
     //this.addInput("differ","number")
@@ -11,7 +11,7 @@ export function Shoeview() {
     this.addInput("position","arr")
     
   }
-Shoeview.prototype.onExecute = function () {
+ShoeView.prototype.onExecute = function () {
 
     
     let tmpMesh = ShoeModelView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
