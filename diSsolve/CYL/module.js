@@ -6,7 +6,7 @@ export function CylinderModelView(length,rotate) {
     console.log("모듈 시작")
     console.log(rotate)
     const group = new THREE.Group();
-    const geometry = new THREE.CylinderGeometry(length[0],length[1],length[2],32,8);
+    const geometry = new THREE.CylinderGeometry(length.top,length.buttom,length.height,32,8);
     const meshMaterial = new THREE.MeshNormalMaterial()
     geometry.computeFaceNormals();
     const mesh = new THREE.Mesh(geometry, meshMaterial)
