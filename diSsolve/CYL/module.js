@@ -2,7 +2,7 @@ import { THREE, SpriteText } from "global";
 
 
 
-export function CylinderModelView(length,rotate) {
+export function CylinderModelView(length,rotate,position) {
     console.log("모듈 시작")
     console.log(rotate)
     const group = new THREE.Group();
@@ -10,21 +10,12 @@ export function CylinderModelView(length,rotate) {
     const meshMaterial = new THREE.MeshNormalMaterial()
     geometry.computeFaceNormals();
     const mesh = new THREE.Mesh(geometry, meshMaterial)
-    //const mesh1 = new THREE.Mesh(geometry, meshMaterial)
-    //const mesh2= new THREE.Mesh(geometry, meshMaterial)
-    mesh.position.set(0,200,600)
+    
+    mesh.position.set(positon.x,position.y,position.z)
     mesh.rotation.x=rotate.x
     mesh.rotation.y=rotate.y
     mesh.rotation.z=rotate.z
 
-    //mesh1.position.set(0,200,950)
-   //mesh1.rotation.z=Math.PI/2
-    //mesh2.position.set(0,200,1300)
-
-    console.log("메쉬위치")
-    console.log(mesh)
-    console.log(mesh.position)
-    
 
     group.add(mesh);
     //group.position.set(0,250,500)
