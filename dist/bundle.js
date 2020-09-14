@@ -10687,7 +10687,7 @@
                       laneOffset.push(currentPoints[0].offset + laneData[k].offset);
                   } else if (laneData[k].baseLine === "rightDeck") {
                       laneOffset.push(currentPoints[currentPoints.length - 1].offset - laneData[k].offset);
-                  } // 거더에 대한 모든 기준 포인트가 저장되어야 함.
+                  } else ; // 거더에 대한 모든 기준 포인트가 저장되어야 함.
               }
 
               for (let j = 0; j < currentPoints.length - 1; j++) {
