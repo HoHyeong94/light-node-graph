@@ -18,8 +18,10 @@ export function GirderPoint(){
   }
   
   GirderPoint.prototype.onExecute = function() {
+    
     const result = GirderPointGen(this.getInputData(0))
     this.setOutputData(0, result)
+    
   }
 
 export function IGirder(){
@@ -29,6 +31,8 @@ export function IGirder(){
   }
   
   IGirder.prototype.onExecute = function() {
+    
     const result = IGirderSection(this.getInputData(0), this.getInputData(1))
     this.setOutputData(0, result)
+    
   }

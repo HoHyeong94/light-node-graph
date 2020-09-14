@@ -38,7 +38,7 @@ Initialize().then(() => {
             slaveOrMaster: c ? c : this.properties["slaveOrMaster"]
         };
         let r = LineGen(lineInput);
-        console.log(r)
+        //console.log(r)
         this.setOutputData(0, r);
     };
 
@@ -61,5 +61,5 @@ Initialize().then(() => {
     };
 
     LiteGraph.registerNodeType("nexivil/LineOffset", LineOffset);
-}).catch(e => console.error(e));
+}).catch(e => //console.error(e));
 

@@ -52,7 +52,7 @@ export const MasterLineData = (horizon, VerticalDataList, superElevation, beginS
 }
 
 const LineGenerator2 = (horizonDataList,beginStation) => {
-  // console.time("for loop");
+  // //console.time("for loop");
   let lineResult = {
     vectors: [],
     curves: [],

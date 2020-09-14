@@ -13,9 +13,9 @@ export function ShoeView() {
   }
 ShoeView.prototype.onExecute = function () {
 
-    console.log("호형2")
+    
     let tmpMesh = ShoeModelView(this.getInputData(0),this.getInputData(1),this.getInputData(2))
-    sceneAdder({name:'sh', layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
+    sceneAdder({name:'cy', layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
     
     //console.log(tmpMesh)
     //console.log(getInputData(2))

@@ -89,7 +89,7 @@ export function DeckRebarPoint(
             }
         })
         
-        // console.log(ZOffsetLine(deckSection.slab2[18].points,70))
+        // //console.log(ZOffsetLine(deckSection.slab2[18].points,70))
         let iMax = bPts.length - 1
         let spt = longiRebarEndPoints(bPts[0], bPts[1], rebar2[rNum][startOffset], true)
         let ept = longiRebarEndPoints(bPts[iMax - 1], bPts[iMax], rebar2[rNum][endOffset], false)

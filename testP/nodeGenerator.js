@@ -7,7 +7,7 @@ import { stringLiteral } from "@babel/types";
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 
 export const LineGenerator = inputs => {
-  // console.time("for loop");
+  // //console.time("for loop");
   let lineResult = {
     vectors: [],
     curves: [],

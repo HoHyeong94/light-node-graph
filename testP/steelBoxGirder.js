@@ -521,10 +521,10 @@ export function steelBoxMesh(scene) {
       }
       sign *= -1
     }
-    //console.log(points)
+    ////console.log(points)
     for (let i = 0; i< points.length - 1 ;i++){
        var dummyline =  new THREE.LineCurve3(points[i],points[i+1]);
-       //console.log(dummyline)
+       ////console.log(dummyline)
        var upperframeline = new THREE.LineCurve3(dummyline.getPoint(0.05),dummyline.getPoint(0.95));
        
        var geometry1 = new THREE.ExtrudeBufferGeometry( shape, {steps: 1, bevelEnabled: false, extrudePath: upperframeline} );
@@ -545,7 +545,7 @@ export function steelBoxMesh(scene) {
     for (let i = 0; i < smoothness+1 ; i++){
       var v3 = new THREE.Vector2().addVectors(v1.clone().multiplyScalar(smoothness - i), v2.clone().multiplyScalar(i)).setLength(radius);
       points.push(new THREE.Vector2().addVectors(point2,v3));
-      //console.log(v3)
+      ////console.log(v3)
     }
     return points
   }

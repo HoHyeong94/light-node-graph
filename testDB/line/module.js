@@ -24,7 +24,7 @@ export function LineToThree(linepoints, initPoint) {
 }
 
 export function LineGenerator(input) {
-  // console.time("for loop");
+  // //console.time("for loop");
   const spacing = 10000; //단위 수정시 check
 
   const startPoint = [];

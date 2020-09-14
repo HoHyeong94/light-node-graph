@@ -14,8 +14,8 @@ LineViewer.prototype.on3DExecute = function () {
   const points = this.getInputData(0);
   const initPoint = this.getInputData(1) ? this.getInputData(1) : points[0];
   const color = this.getInputData(2);
-  // console.log(this.getInputData(1) ? true : false)
-  // console.log(initPoint, color)
+  // //console.log(this.getInputData(1) ? true : false)
+  // //console.log(initPoint, color)
   let mesh = LineView(points, initPoint, color)
   sceneAdder({name:"line", layer:2, mesh:mesh, meta:{part:"line"}});
 
@@ -50,7 +50,7 @@ DiaPhragmView.prototype.onExecute = function () {
   const keyName = this.getInputData(2);
   const group = DiaView(diaDict, initPoint);
   // let n = Math.random().toFixed(5)
-  // console.log("random", n)
+  // //console.log("random", n)
   sceneAdder({name:`${keyName}`, layer:0, mesh:group, meta:{part:`${keyName}`}});
 
   // sceneAdder({ layer: 0, mesh: group }, keyName);
@@ -154,11 +154,14 @@ export function LoftView() {
 }
 
 LoftView.prototype.onExecute = function () {
+  
   const model = this.getInputData(0)
   for (let key in model) {
     let tmpMesh = LoftModelView(model[key], this.getInputData(1))
     sceneAdder({name:this.getInputData(2) + key, layer:0, mesh:tmpMesh, meta:{part:this.getInputData(2)}});
   }
+  //console.log(tmpMesh)
+  //console.log(getInputData(2))
 }
 
 

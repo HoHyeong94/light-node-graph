@@ -20,7 +20,9 @@ import { Stud } from "./stud/index"
 import { MaterialQntt } from "./quantity/index"
 import { AbutModel, AbutPoint } from "./substruc/index"
 import { IGirder, GirderPoint } from "./PSC/index"
-
+import {Cylinderview} from "./CYL/index"
+import {VectorView} from "./vectorcm/index"
+import {ShoeView} from "./Shoe/index"
 
 LiteGraph.registerNodeType("nexivil/MasterLine", MasterLine);
 LiteGraph.registerNodeType("nexivil/GirderLayout", GirderLayout);
@@ -78,6 +80,14 @@ LiteGraph.registerNodeType("Drawing/PartGeneralView", PartGeneralView );
 LiteGraph.registerNodeType("Drawing/XbeamGeneralView", XbeamGeneralView );
 LiteGraph.registerNodeType("PSC/IGirder", IGirder );
 LiteGraph.registerNodeType("PSC/GirderPoint", GirderPoint );
+LiteGraph.registerNodeType("CYL/Cylinderview",Cylinderview);
+LiteGraph.registerNodeType("vectorcm/VectorView",VectorView);
+LiteGraph.registerNodeType("Shoe/ShoeView",ShoeView);
+
+
+
+
+
 
 
 // const {
